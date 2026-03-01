@@ -1,23 +1,55 @@
-﻿@{
-    ViewData["Title"] = "حاسبة تكاليف الشحن";
+﻿<!-- مسار الملف في المشروع: Views/Calculator/Index.cshtml -->
+@{
+    ViewData["Title"] = Localizer["حاسبة تكاليف الشحن"];
 }
 
 <style>
-    /* Premium Calculator Pure CSS */
+    .page-header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+    }
+
+    .page-header-text h2 {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #1a2634;
+        margin: 0;
+    }
+
+    .page-header-text p {
+        color: #be955b;
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
     .calc-layout {
         display: flex;
         gap: 2rem;
-        padding: 2rem 0;
+        align-items: stretch;
     }
 
+    @@media (max-width: 992px) {
+        .calc-layout {
+            flex-direction: column-reverse;
+        }
+    }
+
+    /* --- قسم التلخيص الأيسر (الداكن) --- */
     .calc-summary-sidebar {
-        width: 380px;
-        background: #111827;
-        border-radius: 2.5rem;
+        flex: 0 0 380px;
+        background: linear-gradient(135deg, #1a2634 0%, #2b3f56 100%);
+        border-radius: 2rem;
         padding: 2.5rem;
         color: white;
         display: flex;
         flex-direction: column;
+        box-shadow: 0 20px 40px rgba(26, 38, 52, 0.2);
     }
 
     .summary-header {
@@ -28,173 +60,296 @@
     }
 
         .summary-header h2 {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 900;
+            margin: 0;
+            color: #d4af7a;
         }
 
     .summary-icon {
-        background: #3b82f6;
+        background: rgba(190, 149, 91, 0.2);
+        color: #be955b;
         width: 45px;
         height: 45px;
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
+        font-size: 1.2rem;
     }
 
     .cost-item {
         display: flex;
         justify-content: space-between;
         padding: 1.25rem 0;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+        border-bottom: 1px solid rgba(255,255,255,0.05);
     }
 
     .cost-label {
-        color: #94a3b8;
+        color: #cbd5e1;
         font-weight: 700;
         font-size: 0.85rem;
+        text-transform: uppercase;
     }
 
     .cost-value {
-        font-weight: 800;
-        font-size: 1.1rem;
+        font-weight: 900;
+        font-size: 1.2rem;
+        color: white;
     }
 
     .total-cost-section {
         margin-top: auto;
-        padding-top: 2rem;
+        padding-top: 3rem;
     }
 
     .total-display {
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
     }
 
     .total-amount {
-        font-size: 3rem;
+        font-size: 3.5rem;
         font-weight: 900;
-        color: white;
+        color: #be955b;
+        line-height: 1;
     }
 
     .total-label {
-        color: #3b82f6;
+        color: white;
         font-weight: 800;
         margin-bottom: 0.5rem;
     }
 
+    .total-sub {
+        color: #94a3b8;
+        font-size: 0.8rem;
+        text-align: left;
+        margin-bottom: 2rem;
+    }
+
     .btn-quote {
         width: 100%;
-        background: #3b82f6;
+        background: linear-gradient(to right, #be955b, #d4af7a);
         color: white;
         padding: 1.25rem;
         border-radius: 1.25rem;
         font-weight: 800;
+        font-size: 1.1rem;
         border: none;
         cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 10px 20px rgba(190, 149, 91, 0.3);
     }
 
+        .btn-quote:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(190, 149, 91, 0.4);
+        }
+
+    /* --- قسم الإدخال الأيمن (الفاتح) --- */
     .calc-inputs-main {
         flex: 1;
         background: white;
-        border-radius: 2.5rem;
+        border-radius: 2rem;
         padding: 3rem;
         box-shadow: 0 10px 40px rgba(0,0,0,0.02);
+        border: 1px solid #f1f5f9;
     }
 
     .input-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 2rem;
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .input-row {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
     }
 
     .field-box label {
         display: block;
-        color: #94a3b8;
+        color: #1a2634;
         font-weight: 800;
-        font-size: 0.75rem;
+        font-size: 0.85rem;
         margin-bottom: 0.75rem;
-        text-align: center;
     }
 
     .input-control {
         width: 100%;
-        padding: 1.25rem;
+        padding: 1.25rem 1.5rem;
         border-radius: 1.25rem;
-        border: 1px solid #e2e8f0;
+        border: 2px solid #e2e8f0;
         background: #f8fafc;
         font-weight: 800;
-        text-align: center;
+        font-size: 1.1rem;
+        color: #1a2634;
         outline: none;
+        transition: 0.3s;
         font-family: inherit;
     }
 
+        .input-control:focus {
+            border-color: #be955b;
+            box-shadow: 0 0 0 4px rgba(190, 149, 91, 0.1);
+            background: white;
+        }
+
+        .input-control.align-center {
+            text-align: center;
+        }
+
     .btn-toggle-group {
         display: flex;
-        background: #f1f5f9;
+        background: #f8fafc;
         padding: 0.4rem;
         border-radius: 1.25rem;
+        border: 2px solid #e2e8f0;
     }
 
     .toggle-opt {
         flex: 1;
-        padding: 0.85rem;
+        padding: 1rem;
         border-radius: 1rem;
         border: none;
         font-weight: 800;
+        font-size: 1rem;
+        color: #64748b;
         cursor: pointer;
+        transition: 0.3s;
+        background: transparent;
     }
 
         .toggle-opt.active {
-            background: #3b82f6;
+            background: #1a2634;
             color: white;
+            box-shadow: 0 4px 10px rgba(26, 38, 52, 0.2);
         }
 
     .notice-box {
-        background: #eff6ff;
-        padding: 1.5rem;
+        background: #f8fafc;
+        padding: 2rem;
         border-radius: 1.5rem;
-        margin-top: 3rem;
+        margin-top: 2rem;
         display: flex;
-        gap: 1rem;
+        gap: 1.5rem;
+        align-items: flex-start;
+        border: 1px solid #e2e8f0;
+    }
+
+    .notice-icon {
+        background: rgba(190, 149, 91, 0.1);
+        color: #be955b;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
         align-items: center;
-        color: #1e40af;
-        font-weight: 700;
-        font-size: 0.9rem;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .notice-box h4 {
+        margin: 0 0 0.5rem 0;
+        color: #1a2634;
+        font-weight: 900;
+    }
+
+    .notice-box p {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.6;
     }
 </style>
 
-<div class="calc-layout" dir="rtl">
-    <div class="calc-summary-sidebar">
-        <div class="summary-header">
-            <div class="summary-icon">📱</div>
-            <h2>ملخص التكاليف</h2>
+<div class="page-header-container">
+    <div class="page-header-text">
+        <h2>@Localizer["حاسبة تكاليف الشحن"]</h2>
+        <p><span style="width: 6px; height: 6px; background: #be955b; border-radius: 50%;"></span> @Localizer["نظام الإدارة اللوجستية الذكي"]</p>
+    </div>
+</div>
+
+<div class="calc-layout">
+    <div class="calc-inputs-main">
+        <div class="input-row">
+            <div class="field-box">
+                <label>@Localizer["موقع المزاد"]</label>
+                <div class="btn-toggle-group">
+                    <button class="toggle-opt active" type="button">@Localizer["كوبارت (Copart)"]</button>
+                    <button class="toggle-opt" type="button">@Localizer["آي أي أي (IAAI)"]</button>
+                </div>
+            </div>
+            <div class="field-box">
+                <label>@Localizer["سعر السيارة المتوقع ($)"]</label>
+                <input type="text" class="input-control align-center" value="5000" dir="ltr" />
+            </div>
         </div>
-        <div class="cost-item"><span class="cost-value">$5,000</span><span class="cost-label">سعر السيارة</span></div>
-        <div class="cost-item"><span class="cost-value">$700</span><span class="cost-label">رسوم المزاد</span></div>
-        <div class="cost-item"><span class="cost-value">$150</span><span class="cost-label">النقل الداخلي</span></div>
-        <div class="cost-item"><span class="cost-value">$850</span><span class="cost-label">الشحن البحري</span></div>
-        <div class="total-cost-section">
-            <div class="total-display"><div class="total-amount">$6,700</div><div class="total-label">الإجمالي التقديري</div></div>
-            <button class="btn-quote">طلب عرض سعر رسمي</button>
+
+        <div class="input-row">
+            <div class="field-box">
+                <label>@Localizer["موقع السيارة في أمريكا"]</label>
+                <select class="input-control">
+                    <option>New Jersey - Elizabeth</option>
+                    <option>Texas - Somerville</option>
+                    <option>California - Houston</option>
+                </select>
+            </div>
+            <div class="field-box">
+                <label>@Localizer["نوع المركبة"]</label>
+                <select class="input-control">
+                    <option>@Localizer["صالون (Sedan)"]</option>
+                    <option>@Localizer["دفع رباعي (SUV)"]</option>
+                    <option>@Localizer["شاحنة (Pickup)"]</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div class="field-box">
+                <label>@Localizer["ميناء الوصول"]</label>
+                <div class="btn-toggle-group">
+                    <button class="toggle-opt active" type="button">@Localizer["ميناء صحار"]</button>
+                    <button class="toggle-opt" type="button">@Localizer["ميناء صلالة"]</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="notice-box">
+            <div class="notice-icon"><i class="fa-solid fa-info"></i></div>
+            <div>
+                <h4>@Localizer["ملاحظات هامة"]</h4>
+                <p>@Localizer["هذه الأسعار تقديرية وقد تختلف بناءً على حالة السيارة، المسافة الدقيقة للمزاد، وتغيرات أسعار الشحن العالمي. رسوم المزاد تعتمد على سياسة المزاد الحالية."]</p>
+            </div>
         </div>
     </div>
 
-    <div class="calc-inputs-main">
-        <div style="text-align: left; margin-bottom: 2rem;">
-            <h2 style="font-weight: 900; color: #1a2634;">حاسبة تكاليف الشحن</h2>
-            <p style="color: #3b82f6; font-weight: 700; font-size: 0.85rem;">نظام الإدارة اللوجستية التقني</p>
+    <div class="calc-summary-sidebar">
+        <div class="summary-header">
+            <div class="summary-icon"><i class="fa-solid fa-calculator"></i></div>
+            <h2>@Localizer["ملخص التكاليف"]</h2>
         </div>
-        <div class="input-row">
-            <div class="field-box"><label>موقع المزاد</label><div class="btn-toggle-group"><button class="toggle-opt">IAAI</button><button class="toggle-opt active">Copart</button></div></div>
-            <div class="field-box"><label>سعر السيارة المتوقع ($)</label><input type="text" class="input-control" value="5000" /></div>
+
+        <div class="cost-item"><span class="cost-value">$5,000</span><span class="cost-label">@Localizer["سعر السيارة"]</span></div>
+        <div class="cost-item"><span class="cost-value">$700</span><span class="cost-label">@Localizer["رسوم المزاد (COPART)"]</span></div>
+        <div class="cost-item"><span class="cost-value">$150</span><span class="cost-label">@Localizer["النقل الداخلي (TOWING)"]</span></div>
+        <div class="cost-item"><span class="cost-value">$850</span><span class="cost-label">@Localizer["الشحن البحري (OCEAN)"]</span></div>
+
+        <div class="total-cost-section">
+            <div class="total-display">
+                <div class="total-amount" dir="ltr">$6,700</div>
+                <div class="total-label">@Localizer["الإجمالي التقديري"]</div>
+            </div>
+            <div class="total-sub">≈ 2579.50 @Localizer["ر.ع"]</div>
+            <button class="btn-quote">@Localizer["طلب عرض سعر رسمي"]</button>
         </div>
-        <div class="input-row">
-            <div class="field-box"><label>موقع السيارة في أمريكا</label><select class="input-control"><option>New Jersey</option></select></div>
-            <div class="field-box"><label>نوع المركبة</label><select class="input-control"><option>Sedan</option></select></div>
-        </div>
-        <div class="notice-box"><div><p style="font-weight: 900;">ملاحظات هامة</p><p style="font-size: 0.8rem;">هذه الأسعار تقديرية وقد تختلف بناءً على حالة السيارة.</p></div></div>
     </div>
 </div>

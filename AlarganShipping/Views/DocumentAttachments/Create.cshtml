@@ -1,10 +1,10 @@
-﻿@model AlarganShipping.Models.DocumentAttachment
+﻿<!-- مسار الملف في المشروع: Views/DocumentAttachments/Create.cshtml -->
+@model AlarganShipping.Models.DocumentAttachment
 @{
-    ViewData["Title"] = "أرشفة ورفع ملف";
+    ViewData["Title"] = Localizer["أرشفة ورفع ملف"];
 }
 
 <style>
-    /* Premium Form CSS specific to File Upload */
     .form-page-header {
         display: flex;
         justify-content: space-between;
@@ -15,31 +15,32 @@
     .form-page-title {
         font-size: 1.75rem;
         font-weight: 800;
-        color: #2b3f56;
+        color: var(--primary-navy);
         margin: 0;
     }
 
     .btn-back {
-        background-color: #f1f5f9;
-        color: #475569;
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        color: var(--text-muted);
         padding: 0.75rem 1.5rem;
         border-radius: 0.75rem;
         font-weight: 700;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: 0.3s;
     }
 
         .btn-back:hover {
-            background-color: #e2e8f0;
-            color: #1e293b;
+            background-color: #f8fafc;
+            color: var(--primary-navy);
         }
 
     .premium-form-card {
         background-color: #ffffff;
-        border-radius: 1.25rem;
-        box-shadow: 0 10px 30px rgba(43, 63, 86, 0.05);
-        border: 1px solid #f8fafc;
-        padding: 2.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+        padding: 3rem;
         position: relative;
         overflow: hidden;
     }
@@ -49,9 +50,9 @@
             position: absolute;
             top: 0;
             right: 0;
-            width: 100%;
+            left: 0;
             height: 6px;
-            background: linear-gradient(to left, #8b5cf6, #a855f7);
+            background: linear-gradient(to right, var(--primary-navy), var(--primary-gold));
         }
 
     .form-grid {
@@ -66,31 +67,65 @@
     }
 
     .form-label {
-        font-weight: 700;
-        color: #2b3f56;
+        font-weight: 800;
+        color: var(--primary-navy);
         margin-bottom: 0.5rem;
         font-size: 0.95rem;
     }
 
     .form-control {
-        padding: 0.85rem 1.25rem;
+        padding: 1rem 1.25rem;
         border: 2px solid #e2e8f0;
         border-radius: 0.75rem;
-        font-family: 'Cairo', sans-serif;
+        font-family: inherit;
         font-size: 1rem;
-        color: #1e293b;
+        color: var(--text-dark);
         background-color: #f8fafc;
-        transition: all 0.3s ease;
+        transition: 0.3s;
         outline: none;
     }
 
         .form-control:focus {
-            border-color: #8b5cf6;
+            border-color: var(--primary-gold);
             background-color: #ffffff;
-            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+            box-shadow: 0 0 0 4px rgba(195, 154, 92, 0.1);
         }
 
-    /* Custom File Input Styling */
+    /* Select2 Styling */
+    .select2-container--default .select2-selection--single {
+        background-color: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        transition: 0.3s;
+    }
+
+        .select2-container--default .select2-selection--single:focus, .select2-container--focus .select2-selection--single {
+            border-color: var(--primary-gold);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(195, 154, 92, 0.1);
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--text-dark);
+            font-weight: 600;
+            padding-left: 1.25rem;
+            padding-right: 1.25rem;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 48px;
+            right: 10px;
+        }
+
+    html[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
+        left: 10px;
+        right: auto;
+    }
+
+    /* File Upload Styling */
     .file-upload-wrapper {
         border: 2px dashed #cbd5e1;
         border-radius: 1rem;
@@ -102,9 +137,9 @@
         position: relative;
     }
 
-        .file-upload-wrapper:hover {
-            border-color: #8b5cf6;
-            background: #f5f3ff;
+        .file-upload-wrapper:hover, .file-upload-wrapper.dragover {
+            border-color: var(--primary-gold);
+            background: rgba(195, 154, 92, 0.05);
         }
 
     .file-input {
@@ -119,25 +154,32 @@
 
     .upload-icon {
         font-size: 3rem;
-        color: #8b5cf6;
+        color: var(--primary-gold);
         margin-bottom: 1rem;
         display: block;
     }
 
     .upload-text {
         font-weight: 800;
-        color: #2b3f56;
+        color: var(--primary-navy);
         font-size: 1.1rem;
         margin-bottom: 0.5rem;
     }
 
     .upload-hint {
-        color: #64748b;
+        color: var(--text-muted);
         font-size: 0.9rem;
     }
 
+    .file-name-display {
+        margin-top: 1rem;
+        font-weight: 800;
+        color: #16a34a;
+        display: none;
+    }
+
     .form-actions {
-        margin-top: 2.5rem;
+        margin-top: 3rem;
         padding-top: 1.5rem;
         border-top: 1px solid #f1f5f9;
         display: flex;
@@ -145,76 +187,155 @@
     }
 
     .btn-submit {
-        background: linear-gradient(to right, #8b5cf6, #a855f7);
+        background: var(--primary-navy);
         color: #ffffff;
         border: none;
-        padding: 0.85rem 2.5rem;
-        border-radius: 0.75rem;
+        padding: 1rem 3rem;
+        border-radius: 1rem;
         font-weight: 800;
         font-size: 1.1rem;
         cursor: pointer;
-        font-family: 'Cairo', sans-serif;
-        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-        transition: all 0.3s ease;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(26, 42, 58, 0.3);
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
     }
 
         .btn-submit:hover {
+            background: var(--secondary-navy);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 8px 20px rgba(26, 42, 58, 0.4);
         }
 
     .text-danger {
-        color: #dc2626;
+        color: #ef4444;
         font-size: 0.85rem;
-        font-weight: 600;
-        margin-top: 0.25rem;
+        font-weight: 700;
+        margin-top: 0.4rem;
     }
 </style>
 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
 <div>
     <div class="form-page-header">
-        <h2 class="form-page-title">أرشفة المرفقات والمستندات</h2>
-        <a href="javascript:history.back()" class="btn-back">رجوع</a>
+        <h2 class="form-page-title"><i class="fa-solid fa-file-arrow-up" style="color: var(--primary-gold); margin-inline-end: 10px;"></i> @Localizer["أرشفة ورفع ملف"]</h2>
+        <a href="javascript:history.back()" class="btn-back">@Localizer["رجوع"]</a>
     </div>
 
     <div class="premium-form-card">
-        <!-- إعداد enctype ضروري جداً لرفع الملفات -->
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <form asp-action="Create" method="post" enctype="multipart/form-data" id="documentForm">
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label asp-for="CarId" class="form-label">السيارة المرتبطة بالملف</label>
-                    <select asp-for="CarId" class="form-control" asp-items="ViewBag.CarId">
-                        <option value="">-- اختر السيارة (اختياري) --</option>
+                    <label asp-for="CarId" class="form-label">@Localizer["السيارة المرتبطة بالملف"]</label>
+                    <select asp-for="CarId" class="form-control select2-search" asp-items="ViewBag.CarId">
+                        <option value="">-- @Localizer["اختر السيارة (اختياري)"] --</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="DocumentType" class="form-label">نوع المستند</label>
-                    <select asp-for="DocumentType" class="form-control">
-                        <option value="صورة للسيارة">صورة للسيارة (Car Image)</option>
-                        <option value="ملكية السيارة">ملكية السيارة (Title)</option>
-                        <option value="بوليصة شحن">بوليصة شحن (B/L)</option>
-                        <option value="هوية عميل">صورة هوية / جواز سفر العميل</option>
-                        <option value="مستند جمركي">مستند جمركي / ضريبي</option>
+                    <label asp-for="DocumentType" class="form-label">@Localizer["نوع المستند"]</label>
+                    <select asp-for="DocumentType" class="form-control" required>
+                        <option value="CarImage">@Localizer["صورة للسيارة (Car Image)"]</option>
+                        <option value="Title">@Localizer["ملكية السيارة (Title)"]</option>
+                        <option value="BillOfLading">@Localizer["بوليصة شحن (B/L)"]</option>
+                        <option value="CustomerID">@Localizer["صورة هوية / جواز سفر العميل"]</option>
+                        <option value="CustomsDoc">@Localizer["مستند جمركي / ضريبي"]</option>
                     </select>
                 </div>
 
                 <div class="form-group" style="grid-column: 1 / -1; margin-top: 1rem;">
-                    <label class="form-label">اختر الملف المراد رفعه (صورة أو PDF)</label>
-                    <div class="file-upload-wrapper">
-                        <span class="upload-icon">&#128194;</span>
-                        <div class="upload-text">اضغط هنا لاختيار الملف أو اسحبه وأفلته</div>
-                        <div class="upload-hint">يدعم الملفات بصيغة JPG, PNG, PDF بحد أقصى 5 ميجابايت.</div>
-                        <input type="file" name="uploadedFile" class="file-input" accept="image/*,.pdf" required />
+                    <label class="form-label">@Localizer["اختر الملف المراد رفعه (صورة أو PDF)"]</label>
+                    <div class="file-upload-wrapper" id="dropZone">
+                        <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                        <div class="upload-text">@Localizer["اضغط هنا لاختيار الملف أو اسحبه وأفلته"]</div>
+                        <div class="upload-hint">@Localizer["يدعم الملفات بصيغة JPG, PNG, PDF بحد أقصى 5 ميجابايت."]</div>
+                        <input type="file" name="uploadedFile" class="file-input" accept="image/*,.pdf" required id="fileInput" />
+                        <div class="file-name-display" id="fileNameDisplay"><i class="fa-solid fa-check-circle"></i> <span></span></div>
                     </div>
                 </div>
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn-submit">رفع وحفظ المستند</button>
+                <button type="submit" class="btn-submit" id="btnSubmit">
+                    <i class="fa-solid fa-upload"></i> @Localizer["رفع وحفظ المستند"]
+                </button>
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var dir = $('html').attr('dir');
+            $('.select2-search').select2({ dir: dir, width: '100%' });
+
+            // File input display name logic
+            $('#fileInput').on('change', function() {
+                var fileName = $(this).val().split('\\').pop();
+                if(fileName) {
+                    $('#fileNameDisplay span').text(fileName);
+                    $('#fileNameDisplay').show();
+                    $('.upload-text, .upload-hint').hide();
+                } else {
+                    $('#fileNameDisplay').hide();
+                    $('.upload-text, .upload-hint').show();
+                }
+            });
+
+            // AJAX Submission with FormData for File Uploads
+            $('#documentForm').on('submit', function(e) {
+                e.preventDefault();
+                var form = this;
+                if (!form.checkValidity()) { form.reportValidity(); return; }
+
+                var btn = $('#btnSubmit');
+                var originalText = btn.html();
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Localizer["جاري الرفع..."]').prop('disabled', true);
+
+                var formData = new FormData(form);
+
+                $.ajax({
+                    url: $(form).attr('action'),
+                    type: $(form).attr('method'),
+                    data: formData,
+                    processData: false, // أساسي لرفع الملفات عبر AJAX
+                    contentType: false, // أساسي لرفع الملفات عبر AJAX
+                    success: function () {
+                        Swal.fire({
+                            title: '@Localizer["تم الرفع بنجاح!"]',
+                            icon: 'success',
+                            confirmButtonColor: 'var(--primary-gold)',
+                            confirmButtonText: '@Localizer["موافق"]'
+                        }).then((result) => {
+                            if ($('#CarId').val()) {
+                                window.location.href = '@Url.Action("Details", "Cars")/' + $('#CarId').val();
+                            } else {
+                                form.reset();
+                                $('#fileNameDisplay').hide();
+                                $('.upload-text, .upload-hint').show();
+                                $('.select2-search').val(null).trigger('change');
+                                btn.html(originalText).prop('disabled', false);
+                            }
+                        });
+                    },
+                    error: function () {
+                        Swal.fire({ title: '@Localizer["خطأ!"]', text: '@Localizer["حدث خطأ أثناء رفع الملف."]', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                        btn.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+}

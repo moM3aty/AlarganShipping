@@ -1,44 +1,29 @@
 ﻿@model AlarganShipping.Models.ViewModels.LoginViewModel
 @{
-    ViewData["Title"] = "تسجيل الدخول";
+    ViewData["Title"] = Localizer["تسجيل الدخول"];
     Layout = "_Layout";
 }
 
 <style>
-    /* Premium Pure CSS Styling */
-    :root {
-        --primary-navy: #2b3f56;
-        --primary-navy-dark: #1a2634;
-        --primary-gold: #be955b;
-        --primary-gold-light: #d4af7a;
-        --bg-warm: #f9f8f4;
-        --text-dark: #1e293b;
-        --text-muted: #64748b;
-    }
-
-    * {
-        box-sizing: border-box;
-    }
-
+    /* شاشة الدخول تغطي التخطيط الأساسي لتكون شاشة كاملة */
     .login-page-wrapper {
         display: flex;
         min-height: 100vh;
         width: 100%;
-        position: absolute;
+        position: fixed;
         top: 0;
         right: 0;
         left: 0;
-        background-color: var(--bg-warm);
-        z-index: 50;
-        font-family: 'Cairo', sans-serif;
+        background-color: #f4f7f9;
+        z-index: 9999;
         margin: 0;
     }
 
-    /* --- Right Side: Brand Area (Navy) --- */
+    /* --- القسم الأيمن: العلامة التجارية --- */
     .premium-brand-section {
         display: none;
         width: 50%;
-        background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-navy-dark) 100%);
+        background: linear-gradient(135deg, #1a2a3a 0%, #2b3f56 100%);
         color: white;
         flex-direction: column;
         justify-content: center;
@@ -48,15 +33,11 @@
     }
 
     @@media (min-width: 992px) {
-        .premium-brand-section
-
-    {
-        display: flex;
+        .premium-brand-section {
+            display: flex;
+        }
     }
 
-    }
-
-    /* Decorative Background Elements */
     .premium-brand-section::before {
         content: '';
         position: absolute;
@@ -65,25 +46,7 @@
         width: 400px;
         height: 400px;
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(190,149,91,0.15) 0%, rgba(190,149,91,0) 70%);
-    }
-
-    .premium-brand-section::after {
-        content: '';
-        position: absolute;
-        bottom: -15%;
-        left: -10%;
-        width: 500px;
-        height: 500px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%);
-    }
-
-    .brand-content {
-        position: relative;
-        z-index: 10;
-        text-align: center;
-        animation: fadeIn 1.2s ease-out;
+        background: radial-gradient(circle, rgba(195,154,92,0.15) 0%, rgba(195,154,92,0) 70%);
     }
 
     .logo-circle {
@@ -95,24 +58,22 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 1.5rem;
+        padding: 1rem;
         box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        border: 4px solid rgba(190,149,91,0.2);
+        border: 4px solid rgba(195,154,92,0.5);
     }
 
         .logo-circle img {
             max-width: 100%;
             height: auto;
             border-radius: 50%;
-            object-fit: contain;
         }
 
     .brand-title {
         font-size: 3.5rem;
         font-weight: 900;
         margin: 0 0 0.5rem 0;
-        letter-spacing: 2px;
-        color: var(--primary-gold);
+        color: #c39a5c;
         text-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
@@ -123,13 +84,11 @@
         background: rgba(255,255,255,0.05);
         padding: 0.5rem 1.5rem;
         border-radius: 50px;
-        display: inline-block;
         border: 1px solid rgba(255,255,255,0.1);
-        backdrop-filter: blur(5px);
         margin-bottom: 2rem;
     }
 
-    /* --- Left Side: Form Area --- */
+    /* --- القسم الأيسر: نموذج الدخول --- */
     .premium-form-section {
         width: 100%;
         display: flex;
@@ -139,12 +98,9 @@
     }
 
     @@media (min-width: 992px) {
-        .premium-form-section
-
-    {
-        width: 50%;
-    }
-
+        .premium-form-section {
+            width: 50%;
+        }
     }
 
     .form-card {
@@ -153,11 +109,9 @@
         background: white;
         padding: 3rem;
         border-radius: 24px;
-        box-shadow: 0 20px 50px rgba(43, 63, 86, 0.08);
-        animation: slideUp 0.8s ease-out;
+        box-shadow: 0 20px 50px rgba(26, 42, 58, 0.08);
     }
 
-    /* Mobile Logo */
     .mobile-logo {
         display: block;
         text-align: center;
@@ -165,35 +119,17 @@
     }
 
     @@media (min-width: 992px) {
-        .mobile-logo
-
-    {
-        display: none;
-    }
-
+        .mobile-logo {
+            display: none;
+        }
     }
 
     .mobile-logo img {
         width: 100px;
         height: 100px;
         border-radius: 50%;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         margin: 0 auto 1rem;
-    }
-
-    .mobile-logo h1 {
-        color: var(--primary-navy);
-        font-size: 1.8rem;
-        font-weight: 800;
-        margin: 0;
-    }
-
-    .mobile-logo p {
-        color: var(--primary-gold);
-        font-weight: 700;
-        font-size: 0.9rem;
-        letter-spacing: 1px;
-        margin: 0;
+        border: 3px solid #c39a5c;
     }
 
     .form-header {
@@ -204,26 +140,20 @@
         .form-header h2 {
             font-size: 1.75rem;
             font-weight: 800;
-            color: var(--primary-navy);
+            color: #1a2a3a;
             margin: 0 0 0.5rem 0;
-        }
-
-        .form-header p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin: 0;
         }
 
     .input-group {
         margin-bottom: 1.5rem;
-        text-align: right;
+        text-align: start; /* لدعم RTL/LTR تلقائياً */
     }
 
     .input-label {
         display: block;
         font-size: 0.9rem;
         font-weight: 700;
-        color: var(--text-dark);
+        color: #1e293b;
         margin-bottom: 0.5rem;
     }
 
@@ -231,27 +161,17 @@
         width: 100%;
         padding: 1rem 1.25rem;
         font-size: 1rem;
-        color: var(--text-dark);
         background-color: #f8fafc;
         border: 2px solid transparent;
         border-radius: 12px;
         outline: none;
-        transition: all 0.3s ease;
-        font-family: inherit;
+        transition: 0.3s;
     }
-
-        .input-field::placeholder {
-            color: #94a3b8;
-        }
-
-        .input-field:hover {
-            background-color: #f1f5f9;
-        }
 
         .input-field:focus {
             background-color: white;
-            border-color: var(--primary-gold);
-            box-shadow: 0 0 0 4px rgba(190, 149, 91, 0.1);
+            border-color: #c39a5c;
+            box-shadow: 0 0 0 4px rgba(195, 154, 92, 0.1);
         }
 
     .btn-primary {
@@ -262,118 +182,93 @@
         font-weight: 800;
         color: white;
         font-size: 1.1rem;
-        background: linear-gradient(to right, var(--primary-gold), var(--primary-gold-light));
+        background: linear-gradient(to right, #c39a5c, #d4af7a);
         border: none;
         cursor: pointer;
-        transition: all 0.3s ease;
-        font-family: inherit;
-        box-shadow: 0 10px 20px rgba(190, 149, 91, 0.25);
+        transition: 0.3s;
+        box-shadow: 0 10px 20px rgba(195, 154, 92, 0.25);
     }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 25px rgba(190, 149, 91, 0.35);
+            box-shadow: 0 15px 25px rgba(195, 154, 92, 0.35);
         }
 
-        .btn-primary:active {
-            transform: translateY(0);
-        }
+    /* أداة تغيير اللغة في شاشة تسجيل الدخول */
+    .login-lang-switch {
+        position: absolute;
+        top: 20px;
+        inset-inline-end: 20px; /* لتدعم الاتجاهين */
+        z-index: 10000;
+    }
 
-    /* Validation Errors */
-    .val-summary {
-        color: #ef4444;
-        background: #fef2f2;
-        padding: 1rem;
+    .login-lang-btn {
+        background: white;
+        border: 1px solid #e2e8f0;
+        color: #1a2a3a;
+        padding: 8px 15px;
         border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.85rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid #fecaca;
-    }
-
-    .val-error {
-        color: #ef4444;
-        font-size: 0.8rem;
-        font-weight: 600;
-        margin-top: 0.4rem;
-        display: block;
-    }
-
-    /* Animations Keyframes */
-    @@keyframes fadeIn {
-        from
-
-    {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-
-    }
-
-    @@keyframes slideUp {
-        from
-
-    {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 </style>
 
+<!-- زر تغيير اللغة الخاص بصفحة الدخول -->
+<div class="login-lang-switch">
+    <form asp-controller="Home" asp-action="SetLanguage" method="post" asp-route-returnUrl="@Context.Request.Path">
+        @if (System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar"))
+        {
+            <button type="submit" name="culture" value="en-US" class="login-lang-btn">English</button>
+        }
+        else
+        {
+            <button type="submit" name="culture" value="ar" class="login-lang-btn">العربية</button>
+        }
+    </form>
+</div>
+
 <div class="login-page-wrapper">
-    <!-- Brand Section (Desktop Only) -->
     <div class="premium-brand-section">
-        <div class="brand-content">
+        <div class="brand-content" style="text-align: center; z-index: 10;">
             <div class="logo-circle">
-                <img src="~/images/logo.jpg" alt="Alargan Logo" />
+                <img src="~/images/logo.jpg" alt="Alargan Logo" onerror="this.style.display='none'" />
             </div>
             <h1 class="brand-title">ALARGAN</h1>
             <div class="brand-badge">AUTO SHIPPING</div>
-            <p style="color: #cbd5e1; font-size: 1.2rem;">بوابتك الذكية لإدارة الخدمات اللوجستية</p>
+            <p style="color: #cbd5e1; font-size: 1.2rem;">@Localizer["بوابتك الذكية لإدارة الخدمات اللوجستية"]</p>
         </div>
     </div>
 
-    <!-- Form Section -->
     <div class="premium-form-section">
         <div class="form-card">
-
-            <!-- Mobile Logo -->
             <div class="mobile-logo">
-                <img src="~/images/logo.jpg" alt="Alargan Logo" />
-                <h1>ALARGAN</h1>
-                <p>AUTO SHIPPING</p>
+                <img src="~/images/logo.jpg" alt="Alargan Logo" onerror="this.style.display='none'" />
+                <h1 style="color: #1a2a3a; font-weight: 900; margin:0;">ALARGAN</h1>
+                <p style="color: #c39a5c; font-weight: 700; font-size: 0.9rem;">AUTO SHIPPING</p>
             </div>
 
             <div class="form-header">
-                <h2>تسجيل الدخول</h2>
-                <p>أهلاً بك مجدداً في نظام الأرجان</p>
+                <h2>@Localizer["تسجيل الدخول"]</h2>
+                <p style="color: #64748b;">@Localizer["أهلاً بك مجدداً في نظام الأرجان"]</p>
             </div>
 
             <form asp-action="Login" method="post">
-                <div asp-validation-summary="ModelOnly" class="val-summary"></div>
+                <div asp-validation-summary="ModelOnly" style="color: #ef4444; background: #fef2f2; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;"></div>
 
                 <div class="input-group">
-                    <label class="input-label">البريد الإلكتروني</label>
-                    <input asp-for="Email" class="input-field" placeholder="admin@alargan.com" autocomplete="email" />
-                    <span asp-validation-for="Email" class="val-error"></span>
+                    <label class="input-label">@Localizer["البريد الإلكتروني"]</label>
+                    <input asp-for="Email" class="input-field" placeholder="admin@alargan.com" dir="ltr" />
+                    <span asp-validation-for="Email" style="color: #ef4444; font-size: 0.85rem; font-weight: 600;"></span>
                 </div>
 
                 <div class="input-group">
-                    <label class="input-label">كلمة المرور</label>
-                    <input asp-for="Password" type="password" class="input-field" placeholder="••••••••" autocomplete="current-password" />
-                    <span asp-validation-for="Password" class="val-error"></span>
+                    <label class="input-label">@Localizer["كلمة المرور"]</label>
+                    <input asp-for="Password" type="password" class="input-field" placeholder="••••••••" dir="ltr" />
+                    <span asp-validation-for="Password" style="color: #ef4444; font-size: 0.85rem; font-weight: 600;"></span>
                 </div>
 
-                <button type="submit" class="btn-primary">دخول للنظام</button>
+                <button type="submit" class="btn-primary">@Localizer["دخول للنظام"]</button>
             </form>
         </div>
     </div>

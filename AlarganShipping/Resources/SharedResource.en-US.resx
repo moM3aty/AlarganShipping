@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Navigation & Main -->
+  <data name="الأرجان للشحن" xml:space="preserve"><value>Alargan Shipping</value></data>
+  <data name="شركة الارجان للشحن" xml:space="preserve"><value>Alargan Auto Shipping</value></data>
+  <data name="لوحة التحكم الشاملة" xml:space="preserve"><value>Comprehensive Dashboard</value></data>
+  <data name="إدارة السيارات والمخزون" xml:space="preserve"><value>Cars &amp; Inventory</value></data>
+  <data name="إدارة شؤون العملاء" xml:space="preserve"><value>Customers Management</value></data>
+  <data name="الشحنات والحاويات" xml:space="preserve"><value>Shipments &amp; Containers</value></data>
+  <data name="المحاسبة والتقارير المالية" xml:space="preserve"><value>Accounting &amp; Finance</value></data>
+  <data name="سندات القبض" xml:space="preserve"><value>Payment Receipts</value></data>
+  <data name="دليل الخدمات والأسعار" xml:space="preserve"><value>Services &amp; Pricing</value></data>
+  <data name="بوابة تتبع الشحنات" xml:space="preserve"><value>Tracking Portal</value></data>
+  <data name="اتصل بنا" xml:space="preserve"><value>Contact Us</value></data>
+  <data name="تسجيل الخروج" xml:space="preserve"><value>Logout</value></data>
+  <data name="المسؤول الرئيسي" xml:space="preserve"><value>Main Admin</value></data>
+  <data name="الإشعارات" xml:space="preserve"><value>Notifications</value></data>
+  <data name="نظام الإدارة اللوجستية الذكي" xml:space="preserve"><value>Smart Logistics Management System</value></data>
+
+  <!-- Dashboard Stats -->
+  <data name="إجمالي السيارات" xml:space="preserve"><value>Total Cars</value></data>
+  <data name="شحنات نشطة" xml:space="preserve"><value>Active Shipments</value></data>
+  <data name="إجمالي الأرباح" xml:space="preserve"><value>Total Profits</value></data>
+  <data name="مبالغ معلقة" xml:space="preserve"><value>Pending Amounts</value></data>
+  <data name="إجمالي العملاء" xml:space="preserve"><value>Total Customers</value></data>
+  <data name="مبالغ قيد التحصيل" xml:space="preserve"><value>Uncollected Amounts</value></data>
+
+  <!-- Buttons & Actions -->
+  <data name="إضافة سيارة" xml:space="preserve"><value>Add Car</value></data>
+  <data name="إضافة سيارة جديدة" xml:space="preserve"><value>Add New Car</value></data>
+  <data name="إضافة عميل" xml:space="preserve"><value>Add Customer</value></data>
+  <data name="إضافة عميل جديد" xml:space="preserve"><value>Add New Customer</value></data>
+  <data name="إضافة شحنة جديدة" xml:space="preserve"><value>Add New Shipment</value></data>
+  <data name="إصدار فاتورة جديدة" xml:space="preserve"><value>Issue New Invoice</value></data>
+  <data name="إصدار سند قبض جديد" xml:space="preserve"><value>Issue New Receipt</value></data>
+  <data name="عرض البطاقات" xml:space="preserve"><value>Grid View</value></data>
+  <data name="عرض الجدول" xml:space="preserve"><value>List View</value></data>
+  <data name="عرض التفاصيل" xml:space="preserve"><value>View Details</value></data>
+  <data name="التفاصيل" xml:space="preserve"><value>Details</value></data>
+  <data name="عودة للقائمة" xml:space="preserve"><value>Back to List</value></data>
+  <data name="حفظ بيانات السيارة" xml:space="preserve"><value>Save Car Data</value></data>
+
+  <!-- Grid & Tables -->
+  <data name="السيارة" xml:space="preserve"><value>Car</value></data>
+  <data name="رقم الشاصي (VIN)" xml:space="preserve"><value>VIN</value></data>
+  <data name="اسم العميل" xml:space="preserve"><value>Customer Name</value></data>
+  <data name="سعر الشراء" xml:space="preserve"><value>Purchase Price</value></data>
+  <data name="الحالة" xml:space="preserve"><value>Status</value></data>
+  <data name="إجراءات" xml:space="preserve"><value>Actions</value></data>
+  <data name="المدفوع" xml:space="preserve"><value>Paid</value></data>
+  <data name="المتبقي" xml:space="preserve"><value>Remaining</value></data>
+  <data name="متبقي للعميل" xml:space="preserve"><value>Remaining for Customer</value></data>
+  <data name="غير محدد" xml:space="preserve"><value>Not Specified</value></data>
+
+  <!-- Statuses -->
+  <data name="تم الشراء" xml:space="preserve"><value>Purchased</value></data>
+  <data name="في المستودع" xml:space="preserve"><value>In Warehouse</value></data>
+  <data name="الشحن البحري" xml:space="preserve"><value>Ocean Freight</value></data>
+  <data name="أبحرت" xml:space="preserve"><value>Sailed</value></data>
+  <data name="واصلة الميناء" xml:space="preserve"><value>Arrived at Port</value></data>
+  <data name="وصلت عمان" xml:space="preserve"><value>Arrived in Oman</value></data>
+  <data name="قيد الشحن" xml:space="preserve"><value>In Transit</value></data>
+  <data name="مسار الشحن والخدمات اللوجستية" xml:space="preserve"><value>Shipping &amp; Logistics Route</value></data>
+  
+  <!-- Shipments -->
+  <data name="رقم الحاوية" xml:space="preserve"><value>Container No</value></data>
+  <data name="خط الملاحة / الحجز" xml:space="preserve"><value>Shipping Line / Booking</value></data>
+  <data name="مسار الشحنة" xml:space="preserve"><value>Shipment Route</value></data>
+  <data name="تاريخ الإبحار" xml:space="preserve"><value>ETD (Departure)</value></data>
+  <data name="المحتويات" xml:space="preserve"><value>Contents</value></data>
+  <data name="ميناء التحميل" xml:space="preserve"><value>Loading Port</value></data>
+  <data name="ميناء الوصول" xml:space="preserve"><value>Discharge Port</value></data>
+
+  <!-- Invoices & Receipts -->
+  <data name="رقم الفاتورة" xml:space="preserve"><value>Invoice Number</value></data>
+  <data name="تاريخ الإصدار" xml:space="preserve"><value>Issue Date</value></data>
+  <data name="السيارة المرتبطة" xml:space="preserve"><value>Related Car</value></data>
+  <data name="الإجمالي" xml:space="preserve"><value>Total</value></data>
+  <data name="طباعة" xml:space="preserve"><value>Print</value></data>
+  <data name="رقم السند" xml:space="preserve"><value>Receipt Number</value></data>
+  <data name="تاريخ الدفع" xml:space="preserve"><value>Payment Date</value></data>
+  <data name="العميل المُسدد" xml:space="preserve"><value>Paying Customer</value></data>
+  <data name="طريقة الدفع" xml:space="preserve"><value>Payment Method</value></data>
+  <data name="المبلغ" xml:space="preserve"><value>Amount</value></data>
+  <data name="رقم المرجع" xml:space="preserve"><value>Reference No.</value></data>
+
+</root>

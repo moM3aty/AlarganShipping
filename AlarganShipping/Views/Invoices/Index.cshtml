@@ -1,195 +1,199 @@
-﻿@model IEnumerable<AlarganShipping.Models.Invoice>
+﻿<!-- مسار الملف في المشروع: Views/Invoices/Index.cshtml -->
+@model IEnumerable<AlarganShipping.Models.Invoice>
 @{
-    ViewData["Title"] = "إدارة الفواتير";
+    ViewData["Title"] = Localizer["المالية والفواتير"];
 }
 
 <style>
-    /* Premium Pure CSS for Invoices Grid */
     .page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         background-color: #ffffff;
-        padding: 1.25rem 1.5rem;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px -1px rgba(43, 63, 86, 0.05);
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 5px 20px rgba(26, 38, 52, 0.03);
         margin-bottom: 2rem;
+        border: 1px solid #f1f5f9;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
     .page-title {
         font-size: 1.5rem;
-        font-weight: 800;
-        color: #2b3f56;
+        font-weight: 900;
+        color: var(--primary-navy);
         margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
+        .page-title i {
+            color: var(--primary-gold);
+        }
+
     .btn-add {
-        display: inline-block;
-        background: linear-gradient(to right, #be955b, #d4af7a);
+        background: linear-gradient(to right, var(--primary-navy), var(--secondary-navy));
         color: #ffffff;
-        font-weight: 700;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.75rem;
+        font-weight: 800;
+        padding: 0.85rem 1.75rem;
+        border-radius: 1rem;
         text-decoration: none;
-        box-shadow: 0 4px 10px rgba(190, 149, 91, 0.3);
-        transition: all 0.3s ease;
-        border: none;
+        box-shadow: 0 4px 10px rgba(26, 38, 52, 0.3);
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
         .btn-add:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(190, 149, 91, 0.4);
+            box-shadow: 0 6px 15px rgba(26, 38, 52, 0.4);
+            color: white;
         }
 
-    .invoices-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    @@media (min-width: 1024px) {
-        .invoices-grid
-
-    {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    }
-
-    .invoice-card {
-        background-color: #ffffff;
-        border-radius: 1.25rem;
-        box-shadow: 0 10px 25px rgba(43, 63, 86, 0.05);
+    .data-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         border: 1px solid #f1f5f9;
-        position: relative;
-        overflow: hidden;
-        transition: transform 0.3s ease;
+        overflow-x: auto;
     }
 
-        .invoice-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(43, 63, 86, 0.1);
+    .table-enterprise {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+        .table-enterprise th {
+            background-color: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 800;
+            padding: 1.25rem 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            text-align: start;
+            white-space: nowrap;
         }
 
-    .card-accent-line {
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 6px;
-        height: 100%;
-        background-color: #2b3f56;
-    }
+        .table-enterprise td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-dark);
+            font-weight: 700;
+            vertical-align: middle;
+        }
 
-    .invoice-header {
-        padding: 1.5rem 1.5rem 1rem 1.5rem;
-        border-bottom: 1px dashed #e2e8f0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+        .table-enterprise tbody tr:hover {
+            background-color: #f8fafc;
+            transition: 0.2s;
+        }
 
     .inv-number {
-        font-size: 1.1rem;
-        font-weight: 900;
-        color: #2b3f56;
-        margin: 0;
         font-family: monospace;
-    }
-
-    .inv-date {
-        color: #64748b;
-        font-size: 0.85rem;
-        font-weight: 700;
-    }
-
-    .invoice-body {
-        padding: 1.5rem;
-    }
-
-    .inv-customer {
         font-size: 1.1rem;
-        font-weight: 800;
-        color: #1e293b;
-        margin-bottom: 0.25rem;
-    }
-
-    .inv-car {
-        color: #64748b;
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-    }
-
-    .inv-total-box {
-        background: #f8fafc;
-        padding: 1rem;
-        border-radius: 0.75rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border: 1px solid #e2e8f0;
-    }
-
-    .inv-total-label {
-        color: #475569;
-        font-weight: 800;
-    }
-
-    .inv-total-value {
-        color: #be955b;
         font-weight: 900;
-        font-size: 1.5rem;
+        color: var(--primary-navy);
+        background: rgba(26,38,52,0.05);
+        padding: 0.3rem 0.8rem;
+        border-radius: 6px;
     }
 
-    .invoice-footer {
-        padding: 1rem 1.5rem;
-        background: #f8fafc;
-        border-top: 1px solid #f1f5f9;
-        text-align: center;
+    .inv-amount {
+        font-family: monospace;
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--primary-gold);
+        background: rgba(190, 149, 91, 0.1);
+        padding: 0.4rem 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(190, 149, 91, 0.2);
     }
 
-    .btn-print {
-        color: #2b3f56;
-        font-weight: 800;
+    .action-btn {
+        color: white;
+        background: var(--primary-gold);
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 10px;
         text-decoration: none;
-        font-size: 0.95rem;
-        transition: color 0.3s;
+        font-weight: 800;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(190, 149, 91, 0.2);
     }
 
-        .btn-print:hover {
-            color: #be955b;
+        .action-btn:hover {
+            background: #a67c46;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(190, 149, 91, 0.3);
+            color: white;
         }
 </style>
 
 <div>
     <div class="page-header">
-        <h2 class="page-title">إدارة الفواتير والماليات</h2>
-        <a href="@Url.Action("Create", "Invoices")" class="btn-add">إصدار فاتورة جديدة</a>
+        <h2 class="page-title"><i class="fa-solid fa-file-invoice-dollar"></i> @Localizer["سجل الفواتير الضريبية"]</h2>
+        <a href="@Url.Action("Create", "Invoices")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إصدار فاتورة جديدة"]</a>
     </div>
 
-    <div class="invoices-grid">
-        @if (Model != null && Model.Any())
-        {
-            foreach (var inv in Model)
-            {
-                <div class="invoice-card">
-                    <div class="card-accent-line"></div>
-                    <div class="invoice-header">
-                        <h3 class="inv-number">@inv.InvoiceNumber</h3>
-                        <span class="inv-date">@inv.IssueDate.ToString("dd/MM/yyyy")</span>
-                    </div>
-                    <div class="invoice-body">
-                        <div class="inv-customer">العميل: @inv.Customer?.Name</div>
-                        <div class="inv-car">السيارة: @inv.Car?.Make @inv.Car?.Model</div>
-                        <div class="inv-total-box">
-                            <span class="inv-total-label">إجمالي الفاتورة</span>
-                            <span class="inv-total-value">$@inv.TotalAmount</span>
-                        </div>
-                    </div>
-                    <div class="invoice-footer">
-                        <a href="@Url.Action("Details", "Invoices", new { id = inv.Id })" class="btn-print">استعراض وطباعة الفاتورة &larr;</a>
-                    </div>
-                </div>
-            }
-        }
+    <div class="data-card">
+        <table id="invoicesDataTable" class="table-enterprise display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>@Localizer["رقم الفاتورة"]</th>
+                    <th>@Localizer["تاريخ الإصدار"]</th>
+                    <th>@Localizer["العميل"]</th>
+                    <th>@Localizer["السيارة المرتبطة"]</th>
+                    <th>@Localizer["الإجمالي"]</th>
+                    <th>@Localizer["إجراءات"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var inv in Model)
+                    {
+                        <tr>
+                            <td><span class="inv-number">@inv.InvoiceNumber</span></td>
+                            <td style="color: var(--text-muted); font-weight: 800;">@inv.IssueDate.ToString("dd MMM yyyy")</td>
+                            <td><i class="fa-solid fa-user-tie" style="color: #cbd5e1; margin-inline-end: 8px;"></i> @(inv.Customer?.Name ?? "-")</td>
+                            <td style="color: var(--text-muted);">
+                                <i class="fa-solid fa-car" style="color: #cbd5e1; margin-inline-end: 8px;"></i>
+                                @(inv.Car?.Make) @(inv.Car?.Model)
+                            </td>
+                            <td><span class="inv-amount">$@inv.TotalAmount</span></td>
+                            <td>
+                                <a href="@Url.Action("Details", "Invoices", new { id = inv.Id })" class="action-btn">
+                                    <i class="fa-solid fa-print"></i> @Localizer["طباعة"]
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var dir = $('html').attr('dir') === 'rtl';
+            $('#invoicesDataTable').DataTable({
+                "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" },
+                "pageLength": 10,
+                "ordering": true,
+                "order": [[ 1, "desc" ]], // ترتيب افتراضي من الأحدث للأقدم بناءً على التاريخ
+                "responsive": true,
+                "dom": '<"top"f>rt<"bottom"lp><"clear">'
+            });
+        });
+    </script>
+}

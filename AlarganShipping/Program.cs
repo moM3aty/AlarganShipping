@@ -1,17 +1,21 @@
 ﻿using AlarganShipping.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. إضافة خدمات MVC
-builder.Services.AddControllersWithViews();
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
-// 2. إعداد قاعدة البيانات - تأكد من وجود Connection String في appsettings.json
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+    .AddDataAnnotationsLocalization();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 3. إعداد نظام الأمان (Authentication)
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -20,10 +24,21 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
     });
 
-// حل مشكلة BinaryReader: تأكد من استخدام builder.Build() بشكل صحيح
 var app = builder.Build();
 
-// 4. إعداد خط معالجة الطلبات
+var supportedCultures = new[]
+{
+    new CultureInfo("ar"),
+    new CultureInfo("en-US")
+};
+
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("ar"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+});
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -35,13 +50,39 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// 5. تفعيل الهوية والصلاحيات
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 6. المسارات الافتراضية
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+
+   
+
+        AlarganShipping.Data.DbInitializer.Initialize(context);
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("✅ تمت تهيئة قاعدة البيانات بنجاح!");
+        Console.ResetColor();
+    }
+    catch (Exception ex)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine("❌ حدث خطأ أثناء إدخال البيانات الأولية:");
+        Console.WriteLine(ex.Message);
+        if (ex.InnerException != null)
+        {
+            Console.WriteLine("تفاصيل الخطأ الداخلي: " + ex.InnerException.Message);
+        }
+        Console.ResetColor();
+    }
+}
 
 app.Run();

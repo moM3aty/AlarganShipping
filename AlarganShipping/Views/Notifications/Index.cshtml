@@ -1,0 +1,301 @@
+﻿@model IEnumerable<AlarganShipping.Models.Notification>
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResource> Localizer
+@{
+    ViewData["Title"] = Localizer["الإشعارات"];
+    var isRtl = System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
+}
+
+<style>
+    .page-header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 5px 20px rgba(26, 38, 52, 0.03);
+        border: 1px solid #f1f5f9;
+        margin-bottom: 2rem;
+    }
+
+    .page-header-text h2 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .page-header-text h2 i {
+            color: var(--primary-gold);
+        }
+
+    .btn-mark-all {
+        background: white;
+        color: var(--primary-navy);
+        font-weight: 800;
+        padding: 0.75rem 1.5rem;
+        border-radius: 1rem;
+        text-decoration: none;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+
+        .btn-mark-all:hover {
+            background: #f8fafc;
+            border-color: var(--primary-gold);
+            color: var(--primary-gold);
+        }
+
+    .notifications-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .notif-card {
+        background: white;
+        border-radius: 1.25rem;
+        padding: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+        border: 1px solid #f1f5f9;
+        transition: 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+
+        /* ستايل للإشعار غير المقروء */
+        .notif-card.unread {
+            background: #f8fafc;
+            border-color: rgba(190, 149, 91, 0.3);
+        }
+
+            .notif-card.unread::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                width: 6px;
+                background: var(--primary-gold);
+                inset-inline-start: 0;
+            }
+
+    .notif-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .icon-system {
+        background: rgba(26, 38, 52, 0.1);
+        color: var(--primary-navy);
+    }
+
+    .icon-invoice {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    .icon-tracking {
+        background: rgba(190, 149, 91, 0.1);
+        color: var(--primary-gold);
+    }
+
+    .notif-content {
+        flex: 1;
+    }
+
+    .notif-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .notif-title {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+    }
+
+    .notif-date {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .notif-body {
+        color: #475569;
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.6;
+        margin: 0 0 1rem 0;
+    }
+
+    .notif-meta {
+        display: flex;
+        gap: 10px;
+    }
+
+    .meta-badge {
+        background: white;
+        border: 1px solid #e2e8f0;
+        padding: 0.25rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: var(--text-muted);
+    }
+
+    .btn-read {
+        background: transparent;
+        border: none;
+        color: var(--primary-gold);
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+        .btn-read:hover {
+            color: var(--primary-navy);
+        }
+</style>
+
+<div>
+    <div class="page-header-container">
+        <div class="page-header-text">
+            <h2><i class="fa-solid fa-bell"></i> @Localizer["مركز الإشعارات"]</h2>
+            <p>• @Localizer["متابعة كافة أنشطة النظام والعملاء"]</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-mark-all" id="btnMarkAllRead">
+                <i class="fa-solid fa-check-double"></i> @Localizer["تحديد الكل كمقروء"]
+            </button>
+        </div>
+    </div>
+
+    <div class="notifications-list">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var notif in Model)
+            {
+                // تحديد الأيقونة حسب نوع الإشعار
+                string iconClass = "icon-system";
+                string iconHtml = "<i class=\"fa-solid fa-circle-info\"></i>";
+
+                if (notif.Type == "InvoiceAlert") { iconClass = "icon-invoice"; iconHtml = "<i class=\"fa-solid fa-file-invoice-dollar\"></i>"; }
+                else if (notif.Type == "TrackingUpdate") { iconClass = "icon-tracking"; iconHtml = "<i class=\"fa-solid fa-map-location-dot\"></i>"; }
+
+                <div class="notif-card @(notif.IsRead ? "" : "unread")" id="notif-@notif.Id">
+                    <div class="notif-icon @iconClass">
+                        @Html.Raw(iconHtml)
+                    </div>
+
+                    <div class="notif-content">
+                        <div class="notif-header">
+                            <h3 class="notif-title">@notif.Title</h3>
+                            <span class="notif-date"><i class="fa-regular fa-clock"></i> @notif.CreatedAt.ToString("dd MMM yyyy - hh:mm tt")</span>
+                        </div>
+
+                        <p class="notif-body">@notif.Message</p>
+
+                        <div class="notif-header" style="margin-bottom: 0;">
+                            <div class="notif-meta">
+                                @if (notif.Customer != null)
+                                {
+                                    <span class="meta-badge"><i class="fa-solid fa-user" style="color:var(--primary-gold);"></i> @notif.Customer.Name</span>
+                                }
+                            </div>
+
+                            @if (!notif.IsRead)
+                            {
+                                <button class="btn-read" onclick="markAsRead(@notif.Id)">
+                                    <i class="fa-solid fa-check"></i> @Localizer["تحديد كمقروء"]
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div style="text-align: center; padding: 4rem; background: white; border-radius: 1.5rem; color: #94a3b8; border: 1px solid #f1f5f9;">
+                <i class="fa-regular fa-bell-slash" style="font-size: 4rem; margin-bottom: 1rem; color: var(--primary-gold); opacity: 0.5;"></i>
+                <h3 style="font-weight: 800; color: var(--primary-navy);">@Localizer["لا توجد إشعارات حالياً"]</h3>
+                <p>@Localizer["أنت على اطلاع بكل جديد. صندوق الوارد الخاص بك فارغ."]</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <!-- إضافة SweetAlert للتنبيهات -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        // دالة تحديد إشعار واحد كمقروء
+        function markAsRead(id) {
+            $.ajax({
+                url: '@Url.Action("MarkAsRead", "Notifications")',
+                type: 'POST',
+                data: { id: id },
+                success: function(response) {
+                    if(response.success) {
+                        var card = $('#notif-' + id);
+                        card.removeClass('unread'); // إزالة الخلفية والحد الذهبي
+                        card.find('.btn-read').fadeOut(); // إخفاء زر التحديد
+
+                        // يمكن هنا أيضاً تحديث رقم الـ Badge في الـ Layout لاحقاً
+                    }
+                }
+            });
+        }
+
+        // دالة تحديد جميع الإشعارات كمقروءة
+        $('#btnMarkAllRead').click(function() {
+            $.ajax({
+                url: '@Url.Action("MarkAllAsRead", "Notifications")',
+                type: 'POST',
+                success: function(response) {
+                    if(response.success) {
+                        $('.notif-card.unread').removeClass('unread');
+                        $('.btn-read').fadeOut();
+
+                        Swal.fire({
+                            title: '@Localizer["تم التحديث"]',
+                            text: '@Localizer["تم تحديد كافة الإشعارات كمقروءة."]',
+                            icon: 'success',
+                            confirmButtonColor: 'var(--primary-gold)'
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,246 @@
+﻿<!-- مسار الملف في المشروع: Views/Services/Index.cshtml -->
+@{
+    ViewData["Title"] = Localizer["دليل الخدمات والأسعار"];
+}
+
+<style>
+    .page-header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 3rem;
+    }
+
+    .page-header-text h2 {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: #1a2634;
+        margin: 0;
+    }
+
+    .page-header-text p {
+        color: #64748b;
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .intro-text {
+        text-align: right;
+        max-width: 800px;
+        margin-bottom: 4rem;
+    }
+
+        .intro-text h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #1a2634;
+            margin-bottom: 1rem;
+        }
+
+        .intro-text p {
+            font-size: 1.1rem;
+            color: #64748b;
+            line-height: 1.8;
+            font-weight: 600;
+        }
+
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 5rem;
+    }
+
+    .service-card {
+        background: white;
+        border-radius: 2rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.02);
+        border: 1px solid #f1f5f9;
+        transition: 0.3s;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(26,38,52,0.08);
+            border-color: #be955b;
+        }
+
+    .srv-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem auto;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        background: rgba(190, 149, 91, 0.1);
+        color: #be955b;
+    }
+
+    .service-card h3 {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: #1a2634;
+        margin-bottom: 1rem;
+    }
+
+    .service-card p {
+        color: #64748b;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        line-height: 1.7;
+        flex: 1;
+    }
+
+    .btn-srv-link {
+        color: #1a2634;
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
+        transition: 0.3s;
+    }
+
+        .btn-srv-link:hover {
+            color: #be955b;
+            gap: 12px;
+        }
+
+    .cta-banner-dark {
+        background: #1a2634;
+        border-radius: 2.5rem;
+        padding: 4rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .cta-banner-dark::before {
+            content: '\f0e3';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-15deg);
+            font-size: 15rem;
+            color: rgba(190,149,91,0.05);
+        }
+
+    .cta-content {
+        max-width: 600px;
+        position: relative;
+        z-index: 2;
+        text-align: right;
+    }
+
+        .cta-content h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin: 0 0 1rem 0;
+            color: #be955b;
+        }
+
+        .cta-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            font-weight: 600;
+            opacity: 0.8;
+            margin: 0;
+        }
+
+    .btn-cta-outline {
+        background: #be955b;
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 1rem;
+        border: none;
+        font-weight: 800;
+        text-decoration: none;
+        transition: 0.3s;
+        position: relative;
+        z-index: 2;
+        box-shadow: 0 4px 15px rgba(190,149,91,0.3);
+    }
+
+        .btn-cta-outline:hover {
+            background: #a67c46;
+            transform: translateY(-2px);
+        }
+</style>
+
+<div>
+    <div class="page-header-container">
+        <div class="page-header-text" style="text-align: right; width: 100%;">
+            <h2>@Localizer["دليل الخدمات والأسعار"]</h2>
+            <p><span style="width: 6px; height: 6px; background: #be955b; border-radius: 50%;"></span> @Localizer["نظام الإدارة اللوجستية التقني"]</p>
+        </div>
+    </div>
+
+    <div class="intro-text">
+        <h1>@Localizer["حلولنا اللوجستية المتكاملة"]</h1>
+        <p>@Localizer["نقدم في شركة الارجان للشحن (ALARGAN AUTO SHIPPING) تجربة استيراد فريدة، تبدأ من الاستشارة الفنية قبل المزاد وتنتهي عند وصول سيارتك إلى باب منزلك في سلطنة عمان."]</p>
+    </div>
+
+    <div class="services-grid">
+        <div class="service-card">
+            <div class="srv-icon"><i class="fa-solid fa-ship"></i></div>
+            <h3>@Localizer["الشحن البحري الدولي"]</h3>
+            <p>@Localizer["حلول شحن متكاملة عبر الحاويات (Containers) أو نظام الشحن بالدحرجة (RORO) من كافة موانئ العالم إلى ميناء صحار وميناء صلالة."]</p>
+            <a href="#" class="btn-srv-link"><i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]</a>
+        </div>
+
+        <div class="service-card">
+            <div class="srv-icon"><i class="fa-solid fa-file-shield"></i></div>
+            <h3>@Localizer["فحص وتأمين المركبات"]</h3>
+            <p>@Localizer["توفير تقارير فحص مفصلة قبل الشراء، وتأمين شامل على الشحنات البحرية لحماية استثمارك من أي مخاطر محتملة خلال الرحلة."]</p>
+            <a href="#" class="btn-srv-link"><i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]</a>
+        </div>
+
+        <div class="service-card">
+            <div class="srv-icon"><i class="fa-solid fa-truck-fast"></i></div>
+            <h3>@Localizer["النقل الداخلي (أمريكا)"]</h3>
+            <p>@Localizer["خدمة سحب ونقل احترافية (Towing) للمركبات من كافة مواقع المزاد في الولايات المتحدة إلى أقرب ساحة تجمع أو ميناء تصدير بأفضل الأسعار."]</p>
+            <a href="#" class="btn-srv-link"><i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]</a>
+        </div>
+
+        <div class="service-card">
+            <div class="srv-icon"><i class="fa-solid fa-building-shield"></i></div>
+            <h3>@Localizer["التخليص الجمركي في عمان"]</h3>
+            <p>@Localizer["نمتلك فريقاً متخصصاً في موانئ السلطنة لإنهاء كافة الإجراءات الجمركية والضريبية بسرعة وكفاءة، لضمان استلام سيارتك دون تعقيدات."]</p>
+            <a href="#" class="btn-srv-link"><i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]</a>
+        </div>
+
+        <div class="service-card">
+            <div class="srv-icon"><i class="fa-solid fa-gavel"></i></div>
+            <h3>@Localizer["استشارات وحسابات المزادات"]</h3>
+            <p>@Localizer["نقدم استشارات فنية متخصصة قبل الشراء، ونوفر لعملائنا حسابات خاصة للمشاركة المباشرة في كبرى المزادات العالمية مثل Copart و IAAI."]</p>
+            <a href="#" class="btn-srv-link"><i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]</a>
+        </div>
+    </div>
+
+    <!-- Dark CTA Banner -->
+    <div class="cta-banner-dark">
+        <div class="cta-content">
+            <h2>@Localizer["هل ترغب في الحصول على حساب مزاد؟"]</h2>
+            <p>@Localizer["فريقنا المتواجد في مسقط وأمريكا مستعد لتزويدك بكافة الأدوات اللازمة لبدء استيراد سيارتك بأقل التكاليف وبأعلى درجة من الأمان."]</p>
+        </div>
+        <a href="@Url.Action("Index", "Contact")" class="btn-cta-outline">@Localizer["طلب عرض سعر"]</a>
+    </div>
+</div>

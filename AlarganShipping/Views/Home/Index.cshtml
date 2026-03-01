@@ -1,17 +1,22 @@
-﻿@{
-    ViewData["Title"] = "الرئيسية";
+﻿<!-- مسار الملف في المشروع: Views/Home/Index.cshtml -->
+@model IEnumerable<AlarganShipping.Models.Car>
+@{
+    ViewData["Title"] = Localizer["الرئيسية"];
 }
+
+<!-- تضمين مكتبة ApexCharts للرسوم البيانية -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 <style>
     .welcome-card {
-        background: linear-gradient(135deg, #1a2634 0%, #2b3f56 100%);
-        border-radius: 25px;
+        background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%);
+        border-radius: 1.5rem;
         padding: 3rem;
         color: #fff;
         position: relative;
         overflow: hidden;
-        margin-bottom: 2rem;
-        box-shadow: 0 15px 30px rgba(26,38,52,0.1);
+        margin-bottom: 2.5rem;
+        box-shadow: 0 15px 30px rgba(26, 42, 58, 0.15);
     }
 
         .welcome-card::after {
@@ -19,54 +24,148 @@
             font-family: "Font Awesome 6 Free";
             font-weight: 900;
             position: absolute;
-            bottom: -30px;
-            left: -20px;
-            font-size: 15rem;
-            opacity: 0.05;
+            bottom: -20px;
+            right: @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "auto" : "-20px");
+            left: @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "-20px" : "auto");
+            font-size: 14rem;
+            color: var(--primary-gold);
+            opacity: 0.15;
+            transform: @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "scaleX(-1)" : "none");
         }
 
     .stat-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
         gap: 1.5rem;
+        margin-bottom: 2.5rem;
     }
 
     .stat-box {
         background: #fff;
-        padding: 1.5rem;
-        border-radius: 20px;
-        border: 1px solid #eee;
+        padding: 2rem 1.5rem;
+        border-radius: 1.25rem;
+        border: 1px solid #e2e8f0;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        position: relative;
+        overflow: hidden;
     }
 
-        .stat-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        .stat-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary-gold);
         }
 
     .icon-circle {
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
         margin-bottom: 1rem;
         display: flex;
         align-items: center;
         justify-content: center;
+        font-size: 1.5rem;
+        background: rgba(195, 154, 92, 0.1);
+        color: var(--primary-gold);
+    }
+
+    /* Dashboard Analytics Section */
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    @@media (max-width: 992px) {
+        .analytics-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .chart-card {
+        background: white;
+        border-radius: 1.25rem;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+        border: 1px solid #e2e8f0;
+    }
+
+    .chart-title {
         font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--primary-navy);
+        margin-bottom: 1.5rem;
+    }
+
+    .recent-table-card {
+        background: white;
+        border-radius: 1.25rem;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+        border: 1px solid #e2e8f0;
+    }
+
+    .table-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--primary-navy);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .table-title i {
+            color: var(--primary-gold);
+        }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .custom-table th {
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 700;
+            padding: 1rem;
+            text-align: start;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .custom-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+    .status-badge {
+        background: rgba(195, 154, 92, 0.1);
+        color: var(--primary-gold);
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 800;
     }
 </style>
 
 <div class="welcome-card">
     <div style="position: relative; z-index: 2;">
-        <h1 style="font-weight: 900; font-size: 2.5rem; margin-bottom: 1rem;">مرحباً بك في نظام الأرجان</h1>
-        <p style="font-size: 1.1rem; opacity: 0.8; max-width: 600px;">إدارة عمليات شحن السيارات وتتبع الحاويات والمدفوعات بكل سهولة ودقة.</p>
+        <h1 style="font-weight: 900; font-size: 2.2rem; margin-bottom: 0.5rem;">@Localizer["مرحباً بك في نظام الأرجان"]</h1>
+        <p style="font-size: 1.1rem; color: #cbd5e1; font-weight: 600; max-width: 600px;">@Localizer["إدارة عمليات شحن السيارات وتتبع الحاويات والمدفوعات بكل سهولة ودقة."]</p>
         <div style="margin-top: 2rem;">
-            <a href="@Url.Action("Create", "Shipments")" style="background: #be955b; color: #fff; padding: 12px 25px; border-radius: 12px; text-decoration: none; font-weight: 800; display: inline-block;">
-                <i class="fa-solid fa-plus-circle" style="margin-left: 8px;"></i> شحنة جديدة
+            <a href="@Url.Action("Create", "Shipments")" style="background: var(--primary-gold); color: #fff; padding: 12px 25px; border-radius: 10px; text-decoration: none; font-weight: 800; display: inline-block; box-shadow: 0 4px 15px rgba(195,154,92,0.4);">
+                <i class="fa-solid fa-plus-circle" style="margin: 0 5px;"></i> @Localizer["إنشاء شحنة جديدة"]
             </a>
         </div>
     </div>
@@ -74,18 +173,105 @@
 
 <div class="stat-grid">
     <div class="stat-box">
-        <div class="icon-circle" style="background: #f0f7ff; color: #3b82f6;"><i class="fa-solid fa-car"></i></div>
-        <span style="color: #888; font-size: 0.8rem; font-weight: 800;">إجمالي السيارات</span>
-        <h3 style="font-weight: 900; font-size: 1.8rem; color: #1a2634;">1,245</h3>
+        <div class="icon-circle"><i class="fa-solid fa-car"></i></div>
+        <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 800;">@Localizer["إجمالي السيارات"]</span>
+        <h3 style="font-weight: 900; font-size: 2rem; color: var(--primary-navy); margin-top: 0.5rem;">@ViewBag.TotalCars</h3>
     </div>
     <div class="stat-box">
-        <div class="icon-circle" style="background: #fff8f0; color: #f97316;"><i class="fa-solid fa-ship"></i></div>
-        <span style="color: #888; font-size: 0.8rem; font-weight: 800;">شحنات نشطة</span>
-        <h3 style="font-weight: 900; font-size: 1.8rem; color: #1a2634;">14</h3>
+        <div class="icon-circle"><i class="fa-solid fa-ship"></i></div>
+        <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 800;">@Localizer["شحنات نشطة"]</span>
+        <h3 style="font-weight: 900; font-size: 2rem; color: var(--primary-navy); margin-top: 0.5rem;">@ViewBag.ActiveShipments</h3>
     </div>
     <div class="stat-box">
-        <div class="icon-circle" style="background: #f0fdf4; color: #22c55e;"><i class="fa-solid fa-wallet"></i></div>
-        <span style="color: #888; font-size: 0.8rem; font-weight: 800;">إجمالي الأرباح</span>
-        <h3 style="font-weight: 900; font-size: 1.8rem; color: #1a2634;">$14,200</h3>
+        <div class="icon-circle"><i class="fa-solid fa-users"></i></div>
+        <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 800;">@Localizer["إجمالي العملاء"]</span>
+        <h3 style="font-weight: 900; font-size: 2rem; color: var(--primary-navy); margin-top: 0.5rem;">@ViewBag.TotalCustomers</h3>
+    </div>
+    <div class="stat-box">
+        <div class="icon-circle" style="background: rgba(22, 163, 74, 0.1); color: #16a34a;"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+        <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 800;">@Localizer["مبالغ قيد التحصيل"]</span>
+        <h3 style="font-weight: 900; font-size: 1.8rem; color: var(--primary-navy); margin-top: 0.5rem; font-family: monospace;">$@ViewBag.PendingAmounts</h3>
     </div>
 </div>
+
+<!-- الرسوم البيانية الاحترافية -->
+<div class="analytics-grid">
+    <div class="chart-card">
+        <h3 class="chart-title">@Localizer["إيرادات الشحن والتخليص (آخر 6 أشهر)"]</h3>
+        <div id="revenueChart"></div>
+    </div>
+    <div class="chart-card">
+        <h3 class="chart-title">@Localizer["حالة السيارات الحالية"]</h3>
+        <div id="statusChart"></div>
+    </div>
+</div>
+
+<div class="recent-table-card">
+    <h3 class="table-title"><i class="fa-solid fa-clock-rotate-left"></i> @Localizer["أحدث السيارات المضافة"]</h3>
+    <div style="overflow-x: auto;">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>@Localizer["السيارة"]</th>
+                    <th>@Localizer["رقم الشاصي"] (VIN)</th>
+                    <th>@Localizer["العميل"]</th>
+                    <th>@Localizer["الحالة"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var car in Model)
+                    {
+                        <tr>
+                            <td>@car.Make @car.Model @car.Year</td>
+                            <td style="font-family: monospace; color: var(--text-muted);">@car.VIN</td>
+                            <td>@(car.Customer?.Name ?? "-")</td>
+                            <td><span class="status-badge">@(car.StatusId == 1 ? "تم الشراء" : car.StatusId == 4 ? "واصلة" : "في الطريق")</span></td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">@Localizer["لا توجد سيارات مضافة حديثاً"]</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            var isRtl = $('html').attr('dir') === 'rtl';
+
+            // رسم بياني للإيرادات (ApexCharts)
+            var revOptions = {
+                series: [{ name: '@Localizer["الإيرادات بالدولار"]', data: [12000, 19000, 15000, 22000, 18000, 25000] }],
+                chart: { type: 'area', height: 300, fontFamily: 'Cairo, sans-serif', toolbar: { show: false } },
+                colors: ['#c39a5c'],
+                fill: { type: "gradient", gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 90, 100] } },
+                dataLabels: { enabled: false },
+                stroke: { curve: 'smooth', width: 3 },
+                xaxis: { categories: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'], axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { formatter: function (value) { return "$" + value; } } },
+                grid: { borderColor: '#f1f5f9', strokeDashArray: 4 }
+            };
+            new ApexCharts(document.querySelector("#revenueChart"), revOptions).render();
+
+            // رسم بياني لحالة السيارات
+            var statusOptions = {
+                series: [44, 55, 13],
+                labels: ['@Localizer["في أمريكا"]', '@Localizer["في البحر"]', '@Localizer["واصلة للميناء"]'],
+                chart: { type: 'donut', height: 300, fontFamily: 'Cairo, sans-serif' },
+                colors: ['#1a2a3a', '#c39a5c', '#16a34a'],
+                plotOptions: { pie: { donut: { size: '70%' } } },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom' }
+            };
+            new ApexCharts(document.querySelector("#statusChart"), statusOptions).render();
+        });
+    </script>
+}

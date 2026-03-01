@@ -1,126 +1,242 @@
-﻿@model AlarganShipping.Models.Car
+﻿<!-- مسار الملف في المشروع: Views/Tracking/Result.cshtml -->
+@model AlarganShipping.Models.Car
 @{
-    ViewData["Title"] = "نتائج التتبع";
+    ViewData["Title"] = Localizer["نتائج التتبع"];
+    Layout = null; // صفحة التتبع العامة بدون الـ Layout الخاص بالموظفين
+    var isRtl = System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
+    var htmlDir = isRtl ? "rtl" : "ltr";
 }
+<!DOCTYPE html>
+<html lang="@System.Globalization.CultureInfo.CurrentCulture.Name" dir="@htmlDir">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
-<style>
-    /* Premium Search Result Style */
-    .result-container {
-        max-width: 900px;
-        margin: 2rem auto;
-        padding: 2rem;
-    }
-
-    .status-header {
-        background: #1a2634;
-        color: white;
-        padding: 2.5rem;
-        border-radius: 2rem;
-        margin-bottom: 2rem;
-        text-align: center;
-    }
-
-    .car-info-title {
-        font-size: 2rem;
-        font-weight: 900;
-        color: #be955b;
-        margin-bottom: 0.5rem;
-    }
-
-    .timeline-wrapper {
-        background: white;
-        border-radius: 2rem;
-        padding: 3rem;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.05);
-    }
-
-    .log-item {
-        display: flex;
-        gap: 2rem;
-        margin-bottom: 2.5rem;
-        position: relative;
-    }
-
-        .log-item:not(:last-child)::before {
-            content: '';
-            position: absolute;
-            top: 35px;
-            right: 17px;
-            bottom: -35px;
-            width: 2px;
-            background: #e2e8f0;
+    <style>
+        :root {
+            --primary-navy: #1a2a3a;
+            --secondary-navy: #2b3f56;
+            --primary-gold: #c39a5c;
+            --secondary-gold: #d4af7a;
+            --bg-body: #f4f7f9;
         }
 
-    .log-dot {
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        background: #3b82f6;
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        z-index: 2;
-        border: 4px solid white;
-        box-shadow: 0 0 0 2px #3b82f6;
-    }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            padding: 2rem 1rem;
+        }
 
-    .log-content {
-        flex: 1;
-        text-align: right;
-    }
+        .result-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
 
-    .log-title {
-        font-size: 1.1rem;
-        font-weight: 900;
-        color: #1a2634;
-        margin-bottom: 0.25rem;
-    }
+        .status-header {
+            background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 2rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(26, 42, 58, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
 
-    .log-date {
-        font-size: 0.85rem;
-        color: #94a3b8;
-        font-weight: 700;
-    }
+            .status-header::before {
+                content: '\f1b9';
+                font-family: "Font Awesome 6 Free";
+                font-weight: 900;
+                position: absolute;
+                font-size: 15rem;
+                color: rgba(195,154,92,0.1);
+                top: -20px;
+                inset-inline-end: -20px;
+            }
 
-    .log-desc {
-        margin-top: 0.5rem;
-        color: #64748b;
-        font-size: 0.95rem;
-    }
-</style>
+        .car-info-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary-gold);
+            margin: 0 0 0.5rem 0;
+            position: relative;
+            z-index: 2;
+        }
 
-<div class="result-container" dir="rtl">
-    <div class="status-header">
-        <h1 class="car-info-title">@Model.Make @Model.Model</h1>
-        <p style="font-weight: 700; opacity: 0.8;">رقم الشاصي: @Model.VIN</p>
-    </div>
+        .car-vin {
+            font-weight: 800;
+            font-family: monospace;
+            font-size: 1.2rem;
+            background: rgba(255,255,255,0.1);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            display: inline-block;
+            position: relative;
+            z-index: 2;
+        }
 
-    <div class="timeline-wrapper">
-        <h2 style="font-weight: 900; margin-bottom: 3rem; text-align: center;">سجل العمليات والتحركات</h2>
+        .timeline-wrapper {
+            background: white;
+            border-radius: 2rem;
+            padding: 4rem 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+        }
 
-        @if (Model.TrackingLogs != null && Model.TrackingLogs.Any())
-        {
-            foreach (var log in Model.TrackingLogs.OrderByDescending(l => l.UpdateDate))
+        .timeline-title {
+            font-weight: 900;
+            margin-bottom: 3rem;
+            text-align: center;
+            color: var(--primary-navy);
+            font-size: 1.8rem;
+        }
+
+        .log-item {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+            .log-item:not(:last-child)::before {
+                content: '';
+                position: absolute;
+                top: 40px;
+                inset-inline-start: 19px;
+                bottom: -35px;
+                width: 2px;
+                background: #e2e8f0;
+            }
+
+        .log-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-gold);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 2;
+            border: 4px solid white;
+            box-shadow: 0 0 0 3px var(--primary-gold);
+            font-size: 1rem;
+        }
+
+        .log-content {
+            flex: 1;
+            text-align: start;
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid #f1f5f9;
+            transition: 0.3s;
+        }
+
+            .log-content:hover {
+                border-color: var(--primary-gold);
+                box-shadow: 0 5px 15px rgba(195,154,92,0.1);
+            }
+
+        .log-title {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: var(--primary-navy);
+            margin-bottom: 0.25rem;
+        }
+
+        .log-date {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .log-loc {
+            color: var(--primary-gold);
+            font-weight: 900;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .log-desc {
+            margin-top: 1rem;
+            color: #475569;
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .btn-back {
+            display: block;
+            width: fit-content;
+            margin: 3rem auto 0;
+            background: var(--primary-navy);
+            color: white;
+            padding: 1rem 3rem;
+            border-radius: 1rem;
+            text-decoration: none;
+            font-weight: 800;
+            transition: 0.3s;
+        }
+
+            .btn-back:hover {
+                background: var(--secondary-navy);
+                transform: translateY(-2px);
+            }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <div class="status-header">
+            <h1 class="car-info-title">@Model.Make @Model.Model @Model.Year</h1>
+            <p class="car-vin">@Localizer["رقم الشاصي:"] @Model.VIN</p>
+        </div>
+
+        <div class="timeline-wrapper">
+            <h2 class="timeline-title"><i class="fa-solid fa-route"></i> @Localizer["سجل العمليات والتحركات"]</h2>
+
+            @if (Model.TrackingLogs != null && Model.TrackingLogs.Any())
             {
-                <div class="log-item">
-                    <div class="log-dot">✓</div>
-                    <div class="log-content">
-                        <div class="log-title">@log.Title</div>
-                        <div class="log-date">@log.UpdateDate.ToString("dd MMMM yyyy - hh:mm tt")</div>
-                        @if (!string.IsNullOrEmpty(log.Location))
-                        {
-                            <div style="color: #be955b; font-weight: 800; font-size: 0.9rem; margin-top: 0.25rem;">📍 @log.Location</div>
-                        }
-                        <p class="log-desc">@log.Description</p>
+                foreach (var log in Model.TrackingLogs.OrderByDescending(l => l.UpdateDate))
+                {
+                    <div class="log-item">
+                        <div class="log-dot"><i class="fa-solid fa-check"></i></div>
+                        <div class="log-content">
+                            <div class="log-title">@log.Title</div>
+                            <div class="log-date"><i class="fa-regular fa-clock"></i> @log.UpdateDate.ToString("dd MMMM yyyy - hh:mm tt")</div>
+                            @if (!string.IsNullOrEmpty(log.Location))
+                            {
+                                <div class="log-loc"><i class="fa-solid fa-location-dot"></i> @log.Location</div>
+                            }
+                            @if (!string.IsNullOrEmpty(log.Description))
+                            {
+                                <p class="log-desc">@log.Description</p>
+                            }
+                        </div>
                     </div>
+                }
+            }
+            else
+            {
+                <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 1.5rem;">
+                    <i class="fa-solid fa-satellite-dish" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
+                    <p style="color: #64748b; font-weight: 800; font-size: 1.1rem; margin: 0;">@Localizer["لا توجد تحديثات مسجلة لهذه السيارة حالياً."]</p>
                 </div>
             }
-        }
-        else
-        {
-            <p style="text-align: center; color: #94a3b8; font-weight: 700;">لا توجد تحديثات مسجلة لهذه السيارة حالياً.</p>
-        }
+
+            <a href="@Url.Action("Index", "Tracking")" class="btn-back">@Localizer["بحث جديد"]</a>
+        </div>
     </div>
-</div>
+</body>
+</html>

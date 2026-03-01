@@ -1,183 +1,192 @@
-﻿@model IEnumerable<AlarganShipping.Models.PaymentReceipt>
+﻿<!-- مسار الملف في المشروع: Views/PaymentReceipts/Index.cshtml -->
+@model IEnumerable<AlarganShipping.Models.PaymentReceipt>
 @{
-    ViewData["Title"] = "سندات القبض";
+    ViewData["Title"] = Localizer["سندات القبض"];
 }
 
 <style>
-    /* Premium Pure CSS for Payment Receipts Grid */
     .page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         background-color: #ffffff;
-        padding: 1.25rem 1.5rem;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px -1px rgba(43, 63, 86, 0.05);
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 5px 20px rgba(26, 38, 52, 0.03);
         margin-bottom: 2rem;
+        border: 1px solid #f1f5f9;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
     .page-title {
         font-size: 1.5rem;
-        font-weight: 800;
-        color: #2b3f56;
+        font-weight: 900;
+        color: var(--primary-navy);
         margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
+        .page-title i {
+            color: #10b981;
+        }
+    /* لون أخضر دلالة على الأموال المقبوضة */
+
     .btn-add {
-        display: inline-block;
-        background: linear-gradient(to right, #16a34a, #22c55e);
+        background: linear-gradient(to right, #10b981, #059669);
         color: #ffffff;
-        font-weight: 700;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.75rem;
+        font-weight: 800;
+        padding: 0.85rem 1.75rem;
+        border-radius: 1rem;
         text-decoration: none;
-        box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3);
-        transition: all 0.3s ease;
-        border: none;
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
         .btn-add:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(22, 163, 74, 0.4);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
+            color: white;
         }
 
-    .receipts-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    @@media (min-width: 1024px) {
-        .receipts-grid
-
-    {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    }
-
-    .receipt-card {
-        background-color: #ffffff;
-        border-radius: 1.25rem;
-        box-shadow: 0 10px 25px rgba(43, 63, 86, 0.05);
+    .data-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         border: 1px solid #f1f5f9;
-        position: relative;
-        overflow: hidden;
-        transition: transform 0.3s ease;
+        overflow-x: auto;
     }
 
-        .receipt-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(43, 63, 86, 0.1);
+    .table-enterprise {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+        .table-enterprise th {
+            background-color: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 800;
+            padding: 1.25rem 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            text-align: start;
+            white-space: nowrap;
         }
 
-    .card-accent-line {
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 6px;
-        height: 100%;
-        background-color: #16a34a;
-    }
+        .table-enterprise td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-dark);
+            font-weight: 700;
+            vertical-align: middle;
+        }
 
-    .receipt-header {
-        padding: 1.5rem 1.5rem 1rem 1.5rem;
-        border-bottom: 1px dashed #e2e8f0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+        .table-enterprise tbody tr:hover {
+            background-color: #f8fafc;
+            transition: 0.2s;
+        }
 
     .rec-number {
-        font-size: 1.1rem;
-        font-weight: 900;
-        color: #2b3f56;
-        margin: 0;
         font-family: monospace;
-    }
-
-    .rec-date {
-        color: #64748b;
-        font-size: 0.85rem;
-        font-weight: 700;
-    }
-
-    .receipt-body {
-        padding: 1.5rem;
-    }
-
-    .rec-customer {
         font-size: 1.1rem;
-        font-weight: 800;
-        color: #1e293b;
-        margin-bottom: 0.5rem;
-    }
-
-    .rec-method {
-        color: #64748b;
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        display: inline-block;
-        background: #f1f5f9;
-        padding: 0.25rem 0.75rem;
-        border-radius: 50px;
-    }
-
-    .rec-total-box {
-        background: #f0fdf4;
-        padding: 1rem;
-        border-radius: 0.75rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border: 1px solid #bbf7d0;
-    }
-
-    .rec-total-label {
-        color: #166534;
-        font-weight: 800;
-    }
-
-    .rec-total-value {
-        color: #16a34a;
         font-weight: 900;
-        font-size: 1.5rem;
+        color: var(--primary-navy);
+        background: rgba(26,38,52,0.05);
+        padding: 0.3rem 0.8rem;
+        border-radius: 6px;
     }
+
+    .rec-amount {
+        font-family: monospace;
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: #10b981;
+        background: rgba(16, 185, 129, 0.1);
+        padding: 0.4rem 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .method-badge {
+        background: white;
+        color: var(--primary-navy);
+        padding: 0.4rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+        .method-badge i {
+            color: var(--primary-gold);
+        }
+
 </style>
 
 <div>
     <div class="page-header">
-        <h2 class="page-title">سندات القبض (المدفوعات)</h2>
-        <a href="@Url.Action("Create", "PaymentReceipts")" class="btn-add">إصدار سند قبض جديد</a>
+        <h2 class="page-title"><i class="fa-solid fa-hand-holding-dollar"></i> @Localizer["سجل المقبوضات (المدفوعات)"]</h2>
+        <a href="@Url.Action("Create", "PaymentReceipts")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إصدار سند قبض جديد"]</a>
     </div>
 
-    <div class="receipts-grid">
-        @if (Model != null && Model.Any())
-        {
-            foreach (var rec in Model)
-            {
-                <div class="receipt-card">
-                    <div class="card-accent-line"></div>
-                    <div class="receipt-header">
-                        <h3 class="rec-number">@rec.ReceiptNumber</h3>
-                        <span class="rec-date">@rec.PaymentDate.ToString("dd/MM/yyyy")</span>
-                    </div>
-                    <div class="receipt-body">
-                        <div class="rec-customer">العميل: @rec.Customer?.Name</div>
-                        <span class="rec-method">الدفع: @rec.PaymentMethod</span>
-                        <div class="rec-total-box">
-                            <span class="rec-total-label">المبلغ المسدد</span>
-                            <span class="rec-total-value">$@rec.Amount</span>
-                        </div>
-                    </div>
-                </div>
-            }
-        }
-        else
-        {
-            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: white; border-radius: 1rem;">
-                <h3 style="color: #64748b; margin: 0;">لا توجد سندات قبض مسجلة حالياً.</h3>
-            </div>
-        }
+    <div class="data-card">
+        <table id="receiptsDataTable" class="table-enterprise display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>@Localizer["رقم السند"]</th>
+                    <th>@Localizer["تاريخ الدفع"]</th>
+                    <th>@Localizer["العميل المُسدد"]</th>
+                    <th>@Localizer["طريقة الدفع"]</th>
+                    <th>@Localizer["رقم المرجع"]</th>
+                    <th>@Localizer["المبلغ"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var rec in Model)
+                    {
+                        <tr>
+                            <td><span class="rec-number">@rec.ReceiptNumber</span></td>
+                            <td style="color: var(--text-muted); font-weight: 800;">@rec.PaymentDate.ToString("dd MMM yyyy - hh:mm tt")</td>
+                            <td><i class="fa-solid fa-user-check" style="color: #cbd5e1; margin-inline-end: 8px;"></i> @(rec.Customer?.Name ?? "-")</td>
+                            <td>
+                                <span class="method-badge">
+                                    <i class="fa-solid fa-money-bill-transfer"></i> @Localizer[rec.PaymentMethod]
+                                </span>
+                            </td>
+                            <td style="color: var(--text-muted); font-family: monospace;">@(string.IsNullOrEmpty(rec.ReferenceNumber) ? "-" : rec.ReferenceNumber)</td>
+                            <td><span class="rec-amount">$@rec.Amount</span></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var dir = $('html').attr('dir') === 'rtl';
+            $('#receiptsDataTable').DataTable({
+                "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" },
+                "pageLength": 10,
+                "ordering": true,
+                "order": [[ 1, "desc" ]], // ترتيب من الأحدث للأقدم
+                "responsive": true,
+                "dom": '<"top"f>rt<"bottom"lp><"clear">'
+            });
+        });
+    </script>
+}

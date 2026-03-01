@@ -1,207 +1,378 @@
-﻿@model IEnumerable<AlarganShipping.Models.Customer>
+﻿<!-- مسار الملف في المشروع: Views/Customers/Index.cshtml -->
+@model IEnumerable<AlarganShipping.Models.Customer>
 @{
-    ViewData["Title"] = "إدارة شؤون العملاء";
+    ViewData["Title"] = Localizer["إدارة شؤون العملاء"];
 }
 
 <style>
-    /* Premium Customer Cards (Based on Image 2026-02-26 at 1.27.12 PM.jpeg) */
-    .cust-card-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 2rem;
-    }
-
-    .premium-cust-card {
-        background: white;
-        border-radius: 2rem;
-        padding: 2rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        border: 1px solid #f1f5f9;
-        position: relative;
-    }
-
-    .cust-badge-id {
-        position: absolute;
-        top: 2rem;
-        left: 2rem;
-        background: #f0f7ff;
-        color: #3b82f6;
-        padding: 0.25rem 0.75rem;
-        border-radius: 6px;
-        font-weight: 800;
-        font-family: monospace;
-    }
-
-    .portal-toggle {
-        position: absolute;
-        top: 2rem;
-        right: 2rem;
+    .page-header-container {
         display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: #3b82f6;
-    }
-
-    .cust-header-center {
-        text-align: center;
-        margin-top: 1rem;
+        justify-content: space-between;
+        align-items: flex-start;
         margin-bottom: 2rem;
     }
 
-    .avatar-box {
-        width: 80px;
-        height: 80px;
-        background: #f8fafc;
-        border-radius: 50%;
-        margin: 0 auto 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        color: #cbd5e1;
-        border: 2px solid #f1f5f9;
-    }
-
-    .cust-name-main {
-        font-size: 1.5rem;
+    .page-header-text h2 {
+        font-size: 1.8rem;
         font-weight: 900;
         color: #1a2634;
         margin: 0;
     }
 
-    .cust-phone-main {
+    .page-header-text p {
         color: #64748b;
-        font-weight: 700;
-        margin-top: 0.25rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin: 0;
     }
 
-    .finance-row {
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .btn-add {
+        background: linear-gradient(to right, #be955b, #d4af7a);
+        color: #ffffff;
+        font-weight: 800;
+        padding: 0.85rem 1.75rem;
+        border-radius: 1rem;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(190, 149, 91, 0.3);
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(190, 149, 91, 0.4);
+            color: white;
+        }
+
+    .cust-grid-modern {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    .cust-card-pro {
+        background: white;
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+        display: flex;
+        flex-direction: column;
+        transition: 0.3s;
+    }
+
+        .cust-card-pro:hover {
+            box-shadow: 0 15px 40px rgba(26, 38, 52, 0.08);
+            transform: translateY(-5px);
+            border-color: #be955b;
+        }
+
+    .cust-card-header {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 1.5rem;
+        align-items: center;
+        margin-bottom: 2rem;
     }
 
-    .fin-item label {
-        display: block;
-        color: #94a3b8;
-        font-size: 0.75rem;
-        font-weight: 700;
-        margin-bottom: 0.25rem;
+    .portal-switch {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: #16a34a;
     }
 
-    .fin-item span {
-        font-size: 1.25rem;
+    .switch-icon {
+        width: 36px;
+        height: 20px;
+        background: #be955b;
+        border-radius: 20px;
+        position: relative;
+    }
+
+        .switch-icon::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            inset-inline-end: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+        }
+
+    .cust-code {
+        background: rgba(190, 149, 91, 0.1);
+        color: #be955b;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-family: monospace;
         font-weight: 900;
+        font-size: 0.85rem;
+        border: 1px solid rgba(190, 149, 91, 0.2);
     }
 
-    .val-success {
-        color: #22c55e;
+    .cust-profile-area {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
     }
 
-    .val-danger {
+    .cust-name-info {
+        text-align: right;
+        flex: 1;
+        margin-inline-end: 1rem;
+    }
+
+        .cust-name-info h3 {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #1a2634;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .cust-name-info p {
+            color: #64748b;
+            font-weight: 700;
+            margin: 0;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+    .cust-avatar-large {
+        width: 70px;
+        height: 70px;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #cbd5e1;
+        flex-shrink: 0;
+    }
+
+    .fin-stats {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .fin-item {
+        text-align: right;
+    }
+
+        .fin-item label {
+            display: block;
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .fin-item .amount {
+            font-size: 1.4rem;
+            font-weight: 900;
+        }
+
+            .fin-item .amount span {
+                font-size: 0.8rem;
+                font-weight: 700;
+            }
+
+    .amt-green {
+        color: #16a34a;
+    }
+
+    .amt-red {
         color: #ef4444;
     }
 
-    .portal-access-box {
-        background: #f8fafc;
-        border-radius: 1rem;
-        padding: 1.25rem;
-        margin-top: 2rem;
+    .progress-wrapper {
+        margin-bottom: 2rem;
     }
 
-    .access-row {
+    .progress-bar-bg {
+        width: 100%;
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: #be955b;
+        border-radius: 10px;
+    }
+
+    .progress-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-weight: 700;
+    }
+
+    .credentials-box {
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #f1f5f9;
+    }
+
+    .cred-title {
+        text-align: center;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #94a3b8;
+        margin-bottom: 1rem;
+    }
+
+    .cred-row {
         display: flex;
         gap: 1rem;
     }
 
-    .access-field {
+    .cred-field {
         flex: 1;
+        text-align: center;
     }
 
-        .access-field label {
+        .cred-field label {
             display: block;
-            font-size: 0.65rem;
-            color: #94a3b8;
-            margin-bottom: 0.25rem;
-            text-align: center;
+            font-size: 0.7rem;
+            color: #64748b;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
         }
 
-        .access-field div {
+        .cred-field .cred-val {
             background: white;
             border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
             padding: 0.5rem;
-            text-align: center;
+            border-radius: 8px;
+            color: #1a2634;
             font-family: monospace;
-            font-size: 0.85rem;
-            color: #3b82f6;
+            font-weight: 800;
+            font-size: 0.9rem;
         }
 
-    .btn-statement {
-        width: 100%;
+    .btn-action-dark {
         background: #1a2634;
         color: white;
-        padding: 0.85rem;
-        border-radius: 0.75rem;
-        margin-top: 1.5rem;
+        border: none;
+        padding: 1.2rem;
+        border-radius: 16px;
         font-weight: 800;
+        font-size: 1rem;
+        font-family: inherit;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
+        gap: 10px;
+        text-decoration: none;
+        transition: 0.3s;
+        width: 100%;
     }
+
+        .btn-action-dark:hover {
+            background: #2b3f56;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(26,38,52,0.2);
+            color: white;
+        }
 </style>
 
-<div class="cust-card-grid">
-    @foreach (var customer in Model)
-    {
-        <div class="premium-cust-card">
-            <div class="cust-badge-id">@customer.CustomerCode</div>
-            <div class="portal-toggle">
-                <span>البوابة نشطة</span>
-                <div style="width: 40px; height: 20px; background: #3b82f6; border-radius: 20px; position: relative;">
-                    <div style="width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; right: 2px; top: 2px;"></div>
-                </div>
-            </div>
-
-            <div class="cust-header-center">
-                <div class="avatar-box">👤</div>
-                <h3 class="cust-name-main">@customer.Name</h3>
-                <p class="cust-phone-main" dir="ltr">@customer.Phone</p>
-            </div>
-
-            <div class="finance-row">
-                <div class="fin-item">
-                    <label>إجمالي المدفوع</label>
-                    <span class="val-success">@customer.TotalPaid <small>ر.ع</small></span>
-                </div>
-                <div class="fin-item" style="text-align: left;">
-                    <label>المتبقي</label>
-                    <span class="val-danger">@customer.TotalBalance <small>ر.ع</small></span>
-                </div>
-            </div>
-
-            <div class="progress-bar-bg" style="height: 6px; background: #f1f5f9; border-radius: 10px; margin-bottom: 2rem;">
-                <div style="width: 50%; height: 100%; background: #22c55e; border-radius: 10px;"></div>
-            </div>
-
-            <div class="portal-access-box">
-                <label style="display: block; text-align: center; font-weight: 800; font-size: 0.75rem; margin-bottom: 1rem; color: #64748b;">بيانات الوصول الآمن</label>
-                <div class="access-row">
-                    <div class="access-field">
-                        <label>المستخدم</label>
-                        <div>@customer.PortalUsername</div>
-                    </div>
-                    <div class="access-field">
-                        <label>كلمة المرور</label>
-                        <div>@customer.PortalPassword</div>
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn-statement">📄 إصدار كشف حساب</button>
+<div>
+    <div class="page-header-container">
+        <div class="page-header-text">
+            <h2>@Localizer["إدارة شؤون العملاء"]</h2>
+            <p>• @Localizer["نظام الإدارة اللوجستية الذكي"]</p>
         </div>
-    }
+        <div class="header-actions">
+            <a href="@Url.Action("Create", "Customers")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة عميل"]</a>
+        </div>
+    </div>
+
+    <div class="cust-grid-modern">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var customer in Model)
+            {
+                decimal totalRequired = customer.TotalPaid + customer.TotalBalance;
+                decimal payPercentage = totalRequired > 0 ? (customer.TotalPaid / totalRequired) * 100 : 0;
+
+                <div class="cust-card-pro">
+                    <div class="cust-card-header">
+                        <div class="portal-switch">
+                            <div class="switch-icon"></div>
+                            <span>@Localizer["البوابة نشطة"]</span>
+                        </div>
+                        <div class="cust-code">@customer.CustomerCode</div>
+                    </div>
+
+                    <div class="cust-profile-area">
+                        <div class="cust-name-info">
+                            <h3>@customer.Name</h3>
+                            <p dir="ltr">@customer.Phone</p>
+                        </div>
+                        <div class="cust-avatar-large"><i class="fa-solid fa-user"></i></div>
+                    </div>
+
+                    <div class="fin-stats">
+                        <div class="fin-item">
+                            <label>@Localizer["المتبقي"]</label>
+                            <div class="amount amt-red">@customer.TotalBalance <span>ر.ع</span></div>
+                        </div>
+                        <div class="fin-item" style="text-align: left;">
+                            <label>@Localizer["إجمالي المدفوع"]</label>
+                            <div class="amount amt-green">@customer.TotalPaid <span>ر.ع</span></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-wrapper">
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: @((int)payPercentage)%;"></div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>@Localizer["الإجمالي:"] @totalRequired ر.ع</span>
+                            <span>@Localizer["نسبة السداد:"] @((int)payPercentage)%</span>
+                        </div>
+                    </div>
+
+                    <div class="credentials-box">
+                        <div class="cred-title">@Localizer["بيانات الوصول الآمن"]</div>
+                        <div class="cred-row">
+                            <div class="cred-field">
+                                <label>@Localizer["كلمة المرور"]</label>
+                                <div class="cred-val">@customer.PortalPassword</div>
+                            </div>
+                            <div class="cred-field">
+                                <label>@Localizer["المستخدم"]</label>
+                                <div class="cred-val">@customer.PortalUsername</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="@Url.Action("Details", "Customers", new { id = customer.Id })" class="btn-action-dark">
+                        <i class="fa-solid fa-file-invoice"></i> @Localizer["إصدار كشف حساب"]
+                    </a>
+                </div>
+            }
+        }
+    </div>
 </div>

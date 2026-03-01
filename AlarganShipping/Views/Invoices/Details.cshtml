@@ -1,18 +1,19 @@
-﻿@model AlarganShipping.Models.Invoice
+﻿<!-- مسار الملف في المشروع: Views/Invoices/Details.cshtml -->
+@model AlarganShipping.Models.Invoice
 @{
-    ViewData["Title"] = "فاتورة ضريبية";
-    Layout = "_Layout"; // يمكن جعله null إذا أردت صفحة طباعة خالية من القوائم
+    ViewData["Title"] = Localizer["فاتورة ضريبية"];
+    Layout = "_Layout";
 }
 
 <style>
     /* Premium Printable Invoice CSS */
     .invoice-wrapper {
         background: white;
-        max-width: 800px;
+        max-width: 850px;
         margin: 0 auto;
         padding: 3rem;
-        border-radius: 1.25rem;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 40px rgba(26, 42, 58, 0.08);
         border: 1px solid #e2e8f0;
     }
 
@@ -20,13 +21,13 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        border-bottom: 3px solid #be955b;
+        border-bottom: 4px solid var(--primary-gold);
         padding-bottom: 2rem;
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
     }
 
     .company-details h1 {
-        color: #2b3f56;
+        color: var(--primary-navy);
         font-size: 2.5rem;
         font-weight: 900;
         margin: 0;
@@ -34,17 +35,17 @@
     }
 
     .company-details p {
-        color: #64748b;
+        color: var(--text-muted);
         font-weight: 700;
         margin: 0.25rem 0 0 0;
     }
 
     .invoice-meta {
-        text-align: left;
+        text-align: end;
     }
 
     .meta-title {
-        font-size: 2rem;
+        font-size: 2.2rem;
         font-weight: 900;
         color: #e2e8f0;
         text-transform: uppercase;
@@ -56,72 +57,78 @@
         display: flex;
         gap: 1rem;
         justify-content: flex-end;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.4rem;
     }
 
     .meta-label {
-        color: #64748b;
-        font-weight: 700;
+        color: var(--text-muted);
+        font-weight: 800;
     }
 
     .meta-value {
-        color: #2b3f56;
+        color: var(--primary-navy);
         font-weight: 900;
+        font-family: monospace;
+        font-size: 1.1rem;
     }
 
     .bill-to-section {
         background: #f8fafc;
-        padding: 1.5rem;
-        border-radius: 0.75rem;
+        padding: 2rem;
+        border-radius: 1rem;
         margin-bottom: 2.5rem;
-        border-right: 4px solid #2b3f56;
+        border-inline-start: 5px solid var(--primary-navy);
     }
 
     .bill-to-title {
-        color: #64748b;
-        font-size: 0.9rem;
-        font-weight: 700;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        font-weight: 800;
         margin-bottom: 0.5rem;
     }
 
     .bill-to-name {
-        color: #2b3f56;
+        color: var(--primary-navy);
         font-size: 1.5rem;
         font-weight: 900;
-        margin: 0 0 0.25rem 0;
+        margin: 0 0 0.5rem 0;
     }
 
     .bill-to-car {
-        color: #be955b;
+        color: var(--primary-gold);
         font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .invoice-table {
         width: 100%;
         border-collapse: collapse;
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
     }
 
         .invoice-table th {
-            background: #2b3f56;
+            background: var(--primary-navy);
             color: white;
-            padding: 1rem;
-            text-align: right;
+            padding: 1.2rem 1rem;
+            text-align: start;
             font-weight: 800;
-            border: 1px solid #2b3f56;
+            border: 1px solid var(--primary-navy);
         }
 
         .invoice-table td {
-            padding: 1rem;
+            padding: 1.2rem 1rem;
             border: 1px solid #e2e8f0;
-            color: #1e293b;
+            color: var(--text-dark);
             font-weight: 700;
         }
 
         .invoice-table .amount-col {
-            text-align: left;
+            text-align: end;
             font-family: monospace;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
+            color: var(--primary-navy);
         }
 
     .total-section {
@@ -130,12 +137,12 @@
     }
 
     .total-box {
-        width: 300px;
-        background: #2b3f56;
+        width: 320px;
+        background: var(--primary-navy);
         color: white;
         padding: 1.5rem;
-        border-radius: 0.75rem;
-        box-shadow: 0 5px 15px rgba(43, 63, 86, 0.3);
+        border-radius: 1rem;
+        box-shadow: 0 5px 15px rgba(26, 42, 58, 0.2);
     }
 
     .total-row {
@@ -143,11 +150,12 @@
         justify-content: space-between;
         font-size: 1.5rem;
         font-weight: 900;
-        color: #be955b;
+        color: var(--primary-gold);
+        align-items: center;
     }
 
     .action-buttons {
-        margin-top: 2rem;
+        margin-top: 2.5rem;
         text-align: center;
         display: flex;
         justify-content: center;
@@ -155,50 +163,73 @@
     }
 
     .btn-print {
-        background: #be955b;
+        background: linear-gradient(to right, var(--primary-gold), var(--secondary-gold));
         color: white;
-        padding: 0.75rem 2rem;
-        border-radius: 0.5rem;
+        padding: 0.85rem 2.5rem;
+        border-radius: 0.75rem;
         font-weight: 800;
         border: none;
         cursor: pointer;
         transition: 0.3s;
+        font-family: inherit;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 15px rgba(195,154,92,0.3);
     }
 
         .btn-print:hover {
-            background: #a67c46;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(195,154,92,0.4);
+        }
+
+    .btn-cancel {
+        color: var(--text-muted);
+        font-weight: 800;
+        padding: 0.85rem 1.5rem;
+        text-decoration: none;
+        transition: 0.3s;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.75rem;
+    }
+
+        .btn-cancel:hover {
+            background: #f8fafc;
+            color: var(--primary-navy);
         }
 
     /* Print Media Query */
     @@media print {
-        body *
+        body * {
+            visibility: hidden;
+        }
 
-    {
-        visibility: hidden;
-    }
+        .invoice-wrapper, .invoice-wrapper * {
+            visibility: visible;
+        }
 
-    .invoice-wrapper, .invoice-wrapper * {
-        visibility: visible;
-    }
+        .invoice-wrapper {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            max-width: 100%;
+            box-shadow: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
 
-    .invoice-wrapper {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        box-shadow: none;
-        border: none;
-        padding: 0;
-    }
+        .action-buttons {
+            display: none;
+        }
 
-    .action-buttons {
-        display: none;
-    }
+        .sidebar, .top-header {
+            display: none !important;
+        }
 
-    .sidebar, .topbar {
-        display: none !important;
-    }
-
+        body {
+            background-color: white;
+        }
     }
 </style>
 
@@ -207,59 +238,62 @@
         <div class="invoice-header">
             <div class="company-details">
                 <h1>ALARGAN</h1>
-                <p>AUTO SHIPPING</p>
-                <p style="font-size: 0.85rem; margin-top: 1rem;">سلطنة عمان - مسقط</p>
+                <p style="letter-spacing: 2px; color: var(--primary-gold);">AUTO SHIPPING</p>
+                <p style="font-size: 0.9rem; margin-top: 1rem;">@Localizer["سلطنة عمان - المركز الرئيسي"]</p>
             </div>
             <div class="invoice-meta">
                 <div class="meta-title">INVOICE</div>
                 <div class="meta-row">
-                    <span class="meta-label">رقم الفاتورة:</span>
+                    <span class="meta-label">@Localizer["رقم الفاتورة:"]</span>
                     <span class="meta-value">@Model.InvoiceNumber</span>
                 </div>
                 <div class="meta-row">
-                    <span class="meta-label">تاريخ الإصدار:</span>
+                    <span class="meta-label">@Localizer["تاريخ الإصدار:"]</span>
                     <span class="meta-value">@Model.IssueDate.ToString("dd/MM/yyyy")</span>
                 </div>
             </div>
         </div>
 
         <div class="bill-to-section">
-            <div class="bill-to-title">فاتورة مقدمة إلى:</div>
+            <div class="bill-to-title">@Localizer["فاتورة مقدمة إلى:"]</div>
             <h2 class="bill-to-name">@Model.Customer?.Name</h2>
-            <div class="bill-to-car">بيانات السيارة: @Model.Car?.Make @Model.Car?.Model @Model.Car?.Year (VIN: @Model.Car?.VIN)</div>
+            <div class="bill-to-car">
+                <i class="fa-solid fa-car"></i> @Localizer["بيانات السيارة:"] @Model.Car?.Make @Model.Car?.Model @Model.Car?.Year
+                <span style="color: var(--text-muted); font-family: monospace; margin-inline-start: 10px;">(VIN: @Model.Car?.VIN)</span>
+            </div>
         </div>
 
         <table class="invoice-table">
             <thead>
                 <tr>
-                    <th>البيان / الوصف</th>
-                    <th class="amount-col">المبلغ ($)</th>
+                    <th>@Localizer["البيان / الوصف"]</th>
+                    <th class="amount-col">@Localizer["المبلغ"] ($)</th>
                 </tr>
             </thead>
             <tbody>
                 @if (Model.CarPrice > 0)
                 {
-                    <tr><td>قيمة شراء السيارة من المزاد</td><td class="amount-col">@Model.CarPrice</td></tr>
+                    <tr><td>@Localizer["قيمة شراء السيارة من المزاد"]</td><td class="amount-col">@Model.CarPrice</td></tr>
                 }
                 @if (Model.AuctionFees > 0)
                 {
-                    <tr><td>رسوم المزاد والبوابة</td><td class="amount-col">@Model.AuctionFees</td></tr>
+                    <tr><td>@Localizer["رسوم المزاد والبوابة"]</td><td class="amount-col">@Model.AuctionFees</td></tr>
                 }
                 @if (Model.LandFreight > 0)
                 {
-                    <tr><td>أجور النقل الداخلي (الريكفري)</td><td class="amount-col">@Model.LandFreight</td></tr>
+                    <tr><td>@Localizer["أجور النقل الداخلي (الريكفري)"]</td><td class="amount-col">@Model.LandFreight</td></tr>
                 }
                 @if (Model.SeaFreight > 0)
                 {
-                    <tr><td>أجور الشحن البحري</td><td class="amount-col">@Model.SeaFreight</td></tr>
+                    <tr><td>@Localizer["أجور الشحن البحري"]</td><td class="amount-col">@Model.SeaFreight</td></tr>
                 }
                 @if (Model.CustomsFees > 0)
                 {
-                    <tr><td>رسوم التخليص الجمركي</td><td class="amount-col">@Model.CustomsFees</td></tr>
+                    <tr><td>@Localizer["رسوم التخليص الجمركي"]</td><td class="amount-col">@Model.CustomsFees</td></tr>
                 }
                 @if (Model.AdminFees > 0)
                 {
-                    <tr><td>الرسوم الإدارية / عمولة الشركة</td><td class="amount-col">@Model.AdminFees</td></tr>
+                    <tr><td>@Localizer["الرسوم الإدارية / عمولة الشركة"]</td><td class="amount-col">@Model.AdminFees</td></tr>
                 }
             </tbody>
         </table>
@@ -267,7 +301,7 @@
         <div class="total-section">
             <div class="total-box">
                 <div class="total-row">
-                    <span>الإجمالي الكلي:</span>
+                    <span style="color: white; font-size: 1.2rem;">@Localizer["الإجمالي الكلي:"]</span>
                     <span>$@Model.TotalAmount</span>
                 </div>
             </div>
@@ -275,7 +309,7 @@
     </div>
 
     <div class="action-buttons">
-        <button onclick="window.print()" class="btn-print">طباعة الفاتورة</button>
-        <a href="@Url.Action("Index", "Invoices")" style="color: #64748b; font-weight: 700; padding: 0.75rem 1rem; text-decoration: none;">العودة</a>
+        <button onclick="window.print()" class="btn-print"><i class="fa-solid fa-print" style="margin-inline-end: 8px;"></i> @Localizer["طباعة الفاتورة"]</button>
+        <a href="@Url.Action("Index", "Invoices")" class="btn-cancel">@Localizer["العودة"]</a>
     </div>
 </div>

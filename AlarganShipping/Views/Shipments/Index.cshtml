@@ -1,212 +1,232 @@
-﻿@model IEnumerable<AlarganShipping.Models.Shipment>
+﻿<!-- مسار الملف في المشروع: Views/Shipments/Index.cshtml -->
+@model IEnumerable<AlarganShipping.Models.Shipment>
 @{
-    ViewData["Title"] = "إدارة الشحنات";
+    ViewData["Title"] = Localizer["إدارة الشحنات والحاويات"];
 }
 
 <style>
-    /* Premium Pure CSS for Shipments Grid */
     .page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         background-color: #ffffff;
-        padding: 1.25rem 1.5rem;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px -1px rgba(43, 63, 86, 0.05);
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 5px 20px rgba(26, 38, 52, 0.03);
         margin-bottom: 2rem;
+        border: 1px solid #f1f5f9;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
     .page-title {
         font-size: 1.5rem;
-        font-weight: 800;
-        color: #2b3f56;
+        font-weight: 900;
+        color: var(--primary-navy);
         margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
+        .page-title i {
+            color: var(--primary-gold);
+        }
+
     .btn-add {
-        display: inline-block;
-        background: linear-gradient(to right, #be955b, #d4af7a);
+        background: linear-gradient(to right, var(--primary-gold), var(--secondary-gold));
         color: #ffffff;
-        font-weight: 700;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.75rem;
+        font-weight: 800;
+        padding: 0.85rem 1.75rem;
+        border-radius: 1rem;
         text-decoration: none;
         box-shadow: 0 4px 10px rgba(190, 149, 91, 0.3);
-        transition: all 0.3s ease;
-        border: none;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
         .btn-add:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(190, 149, 91, 0.4);
+            color: white;
         }
 
-    .shipments-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-
-    @@media (min-width: 1024px) {
-        .shipments-grid
-
-    {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    }
-
-    .shipment-card {
-        background-color: #ffffff;
-        border-radius: 1.25rem;
-        box-shadow: 0 10px 25px rgba(43, 63, 86, 0.05);
+    .data-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         border: 1px solid #f1f5f9;
-        overflow: hidden;
-        transition: transform 0.3s ease;
+        overflow-x: auto;
     }
 
-        .shipment-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(43, 63, 86, 0.1);
+    .table-enterprise {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+        .table-enterprise th {
+            background-color: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 800;
+            padding: 1.25rem 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            text-align: start;
+            white-space: nowrap;
         }
 
-    .shipment-header {
-        background: #2b3f56;
-        color: white;
-        padding: 1.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+        .table-enterprise td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-dark);
+            font-weight: 700;
+            vertical-align: middle;
+        }
 
-    .shipment-title {
-        font-size: 1.25rem;
+        .table-enterprise tbody tr:hover {
+            background-color: #f8fafc;
+            transition: 0.2s;
+        }
+
+    .container-number {
+        font-family: monospace;
+        font-size: 1.2rem;
         font-weight: 900;
-        margin: 0;
-        color: #be955b;
-        letter-spacing: 1px;
+        color: var(--primary-navy);
+        background: rgba(26,38,52,0.05);
+        padding: 0.4rem 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(26,38,52,0.1);
     }
 
-    .shipment-status {
-        background: rgba(255,255,255,0.1);
-        padding: 0.35rem 1rem;
-        border-radius: 50px;
-        font-size: 0.85rem;
-        font-weight: 700;
-    }
-
-    .shipment-body {
-        padding: 1.5rem;
-    }
-
-    .route-container {
+    .route-td {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 1.5rem;
-        background: #f8fafc;
-        padding: 1rem;
-        border-radius: 0.75rem;
-        border: 1px dashed #cbd5e1;
-    }
-
-    .port-info {
-        text-align: center;
-    }
-
-    .port-label {
-        color: #64748b;
-        font-size: 0.8rem;
-        font-weight: 700;
-        margin-bottom: 0.25rem;
-        display: block;
-    }
-
-    .port-name {
-        color: #2b3f56;
-        font-weight: 900;
-        font-size: 1.1rem;
+        gap: 10px;
+        font-weight: 800;
     }
 
     .route-arrow {
-        color: #be955b;
-        font-size: 1.5rem;
-        font-weight: 900;
+        color: var(--primary-gold);
+        font-size: 1.2rem;
     }
 
-    .info-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.5rem 0;
-        border-bottom: 1px solid #f1f5f9;
-        font-size: 0.95rem;
-    }
-
-        .info-row:last-child {
-            border-bottom: none;
-        }
-
-    .info-label {
-        color: #64748b;
-        font-weight: 700;
-    }
-
-    .info-value {
-        color: #1e293b;
+    .status-badge {
+        background: #f1f5f9;
+        color: var(--text-muted);
+        padding: 0.4rem 1.2rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
         font-weight: 800;
+        display: inline-block;
+        border: 1px solid #e2e8f0;
     }
+
+    .status-active {
+        background: rgba(190, 149, 91, 0.1);
+        color: #be955b;
+        border-color: rgba(190, 149, 91, 0.2);
+    }
+
+    .status-arrived {
+        background: rgba(34, 197, 94, 0.1);
+        color: #16a34a;
+        border-color: rgba(34, 197, 94, 0.2);
+    }
+
+    .action-btn {
+        color: var(--primary-navy);
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 0.6rem 1.2rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .action-btn:hover {
+            background: var(--primary-navy);
+            color: white;
+            border-color: var(--primary-navy);
+            box-shadow: 0 4px 10px rgba(26,38,52,0.2);
+        }
 </style>
 
 <div>
     <div class="page-header">
-        <h2 class="page-title">إدارة الحاويات والشحنات</h2>
-        <a href="@Url.Action("Create", "Shipments")" class="btn-add">إضافة شحنة جديدة</a>
+        <h2 class="page-title"><i class="fa-solid fa-ship"></i> @Localizer["إدارة الشحنات والحاويات"]</h2>
+        <a href="@Url.Action("Create", "Shipments")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة شحنة جديدة"]</a>
     </div>
 
-    <div class="shipments-grid">
-        @if (Model != null && Model.Any())
-        {
-            foreach (var shipment in Model)
-            {
-                <div class="shipment-card">
-                    <div class="shipment-header">
-                        <h3 class="shipment-title">@shipment.ContainerNumber</h3>
-                        <span class="shipment-status">@shipment.Status</span>
-                    </div>
-                    <div class="shipment-body">
-                        <div class="route-container">
-                            <div class="port-info">
-                                <span class="port-label">ميناء التحميل</span>
-                                <span class="port-name">@(shipment.LoadingPort?.Name ?? "غير محدد")</span>
-                            </div>
-                            <div class="route-arrow">&larr;</div>
-                            <div class="port-info">
-                                <span class="port-label">ميناء الوصول</span>
-                                <span class="port-name">@(shipment.DischargePort?.Name ?? "غير محدد")</span>
-                            </div>
-                        </div>
-
-                        <div class="info-row">
-                            <span class="info-label">خط الملاحة</span>
-                            <span class="info-value">@shipment.ShippingLine</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">رقم الحجز (Booking)</span>
-                            <span class="info-value">@shipment.BookingNumber</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">تاريخ الإبحار (ETD)</span>
-                            <span class="info-value">@(shipment.ExpectedTimeOfDeparture?.ToString("yyyy-MM-dd") ?? "-")</span>
-                        </div>
-                    </div>
-                </div>
-            }
-        }
-        else
-        {
-            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: white; border-radius: 1rem;">
-                <h3 style="color: #64748b; margin: 0;">لا توجد شحنات مسجلة حالياً.</h3>
-            </div>
-        }
+    <div class="data-card">
+        <table id="shipmentsDataTable" class="table-enterprise display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>@Localizer["رقم الحاوية"]</th>
+                    <th>@Localizer["خط الملاحة / الحجز"]</th>
+                    <th>@Localizer["مسار الشحنة"]</th>
+                    <th>@Localizer["تاريخ الإبحار"] (ETD)</th>
+                    <th>@Localizer["الحالة"]</th>
+                    <th>@Localizer["إجراءات"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var ship in Model)
+                    {
+                        <tr>
+                            <td><span class="container-number">@ship.ContainerNumber</span></td>
+                            <td>
+                                <div style="font-weight: 900; color: var(--primary-navy); font-size: 1.1rem;">@ship.ShippingLine</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem; font-family: monospace;">BKG: @ship.BookingNumber</div>
+                            </td>
+                            <td>
+                                <div class="route-td">
+                                    <span>@(ship.LoadingPort?.Name ?? "-")</span>
+                                    <i class="fa-solid fa-arrow-right-long route-arrow" style="transform: @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "scaleX(-1)" : "none");"></i>
+                                    <span>@(ship.DischargePort?.Name ?? "-")</span>
+                                </div>
+                            </td>
+                            <td style="font-weight: 800; color: var(--text-muted);">@(ship.ExpectedTimeOfDeparture?.ToString("dd MMM yyyy") ?? "-")</td>
+                            <td>
+                                @{
+                                    string badgeClass = ship.Status == "Arrived" || ship.Status == "Cleared" ? "status-arrived" : "status-active";
+                                }
+                                <span class="status-badge @badgeClass">@Localizer[ship.Status ?? "Pending"]</span>
+                            </td>
+                            <td>
+                                <a href="@Url.Action("Details", "Shipments", new { id = ship.Id })" class="action-btn">
+                                    <i class="fa-solid fa-box-open"></i> @Localizer["المحتويات"]
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var dir = $('html').attr('dir') === 'rtl';
+            $('#shipmentsDataTable').DataTable({
+                "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" },
+                "pageLength": 10,
+                "ordering": true,
+                "responsive": true,
+                "dom": '<"top"f>rt<"bottom"lp><"clear">'
+            });
+        });
+    </script>
+}

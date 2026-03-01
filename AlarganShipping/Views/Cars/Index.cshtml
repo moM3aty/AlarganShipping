@@ -1,157 +1,645 @@
-﻿@model IEnumerable<AlarganShipping.Models.Car>
+﻿<!-- مسار الملف في المشروع: Views/Cars/Index.cshtml -->
+@model IEnumerable<AlarganShipping.Models.Car>
 @{
-    ViewData["Title"] = "إدارة السيارات والمخزون";
+    ViewData["Title"] = Localizer["إدارة السيارات والمخزون"];
+
+    // حقن بيانات أولية (Dummy Data) في حال كانت قاعدة البيانات فارغة لرؤية الشكل النهائي
+    var displayCars = Model != null && Model.Any() ? Model.ToList() : new List<AlarganShipping.Models.Car>
+    {
+        new AlarganShipping.Models.Car {
+            Id = 1, Make = "Toyota", Model = "Camry SE", Year = 2022, Color = "Silver",
+            VIN = "1N4AL3AP1N...", InternalCode = "AUTO-2024-001", StatusId = 3, PurchasePrice = 17150,
+            Customer = new AlarganShipping.Models.Customer { Name = "Ahmed Al-Said", TotalPaid = 12000, TotalBalance = 5050 }
+        },
+        new AlarganShipping.Models.Car {
+            Id = 2, Make = "BMW", Model = "X5 xDrive40i", Year = 2021, Color = "White",
+            VIN = "5UXWX7C5XB...", InternalCode = "AUTO-2024-002", StatusId = 4, PurchasePrice = 23980,
+            Customer = new AlarganShipping.Models.Customer { Name = "Mazin Al-Balushi", TotalPaid = 23900, TotalBalance = 0 }
+        },
+        new AlarganShipping.Models.Car {
+            Id = 3, Make = "Lexus", Model = "RX 350", Year = 2023, Color = "Black",
+            VIN = "2T2HZMAAXP...", InternalCode = "AUTO-2024-003", StatusId = 1, PurchasePrice = 45000,
+            Customer = new AlarganShipping.Models.Customer { Name = "Khalid Al-Oufi", TotalPaid = 20000, TotalBalance = 25000 }
+        }
+    };
 }
 
 <style>
-    /* Premium Car Grid Pure CSS */
-    .cars-premium-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 3rem;
-        padding-top: 2rem;
-    }
-
-    .car-premium-card {
-        background: white;
-        border-radius: 2.5rem;
-        overflow: hidden;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.03);
-        border: 1px solid #f1f5f9;
-        display: flex;
-        flex-direction: column;
-        transition: 0.3s;
-    }
-
-    .car-img-wrapper {
-        height: 280px;
-        position: relative;
-        background: #f1f5f9;
-    }
-
-    .car-code-tag {
-        position: absolute;
-        top: 1.5rem;
-        left: 1.5rem;
-        background: white;
-        padding: 0.35rem 1rem;
-        border-radius: 8px;
-        font-weight: 800;
-        font-size: 0.75rem;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .car-body-main {
-        padding: 2.5rem;
-    }
-
-    .visual-stepper-box {
-        background: #f8fafc;
-        border-radius: 1.5rem;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        position: relative;
-    }
-
-    .stepper-progress-line {
-        position: absolute;
-        top: 50%;
-        left: 1.5rem;
-        right: 1.5rem;
-        height: 8px;
-        background: #e2e8f0;
-        border-radius: 10px;
-        transform: translateY(-50%);
-        z-index: 1;
-    }
-
-    .stepper-fill {
-        height: 100%;
-        background: #3b82f6;
-        border-radius: 10px;
-    }
-
-    .stepper-icons {
+    /* --- التنسيقات المشتركة --- */
+    .page-header-container {
         display: flex;
         justify-content: space-between;
-        position: relative;
-        z-index: 2;
+        align-items: center;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 5px 20px rgba(26, 38, 52, 0.03);
+        border: 1px solid #f1f5f9;
+        margin-bottom: 2rem;
     }
 
-    .step-icon-circle {
-        width: 45px;
-        height: 45px;
-        background: white;
-        border-radius: 50%;
+    .page-header-text h2 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: #1a2634;
+        margin: 0;
         display: flex;
         align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        gap: 10px;
+    }
+
+        .page-header-text h2 i {
+            color: #2563eb;
+        }
+
+    .page-header-text p {
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin: 0;
+        margin-top: 5px;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .btn-add {
+        background: #2563eb;
+        color: #ffffff;
+        font-weight: 800;
+        padding: 0.85rem 1.75rem;
+        border-radius: 1rem;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+            color: white;
+            background: #1d4ed8;
+        }
+
+    /* --- أزرار التبديل (Toggle System) --- */
+    .view-toggle-wrapper {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        display: inline-flex;
+        padding: 5px;
+        gap: 5px;
+    }
+
+    .view-toggle-btn {
+        background: transparent;
+        border: none;
         color: #94a3b8;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
         font-size: 1.1rem;
     }
 
-        .step-icon-circle.active {
-            background: #3b82f6;
+        .view-toggle-btn:hover {
+            color: #1a2634;
+        }
+
+        .view-toggle-btn.active {
+            background: white;
+            color: #2563eb;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+    /* --- تنسيق عرض البطاقات (Grid View) --- */
+    .cars-grid-modern {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 2rem;
+    }
+
+    .car-card-pro {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+        border: 1px solid #f1f5f9;
+        overflow: hidden;
+        position: relative;
+        transition: 0.3s;
+    }
+
+        .car-card-pro:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(26, 38, 52, 0.08);
+            border-color: #2563eb;
+        }
+
+    .car-image-area {
+        height: 220px;
+        background: linear-gradient(135deg, #1a2634 0%, #2b3f56 100%);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-size: cover;
+        background-position: center;
+    }
+
+        .car-image-area::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 40%, rgba(15,23,42,0.8) 100%);
+        }
+
+    .car-badge-code {
+        position: absolute;
+        top: 1.5rem;
+        inset-inline-start: 1.5rem;
+        background: white;
+        padding: 0.4rem 1rem;
+        border-radius: 12px;
+        font-weight: 900;
+        font-size: 0.8rem;
+        color: #1a2634;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        z-index: 2;
+        border: 1px solid #e2e8f0;
+    }
+
+    .car-action-floating {
+        position: absolute;
+        bottom: -25px;
+        inset-inline-end: 2rem;
+        width: 60px;
+        height: 60px;
+        background: #2563eb;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        z-index: 2;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .car-action-floating:hover {
+            background: #1d4ed8;
+            transform: scale(1.05);
             color: white;
         }
 
-    .fin-summary-row {
+    .car-details-area {
+        padding: 3.5rem 2rem 2rem 2rem;
+        text-align: center;
+    }
+
+    .status-pill {
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 0.3rem 1rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        border: 1px solid #bfdbfe;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+
+    .car-title-pro {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: #1a2634;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .car-owner-pro {
+        color: #2563eb;
+        font-weight: 800;
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+    }
+
+        .car-owner-pro span {
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+    /* Stepper Styling */
+    .stepper-container {
+        background: #f8fafc;
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        border: 1px solid #f1f5f9;
+    }
+
+    .stepper-header {
         display: flex;
         justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: #64748b;
+    }
+
+        .stepper-header .percentage {
+            color: #2563eb;
+            font-size: 1.2rem;
+            font-weight: 900;
+        }
+
+    .stepper-track-wrapper {
+        position: relative;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 10px;
+    }
+
+    .stepper-line-bg {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: #e2e8f0;
+        transform: translateY(-50%);
+        border-radius: 10px;
+        z-index: 1;
+    }
+
+    .stepper-line-fill {
+        position: absolute;
+        top: 50%;
+        height: 6px;
+        background: #2563eb;
+        transform: translateY(-50%);
+        border-radius: 10px;
+        z-index: 2;
+        transition: width 1s ease;
+    }
+
+    .step-node {
+        width: 30px;
+        height: 30px;
+        background: white;
+        border: 3px solid #e2e8f0;
+        border-radius: 50%;
+        position: relative;
+        z-index: 3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #cbd5e1;
+        font-size: 0.75rem;
+    }
+
+        .step-node.active {
+            border-color: #2563eb;
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 0 0 4px #eff6ff;
+        }
+
+    .vin-display {
+        background: #f1f5f9;
+        color: #64748b;
+        font-family: monospace;
+        font-size: 0.9rem;
+        font-weight: 800;
+        padding: 0.8rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+    }
+
+    .fin-summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        text-align: right;
+    }
+
+    .fin-box {
+        background: white;
+        padding: 1rem;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+    }
+
+        .fin-box label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        .fin-box .value {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: #1a2634;
+        }
+
+            .fin-box .value span {
+                font-size: 0.8rem;
+                color: #64748b;
+            }
+
+    .val-green {
+        color: #16a34a !important;
+    }
+
+    .val-red {
+        color: #ef4444 !important;
+    }
+
+    /* --- تنسيق عرض الجدول (List View) --- */
+    .data-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+        display: none; /* مخفي افتراضياً */
+    }
+
+    .table-enterprise {
+        width: 100%;
+        border-collapse: collapse;
         margin-top: 1rem;
     }
 
-    .fin-group label {
-        display: block;
-        color: #94a3b8;
-        font-size: 0.75rem;
-        font-weight: 800;
-        margin-bottom: 0.5rem;
+        .table-enterprise th {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-weight: 800;
+            padding: 1.25rem 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            text-align: start;
+            white-space: nowrap;
+        }
+
+        .table-enterprise td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+            font-weight: 700;
+            vertical-align: middle;
+        }
+
+        .table-enterprise tbody tr:hover {
+            background-color: #f8fafc;
+            transition: 0.2s;
+        }
+
+    .car-info-td {
+        display: flex;
+        align-items: center;
+        gap: 15px;
     }
 
-    .fin-group div {
-        font-size: 1.25rem;
-        font-weight: 900;
-        color: #1a2634;
+    .car-icon-box {
+        width: 45px;
+        height: 45px;
+        background: rgba(37,99,235,0.1);
+        color: #2563eb;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
     }
+
+    .status-badge {
+        background: #f1f5f9;
+        color: #64748b;
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        display: inline-block;
+        border: 1px solid #e2e8f0;
+    }
+
+    .status-1 {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+        border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    .status-3 {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+        border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .status-4 {
+        background: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+        border-color: rgba(34, 197, 94, 0.2);
+    }
+
+    .action-btn {
+        color: #1a2634;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+        .action-btn:hover {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
 </style>
 
-<div class="cars-premium-grid" dir="rtl">
-    @foreach (var car in Model)
-    {
-        <div class="car-premium-card">
-            <div class="car-img-wrapper">
-                <div class="car-code-tag">@car.InternalCode</div>
-                <div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:4rem;">🚗</div>
-            </div>
-
-            <div class="car-body-main">
-                <h3 style="font-size:1.75rem;font-weight:900;margin-bottom:0.5rem;">@car.Make @car.Model</h3>
-                <p style="color:#3b82f6;font-weight:800;margin-bottom:2rem;">👤 @car.Customer?.Name</p>
-
-                <div class="visual-stepper-box">
-                    <div class="stepper-progress-line"><div class="stepper-fill" style="width: 63%;"></div></div>
-                    <div class="stepper-icons">
-                        <div class="step-icon-circle active">🔨</div>
-                        <div class="step-icon-circle active">🚚</div>
-                        <div class="step-icon-circle active">⛴️</div>
-                        <div class="step-icon-circle">🏢</div>
-                        <div class="step-icon-circle">🏠</div>
-                    </div>
-                </div>
-
-                <div class="fin-summary-row">
-                    <div class="fin-group">
-                        <label>التكلفة</label>
-                        <div>@car.PurchasePrice ر.ع</div>
-                    </div>
-                    <div class="fin-group" style="text-align: left;">
-                        <label>المتبقي</label>
-                        <div style="color:#ef4444;">@car.Customer?.TotalBalance ر.ع</div>
-                    </div>
-                </div>
-            </div>
+<div>
+    <div class="page-header-container">
+        <div class="page-header-text">
+            <h2><i class="fa-solid fa-car-side"></i> @Localizer["إدارة السيارات والمخزون"]</h2>
+            <p>• @Localizer["نظام الإدارة اللوجستية الذكي"]</p>
         </div>
-    }
+        <div class="header-actions">
+            <div class="view-toggle-wrapper">
+                <button class="view-toggle-btn active" id="btnGridView" onclick="switchView('grid')" title="@Localizer["عرض البطاقات"]">
+                    <i class="fa-solid fa-border-all"></i>
+                </button>
+                <button class="view-toggle-btn" id="btnListView" onclick="switchView('list')" title="@Localizer["عرض الجدول"]">
+                    <i class="fa-solid fa-list-ul"></i>
+                </button>
+            </div>
+
+            <a href="@Url.Action("Create", "Cars")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة سيارة"]</a>
+        </div>
+    </div>
+
+    <!-- 1. عرض البطاقات (Grid View) -->
+    <div id="carsGridView" class="cars-grid-modern">
+        @foreach (var car in displayCars)
+        {
+            // صور افتراضية تتغير حسب الماركة لتبدو واقعية
+            string bgImage = car.Make == "Toyota" ? "https://images.unsplash.com/photo-1629897048514-3dd74142fffc?auto=format&fit=crop&w=800&q=80" :
+            car.Make == "BMW" ? "https://images.unsplash.com/photo-1555353540-64fd1b6b4c0b?auto=format&fit=crop&w=800&q=80" :
+            "https://images.unsplash.com/photo-1502877338535-349c6722c608?auto=format&fit=crop&w=800&q=80";
+
+            string statusLabel = car.StatusId == 1 ? "تم الشراء" : car.StatusId == 3 ? "الشحن البحري" : car.StatusId >= 4 ? "وصلت عمان" : "في الطريق";
+
+            <div class="car-card-pro">
+                <div class="car-image-area" style="background-image: url('@bgImage');">
+                    <div class="car-badge-code">@car.InternalCode</div>
+                    <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="car-action-floating">
+                        <i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i>
+                    </a>
+                </div>
+
+                <div class="car-details-area">
+                    <div class="status-pill">@Localizer[statusLabel]</div>
+                    <h3 class="car-title-pro">@car.Make @car.Model</h3>
+                    <div class="car-owner-pro"><i class="fa-solid fa-user-tie"></i> @(car.Customer?.Name?.ToUpper() ?? Localizer["غير محدد"].Value) <span>• @car.Year</span></div>
+
+                    @{
+                        int status = car.StatusId;
+                        string fillWidth = status == 1 ? "25%" : status == 2 ? "50%" : status == 3 ? "75%" : status >= 4 ? "100%" : "0%";
+                    }
+                    <div class="stepper-container">
+                        <div class="stepper-header">
+                            <span><i class="fa-solid fa-route"></i> @Localizer["مسار الشحن والخدمات اللوجستية"]</span>
+                            <span class="percentage">@fillWidth</span>
+                        </div>
+                        <div class="stepper-track-wrapper">
+                            <div class="stepper-line-bg"></div>
+                            <div class="stepper-line-fill" style="width: @fillWidth; @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "right: 0; left: auto;" : "left: 0; right: auto;")"></div>
+                            <div class="step-node @(status >= 1 ? "active" : "")"><i class="fa-solid fa-gavel"></i></div>
+                            <div class="step-node @(status >= 2 ? "active" : "")"><i class="fa-solid fa-warehouse"></i></div>
+                            <div class="step-node @(status >= 3 ? "active" : "")"><i class="fa-solid fa-ship"></i></div>
+                            <div class="step-node @(status >= 4 ? "active" : "")"><i class="fa-solid fa-anchor"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="vin-display">
+                        ...VIN: @(car.VIN.Length > 10 ? car.VIN.Substring(0, 10) : car.VIN)
+                    </div>
+
+                    <div class="fin-summary-grid">
+                        <div class="fin-box">
+                            <label>@Localizer["المدفوع"]</label>
+                            <div class="value val-green">@(car.Customer?.TotalPaid ?? 0) <span>ر.ع</span></div>
+                        </div>
+                        <div class="fin-box">
+                            <label>@Localizer["المتبقي"]</label>
+                            <div class="value val-red">@(car.Customer?.TotalBalance ?? 0) <span>ر.ع</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- 2. عرض الجدول (List View - DataTables) -->
+    <div id="carsTableView" class="data-card">
+        <table id="carsDataTable" class="table-enterprise display">
+            <thead>
+                <tr>
+                    <th>@Localizer["السيارة"]</th>
+                    <th>@Localizer["رقم الشاصي (VIN)"]</th>
+                    <th>@Localizer["اسم العميل"]</th>
+                    <th>@Localizer["سعر الشراء"]</th>
+                    <th>@Localizer["الحالة"]</th>
+                    <th>@Localizer["إجراءات"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var car in displayCars)
+                {
+                    <tr>
+                        <td>
+                            <div class="car-info-td">
+                                <div class="car-icon-box"><i class="fa-solid fa-car"></i></div>
+                                <div>
+                                    <div style="font-weight: 900; color: #1a2634; font-size: 1.1rem;">@car.Make @car.Model</div>
+                                    <div style="color: #64748b; font-size: 0.85rem;">@car.Year - @car.Color</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-family: monospace; color: #64748b; font-size: 1.1rem;">@car.VIN</td>
+                        <td><i class="fa-solid fa-user-tie" style="color: #cbd5e1; margin-inline-end: 5px;"></i> @(car.Customer?.Name ?? Localizer["غير محدد"].Value)</td>
+                        <td style="font-family: monospace; font-size: 1.1rem; color: #16a34a;">$@car.PurchasePrice</td>
+                        <td>
+                            @{
+                                string badgeClass = car.StatusId == 1 ? "status-1" : car.StatusId == 3 ? "status-3" : car.StatusId >= 4 ? "status-4" : "";
+                                string statusText = car.StatusId == 1 ? "تم الشراء" : car.StatusId == 3 ? "الشحن البحري" : car.StatusId >= 4 ? "واصلة الميناء" : "قيد الشحن";
+                            }
+                            <span class="status-badge @badgeClass">@Localizer[statusText]</span>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="action-btn">
+                                <i class="fa-regular fa-eye"></i> @Localizer["التفاصيل"]
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        function switchView(viewType) {
+            if (viewType === 'list') {
+                $('#carsGridView').hide();
+                $('#carsTableView').fadeIn(300);
+                $('#btnListView').addClass('active');
+                $('#btnGridView').removeClass('active');
+                localStorage.setItem('preferredCarView', 'list');
+
+                if ($.fn.DataTable.isDataTable('#carsDataTable')) {
+                    $('#carsDataTable').DataTable().columns.adjust().responsive.recalc();
+                }
+            } else {
+                $('#carsTableView').hide();
+                $('#carsGridView').fadeIn(300);
+                $('#btnGridView').addClass('active');
+                $('#btnListView').removeClass('active');
+                localStorage.setItem('preferredCarView', 'grid');
+            }
+        }
+
+        $(document).ready(function () {
+            var dir = $('html').attr('dir') === 'rtl';
+            var table = $('#carsDataTable').DataTable({
+                "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" },
+                "pageLength": 10,
+                "ordering": true,
+                "responsive": true,
+                "dom": '<"top"f>rt<"bottom"lp><"clear">'
+            });
+
+            var savedView = localStorage.getItem('preferredCarView') || 'grid';
+            switchView(savedView);
+        });
+    </script>
+}

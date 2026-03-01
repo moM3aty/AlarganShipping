@@ -1,10 +1,10 @@
-﻿@model AlarganShipping.Models.CarInspection
+﻿<!-- مسار الملف في المشروع: Views/CarInspections/Create.cshtml -->
+@model AlarganShipping.Models.CarInspection
 @{
-    ViewData["Title"] = "إضافة تقرير فحص سيارة";
+    ViewData["Title"] = Localizer["إضافة تقرير فحص سيارة"];
 }
 
 <style>
-    /* Premium Pure CSS specific to Car Inspections */
     .form-page-header {
         display: flex;
         justify-content: space-between;
@@ -15,31 +15,32 @@
     .form-page-title {
         font-size: 1.75rem;
         font-weight: 800;
-        color: #2b3f56;
+        color: var(--primary-navy);
         margin: 0;
     }
 
     .btn-back {
-        background-color: #f1f5f9;
-        color: #475569;
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        color: var(--text-muted);
         padding: 0.75rem 1.5rem;
         border-radius: 0.75rem;
         font-weight: 700;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: 0.3s;
     }
 
         .btn-back:hover {
-            background-color: #e2e8f0;
-            color: #1e293b;
+            background-color: #f8fafc;
+            color: var(--primary-navy);
         }
 
     .premium-form-card {
         background-color: #ffffff;
-        border-radius: 1.25rem;
-        box-shadow: 0 10px 30px rgba(43, 63, 86, 0.05);
-        border: 1px solid #f8fafc;
-        padding: 2.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+        padding: 3rem;
         position: relative;
         overflow: hidden;
     }
@@ -49,9 +50,9 @@
             position: absolute;
             top: 0;
             right: 0;
-            width: 100%;
+            left: 0;
             height: 6px;
-            background: linear-gradient(to left, #eab308, #facc15);
+            background: linear-gradient(to right, var(--primary-navy), var(--primary-gold));
         }
 
     .form-grid {
@@ -59,13 +60,11 @@
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
+
     @@media (min-width: 768px) {
-        .form-grid
-
-    {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 
     .form-group {
@@ -78,63 +77,98 @@
     }
 
     .form-label {
-        font-weight: 700;
-        color: #2b3f56;
+        font-weight: 800;
+        color: var(--primary-navy);
         margin-bottom: 0.5rem;
         font-size: 0.95rem;
     }
 
     .form-control {
-        padding: 0.85rem 1.25rem;
+        padding: 1rem 1.25rem;
         border: 2px solid #e2e8f0;
         border-radius: 0.75rem;
-        font-family: 'Cairo', sans-serif;
+        font-family: inherit;
         font-size: 1rem;
-        color: #1e293b;
+        color: var(--text-dark);
         background-color: #f8fafc;
-        transition: all 0.3s ease;
+        transition: 0.3s;
         outline: none;
     }
 
         .form-control:focus {
-            border-color: #eab308;
+            border-color: var(--primary-gold);
             background-color: #ffffff;
-            box-shadow: 0 0 0 4px rgba(234, 179, 8, 0.1);
+            box-shadow: 0 0 0 4px rgba(195, 154, 92, 0.1);
         }
+
+    /* Select2 Styling */
+    .select2-container--default .select2-selection--single {
+        background-color: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        transition: 0.3s;
+    }
+
+        .select2-container--default .select2-selection--single:focus, .select2-container--focus .select2-selection--single {
+            border-color: var(--primary-gold);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(195, 154, 92, 0.1);
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--text-dark);
+            font-weight: 600;
+            padding-left: 1.25rem;
+            padding-right: 1.25rem;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 48px;
+            right: 10px;
+        }
+
+    html[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
+        left: 10px;
+        right: auto;
+    }
 
     /* Checkbox Styling */
     .checkbox-container {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        padding: 1rem;
+        gap: 1rem;
+        padding: 1.25rem;
         background: #f8fafc;
-        border: 1px solid #e2e8f0;
+        border: 2px solid #e2e8f0;
         border-radius: 0.75rem;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: 0.2s;
     }
 
         .checkbox-container:hover {
-            border-color: #eab308;
+            border-color: var(--primary-gold);
+            background: white;
         }
 
     .checkbox-input {
-        width: 1.25rem;
-        height: 1.25rem;
-        accent-color: #eab308;
+        width: 1.5rem;
+        height: 1.5rem;
+        accent-color: var(--primary-gold);
         cursor: pointer;
     }
 
     .checkbox-label {
-        font-weight: 700;
-        color: #1e293b;
+        font-weight: 800;
+        color: var(--text-dark);
         cursor: pointer;
         margin: 0;
     }
 
     .form-actions {
-        margin-top: 2.5rem;
+        margin-top: 3rem;
         padding-top: 1.5rem;
         border-top: 1px solid #f1f5f9;
         display: flex;
@@ -142,92 +176,155 @@
     }
 
     .btn-submit {
-        background: linear-gradient(to right, #eab308, #facc15);
+        background: var(--primary-navy);
         color: #ffffff;
         border: none;
-        padding: 0.85rem 2.5rem;
-        border-radius: 0.75rem;
+        padding: 1rem 3rem;
+        border-radius: 1rem;
         font-weight: 800;
         font-size: 1.1rem;
         cursor: pointer;
-        font-family: 'Cairo', sans-serif;
-        box-shadow: 0 4px 15px rgba(234, 179, 8, 0.3);
-        transition: all 0.3s ease;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(26, 42, 58, 0.3);
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
     }
 
         .btn-submit:hover {
+            background: var(--secondary-navy);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(234, 179, 8, 0.4);
+            box-shadow: 0 8px 20px rgba(26, 42, 58, 0.4);
         }
 
     .text-danger {
-        color: #dc2626;
+        color: #ef4444;
         font-size: 0.85rem;
-        font-weight: 600;
-        margin-top: 0.25rem;
+        font-weight: 700;
+        margin-top: 0.4rem;
     }
 </style>
 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
 <div>
     <div class="form-page-header">
-        <h2 class="form-page-title">إضافة تقرير فحص وحالة سيارة</h2>
-        <a href="@Url.Action("Index", "Cars")" class="btn-back">العودة للسيارات</a>
+        <h2 class="form-page-title"><i class="fa-solid fa-clipboard-check" style="color: var(--primary-gold); margin-inline-end: 10px;"></i> @Localizer["إضافة تقرير فحص وحالة سيارة"]</h2>
+        <a href="javascript:history.back()" class="btn-back">@Localizer["إلغاء والعودة"]</a>
     </div>
 
     <div class="premium-form-card">
-        <form asp-action="Create" method="post">
+        <form asp-action="Create" method="post" id="inspectionForm">
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-grid">
                 <div class="form-group form-group-full">
-                    <label asp-for="CarId" class="form-label">السيارة المراد فحصها</label>
-                    <select asp-for="CarId" class="form-control" asp-items="ViewBag.CarId"></select>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="InspectionStage" class="form-label">مرحلة الفحص</label>
-                    <select asp-for="InspectionStage" class="form-control">
-                        <option value="عند المزاد">عند الشراء من المزاد</option>
-                        <option value="في المستودع">عند الوصول للمستودع (أمريكا)</option>
-                        <option value="عند الوصول">عند الوصول للميناء (الوجهة)</option>
+                    <label asp-for="CarId" class="form-label">@Localizer["السيارة المراد فحصها"]</label>
+                    <select asp-for="CarId" class="form-control select2-search" asp-items="ViewBag.CarId" required>
+                        <option value="">-- @Localizer["ابحث برقم الشاصي أو العميل"] --</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="InspectorName" class="form-label">اسم الفاحص / السائق</label>
-                    <input asp-for="InspectorName" class="form-control" placeholder="اسم الموظف الذي قام بالفحص" />
+                    <label asp-for="InspectionStage" class="form-label">@Localizer["مرحلة الفحص"]</label>
+                    <select asp-for="InspectionStage" class="form-control" required>
+                        <option value="AtAuction">@Localizer["عند الشراء من المزاد"]</option>
+                        <option value="AtWarehouse">@Localizer["عند الوصول للمستودع (أمريكا)"]</option>
+                        <option value="AtArrival">@Localizer["عند الوصول للميناء (الوجهة)"]</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="InspectorName" class="form-label">@Localizer["اسم الفاحص / السائق"]</label>
+                    <input asp-for="InspectorName" class="form-control" placeholder="@Localizer["اسم الموظف الذي قام بالفحص"]" required />
                 </div>
 
                 <div class="form-group">
                     <label class="checkbox-container">
                         <input asp-for="HasKeys" type="checkbox" class="checkbox-input" />
-                        <span class="checkbox-label">هل يوجد مفتاح للسيارة؟</span>
+                        <span class="checkbox-label">@Localizer["هل يوجد مفتاح للسيارة؟"]</span>
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label class="checkbox-container">
                         <input asp-for="HasTitle" type="checkbox" class="checkbox-input" />
-                        <span class="checkbox-label">هل الملكية (Title) موجودة؟</span>
+                        <span class="checkbox-label">@Localizer["هل الملكية (Title) موجودة؟"]</span>
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label class="checkbox-container">
                         <input asp-for="IsRunAndDrive" type="checkbox" class="checkbox-input" />
-                        <span class="checkbox-label">حالة التشغيل (Run & Drive) سليمة؟</span>
+                        <span class="checkbox-label">@Localizer["حالة التشغيل (Run & Drive) سليمة؟"]</span>
                     </label>
                 </div>
 
                 <div class="form-group form-group-full">
-                    <label asp-for="DamageNotes" class="form-label">تفاصيل الأضرار والملاحظات (إن وجدت)</label>
-                    <textarea asp-for="DamageNotes" class="form-control" rows="3" placeholder="سجل أي خدوش، أجزاء مفقودة، أو زجاج مكسور لحفظ حقوق الشركة..."></textarea>
+                    <label asp-for="DamageNotes" class="form-label">@Localizer["تفاصيل الأضرار والملاحظات (إن وجدت)"]</label>
+                    <textarea asp-for="DamageNotes" class="form-control" rows="4" placeholder="@Localizer["سجل أي خدوش، أجزاء مفقودة، أو زجاج مكسور لحفظ حقوق الشركة..."]"></textarea>
                 </div>
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn-submit">حفظ التقرير</button>
+                <button type="submit" class="btn-submit" id="btnSubmit">
+                    <i class="fa-solid fa-save"></i> @Localizer["حفظ التقرير"]
+                </button>
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var dir = $('html').attr('dir');
+            $('.select2-search').select2({ dir: dir, width: '100%' });
+
+            $('#inspectionForm').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
+
+                var btn = $('#btnSubmit');
+                var originalText = btn.html();
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Localizer["جاري الحفظ..."]').prop('disabled', true);
+
+                $.ajax({
+                    url: form.attr('action'), type: form.attr('method'), data: form.serialize(),
+                    success: function () {
+                        Swal.fire({
+                            title: '@Localizer["تم حفظ التقرير بنجاح!"]',
+                            icon: 'success',
+                            confirmButtonColor: 'var(--primary-gold)',
+                            confirmButtonText: '@Localizer["العودة لتفاصيل السيارة"]',
+                            showCancelButton: true,
+                            cancelButtonText: '@Localizer["إضافة تقرير آخر"]',
+                            cancelButtonColor: 'var(--primary-navy)'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                var carId = $('#CarId').val();
+                                window.location.href = '@Url.Action("Details", "Cars")/' + carId;
+                            } else {
+                                form[0].reset();
+                                $('.select2-search').val(null).trigger('change');
+                                btn.html(originalText).prop('disabled', false);
+                            }
+                        });
+                    },
+                    error: function () {
+                        Swal.fire({ title: '@Localizer["خطأ!"]', text: '@Localizer["حدث خطأ أثناء الحفظ."]', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                        btn.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+}
