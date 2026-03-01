@@ -1,0 +1,123 @@
+﻿@{
+    ViewData["Title"] = "اتصل بنا";
+}
+
+<style>
+    /* Premium Contact Us Pure CSS */
+    .contact-hero {
+        text-align: center;
+        margin-bottom: 4rem;
+        padding-top: 2rem;
+    }
+
+        .contact-hero h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #1a2634;
+            margin-bottom: 1rem;
+        }
+
+        .contact-hero p {
+            color: #64748b;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+            font-weight: 600;
+        }
+
+    .dept-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-bottom: 5rem;
+    }
+
+    .dept-card {
+        background: white;
+        border-radius: 2rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.02);
+        border: 1px solid #f1f5f9;
+    }
+
+    .dept-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        display: block;
+        color: #3b82f6;
+    }
+
+    .dept-card h3 {
+        font-size: 1.75rem;
+        font-weight: 900;
+        color: #1a2634;
+        margin-bottom: 1rem;
+    }
+
+    .contact-info-row {
+        background: #f8fafc;
+        border-radius: 1.25rem;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .contact-label {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-align: right;
+    }
+
+    .contact-value {
+        color: #1a2634;
+        font-size: 1.1rem;
+        font-weight: 900;
+        font-family: monospace;
+    }
+
+    .branch-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+
+    .branch-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 2.25rem;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        border: 1px solid #f1f5f9;
+    }
+</style>
+
+<div class="contact-hero">
+    <p style="font-weight: 800; color: #3b82f6;">دعم فني متواصل</p>
+    <h2>تواصل مع خبراء الأرجان</h2>
+    <p>نحن هنا لخدمتك. يمكنك التواصل مباشرة مع القسم المختص أو زيارة أحد فروعنا.</p>
+</div>
+
+<div class="dept-grid">
+    <div class="dept-card">
+        <span class="dept-icon">🔨</span>
+        <h3>قسم المزادات</h3>
+        <div class="contact-info-row">
+            <div style="display:flex;gap:5px;"><div style="padding:5px;border:1px solid #eee;border-radius:5px;">📞</div></div>
+            <div style="text-align: left;">
+                <span class="contact-label">دعم المزادات</span>
+                <div class="contact-value">96505777</div>
+            </div>
+        </div>
+    </div>
+    <!-- أضف باقي الأقسام بنفس التنسيق -->
+</div>
+
+<div class="branch-grid">
+    <div class="branch-card"><h3 style="font-weight:900;">صلالة</h3><p style="color:#94a3b8;">المركز الرئيسي</p></div>
+    <div class="branch-card"><h3 style="font-weight:900;">نزوى</h3><p style="color:#94a3b8;">فرع نزوى</p></div>
+    <div class="branch-card"><h3 style="font-weight:900;">مسقط</h3><p style="color:#94a3b8;">المعبيلة</p></div>
+</div>

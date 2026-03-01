@@ -1,0 +1,157 @@
+﻿@model IEnumerable<AlarganShipping.Models.Car>
+@{
+    ViewData["Title"] = "إدارة السيارات والمخزون";
+}
+
+<style>
+    /* Premium Car Grid Pure CSS */
+    .cars-premium-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 3rem;
+        padding-top: 2rem;
+    }
+
+    .car-premium-card {
+        background: white;
+        border-radius: 2.5rem;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+        display: flex;
+        flex-direction: column;
+        transition: 0.3s;
+    }
+
+    .car-img-wrapper {
+        height: 280px;
+        position: relative;
+        background: #f1f5f9;
+    }
+
+    .car-code-tag {
+        position: absolute;
+        top: 1.5rem;
+        left: 1.5rem;
+        background: white;
+        padding: 0.35rem 1rem;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.75rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .car-body-main {
+        padding: 2.5rem;
+    }
+
+    .visual-stepper-box {
+        background: #f8fafc;
+        border-radius: 1.5rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .stepper-progress-line {
+        position: absolute;
+        top: 50%;
+        left: 1.5rem;
+        right: 1.5rem;
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 10px;
+        transform: translateY(-50%);
+        z-index: 1;
+    }
+
+    .stepper-fill {
+        height: 100%;
+        background: #3b82f6;
+        border-radius: 10px;
+    }
+
+    .stepper-icons {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        z-index: 2;
+    }
+
+    .step-icon-circle {
+        width: 45px;
+        height: 45px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        color: #94a3b8;
+        font-size: 1.1rem;
+    }
+
+        .step-icon-circle.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+    .fin-summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1rem;
+    }
+
+    .fin-group label {
+        display: block;
+        color: #94a3b8;
+        font-size: 0.75rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .fin-group div {
+        font-size: 1.25rem;
+        font-weight: 900;
+        color: #1a2634;
+    }
+</style>
+
+<div class="cars-premium-grid" dir="rtl">
+    @foreach (var car in Model)
+    {
+        <div class="car-premium-card">
+            <div class="car-img-wrapper">
+                <div class="car-code-tag">@car.InternalCode</div>
+                <div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:4rem;">🚗</div>
+            </div>
+
+            <div class="car-body-main">
+                <h3 style="font-size:1.75rem;font-weight:900;margin-bottom:0.5rem;">@car.Make @car.Model</h3>
+                <p style="color:#3b82f6;font-weight:800;margin-bottom:2rem;">👤 @car.Customer?.Name</p>
+
+                <div class="visual-stepper-box">
+                    <div class="stepper-progress-line"><div class="stepper-fill" style="width: 63%;"></div></div>
+                    <div class="stepper-icons">
+                        <div class="step-icon-circle active">🔨</div>
+                        <div class="step-icon-circle active">🚚</div>
+                        <div class="step-icon-circle active">⛴️</div>
+                        <div class="step-icon-circle">🏢</div>
+                        <div class="step-icon-circle">🏠</div>
+                    </div>
+                </div>
+
+                <div class="fin-summary-row">
+                    <div class="fin-group">
+                        <label>التكلفة</label>
+                        <div>@car.PurchasePrice ر.ع</div>
+                    </div>
+                    <div class="fin-group" style="text-align: left;">
+                        <label>المتبقي</label>
+                        <div style="color:#ef4444;">@car.Customer?.TotalBalance ر.ع</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

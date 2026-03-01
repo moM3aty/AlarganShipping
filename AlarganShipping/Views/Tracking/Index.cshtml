@@ -1,0 +1,151 @@
+﻿@{
+    ViewData["Title"] = "بوابة تتبع الشحنات";
+}
+
+<style>
+    /* Premium Tracking Portal Style */
+    .track-portal-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 1rem;
+        text-align: center;
+    }
+
+    .track-logo-box {
+        width: 120px;
+        height: 120px;
+        background: #3b82f6;
+        border-radius: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(59, 130, 246, 0.3);
+        color: white;
+        font-size: 3rem;
+    }
+
+    .track-portal-header h2 {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: #1a2634;
+        margin-bottom: 0.5rem;
+    }
+
+    .track-portal-header p {
+        color: #94a3b8;
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin-bottom: 3rem;
+    }
+
+    .track-toggle-wrapper {
+        background: white;
+        padding: 0.5rem;
+        border-radius: 1rem;
+        display: inline-flex;
+        gap: 0.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        margin-bottom: 3rem;
+        border: 1px solid #f1f5f9;
+    }
+
+    .toggle-btn {
+        padding: 0.75rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.3s;
+        border: none;
+        background: transparent;
+        color: #64748b;
+    }
+
+        .toggle-btn.active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+    .search-card {
+        background: white;
+        width: 100%;
+        max-width: 700px;
+        padding: 2.5rem;
+        border-radius: 2.5rem;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.04);
+        border: 1px solid #f1f5f9;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: #f8fafc;
+        border-radius: 1.5rem;
+        padding: 0.5rem;
+        border: 2px solid transparent;
+        transition: 0.3s;
+    }
+
+        .search-input-wrapper:focus-within {
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.05);
+        }
+
+        .search-input-wrapper input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            font-family: inherit;
+            outline: none;
+            text-align: center;
+            color: #1a2634;
+            font-weight: 700;
+        }
+
+    .btn-track-now {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 1.25rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .track-hint {
+        margin-top: 1.5rem;
+        color: #94a3b8;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+</style>
+
+<div class="track-portal-container">
+    <div class="track-logo-box">⚓</div>
+
+    <div class="track-portal-header">
+        <h2>بوابة تتبع الشحنات</h2>
+        <p>نظام الإدارة اللوجستية التقني</p>
+    </div>
+
+    <div class="track-toggle-wrapper">
+        <button class="toggle-btn">دخول العميل</button>
+        <button class="toggle-btn active">تتبع برقم الشاصي</button>
+    </div>
+
+    <div class="search-card">
+        <div class="search-input-wrapper">
+            <button class="btn-track-now">تتبع الآن</button>
+            <input type="text" placeholder="أدخل رقم الشاصي (VIN) المكون من 17 رمزاً..." />
+        </div>
+        <p class="track-hint">تتبع حالة سيارتك لحظة بلحظة من المزاد وحتى باب منزلك</p>
+    </div>
+</div>

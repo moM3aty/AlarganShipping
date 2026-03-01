@@ -1,0 +1,281 @@
+﻿@model AlarganShipping.Models.Invoice
+@{
+    ViewData["Title"] = "فاتورة ضريبية";
+    Layout = "_Layout"; // يمكن جعله null إذا أردت صفحة طباعة خالية من القوائم
+}
+
+<style>
+    /* Premium Printable Invoice CSS */
+    .invoice-wrapper {
+        background: white;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 3rem;
+        border-radius: 1.25rem;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        border: 1px solid #e2e8f0;
+    }
+
+    .invoice-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 3px solid #be955b;
+        padding-bottom: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .company-details h1 {
+        color: #2b3f56;
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin: 0;
+        letter-spacing: 1px;
+    }
+
+    .company-details p {
+        color: #64748b;
+        font-weight: 700;
+        margin: 0.25rem 0 0 0;
+    }
+
+    .invoice-meta {
+        text-align: left;
+    }
+
+    .meta-title {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #e2e8f0;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 0.5rem;
+    }
+
+    .meta-row {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-bottom: 0.25rem;
+    }
+
+    .meta-label {
+        color: #64748b;
+        font-weight: 700;
+    }
+
+    .meta-value {
+        color: #2b3f56;
+        font-weight: 900;
+    }
+
+    .bill-to-section {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        margin-bottom: 2.5rem;
+        border-right: 4px solid #2b3f56;
+    }
+
+    .bill-to-title {
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .bill-to-name {
+        color: #2b3f56;
+        font-size: 1.5rem;
+        font-weight: 900;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .bill-to-car {
+        color: #be955b;
+        font-weight: 800;
+    }
+
+    .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+    }
+
+        .invoice-table th {
+            background: #2b3f56;
+            color: white;
+            padding: 1rem;
+            text-align: right;
+            font-weight: 800;
+            border: 1px solid #2b3f56;
+        }
+
+        .invoice-table td {
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .invoice-table .amount-col {
+            text-align: left;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+    .total-section {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .total-box {
+        width: 300px;
+        background: #2b3f56;
+        color: white;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 5px 15px rgba(43, 63, 86, 0.3);
+    }
+
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: #be955b;
+    }
+
+    .action-buttons {
+        margin-top: 2rem;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .btn-print {
+        background: #be955b;
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 0.5rem;
+        font-weight: 800;
+        border: none;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .btn-print:hover {
+            background: #a67c46;
+        }
+
+    /* Print Media Query */
+    @@media print {
+        body *
+
+    {
+        visibility: hidden;
+    }
+
+    .invoice-wrapper, .invoice-wrapper * {
+        visibility: visible;
+    }
+
+    .invoice-wrapper {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+        padding: 0;
+    }
+
+    .action-buttons {
+        display: none;
+    }
+
+    .sidebar, .topbar {
+        display: none !important;
+    }
+
+    }
+</style>
+
+<div>
+    <div class="invoice-wrapper" id="invoice-print-area">
+        <div class="invoice-header">
+            <div class="company-details">
+                <h1>ALARGAN</h1>
+                <p>AUTO SHIPPING</p>
+                <p style="font-size: 0.85rem; margin-top: 1rem;">سلطنة عمان - مسقط</p>
+            </div>
+            <div class="invoice-meta">
+                <div class="meta-title">INVOICE</div>
+                <div class="meta-row">
+                    <span class="meta-label">رقم الفاتورة:</span>
+                    <span class="meta-value">@Model.InvoiceNumber</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">تاريخ الإصدار:</span>
+                    <span class="meta-value">@Model.IssueDate.ToString("dd/MM/yyyy")</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bill-to-section">
+            <div class="bill-to-title">فاتورة مقدمة إلى:</div>
+            <h2 class="bill-to-name">@Model.Customer?.Name</h2>
+            <div class="bill-to-car">بيانات السيارة: @Model.Car?.Make @Model.Car?.Model @Model.Car?.Year (VIN: @Model.Car?.VIN)</div>
+        </div>
+
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>البيان / الوصف</th>
+                    <th class="amount-col">المبلغ ($)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.CarPrice > 0)
+                {
+                    <tr><td>قيمة شراء السيارة من المزاد</td><td class="amount-col">@Model.CarPrice</td></tr>
+                }
+                @if (Model.AuctionFees > 0)
+                {
+                    <tr><td>رسوم المزاد والبوابة</td><td class="amount-col">@Model.AuctionFees</td></tr>
+                }
+                @if (Model.LandFreight > 0)
+                {
+                    <tr><td>أجور النقل الداخلي (الريكفري)</td><td class="amount-col">@Model.LandFreight</td></tr>
+                }
+                @if (Model.SeaFreight > 0)
+                {
+                    <tr><td>أجور الشحن البحري</td><td class="amount-col">@Model.SeaFreight</td></tr>
+                }
+                @if (Model.CustomsFees > 0)
+                {
+                    <tr><td>رسوم التخليص الجمركي</td><td class="amount-col">@Model.CustomsFees</td></tr>
+                }
+                @if (Model.AdminFees > 0)
+                {
+                    <tr><td>الرسوم الإدارية / عمولة الشركة</td><td class="amount-col">@Model.AdminFees</td></tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="total-section">
+            <div class="total-box">
+                <div class="total-row">
+                    <span>الإجمالي الكلي:</span>
+                    <span>$@Model.TotalAmount</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button onclick="window.print()" class="btn-print">طباعة الفاتورة</button>
+        <a href="@Url.Action("Index", "Invoices")" style="color: #64748b; font-weight: 700; padding: 0.75rem 1rem; text-decoration: none;">العودة</a>
+    </div>
+</div>

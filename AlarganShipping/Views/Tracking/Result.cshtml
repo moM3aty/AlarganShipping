@@ -1,0 +1,126 @@
+﻿@model AlarganShipping.Models.Car
+@{
+    ViewData["Title"] = "نتائج التتبع";
+}
+
+<style>
+    /* Premium Search Result Style */
+    .result-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+
+    .status-header {
+        background: #1a2634;
+        color: white;
+        padding: 2.5rem;
+        border-radius: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .car-info-title {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #be955b;
+        margin-bottom: 0.5rem;
+    }
+
+    .timeline-wrapper {
+        background: white;
+        border-radius: 2rem;
+        padding: 3rem;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    }
+
+    .log-item {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 2.5rem;
+        position: relative;
+    }
+
+        .log-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            top: 35px;
+            right: 17px;
+            bottom: -35px;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+    .log-dot {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: #3b82f6;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        z-index: 2;
+        border: 4px solid white;
+        box-shadow: 0 0 0 2px #3b82f6;
+    }
+
+    .log-content {
+        flex: 1;
+        text-align: right;
+    }
+
+    .log-title {
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: #1a2634;
+        margin-bottom: 0.25rem;
+    }
+
+    .log-date {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        font-weight: 700;
+    }
+
+    .log-desc {
+        margin-top: 0.5rem;
+        color: #64748b;
+        font-size: 0.95rem;
+    }
+</style>
+
+<div class="result-container" dir="rtl">
+    <div class="status-header">
+        <h1 class="car-info-title">@Model.Make @Model.Model</h1>
+        <p style="font-weight: 700; opacity: 0.8;">رقم الشاصي: @Model.VIN</p>
+    </div>
+
+    <div class="timeline-wrapper">
+        <h2 style="font-weight: 900; margin-bottom: 3rem; text-align: center;">سجل العمليات والتحركات</h2>
+
+        @if (Model.TrackingLogs != null && Model.TrackingLogs.Any())
+        {
+            foreach (var log in Model.TrackingLogs.OrderByDescending(l => l.UpdateDate))
+            {
+                <div class="log-item">
+                    <div class="log-dot">✓</div>
+                    <div class="log-content">
+                        <div class="log-title">@log.Title</div>
+                        <div class="log-date">@log.UpdateDate.ToString("dd MMMM yyyy - hh:mm tt")</div>
+                        @if (!string.IsNullOrEmpty(log.Location))
+                        {
+                            <div style="color: #be955b; font-weight: 800; font-size: 0.9rem; margin-top: 0.25rem;">📍 @log.Location</div>
+                        }
+                        <p class="log-desc">@log.Description</p>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p style="text-align: center; color: #94a3b8; font-weight: 700;">لا توجد تحديثات مسجلة لهذه السيارة حالياً.</p>
+        }
+    </div>
+</div>

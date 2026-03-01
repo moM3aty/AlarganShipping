@@ -1,0 +1,212 @@
+﻿@model AlarganShipping.Models.Invoice
+@{
+    ViewData["Title"] = "إصدار فاتورة جديدة";
+}
+
+<style>
+    /* Premium Pure CSS Form */
+    .form-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-page-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #2b3f56;
+        margin: 0;
+    }
+
+    .btn-back {
+        background-color: #f1f5f9;
+        color: #475569;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-back:hover {
+            background-color: #e2e8f0;
+            color: #1e293b;
+        }
+
+    .premium-form-card {
+        background-color: #ffffff;
+        border-radius: 1.25rem;
+        box-shadow: 0 10px 30px rgba(43, 63, 86, 0.05);
+        border: 1px solid #f8fafc;
+        padding: 2.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .premium-form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(to left, #2b3f56, #3a5472);
+        }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    @@media (min-width: 768px) {
+        .form-grid
+
+    {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-weight: 700;
+        color: #2b3f56;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        padding: 0.85rem 1.25rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1rem;
+        color: #1e293b;
+        background-color: #f8fafc;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+        .form-control:focus {
+            border-color: #2b3f56;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(43, 63, 86, 0.1);
+        }
+
+    .form-actions {
+        margin-top: 2.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .btn-submit {
+        background: linear-gradient(to right, #2b3f56, #3a5472);
+        color: #ffffff;
+        border: none;
+        padding: 0.85rem 2.5rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+        font-size: 1.1rem;
+        cursor: pointer;
+        font-family: 'Cairo', sans-serif;
+        box-shadow: 0 4px 15px rgba(43, 63, 86, 0.3);
+        transition: all 0.3s ease;
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(43, 63, 86, 0.4);
+        }
+
+    .text-danger {
+        color: #dc2626;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 0.25rem;
+    }
+
+    .section-divider {
+        grid-column: 1 / -1;
+        margin: 1rem 0 0.5rem 0;
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #be955b;
+        border-bottom: 2px dashed #f1f5f9;
+        padding-bottom: 0.5rem;
+    }
+</style>
+
+<div>
+    <div class="form-page-header">
+        <h2 class="form-page-title">إصدار فاتورة جديدة</h2>
+        <a href="@Url.Action("Index", "Invoices")" class="btn-back">عودة للقائمة</a>
+    </div>
+
+    <div class="premium-form-card">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-grid">
+                <div class="section-divider">المعلومات الأساسية</div>
+
+                <div class="form-group">
+                    <label asp-for="CustomerId" class="form-label">العميل</label>
+                    <select asp-for="CustomerId" class="form-control" asp-items="ViewBag.CustomerId">
+                        <option value="">-- اختر العميل المطالب بالدفع --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="CarId" class="form-label">السيارة المرتبطة بالفاتورة</label>
+                    <select asp-for="CarId" class="form-control" asp-items="ViewBag.CarId">
+                        <option value="">-- اختر السيارة --</option>
+                    </select>
+                </div>
+
+                <div class="section-divider">تفصيل التكاليف (بالدولار $)</div>
+
+                <div class="form-group">
+                    <label asp-for="CarPrice" class="form-label">قيمة السيارة (من المزاد)</label>
+                    <input asp-for="CarPrice" class="form-control" type="number" step="0.01" value="0.00" />
+                    <span asp-validation-for="CarPrice" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="AuctionFees" class="form-label">رسوم المزاد / البوابة</label>
+                    <input asp-for="AuctionFees" class="form-control" type="number" step="0.01" value="0.00" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="LandFreight" class="form-label">النقل الداخلي (الريكفري بأمريكا)</label>
+                    <input asp-for="LandFreight" class="form-control" type="number" step="0.01" value="0.00" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="SeaFreight" class="form-label">الشحن البحري</label>
+                    <input asp-for="SeaFreight" class="form-control" type="number" step="0.01" value="0.00" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="CustomsFees" class="form-label">رسوم التخليص الجمركي</label>
+                    <input asp-for="CustomsFees" class="form-control" type="number" step="0.01" value="0.00" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="AdminFees" class="form-label">الرسوم الإدارية / عمولة الشركة</label>
+                    <input asp-for="AdminFees" class="form-control" type="number" step="0.01" value="0.00" />
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">حفظ وإصدار الفاتورة</button>
+            </div>
+        </form>
+    </div>
+</div>

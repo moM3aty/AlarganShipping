@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "الرئيسية";
+}
+
+<style>
+    .welcome-card {
+        background: linear-gradient(135deg, #1a2634 0%, #2b3f56 100%);
+        border-radius: 25px;
+        padding: 3rem;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 30px rgba(26,38,52,0.1);
+    }
+
+        .welcome-card::after {
+            content: '\f21a';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            bottom: -30px;
+            left: -20px;
+            font-size: 15rem;
+            opacity: 0.05;
+        }
+
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .stat-box {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 20px;
+        border: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: 0.3s;
+    }
+
+        .stat-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+    .icon-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+</style>
+
+<div class="welcome-card">
+    <div style="position: relative; z-index: 2;">
+        <h1 style="font-weight: 900; font-size: 2.5rem; margin-bottom: 1rem;">مرحباً بك في نظام الأرجان</h1>
+        <p style="font-size: 1.1rem; opacity: 0.8; max-width: 600px;">إدارة عمليات شحن السيارات وتتبع الحاويات والمدفوعات بكل سهولة ودقة.</p>
+        <div style="margin-top: 2rem;">
+            <a href="@Url.Action("Create", "Shipments")" style="background: #be955b; color: #fff; padding: 12px 25px; border-radius: 12px; text-decoration: none; font-weight: 800; display: inline-block;">
+                <i class="fa-solid fa-plus-circle" style="margin-left: 8px;"></i> شحنة جديدة
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-box">
+        <div class="icon-circle" style="background: #f0f7ff; color: #3b82f6;"><i class="fa-solid fa-car"></i></div>
+        <span style="color: #888; font-size: 0.8rem; font-weight: 800;">إجمالي السيارات</span>
+        <h3 style="font-weight: 900; font-size: 1.8rem; color: #1a2634;">1,245</h3>
+    </div>
+    <div class="stat-box">
+        <div class="icon-circle" style="background: #fff8f0; color: #f97316;"><i class="fa-solid fa-ship"></i></div>
+        <span style="color: #888; font-size: 0.8rem; font-weight: 800;">شحنات نشطة</span>
+        <h3 style="font-weight: 900; font-size: 1.8rem; color: #1a2634;">14</h3>
+    </div>
+    <div class="stat-box">
+        <div class="icon-circle" style="background: #f0fdf4; color: #22c55e;"><i class="fa-solid fa-wallet"></i></div>
+        <span style="color: #888; font-size: 0.8rem; font-weight: 800;">إجمالي الأرباح</span>
+        <h3 style="font-weight: 900; font-size: 1.8rem; color: #1a2634;">$14,200</h3>
+    </div>
+</div>

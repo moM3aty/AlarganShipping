@@ -1,0 +1,272 @@
+﻿@model AlarganShipping.Models.Car
+@{
+    ViewData["Title"] = "تفاصيل السيارة والتتبع";
+}
+
+<style>
+    /* Premium Pure CSS for Details & Tracking */
+    .details-header {
+        background: #2b3f56;
+        color: white;
+        padding: 2rem;
+        border-radius: 1.25rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 10px 25px rgba(43, 63, 86, 0.15);
+    }
+
+    .car-title-large {
+        font-size: 2rem;
+        font-weight: 900;
+        margin: 0 0 0.5rem 0;
+        color: #be955b;
+    }
+
+    .vin-badge {
+        background-color: rgba(255,255,255,0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-family: monospace;
+        letter-spacing: 1px;
+    }
+
+    /* Stepper Styling */
+    .tracking-card {
+        background: white;
+        border-radius: 1.25rem;
+        padding: 2.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        margin-bottom: 2rem;
+        border: 1px solid #f1f5f9;
+    }
+
+    .tracking-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #2b3f56;
+        margin-bottom: 2.5rem;
+        text-align: center;
+    }
+
+    .stepper-wrapper {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+        .stepper-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: #e2e8f0;
+            z-index: 1;
+        }
+
+        /* Dynamic progress line based on StatusId */
+        .stepper-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 25px;
+            right: 0; /* RTL Support */
+            height: 4px;
+            background-color: #be955b;
+            z-index: 2;
+            transition: width 0.5s ease;
+            /* Width calculated inline below based on status */
+        }
+
+    .step-item {
+        position: relative;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100px;
+    }
+
+    .step-circle {
+        width: 50px;
+        height: 50px;
+        background-color: #ffffff;
+        border: 4px solid #e2e8f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: #94a3b8;
+        margin-bottom: 0.75rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 0 4px white; /* To cut the line behind it */
+    }
+
+    .step-item.active .step-circle {
+        border-color: #be955b;
+        background-color: #be955b;
+        color: white;
+        box-shadow: 0 0 0 4px white, 0 4px 10px rgba(190, 149, 91, 0.4);
+    }
+
+    .step-label {
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #64748b;
+        text-align: center;
+    }
+
+    .step-item.active .step-label {
+        color: #2b3f56;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    @@media (min-width: 768px) {
+        .info-grid
+
+    {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    }
+
+    .info-card {
+        background: white;
+        border-radius: 1.25rem;
+        padding: 1.5rem;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    }
+
+    .info-card-title {
+        color: #be955b;
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 0.5rem;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px dashed #e2e8f0;
+    }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+    .info-label {
+        color: #64748b;
+        font-weight: 700;
+    }
+
+    .info-value {
+        color: #2b3f56;
+        font-weight: 800;
+    }
+</style>
+
+<div>
+    <div class="details-header">
+        <div>
+            <h1 class="car-title-large">@Model.Make @Model.Model @Model.Year</h1>
+            <span class="vin-badge">VIN: @Model.VIN</span>
+        </div>
+        <div>
+            <a href="@Url.Action("Index", "Cars")" class="btn-back" style="background: rgba(255,255,255,0.1); color: white;">العودة للقائمة</a>
+        </div>
+    </div>
+
+    <!-- Tracking Stepper -->
+    <div class="tracking-card">
+        <h2 class="tracking-title">سجل تتبع السيارة</h2>
+
+        @{
+            // حساب عرض شريط التقدم بناءً على الحالة (StatusId)
+            // افتراض الحالات: 1 = تم الشراء، 2 = المستودع، 3 = أبحرت، 4 = وصلت
+            int status = Model.StatusId;
+            string lineWidth = status == 1 ? "0%" : status == 2 ? "33%" : status == 3 ? "66%" : status >= 4 ? "100%" : "0%";
+        }
+
+        <div class="stepper-wrapper">
+            <!-- Dynamic Line -->
+            <style>
+                .stepper-wrapper::after {
+                    width: @lineWidth;
+                }</style>
+
+            <div class="step-item @(status >= 1 ? "active" : "")">
+                <div class="step-circle">1</div>
+                <div class="step-label">تم الشراء</div>
+            </div>
+            <div class="step-item @(status >= 2 ? "active" : "")">
+                <div class="step-circle">2</div>
+                <div class="step-label">في المستودع</div>
+            </div>
+            <div class="step-item @(status >= 3 ? "active" : "")">
+                <div class="step-circle">3</div>
+                <div class="step-label">أبحرت</div>
+            </div>
+            <div class="step-item @(status >= 4 ? "active" : "")">
+                <div class="step-circle">4</div>
+                <div class="step-label">وصلت الميناء</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Grid -->
+    <div class="info-grid">
+        <div class="info-card">
+            <h3 class="info-card-title">معلومات السيارة</h3>
+            <div class="info-row">
+                <span class="info-label">الشركة المصنعة</span>
+                <span class="info-value">@Model.Make</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">الموديل</span>
+                <span class="info-value">@Model.Model</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">سنة الصنع</span>
+                <span class="info-value">@Model.Year</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">اللون</span>
+                <span class="info-value">@Model.Color</span>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3 class="info-card-title">معلومات المالك والشراء</h3>
+            <div class="info-row">
+                <span class="info-label">اسم العميل</span>
+                <span class="info-value">@(Model.Customer?.Name ?? "غير محدد")</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">رقم الهاتف</span>
+                <span class="info-value" dir="ltr">@(Model.Customer?.Phone ?? "-")</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">سعر الشراء</span>
+                <span class="info-value" style="color: #16a34a;">$@Model.PurchasePrice</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">المزاد</span>
+                <span class="info-value">@(Model.Auction?.Name ?? "خارجي")</span>
+            </div>
+        </div>
+    </div>
+</div>

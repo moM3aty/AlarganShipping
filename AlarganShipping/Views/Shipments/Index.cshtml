@@ -1,0 +1,212 @@
+﻿@model IEnumerable<AlarganShipping.Models.Shipment>
+@{
+    ViewData["Title"] = "إدارة الشحنات";
+}
+
+<style>
+    /* Premium Pure CSS for Shipments Grid */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #ffffff;
+        padding: 1.25rem 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(43, 63, 86, 0.05);
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #2b3f56;
+        margin: 0;
+    }
+
+    .btn-add {
+        display: inline-block;
+        background: linear-gradient(to right, #be955b, #d4af7a);
+        color: #ffffff;
+        font-weight: 700;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(190, 149, 91, 0.3);
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(190, 149, 91, 0.4);
+        }
+
+    .shipments-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    @@media (min-width: 1024px) {
+        .shipments-grid
+
+    {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    }
+
+    .shipment-card {
+        background-color: #ffffff;
+        border-radius: 1.25rem;
+        box-shadow: 0 10px 25px rgba(43, 63, 86, 0.05);
+        border: 1px solid #f1f5f9;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+        .shipment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(43, 63, 86, 0.1);
+        }
+
+    .shipment-header {
+        background: #2b3f56;
+        color: white;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .shipment-title {
+        font-size: 1.25rem;
+        font-weight: 900;
+        margin: 0;
+        color: #be955b;
+        letter-spacing: 1px;
+    }
+
+    .shipment-status {
+        background: rgba(255,255,255,0.1);
+        padding: 0.35rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .shipment-body {
+        padding: 1.5rem;
+    }
+
+    .route-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        background: #f8fafc;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        border: 1px dashed #cbd5e1;
+    }
+
+    .port-info {
+        text-align: center;
+    }
+
+    .port-label {
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+        display: block;
+    }
+
+    .port-name {
+        color: #2b3f56;
+        font-weight: 900;
+        font-size: 1.1rem;
+    }
+
+    .route-arrow {
+        color: #be955b;
+        font-size: 1.5rem;
+        font-weight: 900;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.95rem;
+    }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+    .info-label {
+        color: #64748b;
+        font-weight: 700;
+    }
+
+    .info-value {
+        color: #1e293b;
+        font-weight: 800;
+    }
+</style>
+
+<div>
+    <div class="page-header">
+        <h2 class="page-title">إدارة الحاويات والشحنات</h2>
+        <a href="@Url.Action("Create", "Shipments")" class="btn-add">إضافة شحنة جديدة</a>
+    </div>
+
+    <div class="shipments-grid">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var shipment in Model)
+            {
+                <div class="shipment-card">
+                    <div class="shipment-header">
+                        <h3 class="shipment-title">@shipment.ContainerNumber</h3>
+                        <span class="shipment-status">@shipment.Status</span>
+                    </div>
+                    <div class="shipment-body">
+                        <div class="route-container">
+                            <div class="port-info">
+                                <span class="port-label">ميناء التحميل</span>
+                                <span class="port-name">@(shipment.LoadingPort?.Name ?? "غير محدد")</span>
+                            </div>
+                            <div class="route-arrow">&larr;</div>
+                            <div class="port-info">
+                                <span class="port-label">ميناء الوصول</span>
+                                <span class="port-name">@(shipment.DischargePort?.Name ?? "غير محدد")</span>
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <span class="info-label">خط الملاحة</span>
+                            <span class="info-value">@shipment.ShippingLine</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">رقم الحجز (Booking)</span>
+                            <span class="info-value">@shipment.BookingNumber</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">تاريخ الإبحار (ETD)</span>
+                            <span class="info-value">@(shipment.ExpectedTimeOfDeparture?.ToString("yyyy-MM-dd") ?? "-")</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: white; border-radius: 1rem;">
+                <h3 style="color: #64748b; margin: 0;">لا توجد شحنات مسجلة حالياً.</h3>
+            </div>
+        }
+    </div>
+</div>

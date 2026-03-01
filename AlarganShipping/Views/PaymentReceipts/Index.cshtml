@@ -1,0 +1,183 @@
+﻿@model IEnumerable<AlarganShipping.Models.PaymentReceipt>
+@{
+    ViewData["Title"] = "سندات القبض";
+}
+
+<style>
+    /* Premium Pure CSS for Payment Receipts Grid */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #ffffff;
+        padding: 1.25rem 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(43, 63, 86, 0.05);
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #2b3f56;
+        margin: 0;
+    }
+
+    .btn-add {
+        display: inline-block;
+        background: linear-gradient(to right, #16a34a, #22c55e);
+        color: #ffffff;
+        font-weight: 700;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3);
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(22, 163, 74, 0.4);
+        }
+
+    .receipts-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    @@media (min-width: 1024px) {
+        .receipts-grid
+
+    {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    }
+
+    .receipt-card {
+        background-color: #ffffff;
+        border-radius: 1.25rem;
+        box-shadow: 0 10px 25px rgba(43, 63, 86, 0.05);
+        border: 1px solid #f1f5f9;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+        .receipt-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(43, 63, 86, 0.1);
+        }
+
+    .card-accent-line {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 6px;
+        height: 100%;
+        background-color: #16a34a;
+    }
+
+    .receipt-header {
+        padding: 1.5rem 1.5rem 1rem 1.5rem;
+        border-bottom: 1px dashed #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .rec-number {
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: #2b3f56;
+        margin: 0;
+        font-family: monospace;
+    }
+
+    .rec-date {
+        color: #64748b;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .receipt-body {
+        padding: 1.5rem;
+    }
+
+    .rec-customer {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+
+    .rec-method {
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+        background: #f1f5f9;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+    }
+
+    .rec-total-box {
+        background: #f0fdf4;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #bbf7d0;
+    }
+
+    .rec-total-label {
+        color: #166534;
+        font-weight: 800;
+    }
+
+    .rec-total-value {
+        color: #16a34a;
+        font-weight: 900;
+        font-size: 1.5rem;
+    }
+</style>
+
+<div>
+    <div class="page-header">
+        <h2 class="page-title">سندات القبض (المدفوعات)</h2>
+        <a href="@Url.Action("Create", "PaymentReceipts")" class="btn-add">إصدار سند قبض جديد</a>
+    </div>
+
+    <div class="receipts-grid">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var rec in Model)
+            {
+                <div class="receipt-card">
+                    <div class="card-accent-line"></div>
+                    <div class="receipt-header">
+                        <h3 class="rec-number">@rec.ReceiptNumber</h3>
+                        <span class="rec-date">@rec.PaymentDate.ToString("dd/MM/yyyy")</span>
+                    </div>
+                    <div class="receipt-body">
+                        <div class="rec-customer">العميل: @rec.Customer?.Name</div>
+                        <span class="rec-method">الدفع: @rec.PaymentMethod</span>
+                        <div class="rec-total-box">
+                            <span class="rec-total-label">المبلغ المسدد</span>
+                            <span class="rec-total-value">$@rec.Amount</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: white; border-radius: 1rem;">
+                <h3 style="color: #64748b; margin: 0;">لا توجد سندات قبض مسجلة حالياً.</h3>
+            </div>
+        }
+    </div>
+</div>

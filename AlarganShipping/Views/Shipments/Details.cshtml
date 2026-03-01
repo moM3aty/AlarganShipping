@@ -1,0 +1,268 @@
+﻿@model AlarganShipping.Models.Shipment
+@{
+    ViewData["Title"] = "تفاصيل الشحنة والحاوية";
+}
+
+<style>
+    /* Premium Pure CSS for Shipment Details */
+    .details-header {
+        background: linear-gradient(135deg, #2b3f56 0%, #1a2634 100%);
+        color: white;
+        padding: 2.5rem;
+        border-radius: 1.25rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 15px 30px rgba(43, 63, 86, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .details-header::after {
+            content: '\26F4'; /* Ship icon */
+            position: absolute;
+            top: -20%;
+            left: -5%;
+            font-size: 15rem;
+            color: rgba(255,255,255,0.03);
+            z-index: 1;
+        }
+
+    .shipment-title-large {
+        font-size: 2rem;
+        font-weight: 900;
+        margin: 0 0 0.5rem 0;
+        color: #be955b;
+        position: relative;
+        z-index: 2;
+        letter-spacing: 2px;
+    }
+
+    .info-badge {
+        background-color: rgba(255,255,255,0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+        position: relative;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: 1rem;
+    }
+
+    .btn-outline-light {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        border: 1px solid rgba(255,255,255,0.2);
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 2;
+    }
+
+        .btn-outline-light:hover {
+            background: white;
+            color: #2b3f56;
+        }
+
+    .route-card {
+        background: white;
+        border-radius: 1.25rem;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        margin-bottom: 2rem;
+        border: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .port-section {
+        text-align: center;
+        flex: 1;
+    }
+
+    .port-label {
+        color: #64748b;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .port-value {
+        color: #2b3f56;
+        font-size: 1.5rem;
+        font-weight: 900;
+    }
+
+    .port-date {
+        color: #be955b;
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .route-divider {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+        .route-divider::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: dashed 2px #cbd5e1;
+            z-index: 1;
+        }
+
+    .route-icon {
+        background: white;
+        color: #be955b;
+        font-size: 2rem;
+        position: relative;
+        z-index: 2;
+        padding: 0 1rem;
+    }
+
+    .section-container {
+        background: white;
+        border-radius: 1.25rem;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #2b3f56;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 1.5rem;
+            background-color: #be955b;
+            border-radius: 4px;
+        }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: right;
+    }
+
+        .data-table th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 800;
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .data-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+    .btn-sm-gold {
+        color: #be955b;
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+        .btn-sm-gold:hover {
+            text-decoration: underline;
+        }
+</style>
+
+<div>
+    <div class="details-header">
+        <div>
+            <h1 class="shipment-title-large">حاوية: @Model.ContainerNumber</h1>
+            <span class="info-badge">خط الملاحة: @Model.ShippingLine</span>
+            <span class="info-badge">بوليصة الشحن (B/L): @(string.IsNullOrEmpty(Model.BillOfLading) ? "قيد الانتظار" : Model.BillOfLading)</span>
+        </div>
+        <div>
+            <a href="@Url.Action("Index", "Shipments")" class="btn-outline-light">العودة للشحنات</a>
+        </div>
+    </div>
+
+    <div class="route-card">
+        <div class="port-section">
+            <span class="port-label">ميناء التحميل</span>
+            <span class="port-value">@(Model.LoadingPort?.Name ?? "غير محدد")</span>
+            <span class="port-date">ETD: @(Model.ExpectedTimeOfDeparture?.ToString("dd/MM/yyyy") ?? "-")</span>
+        </div>
+        <div class="route-divider">
+            <span class="route-icon">&larr;</span>
+        </div>
+        <div class="port-section">
+            <span class="port-label">ميناء الوصول</span>
+            <span class="port-value">@(Model.DischargePort?.Name ?? "غير محدد")</span>
+            <span class="port-date">ETA: @(Model.ExpectedTimeOfArrival?.ToString("dd/MM/yyyy") ?? "-")</span>
+        </div>
+    </div>
+
+    <div class="section-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 class="section-title" style="margin-bottom: 0;">السيارات داخل الحاوية</h2>
+            <span style="background: #e2e8f0; color: #475569; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 800;">العدد: @(Model.Cars?.Count ?? 0) سيارة</span>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>السيارة</th>
+                        <th>رقم الشاصي (VIN)</th>
+                        <th>العميل المالك</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Cars != null && Model.Cars.Any())
+                    {
+                        foreach (var car in Model.Cars)
+                        {
+                            <tr>
+                                <td>@car.Make @car.Model @car.Year</td>
+                                <td style="font-family: monospace; color: #64748b;">@car.VIN</td>
+                                <td>@car.Customer?.Name</td>
+                                <td><a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn-sm-gold">عرض السيارة</a></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #94a3b8; padding: 2rem;">لم يتم تحميل أي سيارات في هذه الحاوية بعد.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
