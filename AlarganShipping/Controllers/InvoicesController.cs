@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿// مسار الملف: Controllers/InvoicesController.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Linq;
 using AlarganShipping.Models;
+using System;
 
 namespace AlarganShipping.Controllers
 {
-    // متحكم الفواتير والماليات الشامل (القسم المالي)
     [Authorize]
     public class InvoicesController : Controller
     {
@@ -21,17 +22,22 @@ namespace AlarganShipping.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var invoices = _context.Invoices
+            var invoices = await _context.Invoices
                 .Include(i => i.Customer)
                 .Include(i => i.Car)
-                .OrderByDescending(i => i.IssueDate);
-            return View(await invoices.ToListAsync());
+                .OrderByDescending(i => i.IssueDate)
+                .ToListAsync();
+            return View(invoices);
         }
 
         public IActionResult Create()
         {
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name");
-            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "VIN");
+            // تعبئة القوائم المنسدلة للعملاء والسيارات
+            ViewData["CustomerId"] = new SelectList(_context.Customers.OrderBy(c => c.Name), "Id", "Name");
+            // عرض رقم الشاصي مع موديل السيارة لسهولة البحث
+            var carsList = _context.Cars.Select(c => new { Id = c.Id, DisplayName = c.Make + " " + c.Model + " (" + c.VIN + ")" }).ToList();
+            ViewData["CarId"] = new SelectList(carsList, "Id", "DisplayName");
+
             return View();
         }
 
@@ -54,14 +60,36 @@ namespace AlarganShipping.Controllers
                     _context.Update(customer);
                 }
 
-                invoice.InvoiceNumber = "INV-" + System.DateTime.Now.ToString("yyyyMMddHHmmss");
+                if (string.IsNullOrEmpty(invoice.InvoiceNumber))
+                {
+                    invoice.InvoiceNumber = "INV-" + DateTime.Now.ToString("yyyyMMddHHmmss");
+                }
+
+                if (invoice.IssueDate == default)
+                {
+                    invoice.IssueDate = DateTime.Now;
+                }
 
                 _context.Add(invoice);
                 await _context.SaveChangesAsync();
+
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = true });
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", invoice.CustomerId);
-            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "VIN", invoice.CarId);
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                return Json(new { success = false, errors = errors });
+            }
+
+            ViewData["CustomerId"] = new SelectList(_context.Customers.OrderBy(c => c.Name), "Id", "Name", invoice.CustomerId);
+            var carsList = _context.Cars.Select(c => new { Id = c.Id, DisplayName = c.Make + " " + c.Model + " (" + c.VIN + ")" }).ToList();
+            ViewData["CarId"] = new SelectList(carsList, "Id", "DisplayName", invoice.CarId);
             return View(invoice);
         }
 

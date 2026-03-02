@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿// مسار الملف: Controllers/ShipmentsController.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,6 @@ using AlarganShipping.Models;
 
 namespace AlarganShipping.Controllers
 {
-    // متحكم إدارة الحاويات والشحنات البحرية
     [Authorize]
     public class ShipmentsController : Controller
     {
@@ -21,16 +21,18 @@ namespace AlarganShipping.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var shipments = _context.Shipments
+            var shipments = await _context.Shipments
                 .Include(s => s.LoadingPort)
-                .Include(s => s.DischargePort);
-            return View(await shipments.ToListAsync());
+                .Include(s => s.DischargePort)
+                .OrderByDescending(s => s.Id)
+                .ToListAsync();
+            return View(shipments);
         }
 
         public IActionResult Create()
         {
-            // جلب الموانئ فقط لتعيينها كميناء تحميل وميناء وصول
-            var ports = _context.Locations.Where(l => l.LocationType == "Port").ToList();
+            // جلب الموانئ فقط لتعبئة القوائم المنسدلة
+            var ports = _context.Locations.Where(l => l.LocationType == "Port").OrderBy(l => l.Name).ToList();
             ViewData["LoadingPortId"] = new SelectList(ports, "Id", "Name");
             ViewData["DischargePortId"] = new SelectList(ports, "Id", "Name");
             return View();
@@ -42,15 +44,48 @@ namespace AlarganShipping.Controllers
         {
             if (ModelState.IsValid)
             {
-                shipment.Status = "Pending"; // حالة الشحنة مبدئياً "معلقة"
+                if (string.IsNullOrEmpty(shipment.Status))
+                {
+                    shipment.Status = "Pending";
+                }
+
                 _context.Add(shipment);
                 await _context.SaveChangesAsync();
+
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = true });
+                }
+
                 return RedirectToAction(nameof(Index));
             }
 
-            var ports = _context.Locations.Where(l => l.LocationType == "Port").ToList();
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                return Json(new { success = false, errors = errors });
+            }
+
+            var ports = _context.Locations.Where(l => l.LocationType == "Port").OrderBy(l => l.Name).ToList();
             ViewData["LoadingPortId"] = new SelectList(ports, "Id", "Name", shipment.LoadingPortId);
             ViewData["DischargePortId"] = new SelectList(ports, "Id", "Name", shipment.DischargePortId);
+            return View(shipment);
+        }
+
+        // إضافة دالة لعرض تفاصيل الشحنة (التي كانت مفقودة وتسبب خطأ عند الضغط على "المحتويات")
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var shipment = await _context.Shipments
+                .Include(s => s.LoadingPort)
+                .Include(s => s.DischargePort)
+                .Include(s => s.Cars) // جلب السيارات داخل هذه الشحنة
+                    .ThenInclude(c => c.Customer) // جلب أصحاب السيارات
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (shipment == null) return NotFound();
+
             return View(shipment);
         }
     }

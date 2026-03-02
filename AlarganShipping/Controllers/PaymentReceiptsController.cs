@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿// مسار الملف: Controllers/PaymentReceiptsController.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,6 @@ using AlarganShipping.Models;
 
 namespace AlarganShipping.Controllers
 {
-    // متحكم سندات القبض والمدفوعات
     [Authorize]
     public class PaymentReceiptsController : Controller
     {
@@ -20,31 +20,37 @@ namespace AlarganShipping.Controllers
             _context = context;
         }
 
-        // عرض قائمة السندات
         public async Task<IActionResult> Index()
         {
-            var receipts = _context.PaymentReceipts
+            var receipts = await _context.PaymentReceipts
                 .Include(p => p.Customer)
-                .OrderByDescending(p => p.PaymentDate);
-            return View(await receipts.ToListAsync());
+                .OrderByDescending(p => p.PaymentDate)
+                .ToListAsync();
+            return View(receipts);
         }
 
-        // شاشة إصدار سند قبض جديد
         public IActionResult Create()
         {
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name");
+            // تعبئة قائمة العملاء
+            ViewData["CustomerId"] = new SelectList(_context.Customers.OrderBy(c => c.Name), "Id", "Name");
             return View();
         }
 
-        // حفظ السند وتحديث رصيد العميل تلقائياً
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PaymentReceipt receipt)
         {
             if (ModelState.IsValid)
             {
-                // توليد رقم سند فريد
-                receipt.ReceiptNumber = "REC-" + DateTime.Now.ToString("yyyyMMddHHmmss");
+                if (string.IsNullOrEmpty(receipt.ReceiptNumber))
+                {
+                    receipt.ReceiptNumber = "REC-" + DateTime.Now.ToString("yyyyMMddHHmmss");
+                }
+
+                if (receipt.PaymentDate == default)
+                {
+                    receipt.PaymentDate = DateTime.Now;
+                }
 
                 _context.Add(receipt);
 
@@ -55,16 +61,29 @@ namespace AlarganShipping.Controllers
                     customer.TotalPaid += receipt.Amount;
                     customer.TotalBalance -= receipt.Amount;
 
-                    // منع الرصيد من أن يكون بالسالب إذا دفع أكثر من المطلوب (يمكن تحويله لرصيد دائن مستقبلاً)
+                    // منع الرصيد من أن يكون بالسالب (إن دفع أكثر يمكن تحويله لرصيد دائن لاحقاً)
                     if (customer.TotalBalance < 0) customer.TotalBalance = 0;
 
                     _context.Update(customer);
                 }
 
                 await _context.SaveChangesAsync();
+
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = true });
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", receipt.CustomerId);
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                return Json(new { success = false, errors = errors });
+            }
+
+            ViewData["CustomerId"] = new SelectList(_context.Customers.OrderBy(c => c.Name), "Id", "Name", receipt.CustomerId);
             return View(receipt);
         }
     }
