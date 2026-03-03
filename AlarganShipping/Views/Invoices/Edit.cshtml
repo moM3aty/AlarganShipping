@@ -1,0 +1,356 @@
+﻿@model AlarganShipping.Models.Invoice
+@{
+    ViewData["Title"] = Localizer["تعديل الفاتورة الضريبية"];
+}
+
+<style>
+    .form-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-page-title {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-back {
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        color: var(--text-muted);
+        padding: 0.6rem 1.2rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn-back:hover {
+            background-color: #f8fafc;
+            color: var(--primary-navy);
+        }
+
+    .premium-form-card {
+        background-color: #ffffff;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 30px rgba(44, 62, 80, 0.03);
+        border: 1px solid #f1f5f9;
+        padding: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .premium-form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary-navy), var(--primary-gold));
+        }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 0.5rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    @@media (min-width: 768px) {
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (min-width: 1024px) {
+        .form-grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-weight: 800;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .form-control {
+        padding: 0.85rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        font-family: inherit;
+        font-size: 0.95rem;
+        color: var(--primary-navy);
+        font-weight: 700;
+        background-color: #f8fafc;
+        transition: 0.3s;
+        outline: none;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-gold);
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
+        }
+
+    .calc-input {
+        text-align: end;
+        font-family: monospace;
+        font-size: 1.1rem;
+        color: var(--primary-navy);
+    }
+
+    /* Total Box */
+    .total-box {
+        background: rgba(44, 62, 80, 0.03);
+        border: 2px dashed var(--primary-navy);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+    }
+
+    .total-label {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+    }
+
+    .total-amount {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--primary-gold);
+        font-family: monospace;
+    }
+
+    /* Select2 */
+    .select2-container--default .select2-selection--single {
+        background-color: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        transition: 0.3s;
+    }
+
+        .select2-container--default .select2-selection--single:focus {
+            border-color: var(--primary-gold);
+            background-color: white;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--primary-navy);
+            font-weight: 700;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 43px;
+            right: 10px;
+        }
+
+    html[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
+        left: 10px;
+        right: auto;
+    }
+
+    .form-actions {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .btn-submit {
+        background: var(--primary-navy);
+        color: white;
+        border: none;
+        padding: 0.85rem 2.5rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .btn-submit:hover {
+            background: var(--primary-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(184, 147, 90, 0.3);
+        }
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
+<div>
+    <div class="form-page-header">
+        <h2 class="form-page-title"><i class="fa-solid fa-pen-to-square" style="color: var(--primary-gold);"></i> @Localizer["تعديل الفاتورة الضريبية"]</h2>
+        <a href="@Url.Action("Index", "Invoices")" class="btn-back"><i class="fa-solid fa-arrow-right-long"></i> @Localizer["العودة"]</a>
+    </div>
+
+    <div class="premium-form-card">
+        <form asp-action="Edit" method="post" id="invoiceEditForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="InvoiceNumber" />
+            <input type="hidden" asp-for="IssueDate" />
+
+            <div style="background: rgba(184, 147, 90, 0.1); padding: 1rem; border-radius: 1rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(184, 147, 90, 0.2);">
+                <div>
+                    <span style="font-weight: 800; color: var(--primary-navy);">@Localizer["رقم الفاتورة:"]</span>
+                    <span style="font-family: monospace; font-weight: 900; color: var(--primary-gold); font-size: 1.1rem; margin-inline-start: 10px;">@Model.InvoiceNumber</span>
+                </div>
+            </div>
+
+            <h3 class="section-title">@Localizer["البيانات الأساسية"]</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label asp-for="CustomerId" class="form-label">@Localizer["العميل"] *</label>
+                    <select asp-for="CustomerId" class="form-control select2-search" asp-items="ViewBag.CustomerId" required>
+                        <option value="">@Localizer["اختر العميل..."]</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CarId" class="form-label">@Localizer["السيارة المرتبطة"] *</label>
+                    <select asp-for="CarId" class="form-control select2-search" asp-items="ViewBag.CarId" required>
+                        <option value="">@Localizer["اختر السيارة أو ابحث بالشاصي..."]</option>
+                    </select>
+                </div>
+            </div>
+
+            <h3 class="section-title">@Localizer["التفاصيل المالية (بالدولار أو الريال العماني حسب الاتفاق)"]</h3>
+            <div class="form-grid form-grid-3">
+                <div class="form-group">
+                    <label asp-for="CarPrice" class="form-label">@Localizer["سعر شراء السيارة"]</label>
+                    <input asp-for="CarPrice" type="number" step="0.01" class="form-control calc-input" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="AuctionFees" class="form-label">@Localizer["رسوم المزاد"]</label>
+                    <input asp-for="AuctionFees" type="number" step="0.01" class="form-control calc-input" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="LandFreight" class="form-label">@Localizer["النقل الداخلي (Towing)"]</label>
+                    <input asp-for="LandFreight" type="number" step="0.01" class="form-control calc-input" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="SeaFreight" class="form-label">@Localizer["الشحن البحري"]</label>
+                    <input asp-for="SeaFreight" type="number" step="0.01" class="form-control calc-input" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="CustomsFees" class="form-label">@Localizer["الجمارك والضرائب"]</label>
+                    <input asp-for="CustomsFees" type="number" step="0.01" class="form-control calc-input" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="AdminFees" class="form-label">@Localizer["عمولة الشركة (أتعاب إدارية)"]</label>
+                    <input asp-for="AdminFees" type="number" step="0.01" class="form-control calc-input" />
+                </div>
+            </div>
+
+            <div class="total-box">
+                <span class="total-label">@Localizer["الإجمالي المستحق على العميل:"]</span>
+                <span class="total-amount" id="displayTotal">0.00</span>
+                <input type="hidden" asp-for="TotalAmount" id="TotalAmount" />
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-back" onclick="javascript:history.back()">@Localizer["إلغاء"]</button>
+                <button type="submit" class="btn-submit" id="btnSubmit">
+                    <i class="fa-solid fa-save"></i> @Localizer["تحديث الفاتورة"]
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var dir = $('html').attr('dir');
+            $('.select2-search').select2({ dir: dir, width: '100%' });
+
+            // دالة الحساب التلقائي للإجمالي
+            function calculateTotal() {
+                let total = 0;
+                $('.calc-input').each(function() {
+                    let val = parseFloat($(this).val()) || 0;
+                    total += val;
+                });
+                $('#displayTotal').text(total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                $('#TotalAmount').val(total);
+            }
+
+            // استدعاء دالة الحساب عند تغيير أي رقم
+            $('.calc-input').on('input', calculateTotal);
+            calculateTotal(); // حساب مبدئي
+
+            // إرسال البيانات بالـ AJAX
+            $('#invoiceEditForm').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
+
+                var btn = $('#btnSubmit');
+                var originalText = btn.html();
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i>').prop('disabled', true);
+
+                $.ajax({
+                    url: form.attr('action'), type: form.attr('method'), data: form.serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: '@Html.Raw(Localizer["تم التحديث بنجاح!"])',
+                                text: '@Html.Raw(Localizer["تم حفظ التعديلات وتحديث حساب العميل تلقائياً."])',
+                                icon: 'success', confirmButtonColor: 'var(--primary-gold)'
+                            }).then(() => { window.location.href = '@Url.Action("Index", "Invoices")'; });
+                        } else {
+                            var errorMsg = response.errors ? response.errors.join('\n') : '@Html.Raw(Localizer["تأكد من البيانات"])';
+                            Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: errorMsg, icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                            btn.html(originalText).prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                        btn.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+}

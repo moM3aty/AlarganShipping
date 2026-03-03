@@ -23,7 +23,7 @@
         font-weight: 600;
     }
 
-    /* تبويبات المحاسبة (مشتريات، مبيعات، مصاريف، الخ) */
+    /* تبويبات المحاسبة */
     .accounting-tabs {
         display: flex;
         gap: 10px;
@@ -100,6 +100,7 @@
         align-items: center;
         justify-content: center;
         color: var(--primary-gold);
+        font-size: 1.2rem;
     }
 
     .fin-data-grid {
@@ -128,6 +129,7 @@
         font-size: 1.4rem;
         font-weight: 900;
         color: var(--primary-navy);
+        font-family: monospace;
     }
 
         .fin-value.green {
@@ -159,19 +161,17 @@
     <div class="page-header">
         <div>
             <h2 class="page-title">@Localizer["المحاسبة والتقارير المالية"]</h2>
-            <div class="page-subtitle">@Localizer["نظام الإدارة المحاسبية الذكي"]</div>
+            <div class="page-subtitle">@Localizer["نظام الإدارة المحاسبية الذكي"] - @ViewBag.CurrentYear</div>
         </div>
     </div>
 
-    <!-- الأقسام المحاسبية الأساسية -->
+    <!-- الأقسام المحاسبية الأساسية (أصبحت روابط حقيقية ديناميكية) -->
     <div class="accounting-tabs">
-        <button class="acc-tab active"><i class="fa-solid fa-chart-pie"></i> @Localizer["نظرة عامة"]</button>
-        <button class="acc-tab"><i class="fa-solid fa-cart-shopping"></i> @Localizer["المشتريات (مزادات ونقل)"]</button>
-        <button class="acc-tab"><i class="fa-solid fa-tags"></i> @Localizer["المبيعات (فواتير العملاء)"]</button>
-        <button class="acc-tab"><i class="fa-solid fa-money-bill-wave"></i> @Localizer["المصاريف العامة"]</button>
+        <a href="@Url.Action("Index", "Accounting")" class="acc-tab active"><i class="fa-solid fa-chart-pie"></i> @Localizer["نظرة عامة"]</a>
+        <a href="@Url.Action("Index", "Cars")" class="acc-tab"><i class="fa-solid fa-cart-shopping"></i> @Localizer["المشتريات (السيارات)"]</a>
+        <a href="@Url.Action("Index", "Invoices")" class="acc-tab"><i class="fa-solid fa-tags"></i> @Localizer["المبيعات (فواتير العملاء)"]</a>
+        <a href="@Url.Action("Index", "DispatchOrders")" class="acc-tab"><i class="fa-solid fa-truck-fast"></i> @Localizer["مصاريف النقل الداخلي"]</a>
         <a href="@Url.Action("Index", "PaymentReceipts")" class="acc-tab"><i class="fa-solid fa-arrow-down-to-line"></i> @Localizer["سندات القبض"]</a>
-        <button class="acc-tab"><i class="fa-solid fa-arrow-up-from-bracket"></i> @Localizer["سندات الصرف"]</button>
-        <button class="acc-tab"><i class="fa-solid fa-file-invoice"></i> @Localizer["التقارير الضريبية"]</button>
     </div>
 
     <div class="stats-grid">
@@ -184,19 +184,19 @@
             <div class="fin-data-grid">
                 <div class="fin-data-box">
                     <span class="fin-label">@Localizer["إجمالي المبيعات"]</span>
-                    <span class="fin-value" dir="ltr">OMR @ViewBag.TotalSales</span>
+                    <span class="fin-value" dir="ltr">OMR @(((decimal)ViewBag.TotalSales).ToString("N2"))</span>
                 </div>
                 <div class="fin-data-box">
                     <span class="fin-label">@Localizer["المستلم (سندات قبض)"]</span>
-                    <span class="fin-value green" dir="ltr">OMR @(ViewBag.TotalSales - ViewBag.PendingCollections)</span>
+                    <span class="fin-value green" dir="ltr">OMR @(((decimal)ViewBag.TotalPaid).ToString("N2"))</span>
                 </div>
                 <div class="fin-data-box">
                     <span class="fin-label">@Localizer["المتأخرات (ذمم)"]</span>
-                    <span class="fin-value red" dir="ltr">OMR @ViewBag.PendingCollections</span>
+                    <span class="fin-value red" dir="ltr">OMR @(((decimal)ViewBag.PendingCollections).ToString("N2"))</span>
                 </div>
                 <div class="fin-data-box">
                     <span class="fin-label">@Localizer["عدد الفواتير"]</span>
-                    <span class="fin-value">12</span>
+                    <span class="fin-value" style="font-family: 'Cairo';">@ViewBag.InvoicesCount</span>
                 </div>
             </div>
         </div>
@@ -209,28 +209,28 @@
             </div>
             <div class="fin-data-grid">
                 <div class="fin-data-box">
-                    <span class="fin-label">@Localizer["إجمالي المشتريات"]</span>
-                    <span class="fin-value" dir="ltr">OMR @ViewBag.TotalPurchases</span>
+                    <span class="fin-label">@Localizer["إجمالي قيمة الشراء"]</span>
+                    <span class="fin-value" dir="ltr">$ @(((decimal)ViewBag.TotalPurchases).ToString("N2"))</span>
                 </div>
                 <div class="fin-data-box">
-                    <span class="fin-label">@Localizer["المدفوع (سندات صرف)"]</span>
-                    <span class="fin-value" dir="ltr">OMR @ViewBag.TotalPurchases</span>
+                    <span class="fin-label">@Localizer["تكاليف النقل (Towing)"]</span>
+                    <span class="fin-value" dir="ltr" style="color: #f59e0b;">$ @(((decimal)ViewBag.TotalExpenses).ToString("N2"))</span>
                 </div>
                 <div class="fin-data-box">
-                    <span class="fin-label">@Localizer["المصاريف التشغيلية"]</span>
-                    <span class="fin-value red" dir="ltr">OMR @ViewBag.TotalExpenses</span>
+                    <span class="fin-label">@Localizer["إجمالي التكاليف"]</span>
+                    <span class="fin-value red" dir="ltr">$ @(((decimal)(ViewBag.TotalPurchases + ViewBag.TotalExpenses)).ToString("N2"))</span>
                 </div>
                 <div class="fin-data-box">
                     <span class="fin-label">@Localizer["سيارات مشتراة"]</span>
-                    <span class="fin-value">8</span>
+                    <span class="fin-value" style="font-family: 'Cairo';">@ViewBag.PurchasedCarsCount</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- رسم بياني للمحاسبة (Chart.js) -->
+    <!-- رسم بياني للمحاسبة (Chart.js) - ديناميكي بالكامل -->
     <div class="chart-container">
-        <h3 class="chart-title">@Localizer["نظرة عامة على التدفقات النقدية (الإيرادات vs المصروفات)"]</h3>
+        <h3 class="chart-title">@Localizer["نظرة عامة على التدفقات النقدية لعام"] @ViewBag.CurrentYear</h3>
         <canvas id="financeChart" height="100"></canvas>
     </div>
 </div>
@@ -238,6 +238,18 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // استقبال البيانات الديناميكية من السيرفر باستخدام Html.Raw و Json.Serialize
+        const salesData = @Html.Raw(Json.Serialize(ViewBag.MonthlySales));
+        const purchasesData = @Html.Raw(Json.Serialize(ViewBag.MonthlyPurchases));
+
+        // مصفوفة الشهور المترجمة ديناميكياً
+        const monthLabels = [
+            '@Html.Raw(Localizer["يناير"])', '@Html.Raw(Localizer["فبراير"])', '@Html.Raw(Localizer["مارس"])',
+            '@Html.Raw(Localizer["أبريل"])', '@Html.Raw(Localizer["مايو"])', '@Html.Raw(Localizer["يونيو"])',
+            '@Html.Raw(Localizer["يوليو"])', '@Html.Raw(Localizer["أغسطس"])', '@Html.Raw(Localizer["سبتمبر"])',
+            '@Html.Raw(Localizer["أكتوبر"])', '@Html.Raw(Localizer["نوفمبر"])', '@Html.Raw(Localizer["ديسمبر"])'
+        ];
+
         // تهيئة الرسم البياني ليطابق ألوان الهوية البصرية
         const rootStyles = getComputedStyle(document.documentElement);
         const goldColor = rootStyles.getPropertyValue('--primary-gold').trim();
@@ -247,28 +259,33 @@
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                labels: monthLabels,
                 datasets: [
                     {
-                        label: '@Localizer["المبيعات (إيرادات)"]',
-                        data: [15000, 22000, 38000, 35000, 28000, 19000, 15000, 10000, 12000, 15000, 20000, 25000],
-                        borderColor: navyColor, // لون كحلي للإيرادات
+                        label: '@Html.Raw(Localizer["المبيعات (إيرادات الفواتير OMR)"])',
+                        data: salesData,
+                        borderColor: navyColor,
+                        backgroundColor: navyColor + '20', // لون شفاف للتعبئة أسفل الخط
                         tension: 0.4,
-                        borderWidth: 3
+                        borderWidth: 3,
+                        fill: true
                     },
                     {
-                        label: '@Localizer["المشتريات والتكاليف"]',
-                        data: [10000, 18000, 25000, 20000, 15000, 12000, 8000, 5000, 8000, 10000, 12000, 18000],
-                        borderColor: goldColor, // لون ذهبي للتكاليف
+                        label: '@Html.Raw(Localizer["المشتريات (تكلفة السيارات USD)"])',
+                        data: purchasesData,
+                        borderColor: goldColor,
+                        backgroundColor: goldColor + '20',
                         tension: 0.4,
-                        borderWidth: 3
+                        borderWidth: 3,
+                        fill: true
                     }
                 ]
             },
             options: {
                 responsive: true,
                 plugins: { legend: { position: 'top', labels: { font: { family: 'Cairo', weight: 'bold' } } } },
-                scales: { y: { beginAtZero: true } }
+                scales: { y: { beginAtZero: true } },
+                interaction: { mode: 'index', intersect: false }
             }
         });
     </script>

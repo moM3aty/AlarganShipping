@@ -1,5 +1,20 @@
-﻿@{
+﻿@using System.Text.Json
+@inject IWebHostEnvironment Env
+@{
     ViewData["Title"] = Localizer["دليل الخدمات والأسعار"];
+
+    // جلب رقم التواصل من ملف الإعدادات ديناميكياً
+    string settingsPath = System.IO.Path.Combine(Env.WebRootPath, "settings.json");
+    string phone = "96800000000"; // قيمة افتراضية
+    if (System.IO.File.Exists(settingsPath))
+    {
+        var json = System.IO.File.ReadAllText(settingsPath);
+        using var doc = JsonDocument.Parse(json);
+        if (doc.RootElement.TryGetProperty("InquiryPhoneNumber", out var phoneProp))
+        {
+            phone = phoneProp.GetString() ?? phone;
+        }
+    }
 }
 
 <style>
@@ -194,51 +209,60 @@
 
     <div class="intro-text">
         <h1>@Localizer["حلولنا اللوجستية المتكاملة"]</h1>
-        <p>@Localizer["نقدم في شركة الارجان للشحن (ALARGAN AUTO SHIPPING) تجربة استيراد فريدة، تبدأ من الاستشارة الفنية قبل المزاد وتنتهي عند وصول سيارتك إلى باب منزلك في سلطنة عمان."]</p>
+        <p>@Localizer["نقدم في شركة الارجان للشحن تجربة استيراد فريدة، تبدأ من الاستشارة الفنية قبل المزاد وتنتهي عند وصول سيارتك إلى منزلك."]</p>
     </div>
 
     <div class="services-grid">
         <div class="service-card">
             <div class="srv-icon"><i class="fa-solid fa-ship"></i></div>
             <h3>@Localizer["الشحن البحري الدولي"]</h3>
-            <p>@Localizer["حلول شحن متكاملة عبر الحاويات (Containers) أو نظام الشحن بالدحرجة (RORO) من كافة موانئ العالم إلى ميناء صحار وميناء صلالة."]</p>
-            <a href="#" class="btn-srv-link"><i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]</a>
+            <p>@Localizer["حلول شحن متكاملة عبر الحاويات أو نظام RORO من كافة موانئ العالم."]</p>
+            <a href="https://wa.me/@(phone)?text=@Html.Raw(Uri.EscapeDataString("أهلاً شركة الأرجان، أود الاستفسار عن خدمات الشحن البحري الدولي."))" target="_blank" class="btn-srv-link">
+                <i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]
+            </a>
         </div>
 
         <div class="service-card">
             <div class="srv-icon"><i class="fa-solid fa-file-shield"></i></div>
             <h3>@Localizer["فحص وتأمين المركبات"]</h3>
-            <p>@Localizer["توفير تقارير فحص مفصلة قبل الشراء، وتأمين شامل على الشحنات البحرية لحماية استثمارك من أي مخاطر محتملة خلال الرحلة."]</p>
-            <a href="#" class="btn-srv-link"><i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]</a>
+            <p>@Localizer["توفير تقارير فحص مفصلة قبل الشراء، وتأمين شامل على الشحنات البحرية."]</p>
+            <a href="https://wa.me/@(phone)?text=@Html.Raw(Uri.EscapeDataString("أهلاً شركة الأرجان، أود الاستفسار عن فحص وتأمين سيارتي قبل الشراء."))" target="_blank" class="btn-srv-link">
+                <i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]
+            </a>
         </div>
 
         <div class="service-card">
             <div class="srv-icon"><i class="fa-solid fa-truck-fast"></i></div>
             <h3>@Localizer["النقل الداخلي (أمريكا)"]</h3>
-            <p>@Localizer["خدمة سحب ونقل احترافية (Towing) للمركبات من كافة مواقع المزاد في الولايات المتحدة إلى أقرب ساحة تجمع أو ميناء تصدير بأفضل الأسعار."]</p>
-            <a href="#" class="btn-srv-link"><i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]</a>
+            <p>@Localizer["خدمة سحب ونقل احترافية (Towing) من كافة مواقع المزاد في الولايات المتحدة."]</p>
+            <a href="https://wa.me/@(phone)?text=@Html.Raw(Uri.EscapeDataString("أهلاً شركة الأرجان، أود الاستفسار عن تكاليف النقل الداخلي (Towing) في أمريكا."))" target="_blank" class="btn-srv-link">
+                <i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]
+            </a>
         </div>
 
         <div class="service-card">
             <div class="srv-icon"><i class="fa-solid fa-building-shield"></i></div>
             <h3>@Localizer["التخليص الجمركي في عمان"]</h3>
-            <p>@Localizer["نمتلك فريقاً متخصصاً في موانئ السلطنة لإنهاء كافة الإجراءات الجمركية والضريبية بسرعة وكفاءة، لضمان استلام سيارتك دون تعقيدات."]</p>
-            <a href="#" class="btn-srv-link"><i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]</a>
+            <p>@Localizer["إنهاء كافة الإجراءات الجمركية والضريبية بسرعة وكفاءة في موانئ السلطنة."]</p>
+            <a href="https://wa.me/@(phone)?text=@Html.Raw(Uri.EscapeDataString("أهلاً شركة الأرجان، أود الاستفسار عن إجراءات التخليص الجمركي والضرائب في عمان."))" target="_blank" class="btn-srv-link">
+                <i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]
+            </a>
         </div>
 
         <div class="service-card">
             <div class="srv-icon"><i class="fa-solid fa-gavel"></i></div>
             <h3>@Localizer["استشارات وحسابات المزادات"]</h3>
-            <p>@Localizer["نقدم استشارات فنية متخصصة قبل الشراء، ونوفر لعملائنا حسابات خاصة للمشاركة المباشرة في كبرى المزادات العالمية مثل Copart و IAAI."]</p>
-            <a href="#" class="btn-srv-link"><i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]</a>
+            <p>@Localizer["نوفر لعملائنا حسابات خاصة للمشاركة المباشرة في كبرى المزادات العالمية."]</p>
+            <a href="https://wa.me/@(phone)?text=@Html.Raw(Uri.EscapeDataString("أهلاً شركة الأرجان، أرغب في الحصول على حساب مزاد للمزايدة بنفسي."))" target="_blank" class="btn-srv-link">
+                <i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i> @Localizer["استفسر الآن"]
+            </a>
         </div>
     </div>
 
-    <!-- Dark CTA Banner -->
     <div class="cta-banner-dark">
-        <div class="cta-content">
-            <h2>@Localizer["هل ترغب في الحصول على حساب مزاد؟"]</h2>
-            <p>@Localizer["فريقنا المتواجد في مسقط وأمريكا مستعد لتزويدك بكافة الأدوات اللازمة لبدء استيراد سيارتك بأقل التكاليف وبأعلى درجة من الأمان."]</p>
+        <div class="cta-content" style="text-align: right; flex: 1;">
+            <h2 style="color: var(--primary-gold); font-size: 2rem; font-weight: 900; margin-bottom: 1rem;">@Localizer["هل ترغب في الحصول على حساب مزاد؟"]</h2>
+            <p style="font-size: 1.1rem; opacity: 0.8;">@Localizer["فريقنا مستعد لتزويدك بكافة الأدوات لبدء استيراد سيارتك بأمان."]</p>
         </div>
         <a href="@Url.Action("Index", "Contact")" class="btn-cta-outline">@Localizer["طلب عرض سعر"]</a>
     </div>

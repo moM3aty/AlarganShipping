@@ -3,6 +3,8 @@
     ViewData["Title"] = Localizer["أوامر النقل الداخلي"];
 }
 
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
 <style>
     .page-header-container {
         display: flex;
@@ -83,6 +85,11 @@
             vertical-align: middle;
         }
 
+        .table-enterprise tbody tr:hover {
+            background-color: #f8fafc;
+            transition: 0.2s;
+        }
+
     .order-number {
         background: rgba(44,62,80,0.05);
         color: var(--primary-navy);
@@ -123,9 +130,19 @@
         color: #16a34a;
         border: 1px solid #bbf7d0;
     }
+
+    .action-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: 0.3s;
+        padding: 5px;
+    }
 </style>
 
 <div>
+    @Html.AntiForgeryToken()
     <div class="page-header-container">
         <div class="page-header-text">
             <h2><i class="fa-solid fa-route"></i> @Localizer["أوامر النقل الداخلي (Dispatch)"]</h2>
@@ -146,6 +163,7 @@
                     <th>@Localizer["المسار (من - إلى)"]</th>
                     <th>@Localizer["تكلفة النقل"]</th>
                     <th>@Localizer["الحالة"]</th>
+                    <th>@Localizer["إجراءات"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -161,14 +179,19 @@
                             </td>
                             <td><i class="fa-solid fa-truck" style="color: var(--primary-gold); margin-inline-end: 5px;"></i> @(order.Transporter?.Name)</td>
                             <td>
-                                <div>@(order.OriginLocation?.Name ?? "المزاد") <i class="fa-solid fa-arrow-left-long route-arrow"></i> @(order.DestinationLocation?.Name ?? "المستودع")</div>
+                                <div>@(order.OriginLocation?.Name ?? "المزاد") <i class="fa-solid fa-arrow-left-long route-arrow" style="transform: @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "scaleX(-1)" : "none");"></i> @(order.DestinationLocation?.Name ?? "المستودع")</div>
                             </td>
                             <td style="color: #16a34a; font-weight: 900;">$@order.TowingFee</td>
                             <td>
                                 @{
-                                    string sClass = order.Status == "Delivered" ? "s-delivered" : order.Status == "PickedUp" ? "s-picked" : "s-assigned";
+                                    string currentStatus = order.Status ?? "Assigned";
+                                    string sClass = currentStatus == "Delivered" ? "s-delivered" : currentStatus == "PickedUp" ? "s-picked" : "s-assigned";
                                 }
-                                <span class="status-pill @sClass">@Localizer[order.Status]</span>
+                                <span class="status-pill @sClass">@Localizer[currentStatus]</span>
+                            </td>
+                            <td>
+                                <a href="@Url.Action("Edit", "DispatchOrders", new { id = order.Id })" class="action-btn" style="color: var(--primary-gold); margin-inline-end: 15px;" title="@Localizer["تعديل"]"><i class="fa-solid fa-pen-to-square"></i></a>
+                                <button type="button" onclick="confirmDelete(@order.Id)" class="action-btn" style="color: #ef4444;" title="@Localizer["حذف"]"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
                     }
@@ -179,7 +202,48 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
     <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
+                text: '@Html.Raw(Localizer["لن تتمكن من التراجع عن عملية الحذف!"])',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: 'var(--primary-navy)',
+                confirmButtonText: '@Html.Raw(Localizer["نعم، احذفه!"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "DispatchOrders")/' + id,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: '@Html.Raw(Localizer["تم الحذف!"])',
+                                    text: '@Html.Raw(Localizer["تم حذف أمر النقل بنجاح."])',
+                                    icon: 'success',
+                                    confirmButtonColor: 'var(--primary-gold)'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', response.message || '@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])', 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["لا يمكن الاتصال بالخادم."])', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
         $(document).ready(function () {
             var dir = $('html').attr('dir') === 'rtl';
             $('#dispatchTable').DataTable({

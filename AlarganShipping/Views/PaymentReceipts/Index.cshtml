@@ -3,6 +3,8 @@
     ViewData["Title"] = Localizer["سندات القبض"];
 }
 
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
 <style>
     .page-header {
         display: flex;
@@ -29,18 +31,17 @@
     }
 
         .page-title i {
-            color: #10b981;
+            color: var(--primary-gold);
         }
-    /* لون أخضر دلالة على الأموال المقبوضة */
 
     .btn-add {
-        background: linear-gradient(to right, #10b981, #059669);
+        background: linear-gradient(to right, var(--primary-navy), var(--secondary-navy));
         color: #ffffff;
         font-weight: 800;
         padding: 0.85rem 1.75rem;
         border-radius: 1rem;
         text-decoration: none;
-        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        box-shadow: 0 4px 10px rgba(44, 62, 80, 0.3);
         transition: 0.3s;
         display: inline-flex;
         align-items: center;
@@ -49,7 +50,8 @@
 
         .btn-add:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 6px 15px rgba(44, 62, 80, 0.4);
+            background: linear-gradient(to right, var(--primary-gold), var(--secondary-gold));
             color: white;
         }
 
@@ -105,11 +107,11 @@
         font-family: monospace;
         font-size: 1.2rem;
         font-weight: 900;
-        color: #10b981;
-        background: rgba(16, 185, 129, 0.1);
+        color: var(--primary-gold);
+        background: rgba(184, 147, 90, 0.1);
         padding: 0.4rem 1rem;
         border-radius: 8px;
-        border: 1px solid rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(184, 147, 90, 0.2);
     }
 
     .method-badge {
@@ -130,9 +132,50 @@
             color: var(--primary-gold);
         }
 
+    /* أزرار الإجراءات */
+    .actions-wrapper {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-btn-outline {
+        color: var(--primary-gold);
+        background: rgba(184, 147, 90, 0.05);
+        border: 1px solid rgba(184, 147, 90, 0.2);
+        padding: 0.6rem 1rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 800;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .action-btn-outline:hover {
+            background: var(--primary-gold);
+            color: white;
+        }
+
+    .action-btn-danger {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.05);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        padding: 0.6rem 1rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .action-btn-danger:hover {
+            background: #ef4444;
+            color: white;
+        }
 </style>
 
 <div>
+    @Html.AntiForgeryToken()
     <div class="page-header">
         <h2 class="page-title"><i class="fa-solid fa-hand-holding-dollar"></i> @Localizer["سجل المقبوضات (المدفوعات)"]</h2>
         <a href="@Url.Action("Create", "PaymentReceipts")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إصدار سند قبض جديد"]</a>
@@ -146,8 +189,8 @@
                     <th>@Localizer["تاريخ الدفع"]</th>
                     <th>@Localizer["العميل المُسدد"]</th>
                     <th>@Localizer["طريقة الدفع"]</th>
-                    <th>@Localizer["رقم المرجع"]</th>
                     <th>@Localizer["المبلغ"]</th>
+                    <th>@Localizer["إجراءات"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -164,8 +207,17 @@
                                     <i class="fa-solid fa-money-bill-transfer"></i> @Localizer[rec.PaymentMethod]
                                 </span>
                             </td>
-                            <td style="color: var(--text-muted); font-family: monospace;">@(string.IsNullOrEmpty(rec.ReferenceNumber) ? "-" : rec.ReferenceNumber)</td>
                             <td><span class="rec-amount">$@rec.Amount</span></td>
+                            <td>
+                                <div class="actions-wrapper">
+                                    <a href="@Url.Action("Edit", "PaymentReceipts", new { id = rec.Id })" class="action-btn-outline" title="@Localizer["تعديل السند"]">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <button type="button" class="action-btn-danger" onclick="confirmDelete(@rec.Id)" title="@Localizer["حذف السند"]">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
                     }
                 }
@@ -175,7 +227,48 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
     <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
+                text: '@Html.Raw(Localizer["عند حذف السند، سيتم التراجع عن خصم المبلغ من مديونية العميل."])',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: 'var(--primary-navy)',
+                confirmButtonText: '@Html.Raw(Localizer["نعم، احذفه!"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "PaymentReceipts")/' + id,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: '@Html.Raw(Localizer["تم الحذف!"])',
+                                    text: '@Html.Raw(Localizer["تم حذف السند وتحديث حساب العميل."])',
+                                    icon: 'success',
+                                    confirmButtonColor: 'var(--primary-gold)'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', response.message || '@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])', 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["لا يمكن الاتصال بالخادم."])', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
         $(document).ready(function () {
             var dir = $('html').attr('dir') === 'rtl';
             $('#receiptsDataTable').DataTable({

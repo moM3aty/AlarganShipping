@@ -1,0 +1,239 @@
+﻿@model AlarganShipping.Models.Location
+@{
+    ViewData["Title"] = Localizer["إضافة موقع جديد"];
+}
+
+<style>
+    .form-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-page-title {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-back {
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        color: var(--text-muted);
+        padding: 0.6rem 1.2rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn-back:hover {
+            background-color: #f8fafc;
+            color: var(--primary-navy);
+        }
+
+    .premium-form-card {
+        background-color: #ffffff;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 30px rgba(44, 62, 80, 0.03);
+        border: 1px solid #f1f5f9;
+        padding: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .premium-form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary-navy), var(--primary-gold));
+        }
+
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    @@media (min-width: 768px) {
+        .form-grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-weight: 800;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .form-control {
+        padding: 0.85rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        font-family: inherit;
+        font-size: 0.95rem;
+        color: var(--primary-navy);
+        font-weight: 700;
+        background-color: white;
+        transition: 0.3s;
+        outline: none;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
+        }
+
+    .form-actions {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .btn-submit {
+        background: var(--primary-navy);
+        color: white;
+        border: none;
+        padding: 0.85rem 2.5rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .btn-submit:hover {
+            background: var(--primary-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(184, 147, 90, 0.3);
+        }
+
+    .btn-cancel {
+        background: transparent;
+        color: var(--text-dark);
+        border: none;
+        font-weight: 800;
+        cursor: pointer;
+        text-decoration: none;
+        padding: 0.85rem 1rem;
+    }
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
+<div>
+    <div class="form-page-header">
+        <h2 class="form-page-title"><i class="fa-solid fa-map-location-dot" style="color: var(--primary-gold);"></i> @Localizer["إضافة موقع جديد"]</h2>
+        <a href="@Url.Action("Index", "Locations")" class="btn-back"><i class="fa-solid fa-arrow-right-long"></i> @Localizer["العودة"]</a>
+    </div>
+
+    <div class="premium-form-card">
+        <form asp-action="Create" method="post" id="locationForm">
+            @Html.AntiForgeryToken()
+
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label asp-for="Name" class="form-label">@Localizer["اسم الموقع"] *</label>
+                    <input asp-for="Name" class="form-control" placeholder="New Jersey Port, Sohar Port..." required />
+                </div>
+                <div class="form-group">
+                    <label asp-for="LocationType" class="form-label">@Localizer["النوع"] *</label>
+                    <select asp-for="LocationType" class="form-control" required>
+                        <option value="">@Localizer["اختر النوع..."]</option>
+                        <option value="Warehouse">@Localizer["مستودع"]</option>
+                        <option value="Port">@Localizer["ميناء"]</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Country" class="form-label">@Localizer["الدولة"] *</label>
+                    <input asp-for="Country" class="form-control" placeholder="USA, Oman, UAE..." required />
+                </div>
+                <div class="form-group">
+                    <label asp-for="StateOrProvince" class="form-label">@Localizer["الولاية / المحافظة"]</label>
+                    <input asp-for="StateOrProvince" class="form-control" placeholder="NJ, TX, Muscat..." />
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label asp-for="Address" class="form-label">@Localizer["العنوان التفصيلي"]</label>
+                    <input asp-for="Address" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="ContactPerson" class="form-label">@Localizer["الشخص المسؤول (اختياري)"]</label>
+                    <input asp-for="ContactPerson" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="ContactPhone" class="form-label">@Localizer["رقم التواصل (اختياري)"]</label>
+                    <input asp-for="ContactPhone" class="form-control" dir="ltr" />
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="javascript:history.back()">@Localizer["إلغاء"]</button>
+                <button type="submit" class="btn-submit" id="btnSubmit">
+                    <i class="fa-solid fa-save"></i> @Localizer["حفظ البيانات"]
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#locationForm').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
+
+                var btn = $('#btnSubmit');
+                var originalText = btn.html();
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Html.Raw(Localizer["جاري الحفظ..."])').prop('disabled', true);
+
+                $.ajax({
+                    url: form.attr('action'), type: form.attr('method'), data: form.serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: '@Html.Raw(Localizer["تم الحفظ بنجاح!"])', icon: 'success', confirmButtonColor: 'var(--primary-gold)',
+                                confirmButtonText: '@Html.Raw(Localizer["العودة للقائمة"])'
+                            }).then(() => { window.location.href = '@Url.Action("Index", "Locations")'; });
+                        } else {
+                            var errorMsg = response.errors ? response.errors.join('\n') : '@Html.Raw(Localizer["تأكد من البيانات المدخلة"])';
+                            Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: errorMsg, icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                            btn.html(originalText).prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: '@Html.Raw(Localizer["حدث خطأ أثناء الحفظ."])', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                        btn.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+}

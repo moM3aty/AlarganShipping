@@ -93,6 +93,32 @@ namespace AlarganShipping.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TaxMethods",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaxMethods", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TaxTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaxTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Transporters",
                 columns: table => new
                 {
@@ -121,12 +147,33 @@ namespace AlarganShipping.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CanManageCars = table.Column<bool>(type: "bit", nullable: false),
+                    CanManageCustomers = table.Column<bool>(type: "bit", nullable: false),
+                    CanManageFinance = table.Column<bool>(type: "bit", nullable: false),
+                    CanManageSettings = table.Column<bool>(type: "bit", nullable: false),
+                    ShowOnContactPage = table.Column<bool>(type: "bit", nullable: false),
+                    JobTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DepartmentIcon = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VehicleShapes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VehicleShapes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -254,6 +301,7 @@ namespace AlarganShipping.Migrations
                     Year = table.Column<int>(type: "int", nullable: false),
                     Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     InternalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MainImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StatusId = table.Column<int>(type: "int", nullable: false),
                     PurchasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     EstimatedProfit = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
@@ -639,7 +687,16 @@ namespace AlarganShipping.Migrations
                 name: "ServiceRates");
 
             migrationBuilder.DropTable(
+                name: "TaxMethods");
+
+            migrationBuilder.DropTable(
+                name: "TaxTypes");
+
+            migrationBuilder.DropTable(
                 name: "TrackingLogs");
+
+            migrationBuilder.DropTable(
+                name: "VehicleShapes");
 
             migrationBuilder.DropTable(
                 name: "Transporters");

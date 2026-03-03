@@ -39,7 +39,7 @@
         }
     }
 
-    /* Summary Card (Navy Blue Background) */
+    /* Summary Card */
     .summary-card {
         background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--primary-navy) 100%);
         color: white;
@@ -119,6 +119,10 @@
         transition: 0.3s;
         font-family: inherit;
         box-shadow: 0 5px 15px rgba(184, 147, 90, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
     }
 
         .btn-share:hover {
@@ -126,7 +130,7 @@
             box-shadow: 0 8px 20px rgba(184, 147, 90, 0.4);
         }
 
-    /* Form Card (White) */
+    /* Form Card */
     .form-card {
         background: white;
         border-radius: 1.5rem;
@@ -187,7 +191,7 @@
         font-size: 0.85rem;
         font-weight: 800;
         color: var(--primary-navy);
-        text-align: end;
+        text-align: start;
     }
 
     .calc-input {
@@ -201,7 +205,6 @@
         outline: none;
         transition: 0.3s;
         background: #f8fafc;
-        text-align: end;
     }
 
         .calc-input:focus {
@@ -210,10 +213,15 @@
             box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
 
+    .calc-input-ltr {
+        text-align: end;
+        font-family: monospace;
+    }
+
     .location-box {
         border: 2px solid #e2e8f0;
         border-radius: 0.8rem;
-        max-height: 200px;
+        max-height: 250px;
         overflow-y: auto;
         padding: 0.5rem;
     }
@@ -226,6 +234,7 @@
         cursor: pointer;
         transition: 0.2s;
         border-radius: 0.5rem;
+        align-items: center;
     }
 
         .loc-item:hover {
@@ -235,6 +244,7 @@
         .loc-item.selected {
             background: rgba(184, 147, 90, 0.05);
             border-color: var(--primary-gold);
+            border: 1px solid var(--primary-gold);
         }
 
     .loc-name {
@@ -244,7 +254,7 @@
 
     .loc-price {
         font-weight: 900;
-        color: var(--text-muted);
+        color: var(--primary-gold);
         font-family: monospace;
     }
 
@@ -261,142 +271,400 @@
         margin-top: 2rem;
         border: 1px solid rgba(184, 147, 90, 0.2);
     }
+
+    /* ==================================
+           تصميم صفحة الطباعة الاحترافية
+           ================================== */
+    .print-only {
+        display: none;
+    }
+
+    @@media print {
+        /* إخفاء كل محتويات الصفحة الأصلية والشريط الجانبي */
+        body * {
+            visibility: hidden;
+        }
+
+        .sidebar, .top-header {
+            display: none !important;
+        }
+        /* إظهار منطقة عرض السعر فقط وتنسيقها لتملأ الورقة */
+        .print-only, .print-only * {
+            visibility: visible;
+        }
+
+        .print-only {
+            display: block !important;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            background: white;
+            padding: 2rem;
+            color: black;
+            direction: rtl; /* لضمان التنسيق العربي للطباعة */
+        }
+        /* تنسيقات الطباعة */
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+
+            .print-table th {
+                background: var(--primary-navy) !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding: 15px;
+                text-align: right;
+                font-size: 1.1rem;
+            }
+
+            .print-table td {
+                border-bottom: 1px solid #e2e8f0;
+                padding: 15px;
+                font-weight: bold;
+                font-size: 1.1rem;
+            }
+
+            .print-table .amount-col {
+                text-align: left;
+                font-family: monospace;
+                color: var(--primary-navy);
+                font-size: 1.2rem;
+            }
+
+        .print-total-box {
+            margin-top: 2rem;
+            padding: 20px;
+            background: #f8fafc !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            border: 2px solid var(--primary-navy);
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pt-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--primary-navy);
+            margin: 0;
+        }
+
+        .pt-usd {
+            font-size: 1.2rem;
+            color: #64748b;
+            font-family: monospace;
+        }
+
+        .pt-omr {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--primary-gold);
+            margin: 0;
+            font-family: monospace;
+        }
+    }
 </style>
 
 <div class="calc-page-wrapper">
     <div class="calc-header">
-        <h2>@Localizer["حاسبة تكاليف الشحن"]</h2>
-        <p>@Localizer["احسب التكاليف بناءً على قوائم الأسعار الرسمية لشركة الأرجان"]</p>
+        <h2>@Localizer["حاسبة تكاليف الشحن الذكية"]</h2>
+        <p>@Localizer["احسب التكاليف المتوقعة مباشرة بناءً على بيانات المزادات والموانئ في النظام"]</p>
     </div>
 
     <div class="calc-layout">
         <!-- 1. نموذج الإدخال -->
         <div class="form-card">
+            <!-- التبويبات -->
             <div class="tabs-wrapper">
-                <div class="tab-btn">@Localizer["شحن فقط (Import)"]</div>
-                <div class="tab-btn active">@Localizer["سيارة (Export)"]</div>
+                <div class="tab-btn" id="tabImport" onclick="switchCalcMode('import')">@Localizer["شحن فقط (Import)"]</div>
+                <div class="tab-btn active" id="tabExport" onclick="switchCalcMode('export')">@Localizer["شراء سيارة (Export)"]</div>
             </div>
 
             <div class="calc-grid">
-                <div class="input-group">
+                <div class="input-group" id="carPriceGroup">
                     <label class="input-label">@Localizer["سعر السيارة المتوقع (USD)"]</label>
-                    <input type="number" class="calc-input" id="carPrice" value="5000" />
+                    <input type="number" class="calc-input calc-input-ltr" id="carPrice" value="5000" />
                 </div>
                 <div class="input-group">
-                    <label class="input-label">@Localizer["أدخل رقم الشاصي..."]</label>
-                    <input type="text" class="calc-input" placeholder="@Localizer["رقم الشاصي (اختياري)"]" />
+                    <label class="input-label">@Localizer["نوع السيارة"]</label>
+                    <select class="calc-input" id="carTypeSelect">
+                        <option>@Localizer["صالون (Sedan)"]</option>
+                        <option>@Localizer["دفع رباعي (SUV)"]</option>
+                        <option>@Localizer["بيك أب (Pickup)"]</option>
+                    </select>
                 </div>
 
-                <div class="input-group full">
-                    <label class="input-label">@Localizer["حدد موقع السيارة في أمريكا"]</label>
-                    <input type="text" class="calc-input" placeholder="@Localizer["ابحث بالولاية، المدينة، أو اسم المزاد..."]" style="margin-bottom: 0.5rem; text-align: start;" />
+                <div class="input-group full" id="auctionGroup">
+                    <label class="input-label">@Localizer["حدد المزاد / موقع السيارة (لتحديد الرسوم)"]</label>
                     <div class="location-box">
-                        <label class="loc-item selected">
-                            <div><input type="radio" name="loc" checked style="margin-inline-end: 10px;"> <span class="loc-name">Birmingham, Alabama</span><br><small style="color: #94a3b8; margin-inline-start: 25px;">Copart - 300 Miles</small></div>
-                            <div class="loc-price">$350</div>
-                        </label>
-                        <label class="loc-item">
-                            <div><input type="radio" name="loc" style="margin-inline-end: 10px;"> <span class="loc-name">Houston, Texas</span><br><small style="color: #94a3b8; margin-inline-start: 25px;">IAAI - 50 Miles</small></div>
-                            <div class="loc-price">$150</div>
-                        </label>
-                        <label class="loc-item">
-                            <div><input type="radio" name="loc" style="margin-inline-end: 10px;"> <span class="loc-name">Los Angeles, CA</span></div>
-                            <div class="loc-price">$400</div>
-                        </label>
+                        @if (ViewBag.Auctions != null)
+                        {
+                            bool isFirst = true;
+                            foreach (var auction in ViewBag.Auctions)
+                            {
+                                <label class="loc-item @(isFirst ? "selected" : "")">
+                                    <div>
+                                        <input type="radio" name="auctionFee" value="@auction.DefaultAuctionFee" data-name="@auction.Name" @(isFirst ? "checked" : "") style="margin-inline-end: 10px;" onchange="updateAuctionSelection(this)">
+                                        <span class="loc-name">@auction.Name</span><br>
+                                        <small style="color: #94a3b8; margin-inline-start: 25px;">@auction.Location</small>
+                                    </div>
+                                    <div class="loc-price">$@auction.DefaultAuctionFee</div>
+                                </label>
+                                isFirst = false;
+                            }
+                        }
+                        else
+                        {
+                            <p style="padding:1rem; text-align:center; color:#94a3b8;">@Localizer["لا توجد مزادات مسجلة في النظام"]</p>
+                        }
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label class="input-label">@Localizer["نوع السيارة"]</label>
-                    <select class="calc-input" style="text-align: start;">
-                        <option>@Localizer["صالون (Sedan)"]</option>
-                        <option>@Localizer["دفع رباعي (SUV)"]</option>
-                    </select>
+                    <label class="input-label">@Localizer["تكلفة النقل الداخلي (Towing) USD"]</label>
+                    <input type="number" class="calc-input calc-input-ltr" id="towingFee" value="350" />
                 </div>
+
                 <div class="input-group">
-                    <label class="input-label">@Localizer["ولاية الوصول (المستودع)"]</label>
-                    <select class="calc-input" style="text-align: start;">
-                        <option>Georgia</option>
-                        <option>New Jersey</option>
-                        <option>Texas</option>
-                    </select>
+                    <label class="input-label">@Localizer["تكلفة الشحن البحري (Ocean Freight) USD"]</label>
+                    <input type="number" class="calc-input calc-input-ltr" id="seaFreightFee" value="1000" />
                 </div>
 
                 <div class="input-group full" style="margin-top: 1rem; border-top: 1px solid #f1f5f9; padding-top: 1rem;">
-                    <label class="input-label" style="text-align: start;">@Localizer["إضافة تكاليف مخصصة"]</label>
+                    <label class="input-label">@Localizer["إعدادات الجمارك والعمولات (يمكن تعديلها)"]</label>
                     <div class="calc-grid" style="grid-template-columns: repeat(3, 1fr);">
-                        <input type="number" class="calc-input" id="customCommission" placeholder="@Localizer["العمولة"]" />
-                        <input type="number" class="calc-input" id="customCustoms" placeholder="@Localizer["الجمارك (%)"]" />
-                        <input type="number" class="calc-input" id="customVat" placeholder="@Localizer["الضريبة (%)"]" />
+                        <div class="input-group">
+                            <label class="input-label" style="font-size:0.75rem;">@Localizer["عمولة الشركة ($)"]</label>
+                            <input type="number" class="calc-input calc-input-ltr" id="customCommission" value="150" />
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label" style="font-size:0.75rem;">@Localizer["الجمارك (%)"]</label>
+                            <input type="number" class="calc-input calc-input-ltr" id="customCustoms" value="5" />
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label" style="font-size:0.75rem;">@Localizer["الضريبة VAT (%)"]</label>
+                            <input type="number" class="calc-input calc-input-ltr" id="customVat" value="5" />
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="info-alert">
                 <i class="fa-solid fa-circle-info" style="font-size: 1.5rem;"></i>
-                @Localizer["ملاحظات هامة: الأسعار المعروضة تشمل النقل الداخلي في أمريكا والشحن البحري إلى ميناء صلالة/صحار. رسوم الجمارك والضرائب تقريبية."]
+                @Localizer["ملاحظات هامة: التكاليف المعروضة قابلة للتعديل وتتغير النتائج فوراً. الجمارك والضرائب تحسب تلقائياً كنسبة من (سعر السيارة + أجور الشحن)."]
             </div>
         </div>
 
-        <!-- 2. ملخص التكاليف -->
+        <!-- 2. ملخص التكاليف (النتائج) -->
         <div class="summary-card">
             <div class="summary-title">
-                <span>@Localizer["ملخص التكاليف"]</span>
+                <span>@Localizer["ملخص التسعيرة"]</span>
                 <i class="fa-solid fa-calculator" style="color: var(--primary-gold);"></i>
             </div>
 
-            <div class="summary-row">
+            <div class="summary-row" id="rowSumCar">
                 <span>@Localizer["سعر السيارة"]</span>
-                <span class="val">$<span id="sumCar">5,000</span></span>
+                <span class="val">$<span id="sumCar">0</span></span>
+            </div>
+            <div class="summary-row" id="rowSumAuction">
+                <span>@Localizer["رسوم المزاد"]</span>
+                <span class="val">$<span id="sumAuction">0</span></span>
             </div>
             <div class="summary-row">
-                <span>@Localizer["رسوم المزاد (متوقعة)"]</span>
-                <span class="val">$<span id="sumAuction">650</span></span>
+                <span>@Localizer["النقل الداخلي والشحن"]</span>
+                <span class="val">$<span id="sumShipping">0</span></span>
             </div>
             <div class="summary-row">
-                <span>@Localizer["النقل الداخلي + الشحن"]</span>
-                <span class="val">$<span id="sumShipping">1,350</span></span>
-            </div>
-            <div class="summary-row">
-                <span>@Localizer["الجمارك والضرائب (10%)"]</span>
-                <span class="val">$<span id="sumTax">565</span></span>
+                <span>@Localizer["الجمارك والضرائب"]</span>
+                <span class="val">$<span id="sumTax">0</span></span>
             </div>
             <div class="summary-row" style="color: var(--primary-gold);">
                 <span>@Localizer["عمولة الشركة"]</span>
-                <span class="val">$<span id="sumComm">150</span></span>
+                <span class="val">$<span id="sumComm">0</span></span>
             </div>
 
             <div class="summary-total">
                 <span class="label">@Localizer["الإجمالي المتوقع"]</span>
-                <div>
-                    <span class="total-val" id="finalTotal">2,970.00</span>
+                <div style="text-align: end;">
+                    <span class="total-val" id="finalTotal">0.00</span>
                     <span class="currency">ر.ع</span>
-                    <div style="font-size: 0.75rem; color: #94a3b8; text-align: end; margin-top: 5px;">~ $<span id="finalTotalUsd">7,715.00</span> USD</div>
+                    <div style="font-size: 0.85rem; color: #cbd5e1; margin-top: 5px; font-family: monospace;">~ $<span id="finalTotalUsd">0.00</span> USD</div>
                 </div>
             </div>
 
-            <button class="btn-share"><i class="fa-brands fa-whatsapp"></i> @Localizer["حفظ ومشاركة التسعيرة"]</button>
+            <!-- تم استدعاء دالة preparePrint بدلاً من window.print مباشرة -->
+            <button class="btn-share" onclick="preparePrint()"><i class="fa-solid fa-print"></i> @Localizer["طباعة عرض السعر للعميل"]</button>
         </div>
     </div>
 </div>
 
+<!-- ==============================================
+     نموذج عرض السعر المخصص للطباعة (مخفي بالشاشة)
+     ============================================== -->
+<div id="printQuoteArea" class="print-only">
+    <div style="text-align: center; margin-bottom: 2rem; border-bottom: 3px solid var(--primary-gold); padding-bottom: 2rem;">
+        <h1 style="color: var(--primary-navy); margin: 0; font-size: 3rem; font-weight: 900;">ALARGAN</h1>
+        <p style="color: var(--primary-gold); letter-spacing: 3px; font-weight: bold; margin: 0; font-size: 1.2rem;">AUTO SHIPPING</p>
+        <p style="color: #64748b; margin-top: 10px; font-size: 1.2rem;">عرض سعر تقديري - Quotation</p>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; margin-bottom: 2rem; font-size: 1.2rem;">
+        <div><strong>تاريخ العرض:</strong> <span id="printDate"></span></div>
+        <div><strong>نوع الخدمة:</strong> <span id="printServiceType"></span></div>
+    </div>
+
+    <div style="margin-bottom: 1.5rem; font-size: 1.2rem;">
+        <strong>تفاصيل المركبة:</strong> <span id="printCarType"></span>
+        <span id="printAuctionInfo"></span>
+    </div>
+
+    <table class="print-table">
+        <thead>
+            <tr>
+                <th>البيان / تفاصيل التكلفة</th>
+                <th style="text-align: left;">المبلغ (USD)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr id="printRowCar">
+                <td>سعر شراء السيارة المتوقع</td>
+                <td class="amount-col">$<span id="pCarPrice"></span></td>
+            </tr>
+            <tr id="printRowAuction">
+                <td>رسوم المزاد والبوابة المتوقعة</td>
+                <td class="amount-col">$<span id="pAuction"></span></td>
+            </tr>
+            <tr>
+                <td>أجور النقل الداخلي في أمريكا والشحن البحري</td>
+                <td class="amount-col">$<span id="pShipping"></span></td>
+            </tr>
+            <tr>
+                <td>الرسوم الجمركية والضرائب (تقديرية)</td>
+                <td class="amount-col">$<span id="pTax"></span></td>
+            </tr>
+            <tr>
+                <td>عمولة الشركة والأتعاب الإدارية</td>
+                <td class="amount-col">$<span id="pComm"></span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="print-total-box">
+        <div>
+            <p class="pt-title">الإجمالي المتوقع الدفع</p>
+            <p class="pt-usd">Approx. $<span id="pTotalUsd"></span> USD</p>
+        </div>
+        <div>
+            <p class="pt-omr"><span id="pTotal"></span> ر.ع</p>
+        </div>
+    </div>
+
+    <div style="margin-top: 3rem; text-align: center; color: #64748b; font-size: 1.1rem; line-height: 1.8;">
+        <p><i class="fa-solid fa-circle-info" style="margin-inline-end: 5px;"></i> هذا العرض تقريبي وقابل للتغيير بناءً على أسعار الشراء الفعلية من المزاد وتكاليف الشحن وقت التنفيذ الفعلي.</p>
+        <p><strong>شركة الأرجان للشحن - سلطنة عمان</strong></p>
+    </div>
+</div>
+
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
+        let currentMode = 'export';
+
+        function switchCalcMode(mode) {
+            currentMode = mode;
+            $('.tab-btn').removeClass('active');
+
+            if(mode === 'import') {
+                $('#tabImport').addClass('active');
+                $('#carPriceGroup, #auctionGroup').slideUp(300);
+                $('#rowSumCar, #rowSumAuction').hide();
+            } else {
+                $('#tabExport').addClass('active');
+                $('#carPriceGroup, #auctionGroup').slideDown(300);
+                $('#rowSumCar, #rowSumAuction').show();
+            }
+            calculateTotal();
+        }
+
+        function updateAuctionSelection(radio) {
+            $('.loc-item').removeClass('selected');
+            $(radio).closest('.loc-item').addClass('selected');
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            var carPrice = currentMode === 'export' ? (parseFloat($('#carPrice').val()) || 0) : 0;
+            var auctionFee = currentMode === 'export' ? (parseFloat($('input[name="auctionFee"]:checked').val()) || 0) : 0;
+            var towingFee = parseFloat($('#towingFee').val()) || 0;
+            var seaFreightFee = parseFloat($('#seaFreightFee').val()) || 0;
+            var commission = parseFloat($('#customCommission').val()) || 0;
+            var customsPct = parseFloat($('#customCustoms').val()) || 0;
+            var vatPct = parseFloat($('#customVat').val()) || 0;
+
+            $('#sumCar').text(carPrice.toLocaleString());
+            $('#sumAuction').text(auctionFee.toLocaleString());
+
+            var totalShipping = towingFee + seaFreightFee;
+            $('#sumShipping').text(totalShipping.toLocaleString());
+            $('#sumComm').text(commission.toLocaleString());
+
+            var baseForTax = carPrice + totalShipping;
+            var customsAmount = baseForTax * (customsPct / 100);
+            var vatAmount = (baseForTax + customsAmount) * (vatPct / 100);
+            var totalTax = customsAmount + vatAmount;
+
+            $('#sumTax').text(totalTax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+
+            var totalUsd = carPrice + auctionFee + totalShipping + totalTax + commission;
+            var totalOmr = totalUsd * 0.385;
+
+            $('#finalTotal').text(totalOmr.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+            $('#finalTotalUsd').text(totalUsd.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+        }
+
+        // دالة تجهيز وإطلاق الطباعة المخصصة
+        function preparePrint() {
+            // 1. تعيين التاريخ
+            const dateStr = new Date().toLocaleDateString('ar-OM', { year: 'numeric', month: 'long', day: 'numeric' });
+            $('#printDate').text(dateStr);
+
+            // 2. نوع الخدمة
+            $('#printServiceType').text(currentMode === 'export' ? 'شراء وتصدير سيارة' : 'شحن وتخليص (بدون شراء)');
+            $('#printCarType').text($('#carTypeSelect').val());
+
+            // 3. إظهار/إخفاء صفوف المزاد والشراء في الطباعة
+            if (currentMode === 'import') {
+                $('#printRowCar, #printRowAuction').hide();
+                $('#printAuctionInfo').text('');
+            } else {
+                $('#printRowCar, #printRowAuction').show();
+                let selectedAuctionName = $('input[name="auctionFee"]:checked').attr('data-name');
+                $('#printAuctionInfo').text('(مزاد ' + selectedAuctionName + ')');
+            }
+
+            // 4. تعبئة الأرقام في جدول الطباعة
+            $('#pCarPrice').text($('#sumCar').text());
+            $('#pAuction').text($('#sumAuction').text());
+            $('#pShipping').text($('#sumShipping').text());
+            $('#pTax').text($('#sumTax').text());
+            $('#pComm').text($('#sumComm').text());
+            $('#pTotal').text($('#finalTotal').text());
+            $('#pTotalUsd').text($('#finalTotalUsd').text());
+
+            // 5. استدعاء الطباعة
+            window.print();
+        }
+
         $(document).ready(function() {
-            $('#carPrice').on('input', function() {
-                var price = parseFloat($(this).val()) || 0;
-                $('#sumCar').text(price.toLocaleString());
-
-                // حساب تقريبي للجمارك (10% من قيمة السيارة والشحن)
-                var tax = (price + 1350) * 0.10;
-                $('#sumTax').text(tax.toLocaleString());
-
-                var totalUsd = price + 650 + 1350 + tax + 150;
-                var totalOmr = totalUsd * 0.385; // التحويل للريال العماني
-
-                $('#finalTotal').text(totalOmr.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-                $('#finalTotalUsd').text(totalUsd.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            });
+            $('.calc-input').on('input', calculateTotal);
+            $('input[name="auctionFee"]').on('change', calculateTotal);
+            calculateTotal();
         });
     </script>
 }

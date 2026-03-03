@@ -239,8 +239,8 @@
 
     .doughnut-container {
         position: relative;
-        width: 180px;
-        height: 180px;
+        width: 200px;
+        height: 200px;
         margin: 0 auto;
     }
 
@@ -390,17 +390,17 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // المتغيرات الديناميكية من السيرفر
-        const jsTotalSales = @totalSales;
-        const jsTotalPaid = @totalPaid;
-        const jsPending = @pendingAmounts;
+        // المتغيرات الديناميكية من السيرفر - تم إصلاح التنسيق لتجنب مشكلة الفواصل العشرية في اللغات العربية (Syntax Error)
+        const jsTotalSales = @Html.Raw(totalSales.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        const jsTotalPaid = @Html.Raw(totalPaid.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        const jsPending = @Html.Raw(pendingAmounts.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
-        const jsSeaFreight = @sumSeaFreight;
-        const jsLandFreight = @sumLandFreight;
+        const jsSeaFreight = @Html.Raw(sumSeaFreight.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        const jsLandFreight = @Html.Raw(sumLandFreight.ToString(System.Globalization.CultureInfo.InvariantCulture));
         const jsTotalFreight = jsSeaFreight + jsLandFreight;
 
-        const jsCustoms = @sumCustoms;
-        const jsAdmin = @sumAdmin;
+        const jsCustoms = @Html.Raw(sumCustoms.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        const jsAdmin = @Html.Raw(sumAdmin.ToString(System.Globalization.CultureInfo.InvariantCulture));
         const jsTotalTaxAdmin = jsCustoms + jsAdmin;
 
         // تحديث النصوص المركزية للرسوم البيانية

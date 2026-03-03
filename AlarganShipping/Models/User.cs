@@ -1,38 +1,38 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace AlarganShipping.Models
 {
-    // نموذج مستخدمي النظام (الإدارة والموظفين) مكتمل 100%
     public class User
     {
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "الاسم الكامل مطلوب")]
-        [Display(Name = "الاسم الكامل")]
+        [Required(ErrorMessage = "الاسم مطلوب")]
         public string FullName { get; set; }
 
         [Required(ErrorMessage = "البريد الإلكتروني مطلوب")]
-        [EmailAddress(ErrorMessage = "صيغة البريد غير صحيحة")]
-        [Display(Name = "البريد الإلكتروني")]
+        [EmailAddress]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "كلمة المرور مطلوبة")]
-        [Display(Name = "كلمة المرور")]
         public string PasswordHash { get; set; }
 
-        [Display(Name = "الصلاحية")]
-        public string Role { get; set; } = "Admin"; // Admin, Accountant, Operations
-
-        [Display(Name = "تاريخ الإنشاء")]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        [Display(Name = "حساب نشط")]
+        public string Role { get; set; } = "Staff"; // Admin, Staff, Accountant
         public bool IsActive { get; set; } = true;
 
-        // العلاقات: الإشعارات الموجهة لهذا المستخدم
-        public virtual ICollection<Notification> Notifications { get; set; }
+        // --- نظام الصلاحيات الديناميكي ---
+        public bool CanManageCars { get; set; } = false;
+        public bool CanManageCustomers { get; set; } = false;
+        public bool CanManageFinance { get; set; } = false;
+        public bool CanManageSettings { get; set; } = false;
+
+        // --- بيانات صفحة اتصل بنا ---
+        public bool ShowOnContactPage { get; set; } = false;
+        public string? JobTitle { get; set; } // مثال: مدير قسم المزادات
+        public string? PhoneNumber { get; set; }
+        public string? DepartmentIcon { get; set; } // fa-gavel, fa-headset...
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

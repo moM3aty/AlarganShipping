@@ -1,5 +1,27 @@
-﻿@{
+﻿@using System.Text.Json
+@using Microsoft.EntityFrameworkCore
+@inject AlarganShipping.Models.ApplicationDbContext DbContext
+@inject IWebHostEnvironment Env
+@{
     ViewData["Title"] = Localizer["اتصل بنا"];
+
+    // جلب رقم التواصل من ملف الإعدادات ديناميكياً لتفعيل أزرار الـ Promo
+    string settingsPath = System.IO.Path.Combine(Env.WebRootPath, "settings.json");
+    string phone = "96800000000"; // قيمة افتراضية في حال عدم وجود الملف
+    if (System.IO.File.Exists(settingsPath))
+    {
+        var json = System.IO.File.ReadAllText(settingsPath);
+        using var doc = JsonDocument.Parse(json);
+        if (doc.RootElement.TryGetProperty("InquiryPhoneNumber", out var phoneProp))
+        {
+            phone = phoneProp.GetString() ?? phone;
+        }
+    }
+
+    // جلب الموظفين الذين لديهم صلاحية الظهور في صفحة اتصل بنا ديناميكياً
+    var contactStaff = DbContext.Users
+        .Where(u => u.ShowOnContactPage && u.IsActive)
+        .ToList();
 }
 
 <style>
@@ -69,14 +91,14 @@
     }
 
     .promo-icon {
-        width: 120px;
-        height: 120px;
+        width: 100px;
+        height: 100px;
         background: rgba(255,255,255,0.2);
         border-radius: 1.5rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 4rem;
+        font-size: 3rem;
         transform: rotate(-15deg);
         color: white;
     }
@@ -113,6 +135,7 @@
         font-weight: 900;
         text-decoration: none;
         transition: 0.3s;
+        display: inline-block;
     }
 
         .btn-promo-solid:hover {
@@ -129,6 +152,7 @@
         font-weight: 900;
         text-decoration: none;
         transition: 0.3s;
+        display: inline-block;
     }
 
         .btn-promo-outline:hover {
@@ -149,6 +173,7 @@
         padding: 2.5rem;
         text-align: center;
         color: var(--primary-navy);
+        border: 1px solid #f1f5f9;
     }
 
     .dept-icon {
@@ -165,16 +190,17 @@
     }
 
     .dept-card h3 {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
         font-weight: 900;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
     }
 
-    .dept-card p {
-        color: #64748b;
-        font-size: 0.95rem;
-        margin-bottom: 2rem;
-        min-height: 40px;
+    .dept-job {
+        color: var(--primary-gold);
+        font-weight: 800;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        display: block;
     }
 
     .phone-box {
@@ -204,159 +230,51 @@
         .phone-actions a:hover {
             color: var(--primary-gold);
         }
-
-    /* الفروع */
-    .branches-section {
-        text-align: center;
-        margin-bottom: 4rem;
-    }
-
-    .branches-title {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 1.3rem;
-        font-weight: 900;
-        margin-bottom: 2rem;
-        color: white;
-    }
-
-    .branches-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-    }
-
-    .branch-card {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        transition: 0.3s;
-    }
-
-        .branch-card:hover {
-            background: rgba(255,255,255,0.05);
-            border-color: rgba(255,255,255,0.2);
-            box-shadow: 0 5px 15px rgba(184, 147, 90, 0.1);
-        }
-
-    .branch-info {
-        text-align: right;
-    }
-
-        .branch-info h4 {
-            font-size: 1.1rem;
-            font-weight: 900;
-            margin-bottom: 0.3rem;
-            color: white;
-        }
-
-        .branch-info p {
-            font-size: 0.85rem;
-            color: #94a3b8;
-            margin: 0;
-        }
-
-    .branch-icon {
-        color: var(--primary-gold);
-        font-size: 1.5rem;
-        background: rgba(184, 147, 90, 0.2);
-        width: 45px;
-        height: 45px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
 </style>
 
 <div class="contact-page">
     <div class="contact-header">
         <span class="badge">@Localizer["دعم فني متواصل"]</span>
         <h1>@Localizer["تواصل مع خبراء الأرجان"]</h1>
-        <p>@Localizer["نحن هنا لخدمتك. يمكنك التواصل مباشرة مع القسم المختص للحصول على استجابة سريعة ودقيقة لاستفساراتك أو زيارة أحد فروعنا المنتشرة في السلطنة."]</p>
+        <p style="color: #94a3b8;">@Localizer["نحن هنا لخدمتك. تواصل مباشرة مع القسم المختص للحصول على استجابة سريعة."]</p>
     </div>
 
     <div class="promo-card">
         <div class="promo-icon"><i class="fa-solid fa-gavel"></i></div>
         <div class="promo-content">
-            <h2>@Localizer["هل ترغب في الحصول على حساب مزاد؟"]</h2>
-            <p>@Localizer["فريقنا المتواجد في صلالة أو نزوى أو مسقط وأمريكا مستعد لتزويدك بكافة الأدوات اللازمة لبدء استيراد سياراتك بأقل التكاليف وبأعلى درجة من الأمان."]</p>
+            <h2>@Localizer["هل ترغب في فتح حساب مزاد؟"]</h2>
+            <p>@Localizer["فريقنا مستعد لتزويدك بكافة الأدوات اللازمة لبدء استيراد سياراتك بأمان."]</p>
             <div class="promo-actions">
-                <a href="#" class="btn-promo-solid">@Localizer["اطلب حسابك الآن"]</a>
-                <a href="#" class="btn-promo-outline">@Localizer["تواصل مع قسم المزادات"]</a>
+                <a href="https://wa.me/@(phone)?text=@Html.Raw(Uri.EscapeDataString("أهلاً شركة الأرجان، أرغب في طلب فتح حساب مزاد جديد لبدء المزايدة."))" target="_blank" class="btn-promo-solid">@Localizer["اطلب حسابك الآن عبر واتساب"]</a>
+                <a href="https://wa.me/@(phone)?text=@Html.Raw(Uri.EscapeDataString("أهلاً شركة الأرجان، أود التواصل مع قسم المزادات للاستفسار عن آلية العمل."))" target="_blank" class="btn-promo-outline">@Localizer["تواصل مع قسم المزادات"]</a>
             </div>
         </div>
     </div>
 
+    <!-- الأقسام والهواتف (تأتي من حسابات الموظفين) -->
     <div class="depts-grid">
-        <div class="dept-card">
-            <div class="dept-icon"><i class="fa-solid fa-gavel"></i></div>
-            <h3>@Localizer["قسم المزادات"]</h3>
-            <p>@Localizer["للدعم الفني في حسابات كوبارت و IAAI والمزايدة المباشرة."]</p>
-            <div class="phone-box">
-                <div class="phone-number" dir="ltr">96505777</div>
-                <div class="phone-actions"><a href="#"><i class="fa-brands fa-whatsapp"></i></a><a href="#"><i class="fa-solid fa-phone"></i></a></div>
-            </div>
-            <div class="phone-box">
-                <div class="phone-number" dir="ltr">96202777</div>
-                <div class="phone-actions"><a href="#"><i class="fa-brands fa-whatsapp"></i></a><a href="#"><i class="fa-solid fa-phone"></i></a></div>
-            </div>
-        </div>
+        @if (contactStaff.Any())
+        {
+            foreach (var staff in contactStaff)
+            {
+                <div class="dept-card">
+                    <div class="dept-icon"><i class="fa-solid @(staff.DepartmentIcon ?? "fa-user-tie")"></i></div>
+                    <h3>@staff.FullName</h3>
+                    <span class="dept-job">@staff.JobTitle</span>
 
-        <div class="dept-card">
-            <div class="dept-icon"><i class="fa-solid fa-headset"></i></div>
-            <h3>@Localizer["قسم خدمة العملاء"]</h3>
-            <p>@Localizer["لمتابعة حالة الشحنات، الدعم الفني، وتقديم الاقتراحات."]</p>
-            <div class="phone-box">
-                <div class="phone-number" dir="ltr">77521020</div>
-                <div class="phone-actions"><a href="#"><i class="fa-brands fa-whatsapp"></i></a><a href="#"><i class="fa-solid fa-phone"></i></a></div>
-            </div>
-        </div>
-
-        <div class="dept-card">
-            <div class="dept-icon"><i class="fa-solid fa-tags"></i></div>
-            <h3>@Localizer["قسم المبيعات"]</h3>
-            <p>@Localizer["للاستفسارات التجارية، عروض الأسعار، والتعاقدات الجديدة."]</p>
-            <div class="phone-box">
-                <div class="phone-number" dir="ltr">94203663</div>
-                <div class="phone-actions"><a href="#"><i class="fa-brands fa-whatsapp"></i></a><a href="#"><i class="fa-solid fa-phone"></i></a></div>
-            </div>
-            <div class="phone-box">
-                <div class="phone-number" dir="ltr">77263111</div>
-                <div class="phone-actions"><a href="#"><i class="fa-brands fa-whatsapp"></i></a><a href="#"><i class="fa-solid fa-phone"></i></a></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="branches-section">
-        <div class="branches-title"><i class="fa-solid fa-map-location-dot"></i> @Localizer["فروعنا في سلطنة عمان"]</div>
-        <div class="branches-grid">
-            <div class="branch-card" style="border-color: var(--primary-gold); background: rgba(184,147,90,0.05);">
-                <div class="branch-info">
-                    <h4>@Localizer["المركز الرئيسي - صلالة"]</h4>
-                    <p>@Localizer["خلف مركز شرطة عوقد"]</p>
+                    <div class="phone-box">
+                        <div class="phone-number" dir="ltr">@staff.PhoneNumber</div>
+                        <div class="phone-actions">
+                            <a href="https://wa.me/@(staff.PhoneNumber?.Replace("+", ""))" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+                            <a href="tel:@staff.PhoneNumber"><i class="fa-solid fa-phone"></i></a>
+                        </div>
+                    </div>
                 </div>
-                <div class="branch-icon"><i class="fa-solid fa-star"></i></div>
-            </div>
-            <div class="branch-card">
-                <div class="branch-info">
-                    <h4>@Localizer["فرع نزوى - نزوى"]</h4>
-                    <p>@Localizer["صناعية كرشا"]</p>
-                </div>
-                <div class="branch-icon"><i class="fa-solid fa-location-dot"></i></div>
-            </div>
-            <div class="branch-card">
-                <div class="branch-info">
-                    <h4>@Localizer["فرع مسقط - مسقط"]</h4>
-                    <p>@Localizer["المعبيلة الصناعية"]</p>
-                </div>
-                <div class="branch-icon"><i class="fa-solid fa-location-dot"></i></div>
-            </div>
-        </div>
+            }
+        }
+        else
+        {
+            <p style="text-align: center; grid-column: 1/-1; opacity: 0.5;">@Localizer["لا توجد جهات اتصال مسجلة حالياً."]</p>
+        }
     </div>
 </div>

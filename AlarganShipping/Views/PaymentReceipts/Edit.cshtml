@@ -1,0 +1,297 @@
+﻿@model AlarganShipping.Models.PaymentReceipt
+@{
+    ViewData["Title"] = Localizer["تعديل سند قبض"];
+}
+
+<style>
+    .form-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-page-title {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-back {
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        color: var(--text-muted);
+        padding: 0.6rem 1.2rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn-back:hover {
+            background-color: #f8fafc;
+            color: var(--primary-navy);
+        }
+
+    .premium-form-card {
+        background-color: #ffffff;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 30px rgba(44, 62, 80, 0.03);
+        border: 1px solid #f1f5f9;
+        padding: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .premium-form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary-navy), var(--primary-gold));
+        }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    @@media (min-width: 768px) {
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group-full {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        font-weight: 800;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .form-control {
+        padding: 0.85rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        font-family: inherit;
+        font-size: 0.95rem;
+        color: var(--primary-navy);
+        font-weight: 700;
+        background-color: #f8fafc;
+        transition: 0.3s;
+        outline: none;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-gold);
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
+        }
+
+    .amount-input {
+        font-size: 1.5rem !important;
+        color: var(--primary-gold) !important;
+        text-align: end;
+        font-family: monospace !important;
+        border-color: rgba(184, 147, 90, 0.3) !important;
+        background: rgba(184, 147, 90, 0.05) !important;
+    }
+
+        .amount-input:focus {
+            border-color: var(--primary-gold) !important;
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.2) !important;
+        }
+
+    .select2-container--default .select2-selection--single {
+        background-color: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        transition: 0.3s;
+    }
+
+        .select2-container--default .select2-selection--single:focus {
+            border-color: var(--primary-gold);
+            background-color: white;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--primary-navy);
+            font-weight: 700;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 43px;
+            right: 10px;
+        }
+
+    html[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
+        left: 10px;
+        right: auto;
+    }
+
+    .form-actions {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .btn-submit {
+        background: var(--primary-navy);
+        color: white;
+        border: none;
+        padding: 0.85rem 2.5rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .btn-submit:hover {
+            background: var(--primary-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(184, 147, 90, 0.3);
+        }
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
+<div>
+    <div class="form-page-header">
+        <h2 class="form-page-title"><i class="fa-solid fa-pen-to-square" style="color: var(--primary-gold);"></i> @Localizer["تعديل سند قبض"]</h2>
+        <a href="@Url.Action("Index", "PaymentReceipts")" class="btn-back"><i class="fa-solid fa-arrow-right-long"></i> @Localizer["العودة"]</a>
+    </div>
+
+    <div class="premium-form-card">
+        <form asp-action="Edit" method="post" id="receiptEditForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ReceiptNumber" />
+
+            <div style="background: rgba(184, 147, 90, 0.1); padding: 1rem; border-radius: 1rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(184, 147, 90, 0.2);">
+                <div>
+                    <span style="font-weight: 800; color: var(--primary-navy);">@Localizer["رقم السند:"]</span>
+                    <span style="font-family: monospace; font-weight: 900; color: var(--primary-gold); font-size: 1.1rem; margin-inline-start: 10px;">@Model.ReceiptNumber</span>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group form-group-full">
+                    <label asp-for="Amount" class="form-label">@Localizer["المبلغ المقبوض ($)"] *</label>
+                    <input asp-for="Amount" type="number" step="0.01" class="form-control amount-input" required />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="CustomerId" class="form-label">@Localizer["استلمنا من السيد/الشركة"] *</label>
+                    <select asp-for="CustomerId" class="form-control select2-search" asp-items="ViewBag.CustomerId" required>
+                        <option value="">@Localizer["اختر العميل..."]</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="PaymentDate" class="form-label">@Localizer["تاريخ الاستلام"] *</label>
+                    <input asp-for="PaymentDate" type="datetime-local" class="form-control" value="@Model.PaymentDate.ToString("yyyy-MM-ddTHH:mm")" required />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="PaymentMethod" class="form-label">@Localizer["طريقة الدفع"] *</label>
+                    <select asp-for="PaymentMethod" class="form-control" required>
+                        <option value="Cash">@Localizer["نقداً (Cash)"]</option>
+                        <option value="Bank Transfer">@Localizer["تحويل بنكي (Bank Transfer)"]</option>
+                        <option value="Cheque">@Localizer["شيك (Cheque)"]</option>
+                        <option value="POS">@Localizer["نقاط البيع بطاقة (POS)"]</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ReferenceNumber" class="form-label">@Localizer["رقم المرجع (رقم الشيك أو التحويل)"]</label>
+                    <input asp-for="ReferenceNumber" class="form-control" />
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label asp-for="Notes" class="form-label">@Localizer["وذلك عن (البيان / ملاحظات)"]</label>
+                    <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-back" onclick="javascript:history.back()">@Localizer["إلغاء"]</button>
+                <button type="submit" class="btn-submit" id="btnSubmit">
+                    <i class="fa-solid fa-save"></i> @Localizer["حفظ التعديلات"]
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var dir = $('html').attr('dir');
+            $('.select2-search').select2({ dir: dir, width: '100%' });
+
+            $('#receiptEditForm').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
+
+                var btn = $('#btnSubmit');
+                var originalText = btn.html();
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i>').prop('disabled', true);
+
+                $.ajax({
+                    url: form.attr('action'), type: form.attr('method'), data: form.serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: '@Html.Raw(Localizer["تم التحديث بنجاح!"])',
+                                text: '@Html.Raw(Localizer["تم حفظ التعديلات وتحديث حساب العميل تلقائياً."])',
+                                icon: 'success', confirmButtonColor: 'var(--primary-gold)'
+                            }).then(() => { window.location.href = '@Url.Action("Index", "PaymentReceipts")'; });
+                        } else {
+                            var errorMsg = response.errors ? response.errors.join('\n') : '@Html.Raw(Localizer["تأكد من البيانات"])';
+                            Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: errorMsg, icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                            btn.html(originalText).prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                        btn.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+}

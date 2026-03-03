@@ -3,8 +3,9 @@
     ViewData["Title"] = Localizer["المواقع والمستودعات"];
 }
 
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
 <style>
-    /* نفس تنسيقات الصفحة السابقة للاتساق */
     .page-header-container {
         display: flex;
         justify-content: space-between;
@@ -104,16 +105,27 @@
         color: var(--primary-gold);
         border: 1px solid rgba(184, 147, 90, 0.2);
     }
+
+    .action-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: 0.3s;
+        padding: 5px;
+    }
 </style>
 
 <div>
+    @Html.AntiForgeryToken()
     <div class="page-header-container">
         <div class="page-header-text">
             <h2><i class="fa-solid fa-map-location-dot"></i> @Localizer["المواقع والموانئ"]</h2>
             <p style="color: var(--text-muted); font-weight: 600; margin-top: 5px;">• @Localizer["إدارة المستودعات وموانئ التحميل والوصول"]</p>
         </div>
         <div class="header-actions">
-            <a href="#" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة موقع جديد"]</a>
+            <!-- ربط زر الإضافة بصفحة Create -->
+            <a href="@Url.Action("Create", "Locations")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة موقع جديد"]</a>
         </div>
     </div>
 
@@ -148,10 +160,11 @@
                                 }
                             </td>
                             <td><i class="fa-solid fa-globe" style="color: #cbd5e1; margin-inline-end: 5px;"></i> @loc.Country - @loc.StateOrProvince</td>
-                            <td style="color: var(--text-muted);">@loc.ContactPerson</td>
-                            <td dir="ltr" style="text-align: end; font-family: monospace;">@loc.ContactPhone</td>
+                            <td style="color: var(--text-muted);">@(string.IsNullOrEmpty(loc.ContactPerson) ? "-" : loc.ContactPerson)</td>
+                            <td dir="ltr" style="text-align: end; font-family: monospace;">@(string.IsNullOrEmpty(loc.ContactPhone) ? "-" : loc.ContactPhone)</td>
                             <td>
-                                <a href="#" style="color: var(--primary-gold); margin-inline-end: 15px;" title="@Localizer["تعديل"]"><i class="fa-solid fa-pen-to-square"></i></a>
+                                <a href="@Url.Action("Edit", "Locations", new { id = loc.Id })" class="action-btn" style="color: var(--primary-gold); margin-inline-end: 15px;" title="@Localizer["تعديل"]"><i class="fa-solid fa-pen-to-square"></i></a>
+                                <button type="button" onclick="confirmDelete(@loc.Id)" class="action-btn" style="color: #ef4444;" title="@Localizer["حذف"]"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
                     }
@@ -162,7 +175,48 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
     <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
+                text: '@Html.Raw(Localizer["لن تتمكن من التراجع عن عملية الحذف!"])',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: 'var(--primary-navy)',
+                confirmButtonText: '@Html.Raw(Localizer["نعم، احذفه!"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Locations")/' + id,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: '@Html.Raw(Localizer["تم الحذف!"])',
+                                    text: '@Html.Raw(Localizer["تم حذف الموقع بنجاح."])',
+                                    icon: 'success',
+                                    confirmButtonColor: 'var(--primary-gold)'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', response.message || '@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])', 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["لا يمكن الاتصال بالخادم."])', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
         $(document).ready(function () {
             var dir = $('html').attr('dir') === 'rtl';
             $('#locationsTable').DataTable({

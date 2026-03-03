@@ -1,0 +1,299 @@
+﻿@model AlarganShipping.Models.User
+@{
+    ViewData["Title"] = Localizer["إضافة موظف وصلاحيات"];
+}
+
+<style>
+    .form-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .btn-back {
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        color: var(--text-muted);
+        padding: 0.6rem 1.2rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn-back:hover {
+            background-color: #f8fafc;
+            color: var(--primary-navy);
+        }
+
+    .premium-form-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 3rem;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .premium-form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary-navy), var(--primary-gold));
+        }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1rem;
+    }
+
+    .form-label {
+        font-weight: 800;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .form-control {
+        padding: 0.85rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        font-family: inherit;
+        font-weight: 700;
+        background-color: #f8fafc;
+        outline: none;
+        transition: 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-gold);
+            background-color: white;
+        }
+
+    .permission-box {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+        margin-top: 1rem;
+    }
+
+    .perm-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--primary-navy);
+    }
+
+        .perm-item input {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-gold);
+            cursor: pointer;
+        }
+
+    .btn-save {
+        background: var(--primary-navy);
+        color: white;
+        padding: 1rem 3.5rem;
+        border-radius: 1rem;
+        border: none;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .btn-save:hover {
+            background: var(--primary-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(184, 147, 90, 0.2);
+        }
+
+    /* تخصيص Select2 للقوائم */
+    .select2-container--default .select2-selection--single {
+        background-color: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        height: 45px;
+        display: flex;
+        align-items: center;
+    }
+
+        .select2-container--default .select2-selection--single:focus, .select2-container--focus .select2-selection--single {
+            border-color: var(--primary-gold);
+            background-color: white;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--primary-navy);
+            font-weight: 700;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 43px;
+            right: 10px;
+        }
+
+    html[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
+        left: 10px;
+        right: auto;
+    }
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
+<div class="form-page-header">
+    <h2 style="color: var(--primary-navy); font-weight: 900;">@Localizer["إدارة الموظفين"]</h2>
+    <a href="@Url.Action("Index", "Users")" class="btn-back"><i class="fa-solid fa-arrow-right-long"></i> @Localizer["العودة للقائمة"]</a>
+</div>
+
+<div class="premium-form-card">
+    <h3 style="margin-bottom: 2rem; color: var(--primary-navy); font-weight: 900;">@Localizer["إنشاء حساب موظف جديد"]</h3>
+
+    <form asp-action="Create" method="post" id="userForm">
+        @Html.AntiForgeryToken()
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">@Localizer["الاسم الكامل"] *</label>
+                <input asp-for="FullName" class="form-control" required placeholder="أدخل اسم الموظف..." />
+            </div>
+            <div class="form-group">
+                <label class="form-label">@Localizer["البريد الإلكتروني (للدخول)"] *</label>
+                <input asp-for="Email" type="email" class="form-control" required placeholder="email@alargan.com" dir="ltr" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">@Localizer["كلمة المرور"] *</label>
+                <input asp-for="PasswordHash" type="password" class="form-control" required placeholder="••••••••" dir="ltr" />
+            </div>
+
+            <div class="permission-box" style="grid-column: 1 / -1;">
+                <h4 style="margin-bottom: 1.5rem; color: var(--primary-navy); font-weight: 900;"><i class="fa-solid fa-shield-halved"></i> @Localizer["صلاحيات الوصول للنظام"]</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                    <label class="perm-item"><input type="checkbox" asp-for="CanManageCars" /> @Localizer["إدارة السيارات"]</label>
+                    <label class="perm-item"><input type="checkbox" asp-for="CanManageCustomers" /> @Localizer["إدارة العملاء"]</label>
+                    <label class="perm-item"><input type="checkbox" asp-for="CanManageFinance" /> @Localizer["إدارة المالية والفواتير"]</label>
+                    <label class="perm-item"><input type="checkbox" asp-for="CanManageSettings" /> @Localizer["إدارة الإعدادات"]</label>
+                </div>
+            </div>
+
+            <div class="permission-box" style="grid-column: 1 / -1; border-color: var(--primary-gold); background: rgba(184,147,90,0.05);">
+                <h4 style="margin-bottom: 1.5rem; color: var(--primary-gold); font-weight: 900;"><i class="fa-solid fa-address-book"></i> @Localizer["الظهور في صفحة اتصل بنا (للعملاء)"]</h4>
+                <div class="form-grid">
+                    <label class="perm-item" style="grid-column: 1/-1;"><input type="checkbox" asp-for="ShowOnContactPage" /> @Localizer["تفعيل الظهور كجهة اتصال عامة"]</label>
+                    <div class="form-group">
+                        <label class="form-label">@Localizer["المسمى الوظيفي"]</label>
+                        <input asp-for="JobTitle" class="form-control" placeholder="مثال: مدير قسم المبيعات" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">@Localizer["رقم الهاتف العام"]</label>
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="968xxxxxxx" dir="ltr" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">@Localizer["أيقونة القسم"]</label>
+                        <!-- تم التبديل إلى Select List ليكون اختيار الأيقونة أسهل -->
+                        <select asp-for="DepartmentIcon" class="form-control select2-icon">
+                            <option value="fa-user-tie">@Localizer["إدارة / عام"]</option>
+                            <option value="fa-headset">@Localizer["خدمة العملاء"]</option>
+                            <option value="fa-gavel">@Localizer["المزادات"]</option>
+                            <option value="fa-tags">@Localizer["المبيعات"]</option>
+                            <option value="fa-car">@Localizer["السيارات والعمليات"]</option>
+                            <option value="fa-ship">@Localizer["الشحن"]</option>
+                            <option value="fa-calculator">@Localizer["المالية والمحاسبة"]</option>
+                            <option value="fa-briefcase">@Localizer["مكتب / فرع"]</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 3rem; text-align: left; border-top: 1px solid #f1f5f9; padding-top: 2rem;">
+            <button type="submit" class="btn-save" id="btnSubmit">
+                <i class="fa-solid fa-user-plus"></i> @Localizer["حفظ الحساب والصلاحيات"]
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+    <script>
+        // دالة لإظهار الأيقونات داخل الـ Select2
+        function formatIcon(icon) {
+            if (!icon.id) { return icon.text; }
+            var $icon = $('<span><i class="fa-solid ' + icon.element.value + '" style="margin-inline-end: 8px; color: var(--primary-gold);"></i> ' + icon.text + '</span>');
+            return $icon;
+        }
+
+        $(document).ready(function() {
+            var dir = $('html').attr('dir');
+
+            // تهيئة حقل الأيقونات
+            $('.select2-icon').select2({
+                dir: dir,
+                width: '100%',
+                templateResult: formatIcon,
+                templateSelection: formatIcon,
+                minimumResultsForSearch: Infinity // إخفاء مربع البحث لقلة الخيارات
+            });
+
+            $('#userForm').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var btn = $('#btnSubmit');
+                var originalText = btn.html();
+
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Localizer["جاري الحفظ..."]').prop('disabled', true);
+
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: '@Html.Raw(Localizer["تم إنشاء الحساب!"])',
+                                text: '@Html.Raw(Localizer["تم إضافة الموظف وتفعيل صلاحياته بنجاح."])',
+                                icon: 'success',
+                                confirmButtonColor: 'var(--primary-gold)'
+                            }).then(() => {
+                                window.location.href = '@Url.Action("Index", "Users")';
+                            });
+                        } else {
+                            var errorMsg = response.errors ? response.errors.join('\n') : '@Html.Raw(Localizer["حدث خطأ ما"])';
+                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', errorMsg, 'error');
+                            btn.html(originalText).prop('disabled', false);
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["لا يمكن الاتصال بالسيرفر."])', 'error');
+                        btn.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -233,6 +233,7 @@
             background: var(--secondary-gold);
             transform: translateY(-2px);
             color: white;
+            box-shadow: 0 5px 15px rgba(184,147,90,0.3);
         }
 
     .data-table {
@@ -310,9 +311,110 @@
             color: #b91c1c;
             transform: scale(1.1);
         }
+
+    /* Modal Styling */
+    .custom-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(26, 37, 47, 0.8);
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(5px);
+    }
+
+    .custom-modal {
+        background: white;
+        border-radius: 1.5rem;
+        width: 100%;
+        max-width: 500px;
+        padding: 2rem;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        transform: translateY(-50px);
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        opacity: 0;
+    }
+
+        .custom-modal.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+    .modal-title {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .modal-select {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 1rem;
+        border: 2px solid #e2e8f0;
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--primary-navy);
+        outline: none;
+        margin-bottom: 1.5rem;
+    }
+
+        .modal-select:focus {
+            border-color: var(--primary-gold);
+        }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .btn-modal-cancel {
+        background: #f1f5f9;
+        color: var(--text-muted);
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 0.8rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .btn-modal-cancel:hover {
+            background: #e2e8f0;
+            color: var(--primary-navy);
+        }
+
+    .btn-modal-confirm {
+        background: var(--primary-navy);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 0.8rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .btn-modal-confirm:hover {
+            background: var(--primary-gold);
+        }
 </style>
 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 <div>
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="currentShipmentId" value="@Model.Id" />
+
     <div class="details-header">
         <div class="header-content">
             <div class="status-badge-lg">
@@ -374,10 +476,9 @@
         <div class="section-header">
             <h2 class="section-title"><i class="fa-solid fa-cubes"></i> @Localizer["السيارات المحملة في هذه الحاوية"]</h2>
 
-            <!-- زر لإضافة سيارة للشحنة (يفتح Modal أو يوجه لصفحة التعديل) -->
             @if ((Model.Cars?.Count ?? 0) < 4)
             {
-                <button class="btn-add-car" onclick="alert('@Localizer["سيتم فتح نافذة لاختيار السيارات المتوفرة في المستودع لربطها بهذه الحاوية."]')">
+                <button type="button" class="btn-add-car" onclick="openLinkModal()">
                     <i class="fa-solid fa-link"></i> @Localizer["ربط سيارة بالحاوية"]
                 </button>
             }
@@ -419,7 +520,7 @@
                                 <td>
                                     <div style="display: flex; gap: 10px; align-items: center;">
                                         <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn-sm-navy">@Localizer["التفاصيل"]</a>
-                                        <button class="btn-sm-danger" title="@Localizer["إزالة من الحاوية"]" onclick="confirmRemove()"><i class="fa-solid fa-unlink"></i></button>
+                                        <button type="button" class="btn-sm-danger" title="@Localizer["إزالة من الحاوية"]" onclick="confirmUnlink(@car.Id)"><i class="fa-solid fa-unlink"></i></button>
                                     </div>
                                 </td>
                             </tr>
@@ -440,27 +541,107 @@
     </div>
 </div>
 
+<!-- Modal لربط السيارة -->
+<div class="custom-modal-overlay" id="linkCarModal">
+    <div class="custom-modal">
+        <h3 class="modal-title"><i class="fa-solid fa-link" style="color: var(--primary-gold);"></i> @Localizer["اختر سيارة لربطها"]</h3>
+        <select id="carSelect" class="modal-select select2-modal">
+            <option value="">-- @Localizer["جاري التحميل..."] --</option>
+        </select>
+        <div class="modal-actions">
+            <button type="button" class="btn-modal-cancel" onclick="closeLinkModal()">@Localizer["إلغاء"]</button>
+            <button type="button" class="btn-modal-confirm" id="btnSubmitLink" onclick="submitLinkCar()">@Localizer["تأكيد الربط"]</button>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
     <script>
-        function confirmRemove() {
+        $(document).ready(function() {
+            var dir = $('html').attr('dir');
+            $('.select2-modal').select2({
+                dir: dir,
+                width: '100%',
+                dropdownParent: $('#linkCarModal') // لضمان ظهور القائمة فوق المودال
+            });
+        });
+
+        function openLinkModal() {
+            $('#carSelect').empty().append('<option value="">-- @Html.Raw(Localizer["جاري التحميل..."]) --</option>');
+            $('#linkCarModal').css('display', 'flex');
+            setTimeout(() => $('.custom-modal').addClass('show'), 10);
+
+            // جلب السيارات المتاحة عبر AJAX
+            $.get('@Url.Action("GetAvailableCars", "Shipments")', function(data) {
+                $('#carSelect').empty().append('<option value="">-- @Html.Raw(Localizer["اختر السيارة..."]) --</option>');
+                if(data && data.length > 0) {
+                    data.forEach(c => {
+                        $('#carSelect').append(new Option(c.make + ' ' + c.model + ' (' + c.vin + ')', c.id));
+                    });
+                } else {
+                    $('#carSelect').empty().append('<option value="">-- @Html.Raw(Localizer["لا توجد سيارات متاحة في المستودع"]) --</option>');
+                }
+            });
+        }
+
+        function closeLinkModal() {
+            $('.custom-modal').removeClass('show');
+            setTimeout(() => $('#linkCarModal').hide(), 300);
+        }
+
+        function submitLinkCar() {
+            var carId = $('#carSelect').val();
+            var shipmentId = $('#currentShipmentId').val();
+
+            if(!carId) {
+                Swal.fire('@Html.Raw(Localizer["تنبيه!"])', '@Html.Raw(Localizer["يرجى اختيار سيارة أولاً"])', 'warning');
+                return;
+            }
+
+            var btn = $('#btnSubmitLink');
+            btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i>');
+
+            $.post('@Url.Action("LinkCar", "Shipments")', {
+                shipmentId: shipmentId,
+                carId: carId,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            }, function(res) {
+                if(res.success) {
+                    location.reload();
+                } else {
+                    Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+                    btn.prop('disabled', false).html('@Html.Raw(Localizer["تأكيد الربط"])');
+                }
+            }).fail(function() {
+                Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["حدث خطأ أثناء الاتصال بالخادم."])', 'error');
+                btn.prop('disabled', false).html('@Html.Raw(Localizer["تأكيد الربط"])');
+            });
+        }
+
+        function confirmUnlink(carId) {
             Swal.fire({
-                title: '@Localizer["هل أنت متأكد؟"]',
-                text: '@Localizer["سيتم فك ارتباط هذه السيارة من الحاوية وإعادتها لحالة المستودع."]',
+                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
+                text: '@Html.Raw(Localizer["سيتم فك ارتباط هذه السيارة من الحاوية وإعادتها لحالة المستودع."])',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: 'var(--primary-navy)',
-                confirmButtonText: '@Localizer["نعم، إزالة"]',
-                cancelButtonText: '@Localizer["إلغاء"]'
+                confirmButtonText: '@Html.Raw(Localizer["نعم، إزالة"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // هنا يمكن إضافة كود AJAX لفك الارتباط فعلياً من الداتا بيز
-                    Swal.fire({
-                        title: 'تم!',
-                        text: 'تم إزالة السيارة من الحاوية.',
-                        icon: 'success',
-                        confirmButtonColor: 'var(--primary-gold)'
+                    $.post('@Url.Action("UnlinkCar", "Shipments")', {
+                        carId: carId,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    }, function(res) {
+                        if(res.success) {
+                            location.reload();
+                        } else {
+                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+                        }
                     });
                 }
             });

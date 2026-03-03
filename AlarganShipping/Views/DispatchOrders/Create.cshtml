@@ -185,6 +185,15 @@
                 </div>
 
                 <div class="form-group">
+                    <label asp-for="Status" class="form-label">@Localizer["الحالة"] *</label>
+                    <select asp-for="Status" class="form-control select2-search" required>
+                        <option value="Assigned">@Localizer["Assigned"]</option>
+                        <option value="PickedUp">@Localizer["PickedUp"]</option>
+                        <option value="Delivered">@Localizer["Delivered"]</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label asp-for="CarId" class="form-label">@Localizer["السيارة المراد نقلها"] *</label>
                     <select asp-for="CarId" class="form-control select2-search" asp-items="ViewBag.CarId" required>
                         <option value="">-- @Localizer["اختر السيارة (بالشاصي)"] --</option>
@@ -216,6 +225,11 @@
                         <option value="">-- @Localizer["المستودع الوجهة"] --</option>
                     </select>
                 </div>
+
+                <div class="form-group form-group-full">
+                    <label asp-for="DriverNotes" class="form-label">@Localizer["ملاحظات السائق (أعطال/نواقص)"] *</label>
+                    <textarea asp-for="DriverNotes" class="form-control" rows="3" placeholder="@Localizer["أضف أي ملاحظات بخصوص حالة السيارة..."]" required></textarea>
+                </div>
             </div>
 
             <div class="form-actions">
@@ -244,22 +258,28 @@
 
                 var btn = $('#btnSubmit');
                 var originalText = btn.html();
-                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Localizer["جاري الإصدار..."]').prop('disabled', true);
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Html.Raw(Localizer["جاري الإصدار..."])').prop('disabled', true);
 
                 $.ajax({
                     url: form.attr('action'), type: form.attr('method'), data: form.serialize(),
-                    success: function () {
-                        Swal.fire({
-                            title: '@Localizer["تم إصدار الأمر بنجاح!"]', icon: 'success', confirmButtonColor: 'var(--primary-gold)',
-                            confirmButtonText: '@Localizer["العودة للقائمة"]'
-                        }).then(() => { window.location.href = '@Url.Action("Index", "DispatchOrders")'; });
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: '@Html.Raw(Localizer["تم إصدار الأمر بنجاح!"])', icon: 'success', confirmButtonColor: 'var(--primary-gold)',
+                                confirmButtonText: '@Html.Raw(Localizer["العودة للقائمة"])'
+                            }).then(() => { window.location.href = '@Url.Action("Index", "DispatchOrders")'; });
+                        } else {
+                            var errorMsg = response.errors ? response.errors.join('\n') : '@Html.Raw(Localizer["تأكد من البيانات المدخلة"])';
+                            Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: errorMsg, icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                            btn.html(originalText).prop('disabled', false);
+                        }
                     },
                     error: function () {
-                        Swal.fire({ title: '@Localizer["خطأ!"]', text: '@Localizer["تأكد من إدخال كافة البيانات بشكل صحيح."]', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                        Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: '@Html.Raw(Localizer["حدث خطأ أثناء الاتصال بالخادم."])', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
                         btn.html(originalText).prop('disabled', false);
                     }
                 });
             });
         });
     </script>
-}
+}   

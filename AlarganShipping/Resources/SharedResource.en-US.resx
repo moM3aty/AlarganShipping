@@ -31,7 +31,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 
-  <!-- Navigation & Main -->
+  <!-- Navigation & Main Layout -->
   <data name="الأرجان للشحن" xml:space="preserve"><value>Alargan Shipping</value></data>
   <data name="شركة الارجان للشحن" xml:space="preserve"><value>Alargan Auto Shipping</value></data>
   <data name="لوحة التحكم الشاملة" xml:space="preserve"><value>Comprehensive Dashboard</value></data>
@@ -49,6 +49,13 @@
   <data name="نظام الإدارة اللوجستية الذكي" xml:space="preserve"><value>Smart Logistics Management System</value></data>
   <data name="نظام الإدارة اللوجستية التقني" xml:space="preserve"><value>Technical Logistics Management System</value></data>
   <data name="بوابتك الذكية لإدارة الخدمات اللوجستية" xml:space="preserve"><value>Your Smart Gateway for Logistics Management</value></data>
+  <data name="تسجيل الدخول" xml:space="preserve"><value>Login</value></data>
+  <data name="أهلاً بك مجدداً في نظام الأرجان" xml:space="preserve"><value>Welcome back to Alargan System</value></data>
+  <data name="دخول للنظام" xml:space="preserve"><value>Login to System</value></data>
+  <data name="جميع الحقوق محفوظة" xml:space="preserve"><value>All Rights Reserved</value></data>
+  <data name="الإصدار" xml:space="preserve"><value>Version</value></data>
+  <data name="تم التصميم والتطوير بواسطة" xml:space="preserve"><value>Designed &amp; Developed By</value></data>
+  <data name="موظف" xml:space="preserve"><value>Staff</value></data>
 
   <!-- Dashboard Stats -->
   <data name="إجمالي السيارات" xml:space="preserve"><value>Total Cars</value></data>
@@ -68,11 +75,19 @@
   <data name="ملخص الشحنات" xml:space="preserve"><value>Shipments Summary</value></data>
   <data name="قيد التحميل" xml:space="preserve"><value>Loading</value></data>
   <data name="الشحن البحري" xml:space="preserve"><value>Ocean Freight</value></data>
+  <data name="لا توجد سيارات مضافة حديثاً" xml:space="preserve"><value>No recently added cars</value></data>
+  <data name="توزيع التكاليف اللوجستية" xml:space="preserve"><value>Logistics Costs Distribution</value></data>
+  <data name="الشحن البحري مقابل النقل الداخلي" xml:space="preserve"><value>Ocean Freight vs. Inland Towing</value></data>
+  <data name="النقل الداخلي" xml:space="preserve"><value>Inland Towing</value></data>
+  <data name="الجمارك والعمولات" xml:space="preserve"><value>Customs &amp; Commissions</value></data>
+  <data name="مبالغ الجمارك مقابل عمولات الشركة" xml:space="preserve"><value>Customs amounts vs. Company commissions</value></data>
 
   <!-- Accounting & Charts -->
   <data name="نظام الإدارة المحاسبية الذكي" xml:space="preserve"><value>Smart Accounting Management System</value></data>
   <data name="نظرة عامة" xml:space="preserve"><value>Overview</value></data>
   <data name="المشتريات (مزادات ونقل)" xml:space="preserve"><value>Purchases (Auctions &amp; Towing)</value></data>
+  <data name="المشتريات (السيارات)" xml:space="preserve"><value>Purchases (Cars)</value></data>
+  <data name="مصاريف النقل الداخلي" xml:space="preserve"><value>Inland Towing Expenses</value></data>
   <data name="المبيعات (فواتير العملاء)" xml:space="preserve"><value>Sales (Customer Invoices)</value></data>
   <data name="المصاريف العامة" xml:space="preserve"><value>General Expenses</value></data>
   <data name="سندات الصرف" xml:space="preserve"><value>Payment Vouchers</value></data>
@@ -84,11 +99,17 @@
   <data name="عدد الفواتير" xml:space="preserve"><value>Invoices Count</value></data>
   <data name="المشتريات والتكاليف" xml:space="preserve"><value>Purchases &amp; Costs</value></data>
   <data name="إجمالي المشتريات" xml:space="preserve"><value>Total Purchases</value></data>
+  <data name="إجمالي قيمة الشراء" xml:space="preserve"><value>Total Purchase Value</value></data>
+  <data name="تكاليف النقل (Towing)" xml:space="preserve"><value>Towing Costs</value></data>
+  <data name="إجمالي التكاليف" xml:space="preserve"><value>Total Costs</value></data>
   <data name="المدفوع (سندات صرف)" xml:space="preserve"><value>Paid (Vouchers)</value></data>
   <data name="المصاريف التشغيلية" xml:space="preserve"><value>Operating Expenses</value></data>
   <data name="سيارات مشتراة" xml:space="preserve"><value>Purchased Cars</value></data>
   <data name="نظرة عامة على التدفقات النقدية (الإيرادات vs المصروفات)" xml:space="preserve"><value>Cash Flow Overview (Revenue vs Expenses)</value></data>
+  <data name="نظرة عامة على التدفقات النقدية لعام" xml:space="preserve"><value>Cash Flow Overview for Year</value></data>
   <data name="المبيعات (إيرادات)" xml:space="preserve"><value>Sales (Revenue)</value></data>
+  <data name="المبيعات (إيرادات الفواتير OMR)" xml:space="preserve"><value>Sales (Invoice Revenues OMR)</value></data>
+  <data name="المشتريات (تكلفة السيارات USD)" xml:space="preserve"><value>Purchases (Cars Cost USD)</value></data>
   <data name="حالة الفاتورة" xml:space="preserve"><value>Invoice Status</value></data>
   <data name="مبالغ الفواتير الصادرة للعملاء" xml:space="preserve"><value>Invoice amounts issued to customers</value></data>
   <data name="حالة فواتير الشحن" xml:space="preserve"><value>Shipping Invoices Status</value></data>
@@ -97,12 +118,27 @@
   <data name="مبالغ الفواتير الضريبية للشركة" xml:space="preserve"><value>Company tax invoice amounts</value></data>
   <data name="مدفوع" xml:space="preserve"><value>Paid</value></data>
   <data name="متبقي" xml:space="preserve"><value>Remaining</value></data>
+  
+  <!-- Months -->
+  <data name="يناير" xml:space="preserve"><value>January</value></data>
+  <data name="فبراير" xml:space="preserve"><value>February</value></data>
+  <data name="مارس" xml:space="preserve"><value>March</value></data>
+  <data name="أبريل" xml:space="preserve"><value>April</value></data>
+  <data name="مايو" xml:space="preserve"><value>May</value></data>
+  <data name="يونيو" xml:space="preserve"><value>June</value></data>
+  <data name="يوليو" xml:space="preserve"><value>July</value></data>
+  <data name="أغسطس" xml:space="preserve"><value>August</value></data>
+  <data name="سبتمبر" xml:space="preserve"><value>September</value></data>
+  <data name="أكتوبر" xml:space="preserve"><value>October</value></data>
+  <data name="نوفمبر" xml:space="preserve"><value>November</value></data>
+  <data name="ديسمبر" xml:space="preserve"><value>December</value></data>
 
   <!-- Cars & Forms -->
   <data name="إضافة سيارة" xml:space="preserve"><value>Add Car</value></data>
   <data name="إضافة سيارة جديدة" xml:space="preserve"><value>Add New Car</value></data>
   <data name="إضافة مركبة جديدة" xml:space="preserve"><value>Add New Vehicle</value></data>
   <data name="إدارة بيانات المركبة - جديدة" xml:space="preserve"><value>Manage Vehicle Data - New</value></data>
+  <data name="تعديل بيانات المركبة" xml:space="preserve"><value>Edit Vehicle Data</value></data>
   <data name="رقم الشاصي" xml:space="preserve"><value>VIN Number</value></data>
   <data name="سنة الصنع" xml:space="preserve"><value>Manufacturing Year</value></data>
   <data name="الماركة" xml:space="preserve"><value>Make</value></data>
@@ -117,6 +153,7 @@
   <data name="تاريخ الإضافة" xml:space="preserve"><value>Date Added</value></data>
   <data name="رقم اللوحة" xml:space="preserve"><value>Plate Number</value></data>
   <data name="توجد في" xml:space="preserve"><value>Located In</value></data>
+  <data name="توجد في (الموقع الحالي)" xml:space="preserve"><value>Located In (Current Location)</value></data>
   <data name="رقم الكرت" xml:space="preserve"><value>Card Number</value></data>
   <data name="رقم الماكينة" xml:space="preserve"><value>Engine Number</value></data>
   <data name="اللون" xml:space="preserve"><value>Color</value></data>
@@ -131,6 +168,7 @@
   <data name="الشكل" xml:space="preserve"><value>Shape/Body</value></data>
   <data name="اختر الشكل..." xml:space="preserve"><value>Select Shape...</value></data>
   <data name="حفظ بيانات المركبة" xml:space="preserve"><value>Save Vehicle Data</value></data>
+  <data name="تحديث البيانات" xml:space="preserve"><value>Update Data</value></data>
   <data name="إلغاء" xml:space="preserve"><value>Cancel</value></data>
   <data name="ملاحظة: سيتم تحديث حقل 'آخر تحديث' تلقائياً عند حفظ التغييرات لضمان دقة التتبع." xml:space="preserve"><value>Note: The 'Last Update' field will be automatically updated upon saving to ensure tracking accuracy.</value></data>
   <data name="أدخل رقم الشاصي..." xml:space="preserve"><value>Enter VIN...</value></data>
@@ -144,6 +182,7 @@
   <data name="رقم التأمين..." xml:space="preserve"><value>Insurance Number...</value></data>
   <data name="صالون (Sedan)" xml:space="preserve"><value>Sedan</value></data>
   <data name="دفع رباعي (SUV)" xml:space="preserve"><value>SUV</value></data>
+  <data name="بيك أب (Pickup)" xml:space="preserve"><value>Pickup</value></data>
   <data name="تم الحفظ بنجاح!" xml:space="preserve"><value>Saved Successfully!</value></data>
   <data name="العودة للقائمة" xml:space="preserve"><value>Back to List</value></data>
   <data name="تأكد من البيانات المدخلة" xml:space="preserve"><value>Please verify the entered data</value></data>
@@ -160,7 +199,7 @@
   <data name="معلومات السيارة" xml:space="preserve"><value>Car Information</value></data>
   <data name="الشركة المصنعة" xml:space="preserve"><value>Manufacturer</value></data>
   <data name="الموديل" xml:space="preserve"><value>Model</value></data>
-  <data name="معلومات المالك" xml:space="preserve"><value>Owner Information</value></data>
+  <data name="معلومات المالك والشراء" xml:space="preserve"><value>Owner &amp; Purchase Information</value></data>
   <data name="اسم العميل" xml:space="preserve"><value>Customer Name</value></data>
   <data name="غير محدد" xml:space="preserve"><value>Not Specified</value></data>
   <data name="رقم الهاتف" xml:space="preserve"><value>Phone Number</value></data>
@@ -177,37 +216,102 @@
   <data name="المعرض / المزاد" xml:space="preserve"><value>Showroom / Auction</value></data>
   <data name="الموقع الحالي" xml:space="preserve"><value>Current Location</value></data>
   <data name="رقم الشاصي (VIN)" xml:space="preserve"><value>VIN Number</value></data>
+  <data name="الكود:" xml:space="preserve"><value>Code:</value></data>
+  <data name="قائمة السيارات" xml:space="preserve"><value>Cars List</value></data>
+  <data name="رفع مستند للسيارة" xml:space="preserve"><value>Upload Car Document</value></data>
+  <data name="تقارير الفحص" xml:space="preserve"><value>Inspection Reports</value></data>
+  <data name="المستندات والملفات" xml:space="preserve"><value>Documents &amp; Files</value></data>
+  <data name="لا توجد تقارير فحص لهذه السيارة بعد." xml:space="preserve"><value>No inspection reports for this car yet.</value></data>
+  <data name="لا توجد مستندات مرفقة لهذه السيارة بعد." xml:space="preserve"><value>No documents attached to this car yet.</value></data>
+  <data name="تاريخ الفحص" xml:space="preserve"><value>Inspection Date</value></data>
+  <data name="الفاحص" xml:space="preserve"><value>Inspector</value></data>
+  <data name="مفاتيح" xml:space="preserve"><value>Keys</value></data>
+  <data name="الملكية" xml:space="preserve"><value>Title</value></data>
+  <data name="تشغيل" xml:space="preserve"><value>Run/Drive</value></data>
+  <data name="ملاحظات الأضرار:" xml:space="preserve"><value>Damage Notes:</value></data>
+  <data name="اسم الملف" xml:space="preserve"><value>File Name</value></data>
+  <data name="تاريخ الرفع" xml:space="preserve"><value>Upload Date</value></data>
+  <data name="عرض / تحميل" xml:space="preserve"><value>View / Download</value></data>
+  <data name="الكود الداخلي" xml:space="preserve"><value>Internal Code</value></data>
+  <data name="صورة السيارة الرئيسية" xml:space="preserve"><value>Main Car Image</value></data>
+  <data name="تغيير صورة السيارة الرئيسية (اختياري)" xml:space="preserve"><value>Change Main Car Image (Optional)</value></data>
+  <data name="حذف السيارة" xml:space="preserve"><value>Delete Car</value></data>
+  <data name="إضافة ماركة سيارة جديدة" xml:space="preserve"><value>Add New Car Make</value></data>
+  <data name="إضافة عميل سريع" xml:space="preserve"><value>Quick Add Customer</value></data>
+  <data name="إضافة نوع ضريبة جديد" xml:space="preserve"><value>Add New Tax Type</value></data>
+  <data name="إضافة نوع مركبة جديد" xml:space="preserve"><value>Add New Vehicle Type</value></data>
+  <data name="إضافة طريقة ضريبة جديدة" xml:space="preserve"><value>Add New Tax Method</value></data>
+  <data name="إضافة شكل سيارة جديد" xml:space="preserve"><value>Add New Car Shape</value></data>
+  <data name="أدخل الاسم هنا..." xml:space="preserve"><value>Enter name here...</value></data>
+  <data name="إضافة" xml:space="preserve"><value>Add</value></data>
+  <data name="لا يمكن ترك الحقل فارغاً!" xml:space="preserve"><value>Field cannot be empty!</value></data>
+  <data name="تمت الإضافة!" xml:space="preserve"><value>Added Successfully!</value></data>
+  <data name="تم إضافة الخيار بنجاح ويمكنك استخدامه الآن." xml:space="preserve"><value>Option added successfully and is ready to use.</value></data>
+  <data name="تم التحديث بنجاح!" xml:space="preserve"><value>Updated Successfully!</value></data>
+  <data name="جاري التحديث..." xml:space="preserve"><value>Updating...</value></data>
+  <data name="حدث خطأ أثناء التحديث" xml:space="preserve"><value>An error occurred during update</value></data>
+  <data name="تم حذف بيانات السيارة بنجاح." xml:space="preserve"><value>Car data deleted successfully.</value></data>
 
-  <!-- Contacts -->
-  <data name="دعم فني متواصل" xml:space="preserve"><value>Continuous Technical Support</value></data>
-  <data name="تواصل مع خبراء الأرجان" xml:space="preserve"><value>Contact Alargan Experts</value></data>
-  <data name="نحن هنا لخدمتك. يمكنك التواصل مباشرة مع القسم المختص للحصول على استجابة سريعة ودقيقة لاستفساراتك أو زيارة أحد فروعنا المنتشرة في السلطنة." xml:space="preserve"><value>We are here to serve you. Contact the relevant department directly for a quick response, or visit one of our branches in the Sultanate.</value></data>
-  <data name="هل ترغب في الحصول على حساب مزاد؟" xml:space="preserve"><value>Do you want to get an auction account?</value></data>
-  <data name="فريقنا المتواجد في صلالة أو نزوى أو مسقط وأمريكا مستعد لتزويدك بكافة الأدوات اللازمة لبدء استيراد سياراتك بأقل التكاليف وبأعلى درجة من الأمان." xml:space="preserve"><value>Our team in Salalah, Nizwa, Muscat, and the USA is ready to provide you with all necessary tools to start importing cars at the lowest costs and highest security.</value></data>
-  <data name="اطلب حسابك الآن" xml:space="preserve"><value>Request Your Account Now</value></data>
-  <data name="تواصل مع قسم المزادات" xml:space="preserve"><value>Contact Auctions Dept.</value></data>
-  <data name="قسم المزادات" xml:space="preserve"><value>Auctions Department</value></data>
-  <data name="للدعم الفني في حسابات كوبارت و IAAI والمزايدة المباشرة." xml:space="preserve"><value>For technical support on Copart, IAAI accounts, and direct bidding.</value></data>
-  <data name="قسم خدمة العملاء" xml:space="preserve"><value>Customer Service</value></data>
-  <data name="لمتابعة حالة الشحنات، الدعم الفني، وتقديم الاقتراحات." xml:space="preserve"><value>To track shipments, get technical support, and submit suggestions.</value></data>
-  <data name="قسم المبيعات" xml:space="preserve"><value>Sales Department</value></data>
-  <data name="للاستفسارات التجارية، عروض الأسعار، والتعاقدات الجديدة." xml:space="preserve"><value>For commercial inquiries, quotations, and new contracts.</value></data>
-  <data name="فروعنا في سلطنة عمان" xml:space="preserve"><value>Our Branches in Oman</value></data>
-  <data name="المركز الرئيسي - صلالة" xml:space="preserve"><value>Main Office - Salalah</value></data>
-  <data name="خلف مركز شرطة عوقد" xml:space="preserve"><value>Behind Awqad Police Station</value></data>
-  <data name="فرع نزوى - نزوى" xml:space="preserve"><value>Nizwa Branch - Nizwa</value></data>
-  <data name="صناعية كرشا" xml:space="preserve"><value>Karsha Industrial Area</value></data>
-  <data name="فرع مسقط - مسقط" xml:space="preserve"><value>Muscat Branch - Muscat</value></data>
-  <data name="المعبيلة الصناعية" xml:space="preserve"><value>Al Maabilah Industrial</value></data>
+  <!-- Users & Permissions -->
+  <data name="إدارة الموظفين" xml:space="preserve"><value>Staff Management</value></data>
+  <data name="إدارة موظفي النظام" xml:space="preserve"><value>System Staff Management</value></data>
+  <data name="إضافة موظف جديد" xml:space="preserve"><value>Add New Staff</value></data>
+  <data name="إضافة موظف وصلاحيات" xml:space="preserve"><value>Add Staff &amp; Permissions</value></data>
+  <data name="تعديل صلاحيات الموظف" xml:space="preserve"><value>Edit Staff Permissions</value></data>
+  <data name="تعديل الموظف:" xml:space="preserve"><value>Edit Staff:</value></data>
+  <data name="إنشاء حساب موظف جديد" xml:space="preserve"><value>Create New Staff Account</value></data>
+  <data name="الموظف" xml:space="preserve"><value>Staff Member</value></data>
+  <data name="الدور الوظيفي" xml:space="preserve"><value>Role</value></data>
+  <data name="صلاحيات الوصول" xml:space="preserve"><value>Access Permissions</value></data>
+  <data name="الحالة" xml:space="preserve"><value>Status</value></data>
+  <data name="يظهر للعملاء" xml:space="preserve"><value>Visible to Customers</value></data>
+  <data name="كامل الصلاحيات (Admin)" xml:space="preserve"><value>Full Access (Admin)</value></data>
+  <data name="نشط" xml:space="preserve"><value>Active</value></data>
+  <data name="معطل" xml:space="preserve"><value>Disabled</value></data>
+  <data name="إيقاف" xml:space="preserve"><value>Deactivate</value></data>
+  <data name="صلاحيات الوصول للنظام" xml:space="preserve"><value>System Access Permissions</value></data>
+  <data name="تحديث الصلاحيات" xml:space="preserve"><value>Update Permissions</value></data>
+  <data name="إدارة السيارات" xml:space="preserve"><value>Manage Cars</value></data>
+  <data name="إدارة العملاء" xml:space="preserve"><value>Manage Customers</value></data>
+  <data name="إدارة المالية والفواتير" xml:space="preserve"><value>Manage Finance &amp; Invoices</value></data>
+  <data name="إدارة المالية" xml:space="preserve"><value>Manage Finance</value></data>
+  <data name="إدارة الإعدادات" xml:space="preserve"><value>Manage Settings</value></data>
+  <data name="الظهور في صفحة اتصل بنا (للعملاء)" xml:space="preserve"><value>Visibility on Contact Us Page</value></data>
+  <data name="تفعيل الظهور كجهة اتصال عامة" xml:space="preserve"><value>Enable Visibility as Public Contact</value></data>
+  <data name="المسمى الوظيفي" xml:space="preserve"><value>Job Title</value></data>
+  <data name="رقم الهاتف العام" xml:space="preserve"><value>Public Phone Number</value></data>
+  <data name="أيقونة القسم" xml:space="preserve"><value>Department Icon</value></data>
+  <data name="حفظ الحساب والصلاحيات" xml:space="preserve"><value>Save Account &amp; Permissions</value></data>
+  <data name="تحديث الصلاحيات والحساب" xml:space="preserve"><value>Update Permissions &amp; Account</value></data>
+  <data name="تم إنشاء الحساب!" xml:space="preserve"><value>Account Created!</value></data>
+  <data name="تم إضافة الموظف وتفعيل صلاحياته بنجاح." xml:space="preserve"><value>Staff member added and permissions activated successfully.</value></data>
+  <data name="حدث خطأ ما" xml:space="preserve"><value>Something went wrong</value></data>
+  <data name="لا يمكن الاتصال بالسيرفر." xml:space="preserve"><value>Cannot connect to the server.</value></data>
+  <data name="حالة الحساب" xml:space="preserve"><value>Account Status</value></data>
+  <data name="نشط (يمكنه الدخول)" xml:space="preserve"><value>Active (Can Login)</value></data>
+  <data name="معطل (لا يمكنه الدخول)" xml:space="preserve"><value>Disabled (Cannot Login)</value></data>
+  <data name="البريد الإلكتروني (للدخول)" xml:space="preserve"><value>Email Address (For Login)</value></data>
+  <data name="إدارة / عام" xml:space="preserve"><value>Management / General</value></data>
+  <data name="خدمة العملاء" xml:space="preserve"><value>Customer Service</value></data>
+  <data name="المزادات" xml:space="preserve"><value>Auctions</value></data>
+  <data name="المبيعات" xml:space="preserve"><value>Sales</value></data>
+  <data name="السيارات والعمليات" xml:space="preserve"><value>Cars &amp; Operations</value></data>
+  <data name="الشحن" xml:space="preserve"><value>Shipping</value></data>
+  <data name="المالية والمحاسبة" xml:space="preserve"><value>Finance &amp; Accounting</value></data>
+  <data name="مكتب / فرع" xml:space="preserve"><value>Office / Branch</value></data>
+
+  <!-- Contacts (Dynamic) -->
+  <data name="مراسلة واتساب" xml:space="preserve"><value>Message on WhatsApp</value></data>
+  <data name="اتصال مباشر" xml:space="preserve"><value>Direct Call</value></data>
+  <data name="لا توجد جهات اتصال مسجلة حالياً." xml:space="preserve"><value>No registered contacts currently.</value></data>
+  <data name="اطلب حسابك الآن عبر واتساب" xml:space="preserve"><value>Request your account now via WhatsApp</value></data>
+  <data name="هل ترغب في فتح حساب مزاد؟" xml:space="preserve"><value>Do you want to open an auction account?</value></data>
+  <data name="فروعنا ومواقعنا في السلطنة" xml:space="preserve"><value>Our Branches &amp; Locations in Oman</value></data>
 
   <!-- Customers -->
-  <data name="الاسم الكامل" xml:space="preserve"><value>Full Name</value></data>
   <data name="اسم العميل أو الشركة" xml:space="preserve"><value>Customer or Company Name</value></data>
-  <data name="البريد الإلكتروني" xml:space="preserve"><value>Email Address</value></data>
   <data name="الرقم المدني / رقم السجل التجاري" xml:space="preserve"><value>Civil ID / CR Number</value></data>
-  <data name="رقم الهوية أو الإقامة" xml:space="preserve"><value>ID or Residency Number</value></data>
   <data name="العنوان التفصيلي" xml:space="preserve"><value>Detailed Address</value></data>
-  <data name="الدولة، المدينة، المنطقة، الشارع..." xml:space="preserve"><value>Country, City, Region, Street...</value></data>
   <data name="حفظ بيانات العميل" xml:space="preserve"><value>Save Customer Data</value></data>
   <data name="إضافة عميل آخر" xml:space="preserve"><value>Add Another Customer</value></data>
   <data name="كشف حساب وتفاصيل العميل" xml:space="preserve"><value>Statement &amp; Customer Details</value></data>
@@ -220,40 +324,54 @@
   <data name="عرض السيارة" xml:space="preserve"><value>View Car</value></data>
   <data name="إضافة عميل" xml:space="preserve"><value>Add Customer</value></data>
   <data name="إضافة عميل جديد" xml:space="preserve"><value>Add New Customer</value></data>
+  <data name="تعديل بيانات العميل" xml:space="preserve"><value>Edit Customer Data</value></data>
   <data name="النظام الهجين للبطاقات والجداول" xml:space="preserve"><value>Hybrid Cards &amp; Tables System</value></data>
   <data name="البوابة نشطة" xml:space="preserve"><value>Portal Active</value></data>
+  <data name="البوابة معطلة" xml:space="preserve"><value>Portal Disabled</value></data>
   <data name="الإجمالي:" xml:space="preserve"><value>Total:</value></data>
   <data name="نسبة السداد:" xml:space="preserve"><value>Payment Ratio:</value></data>
   <data name="بيانات الوصول الآمن" xml:space="preserve"><value>Secure Access Data</value></data>
+  <data name="بيانات بوابة العميل" xml:space="preserve"><value>Customer Portal Data</value></data>
+  <data name="بيانات بوابة العميل (تُنشأ تلقائياً إذا تركت فارغة)" xml:space="preserve"><value>Customer Portal Data (Auto-generated if left blank)</value></data>
   <data name="كلمة المرور" xml:space="preserve"><value>Password</value></data>
   <data name="المستخدم" xml:space="preserve"><value>Username</value></data>
+  <data name="اسم المستخدم للبوابة" xml:space="preserve"><value>Portal Username</value></data>
+  <data name="تفعيل حساب البوابة للعميل" xml:space="preserve"><value>Activate Portal Account for Customer</value></data>
   <data name="إصدار كشف حساب" xml:space="preserve"><value>Issue Statement</value></data>
+  <data name="كشف حساب" xml:space="preserve"><value>Statement</value></data>
+  <data name="كشف" xml:space="preserve"><value>Stmt</value></data>
   <data name="لا يوجد عملاء مسجلين حالياً." xml:space="preserve"><value>No customers registered currently.</value></data>
   <data name="كود العميل" xml:space="preserve"><value>Customer Code</value></data>
+  <data name="كود العميل:" xml:space="preserve"><value>Customer Code:</value></data>
   <data name="بيانات العميل" xml:space="preserve"><value>Customer Data</value></data>
   <data name="الرصيد المتبقي (الديون)" xml:space="preserve"><value>Remaining Balance (Debts)</value></data>
+  <data name="عرض البطاقات" xml:space="preserve"><value>Grid View</value></data>
+  <data name="عرض الجدول" xml:space="preserve"><value>List View</value></data>
+  <data name="تم حذف بيانات العميل بنجاح." xml:space="preserve"><value>Customer data deleted successfully.</value></data>
 
   <!-- Calculator -->
   <data name="احسب التكاليف بناءً على قوائم الأسعار الرسمية لشركة الأرجان" xml:space="preserve"><value>Calculate costs based on Alargan's official price lists</value></data>
+  <data name="حاسبة تكاليف الشحن الذكية" xml:space="preserve"><value>Smart Shipping Cost Calculator</value></data>
+  <data name="احسب التكاليف المتوقعة مباشرة بناءً على بيانات المزادات والموانئ في النظام" xml:space="preserve"><value>Calculate estimated costs directly based on auction and port data in the system</value></data>
   <data name="شحن فقط (Import)" xml:space="preserve"><value>Shipping Only (Import)</value></data>
-  <data name="سيارة (Export)" xml:space="preserve"><value>Car (Export)</value></data>
+  <data name="شراء سيارة (Export)" xml:space="preserve"><value>Buy Car (Export)</value></data>
   <data name="سعر السيارة المتوقع (USD)" xml:space="preserve"><value>Estimated Car Price (USD)</value></data>
-  <data name="حدد موقع السيارة في أمريكا" xml:space="preserve"><value>Select Car Location in USA</value></data>
-  <data name="ابحث بالولاية، المدينة، أو اسم المزاد..." xml:space="preserve"><value>Search by state, city, or auction name...</value></data>
-  <data name="ولاية الوصول (المستودع)" xml:space="preserve"><value>Destination State (Warehouse)</value></data>
-  <data name="إضافة تكاليف مخصصة" xml:space="preserve"><value>Add Custom Costs</value></data>
-  <data name="العمولة" xml:space="preserve"><value>Commission</value></data>
+  <data name="حدد المزاد / موقع السيارة (لتحديد الرسوم)" xml:space="preserve"><value>Select Auction / Car Location (to determine fees)</value></data>
+  <data name="لا توجد مزادات مسجلة في النظام" xml:space="preserve"><value>No auctions registered in the system</value></data>
+  <data name="إعدادات الجمارك والعمولات (يمكن تعديلها)" xml:space="preserve"><value>Customs &amp; Commissions Settings (Adjustable)</value></data>
+  <data name="العمولة ($)" xml:space="preserve"><value>Commission ($)</value></data>
   <data name="الجمارك (%)" xml:space="preserve"><value>Customs (%)</value></data>
-  <data name="الضريبة (%)" xml:space="preserve"><value>Tax (%)</value></data>
-  <data name="ملاحظات هامة: الأسعار المعروضة تشمل النقل الداخلي في أمريكا والشحن البحري إلى ميناء صلالة/صحار. رسوم الجمارك والضرائب تقريبية." xml:space="preserve"><value>Important Note: Displayed prices include inland towing in the USA and ocean freight to Salalah/Sohar port. Customs and tax fees are approximate.</value></data>
-  <data name="ملخص التكاليف" xml:space="preserve"><value>Costs Summary</value></data>
+  <data name="الضريبة VAT (%)" xml:space="preserve"><value>VAT (%)</value></data>
+  <data name="ملاحظات هامة: التكاليف المعروضة قابلة للتعديل وتتغير النتائج فوراً. الجمارك والضرائب تحسب تلقائياً كنسبة من (سعر السيارة + أجور الشحن)." xml:space="preserve"><value>Important Note: Displayed costs are adjustable and results change instantly. Customs and taxes are calculated automatically as a percentage of (Car Price + Shipping Fees).</value></data>
+  <data name="ملخص التسعيرة" xml:space="preserve"><value>Quote Summary</value></data>
   <data name="سعر السيارة" xml:space="preserve"><value>Car Price</value></data>
-  <data name="رسوم المزاد (متوقعة)" xml:space="preserve"><value>Auction Fees (Estimated)</value></data>
-  <data name="النقل الداخلي + الشحن" xml:space="preserve"><value>Towing + Shipping</value></data>
-  <data name="الجمارك والضرائب (10%)" xml:space="preserve"><value>Customs &amp; Taxes (10%)</value></data>
+  <data name="رسوم المزاد" xml:space="preserve"><value>Auction Fees</value></data>
+  <data name="النقل الداخلي والشحن" xml:space="preserve"><value>Inland Towing &amp; Shipping</value></data>
+  <data name="الجمارك والضرائب" xml:space="preserve"><value>Customs &amp; Taxes</value></data>
   <data name="عمولة الشركة" xml:space="preserve"><value>Company Commission</value></data>
   <data name="الإجمالي المتوقع" xml:space="preserve"><value>Estimated Total</value></data>
-  <data name="حفظ ومشاركة التسعيرة" xml:space="preserve"><value>Save &amp; Share Quote</value></data>
+  <data name="طباعة التسعيرة للعميل" xml:space="preserve"><value>Print Quote for Customer</value></data>
+  <data name="طباعة عرض السعر للعميل" xml:space="preserve"><value>Print Quotation for Customer</value></data>
 
   <!-- Inspections & Attachments -->
   <data name="إضافة تقرير فحص سيارة" xml:space="preserve"><value>Add Car Inspection Report</value></data>
@@ -273,6 +391,9 @@
   <data name="تفاصيل الأضرار والملاحظات (إن وجدت)" xml:space="preserve"><value>Damage Details &amp; Notes (If Any)</value></data>
   <data name="سجل أي خدوش، أجزاء مفقودة، أو زجاج مكسور لحفظ حقوق الشركة..." xml:space="preserve"><value>Log any scratches, missing parts, or broken glass to protect company rights...</value></data>
   <data name="حفظ التقرير" xml:space="preserve"><value>Save Report</value></data>
+  <data name="تم حفظ التقرير بنجاح!" xml:space="preserve"><value>Report Saved Successfully!</value></data>
+  <data name="العودة لتفاصيل السيارة" xml:space="preserve"><value>Return to Car Details</value></data>
+  <data name="إضافة تقرير آخر" xml:space="preserve"><value>Add Another Report</value></data>
   <data name="أرشفة ورفع ملف" xml:space="preserve"><value>Archive &amp; Upload File</value></data>
   <data name="رجوع" xml:space="preserve"><value>Back</value></data>
   <data name="السيارة المرتبطة بالملف" xml:space="preserve"><value>Car Linked to File</value></data>
@@ -321,12 +442,31 @@
   <data name="رسوم التخليص الجمركي" xml:space="preserve"><value>Customs Clearance Fees</value></data>
   <data name="الرسوم الإدارية / عمولة الشركة" xml:space="preserve"><value>Administrative Fees / Company Commission</value></data>
   <data name="الإجمالي الكلي:" xml:space="preserve"><value>Grand Total:</value></data>
+  <data name="طباعة الفاتورة" xml:space="preserve"><value>Print Invoice</value></data>
   <data name="المالية والفواتير" xml:space="preserve"><value>Finance &amp; Invoices</value></data>
   <data name="سجل الفواتير الضريبية" xml:space="preserve"><value>Tax Invoices Log</value></data>
+  <data name="رقم الفاتورة" xml:space="preserve"><value>Invoice Number</value></data>
+  <data name="رقم الفاتورة:" xml:space="preserve"><value>Invoice Number:</value></data>
+  <data name="تاريخ الإصدار" xml:space="preserve"><value>Issue Date</value></data>
+  <data name="تاريخ الإصدار:" xml:space="preserve"><value>Issue Date:</value></data>
+  <data name="العميل" xml:space="preserve"><value>Customer</value></data>
+  <data name="الإجمالي" xml:space="preserve"><value>Total</value></data>
+  <data name="إجراءات" xml:space="preserve"><value>Actions</value></data>
+  <data name="طباعة وعرض الفاتورة" xml:space="preserve"><value>Print &amp; View Invoice</value></data>
+  <data name="تعديل الفاتورة" xml:space="preserve"><value>Edit Invoice</value></data>
+  <data name="حذف الفاتورة" xml:space="preserve"><value>Delete Invoice</value></data>
+  <data name="عند حذف الفاتورة، سيتم خصم مبلغها من المديونية الحالية للعميل تلقائياً." xml:space="preserve"><value>When deleting the invoice, its amount will be automatically deducted from the customer's current debt.</value></data>
+  <data name="نعم، احذفها!" xml:space="preserve"><value>Yes, Delete It!</value></data>
+  <data name="تم حذف الفاتورة وتعديل حساب العميل بنجاح." xml:space="preserve"><value>Invoice deleted and customer account adjusted successfully.</value></data>
+  <data name="تعديل الفاتورة الضريبية" xml:space="preserve"><value>Edit Tax Invoice</value></data>
+  <data name="تم حفظ التعديلات وتحديث حساب العميل تلقائياً." xml:space="preserve"><value>Changes saved and customer account updated automatically.</value></data>
+  
   <data name="إصدار سند قبض جديد" xml:space="preserve"><value>Issue New Receipt</value></data>
-  <data name="المبلغ المقبوض" xml:space="preserve"><value>Received Amount</value></data>
+  <data name="تعديل سند قبض" xml:space="preserve"><value>Edit Payment Receipt</value></data>
+  <data name="المبلغ المقبوض ($)" xml:space="preserve"><value>Received Amount ($)</value></data>
   <data name="استلمنا من السيد/الشركة" xml:space="preserve"><value>Received from Mr./Company</value></data>
   <data name="تاريخ الاستلام" xml:space="preserve"><value>Receipt Date</value></data>
+  <data name="طريقة الدفع" xml:space="preserve"><value>Payment Method</value></data>
   <data name="نقداً (Cash)" xml:space="preserve"><value>Cash</value></data>
   <data name="تحويل بنكي (Bank Transfer)" xml:space="preserve"><value>Bank Transfer</value></data>
   <data name="شيك (Cheque)" xml:space="preserve"><value>Cheque</value></data>
@@ -338,6 +478,17 @@
   <data name="حفظ وإصدار السند" xml:space="preserve"><value>Save &amp; Issue Receipt</value></data>
   <data name="تم خصم المبلغ من مديونية العميل." xml:space="preserve"><value>Amount deducted from customer's debt.</value></data>
   <data name="سجل المقبوضات (المدفوعات)" xml:space="preserve"><value>Payment Receipts Log</value></data>
+  <data name="رقم السند" xml:space="preserve"><value>Receipt Number</value></data>
+  <data name="رقم السند:" xml:space="preserve"><value>Receipt Number:</value></data>
+  <data name="سيتم التوليد تلقائياً" xml:space="preserve"><value>Will be auto-generated</value></data>
+  <data name="تاريخ الدفع" xml:space="preserve"><value>Payment Date</value></data>
+  <data name="العميل المُسدد" xml:space="preserve"><value>Paying Customer</value></data>
+  <data name="المبلغ" xml:space="preserve"><value>Amount</value></data>
+  <data name="تعديل السند" xml:space="preserve"><value>Edit Receipt</value></data>
+  <data name="حذف السند" xml:space="preserve"><value>Delete Receipt</value></data>
+  <data name="عند حذف السند، سيتم التراجع عن خصم المبلغ من مديونية العميل." xml:space="preserve"><value>When deleting the receipt, the deduction from the customer's debt will be reversed.</value></data>
+  <data name="نعم، احذفه!" xml:space="preserve"><value>Yes, Delete it!</value></data>
+  <data name="تم حذف السند وتحديث حساب العميل." xml:space="preserve"><value>Receipt deleted and customer account updated.</value></data>
 
   <!-- Notifications -->
   <data name="مركز الإشعارات" xml:space="preserve"><value>Notifications Center</value></data>
@@ -351,34 +502,68 @@
 
   <!-- Services -->
   <data name="حلولنا اللوجستية المتكاملة" xml:space="preserve"><value>Our Integrated Logistics Solutions</value></data>
-  <data name="نقدم في شركة الارجان للشحن (ALARGAN AUTO SHIPPING) تجربة استيراد فريدة، تبدأ من الاستشارة الفنية قبل المزاد وتنتهي عند وصول سيارتك إلى باب منزلك في سلطنة عمان." xml:space="preserve"><value>At Alargan Auto Shipping, we offer a unique import experience starting from technical consultation before the auction until your car arrives at your doorstep in Oman.</value></data>
+  <data name="نقدم في شركة الارجان للشحن تجربة استيراد فريدة، تبدأ من الاستشارة الفنية قبل المزاد وتنتهي عند وصول سيارتك إلى منزلك." xml:space="preserve"><value>At Alargan Auto Shipping, we offer a unique import experience starting from technical consultation before the auction until your car arrives at your home.</value></data>
   <data name="الشحن البحري الدولي" xml:space="preserve"><value>International Ocean Freight</value></data>
-  <data name="حلول شحن متكاملة عبر الحاويات (Containers) أو نظام الشحن بالدحرجة (RORO) من كافة موانئ العالم إلى ميناء صحار وميناء صلالة." xml:space="preserve"><value>Integrated shipping solutions via Containers or RORO from all global ports to Sohar and Salalah ports.</value></data>
+  <data name="حلول شحن متكاملة عبر الحاويات أو نظام RORO من كافة موانئ العالم." xml:space="preserve"><value>Integrated shipping solutions via Containers or RORO from all global ports.</value></data>
   <data name="استفسر الآن" xml:space="preserve"><value>Inquire Now</value></data>
   <data name="فحص وتأمين المركبات" xml:space="preserve"><value>Vehicle Inspection &amp; Insurance</value></data>
-  <data name="توفير تقارير فحص مفصلة قبل الشراء، وتأمين شامل على الشحنات البحرية لحماية استثمارك من أي مخاطر محتملة خلال الرحلة." xml:space="preserve"><value>Providing detailed inspection reports pre-purchase, and comprehensive ocean freight insurance to protect your investment.</value></data>
+  <data name="توفير تقارير فحص مفصلة قبل الشراء، وتأمين شامل على الشحنات البحرية." xml:space="preserve"><value>Providing detailed inspection reports pre-purchase, and comprehensive ocean freight insurance.</value></data>
   <data name="النقل الداخلي (أمريكا)" xml:space="preserve"><value>Inland Towing (USA)</value></data>
-  <data name="خدمة سحب ونقل احترافية (Towing) للمركبات من كافة مواقع المزاد في الولايات المتحدة إلى أقرب ساحة تجمع أو ميناء تصدير بأفضل الأسعار." xml:space="preserve"><value>Professional towing services from all US auction yards to the nearest consolidation yard or export port at the best prices.</value></data>
+  <data name="خدمة سحب ونقل احترافية (Towing) من كافة مواقع المزاد في الولايات المتحدة." xml:space="preserve"><value>Professional towing services from all US auction yards.</value></data>
   <data name="التخليص الجمركي في عمان" xml:space="preserve"><value>Customs Clearance in Oman</value></data>
-  <data name="نمتلك فريقاً متخصصاً في موانئ السلطنة لإنهاء كافة الإجراءات الجمركية والضريبية بسرعة وكفاءة، لضمان استلام سيارتك دون تعقيدات." xml:space="preserve"><value>We have a specialized team in Oman's ports to complete all customs and tax procedures swiftly and efficiently.</value></data>
+  <data name="إنهاء كافة الإجراءات الجمركية والضريبية بسرعة وكفاءة في موانئ السلطنة." xml:space="preserve"><value>Complete all customs and tax procedures swiftly and efficiently in Oman's ports.</value></data>
   <data name="استشارات وحسابات المزادات" xml:space="preserve"><value>Auction Consultations &amp; Accounts</value></data>
-  <data name="نقدم استشارات فنية متخصصة قبل الشراء، ونوفر لعملائنا حسابات خاصة للمشاركة المباشرة في كبرى المزادات العالمية مثل Copart و IAAI." xml:space="preserve"><value>We provide expert technical consultations pre-purchase and offer private accounts to participate directly in major auctions like Copart and IAAI.</value></data>
+  <data name="نوفر لعملائنا حسابات خاصة للمشاركة المباشرة في كبرى المزادات العالمية." xml:space="preserve"><value>We provide our clients with private accounts to participate directly in major global auctions.</value></data>
   <data name="طلب عرض سعر" xml:space="preserve"><value>Request a Quote</value></data>
 
   <!-- Settings -->
   <data name="إدارة القواعد المالية، الضرائب، وأسعار الصرف" xml:space="preserve"><value>Manage Financial Rules, Taxes, and Exchange Rates</value></data>
   <data name="حفظ جميع الإعدادات" xml:space="preserve"><value>Save All Settings</value></data>
+  <data name="حفظ الإعدادات" xml:space="preserve"><value>Save Settings</value></data>
+  <data name="إدارة الثوابت المالية لشركة الأرجان" xml:space="preserve"><value>Manage Alargan's Financial Constants</value></data>
   <data name="أسعار صرف العملات" xml:space="preserve"><value>Currency Exchange Rates</value></data>
+  <data name="أسعار الصرف (Exchange Rates)" xml:space="preserve"><value>Exchange Rates</value></data>
   <data name="سعر صرف الدولار (1 OMR = ? USD)" xml:space="preserve"><value>USD Exchange Rate (1 OMR = ? USD)</value></data>
+  <data name="سعر الدولار مقابل الريال (OMR/USD)" xml:space="preserve"><value>USD Rate against OMR (OMR/USD)</value></data>
+  <data name="السعر المستخدم في تحويل تكاليف الشراء من أمريكا" xml:space="preserve"><value>Rate used to convert purchase costs from USA</value></data>
   <data name="سعر صرف الدرهم (1 OMR = ? AED)" xml:space="preserve"><value>AED Exchange Rate (1 OMR = ? AED)</value></data>
+  <data name="السعر المستخدم في تحويل تكاليف الشراء من الإمارات" xml:space="preserve"><value>Rate used to convert purchase costs from UAE</value></data>
   <data name="القواعد المالية والضرائب" xml:space="preserve"><value>Financial Rules &amp; Taxes</value></data>
+  <data name="الضرائب والعمولات" xml:space="preserve"><value>Taxes &amp; Commissions</value></data>
   <data name="نسبة الجمارك العمانية (%)" xml:space="preserve"><value>Oman Customs Percentage (%)</value></data>
+  <data name="نسبة الجمارك (%)" xml:space="preserve"><value>Customs Percentage (%)</value></data>
   <data name="نسبة ضريبة القيمة المضافة VAT (%)" xml:space="preserve"><value>VAT Percentage (%)</value></data>
   <data name="عمولة الشركة الافتراضية (OMR)" xml:space="preserve"><value>Default Company Commission (OMR)</value></data>
+  <data name="المبلغ الثابت الذي يتم إضافته كربح للشركة لكل سيارة" xml:space="preserve"><value>Fixed amount added as company profit per car</value></data>
+  <data name="إعدادات التواصل والاستفسارات" xml:space="preserve"><value>Contact &amp; Inquiries Settings</value></data>
+  <data name="رقم الواتساب للاستفسارات (مع كود الدولة)" xml:space="preserve"><value>WhatsApp Number for Inquiries (with country code)</value></data>
+  <data name="رقم الواتساب للاستفسارات" xml:space="preserve"><value>WhatsApp Number for Inquiries</value></data>
+  <data name="هذا الرقم هو الذي ستوجه إليه أزرار 'استفسر الآن' في صفحة الخدمات." xml:space="preserve"><value>This is the number that 'Inquire Now' buttons on the Services page will direct to.</value></data>
   <data name="صيانة النظام والبيانات" xml:space="preserve"><value>System &amp; Data Maintenance</value></data>
+  <data name="صيانة النظام والتقارير" xml:space="preserve"><value>System Maintenance &amp; Reports</value></data>
+  <data name="تصفير البيانات" xml:space="preserve"><value>Wipe Data</value></data>
   <data name="حذف جميع البيانات والبدء من جديد (لا يمكن التراجع)" xml:space="preserve"><value>Delete all data and start over (Cannot be undone)</value></data>
+  <data name="حذف جميع البيانات (سيارات، عملاء، فواتير) والبدء من جديد (لا يمكن التراجع)" xml:space="preserve"><value>Delete all data (cars, customers, invoices) and start over (Cannot be undone)</value></data>
+  <data name="حذف جميع العمليات والبدء من جديد (لا يمكن التراجع)" xml:space="preserve"><value>Delete all operations and start over (Cannot be undone)</value></data>
+  <data name="تصفير النظام" xml:space="preserve"><value>Reset System</value></data>
+  <data name="تصفير النظام بالكامل" xml:space="preserve"><value>Reset Entire System</value></data>
   <data name="تصدير قاعدة البيانات" xml:space="preserve"><value>Export Database</value></data>
   <data name="تحميل نسخة احتياطية من جميع البيانات بتنسيق JSON" xml:space="preserve"><value>Download a backup of all data in JSON format</value></data>
+  <data name="تصدير الآن" xml:space="preserve"><value>Export Now</value></data>
+  <data name="تقرير حالة النظام" xml:space="preserve"><value>System Status Report</value></data>
+  <data name="توليد ملف PDF رسمي يحتوي على كافة الإحصائيات والقواعد الحالية" xml:space="preserve"><value>Generate an official PDF file containing all current statistics and rules</value></data>
+  <data name="تصدير تقرير PDF" xml:space="preserve"><value>Export PDF Report</value></data>
+  <data name="تحذير خطير جداً!" xml:space="preserve"><value>Very Critical Warning!</value></data>
+  <data name="تحذير خطير!" xml:space="preserve"><value>Critical Warning!</value></data>
+  <data name="أنت على وشك مسح &lt;strong&gt;كافة بيانات العملاء والسيارات والفواتير&lt;/strong&gt; من النظام.&lt;br&gt;هذا الإجراء &lt;strong&gt;لا يمكن التراجع عنه&lt;/strong&gt; أبداً!" xml:space="preserve"><value>You are about to delete &lt;strong&gt;all customer, car, and invoice data&lt;/strong&gt; from the system.&lt;br&gt;This action &lt;strong&gt;cannot be undone&lt;/strong&gt; ever!</value></data>
+  <data name="أنت على وشك مسح كافة بيانات النظام. هل أنت متأكد؟" xml:space="preserve"><value>You are about to wipe all system data. Are you sure?</value></data>
+  <data name="نعم، أنا متأكد، قم بالتصفير" xml:space="preserve"><value>Yes, I am sure, Wipe it</value></data>
+  <data name="تأكيد نهائي" xml:space="preserve"><value>Final Confirmation</value></data>
+  <data name="هل أنت متأكد بنسبة 100%؟" xml:space="preserve"><value>Are you 100% sure?</value></data>
+  <data name="نعم، امسح كل شيء" xml:space="preserve"><value>Yes, Delete Everything</value></data>
+  <data name="تم التصفير" xml:space="preserve"><value>System Wiped</value></data>
+  <data name="تم مسح كافة البيانات التشغيلية بنجاح." xml:space="preserve"><value>All operational data wiped successfully.</value></data>
+  <data name="تم تحديث قواعد النظام بنجاح." xml:space="preserve"><value>System rules updated successfully.</value></data>
 
   <!-- Tracking -->
   <data name="أدخل رقم الشاصي (VIN) المكون من 17 رمزاً..." xml:space="preserve"><value>Enter the 17-character VIN...</value></data>
@@ -414,15 +599,44 @@
 
   <!-- Shipments -->
   <data name="إضافة حاوية / شحنة جديدة" xml:space="preserve"><value>Add New Container / Shipment</value></data>
+  <data name="إضافة شحنة جديدة" xml:space="preserve"><value>Add New Shipment</value></data>
+  <data name="تعديل بيانات الشحنة" xml:space="preserve"><value>Edit Shipment Data</value></data>
   <data name="المحتويات" xml:space="preserve"><value>Contents</value></data>
   <data name="تفاصيل الشحنة والحاوية" xml:space="preserve"><value>Shipment &amp; Container Details</value></data>
   <data name="العودة للشحنات" xml:space="preserve"><value>Back to Shipments</value></data>
+  <data name="عودة للقائمة" xml:space="preserve"><value>Back to List</value></data>
+  <data name="رقم الحاوية" xml:space="preserve"><value>Container Number</value></data>
+  <data name="رقم الحجز" xml:space="preserve"><value>Booking Number</value></data>
+  <data name="رقم الحجز من خط الملاحة" xml:space="preserve"><value>Booking Number from Shipping Line</value></data>
   <data name="بوليصة الشحن (B/L)" xml:space="preserve"><value>Bill of Lading (B/L)</value></data>
+  <data name="رقم بوليصة الشحن" xml:space="preserve"><value>Bill of Lading Number</value></data>
+  <data name="رقم البوليصة (اختياري)" xml:space="preserve"><value>B/L Number (Optional)</value></data>
+  <data name="خط الملاحة / الحجز" xml:space="preserve"><value>Shipping Line / Booking</value></data>
+  <data name="خط الملاحة" xml:space="preserve"><value>Shipping Line</value></data>
+  <data name="مسار الشحنة" xml:space="preserve"><value>Shipment Route</value></data>
+  <data name="تاريخ الإبحار" xml:space="preserve"><value>Sailing Date</value></data>
+  <data name="تاريخ الإبحار المتوقع" xml:space="preserve"><value>Expected Time of Departure</value></data>
+  <data name="تاريخ الوصول المتوقع" xml:space="preserve"><value>Expected Time of Arrival</value></data>
+  <data name="حالة الشحنة" xml:space="preserve"><value>Shipment Status</value></data>
+  <data name="ميناء التحميل (Origin)" xml:space="preserve"><value>Loading Port (Origin)</value></data>
+  <data name="ابحث عن ميناء التحميل" xml:space="preserve"><value>Search for Loading Port</value></data>
+  <data name="ميناء الوصول (Destination)" xml:space="preserve"><value>Discharge Port (Destination)</value></data>
+  <data name="ابحث عن ميناء الوصول" xml:space="preserve"><value>Search for Discharge Port</value></data>
+  <data name="حفظ بيانات الشحنة" xml:space="preserve"><value>Save Shipment Data</value></data>
+  <data name="إضافة شحنة أخرى" xml:space="preserve"><value>Add Another Shipment</value></data>
+  <data name="تم حذف الشحنة بنجاح." xml:space="preserve"><value>Shipment deleted successfully.</value></data>
   <data name="عدد السيارات المحملة" xml:space="preserve"><value>Loaded Cars Count</value></data>
   <data name="سيارات" xml:space="preserve"><value>Cars</value></data>
   <data name="السيارات المحملة في هذه الحاوية" xml:space="preserve"><value>Cars loaded in this container</value></data>
   <data name="سيتم فتح نافذة لاختيار السيارات المتوفرة في المستودع لربطها بهذه الحاوية." xml:space="preserve"><value>A window will open to select available warehouse cars to link to this container.</value></data>
   <data name="ربط سيارة بالحاوية" xml:space="preserve"><value>Link Car to Container</value></data>
+  <data name="اختر سيارة لربطها" xml:space="preserve"><value>Select Car to Link</value></data>
+  <data name="جاري التحميل..." xml:space="preserve"><value>Loading...</value></data>
+  <data name="اختر السيارة..." xml:space="preserve"><value>Select Car...</value></data>
+  <data name="لا توجد سيارات متاحة في المستودع" xml:space="preserve"><value>No cars available in warehouse</value></data>
+  <data name="تأكيد الربط" xml:space="preserve"><value>Confirm Link</value></data>
+  <data name="تنبيه!" xml:space="preserve"><value>Alert!</value></data>
+  <data name="يرجى اختيار سيارة أولاً" xml:space="preserve"><value>Please select a car first</value></data>
   <data name="الحاوية ممتلئة (4/4)" xml:space="preserve"><value>Container Full (4/4)</value></data>
   <data name="المالك" xml:space="preserve"><value>Owner</value></data>
   <data name="إزالة من الحاوية" xml:space="preserve"><value>Remove from Container</value></data>
@@ -430,46 +644,76 @@
   <data name="هل أنت متأكد؟" xml:space="preserve"><value>Are you sure?</value></data>
   <data name="سيتم فك ارتباط هذه السيارة من الحاوية وإعادتها لحالة المستودع." xml:space="preserve"><value>This car will be unlinked from the container and returned to warehouse status.</value></data>
   <data name="نعم، إزالة" xml:space="preserve"><value>Yes, Remove</value></data>
+  <data name="Pending" xml:space="preserve"><value>Pending</value></data>
+  <data name="Loading" xml:space="preserve"><value>Loading</value></data>
+  <data name="Sailed" xml:space="preserve"><value>Sailed</value></data>
+  <data name="Arrived" xml:space="preserve"><value>Arrived</value></data>
+  <data name="Cleared" xml:space="preserve"><value>Cleared</value></data>
+  <data name="Pending (قيد الانتظار)" xml:space="preserve"><value>Pending</value></data>
+  <data name="Loading (قيد التحميل)" xml:space="preserve"><value>Loading</value></data>
+  <data name="Sailed (أبحرت)" xml:space="preserve"><value>Sailed</value></data>
+  <data name="Arrived (وصلت الميناء)" xml:space="preserve"><value>Arrived</value></data>
+  <data name="Cleared (تم التخليص)" xml:space="preserve"><value>Cleared</value></data>
 
   <!-- Auctions & Locations -->
   <data name="إدارة المزادات" xml:space="preserve"><value>Auctions Management</value></data>
   <data name="قائمة المزادات المعتمدة وحسابات الشراء" xml:space="preserve"><value>List of Approved Auctions &amp; Purchasing Accounts</value></data>
+  <data name="تعديل المزاد" xml:space="preserve"><value>Edit Auction</value></data>
   <data name="اسم المزاد" xml:space="preserve"><value>Auction Name</value></data>
   <data name="الموقع الأساسي" xml:space="preserve"><value>Primary Location</value></data>
   <data name="رقم المشتري (Buyer No)" xml:space="preserve"><value>Buyer Number</value></data>
   <data name="رسوم المزاد الافتراضية" xml:space="preserve"><value>Default Auction Fees</value></data>
   <data name="تعديل" xml:space="preserve"><value>Edit</value></data>
   <data name="حذف" xml:space="preserve"><value>Delete</value></data>
+  <data name="لن تتمكن من التراجع عن عملية الحذف!" xml:space="preserve"><value>You will not be able to undo the deletion!</value></data>
+  <data name="تم الحذف!" xml:space="preserve"><value>Deleted!</value></data>
+  <data name="تم حذف المزاد بنجاح." xml:space="preserve"><value>Auction deleted successfully.</value></data>
+  <data name="حدث خطأ أثناء الحذف." xml:space="preserve"><value>An error occurred while deleting.</value></data>
   <data name="المواقع والمستودعات" xml:space="preserve"><value>Locations &amp; Warehouses</value></data>
   <data name="المواقع والموانئ" xml:space="preserve"><value>Locations &amp; Ports</value></data>
   <data name="إدارة المستودعات وموانئ التحميل والوصول" xml:space="preserve"><value>Manage Warehouses and Origin/Destination Ports</value></data>
+  <data name="تعديل بيانات الموقع" xml:space="preserve"><value>Edit Location Data</value></data>
   <data name="اسم الموقع" xml:space="preserve"><value>Location Name</value></data>
   <data name="النوع" xml:space="preserve"><value>Type</value></data>
   <data name="الدولة / الولاية" xml:space="preserve"><value>Country / State</value></data>
+  <data name="الدولة" xml:space="preserve"><value>Country</value></data>
+  <data name="الولاية / المحافظة" xml:space="preserve"><value>State / Province</value></data>
   <data name="الشخص المسؤول" xml:space="preserve"><value>Contact Person</value></data>
+  <data name="الشخص المسؤول (اختياري)" xml:space="preserve"><value>Contact Person (Optional)</value></data>
   <data name="رقم التواصل" xml:space="preserve"><value>Contact Phone</value></data>
+  <data name="رقم التواصل (اختياري)" xml:space="preserve"><value>Contact Phone (Optional)</value></data>
   <data name="ميناء" xml:space="preserve"><value>Port</value></data>
   <data name="مستودع" xml:space="preserve"><value>Warehouse</value></data>
+  <data name="تم حذف الموقع بنجاح." xml:space="preserve"><value>Location deleted successfully.</value></data>
+  <data name="حفظ البيانات" xml:space="preserve"><value>Save Data</value></data>
 
   <!-- Transporters & Dispatch -->
   <data name="شركات النقل الداخلي" xml:space="preserve"><value>Transporters</value></data>
   <data name="شركات النقل والريكفري" xml:space="preserve"><value>Towing &amp; Transporters</value></data>
   <data name="شركات النقل الداخلي (Towing)" xml:space="preserve"><value>Inland Towing Companies</value></data>
   <data name="إدارة الموردين وشركات الريكفري في بلد التصدير" xml:space="preserve"><value>Manage Suppliers and Towing Companies in Export Country</value></data>
+  <data name="تعديل بيانات الناقل" xml:space="preserve"><value>Edit Transporter Data</value></data>
   <data name="اسم الناقل" xml:space="preserve"><value>Transporter Name</value></data>
   <data name="رقم الترخيص (DOT)" xml:space="preserve"><value>License Number (DOT)</value></data>
   <data name="التأمين" xml:space="preserve"><value>Insurance</value></data>
+  <data name="بيانات التأمين" xml:space="preserve"><value>Insurance Details</value></data>
+  <data name="تاريخ انتهاء التأمين" xml:space="preserve"><value>Insurance Expiry Date</value></data>
   <data name="التقييم" xml:space="preserve"><value>Rating</value></data>
+  <data name="التقييم (1-5)" xml:space="preserve"><value>Rating (1-5)</value></data>
+  <data name="تم حذف الناقل بنجاح." xml:space="preserve"><value>Transporter deleted successfully.</value></data>
   <data name="أوامر النقل (Dispatch)" xml:space="preserve"><value>Dispatch Orders</value></data>
   <data name="أوامر النقل الداخلي" xml:space="preserve"><value>Dispatch Orders</value></data>
   <data name="أوامر النقل الداخلي (Dispatch)" xml:space="preserve"><value>Dispatch Orders</value></data>
   <data name="تتبع نقل السيارات من المزادات إلى المستودعات" xml:space="preserve"><value>Track Car Movements from Auctions to Warehouses</value></data>
+  <data name="تعديل أمر نقل داخلي" xml:space="preserve"><value>Edit Inland Dispatch Order</value></data>
+  <data name="تعديل أمر نقل (Dispatch)" xml:space="preserve"><value>Edit Dispatch Order</value></data>
   <data name="إنشاء أمر نقل" xml:space="preserve"><value>Create Dispatch Order</value></data>
   <data name="رقم الأمر" xml:space="preserve"><value>Order Number</value></data>
   <data name="الناقل (Transporter)" xml:space="preserve"><value>Transporter</value></data>
   <data name="المسار (من - إلى)" xml:space="preserve"><value>Route (From - To)</value></data>
   <data name="تكلفة النقل" xml:space="preserve"><value>Towing Cost</value></data>
   <data name="إنشاء أمر نقل داخلي" xml:space="preserve"><value>Create Inland Dispatch Order</value></data>
+  <data name="إنشاء أمر نقل (Dispatch)" xml:space="preserve"><value>Create Dispatch Order</value></data>
   <data name="(تلقائي)" xml:space="preserve"><value>(Auto)</value></data>
   <data name="السيارة المراد نقلها" xml:space="preserve"><value>Car to Transport</value></data>
   <data name="اختر السيارة (بالشاصي)" xml:space="preserve"><value>Select Car (by VIN)</value></data>
@@ -477,12 +721,19 @@
   <data name="اختر الناقل" xml:space="preserve"><value>Select Transporter</value></data>
   <data name="تكلفة النقل المتفق عليها ($)" xml:space="preserve"><value>Agreed Towing Fee ($)</value></data>
   <data name="موقع الانطلاق (من)" xml:space="preserve"><value>Origin Location (From)</value></data>
+  <data name="المزاد أو الساحة" xml:space="preserve"><value>Auction or Yard</value></data>
   <data name="موقع الوصول (إلى)" xml:space="preserve"><value>Destination Location (To)</value></data>
   <data name="المستودع الوجهة" xml:space="preserve"><value>Destination Warehouse</value></data>
+  <data name="ملاحظات السائق (أعطال/نواقص)" xml:space="preserve"><value>Driver Notes (Damages/Missing Parts)</value></data>
+  <data name="أضف أي ملاحظات بخصوص حالة السيارة..." xml:space="preserve"><value>Add any notes regarding car condition...</value></data>
   <data name="إصدار أمر النقل" xml:space="preserve"><value>Issue Dispatch Order</value></data>
   <data name="جاري الإصدار..." xml:space="preserve"><value>Issuing...</value></data>
   <data name="تم إصدار الأمر بنجاح!" xml:space="preserve"><value>Order Issued Successfully!</value></data>
   <data name="تأكد من إدخال كافة البيانات بشكل صحيح." xml:space="preserve"><value>Please ensure all data is entered correctly.</value></data>
+  <data name="تم حذف أمر النقل بنجاح." xml:space="preserve"><value>Dispatch order deleted successfully.</value></data>
+  <data name="Assigned" xml:space="preserve"><value>Assigned</value></data>
+  <data name="PickedUp" xml:space="preserve"><value>Picked Up</value></data>
+  <data name="Delivered" xml:space="preserve"><value>Delivered</value></data>
 
   <!-- Additional Settings actions -->
   <data name="إعدادات النظام والقواعد" xml:space="preserve"><value>System Settings</value></data>

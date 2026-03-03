@@ -3,6 +3,8 @@
     ViewData["Title"] = Localizer["المالية والفواتير"];
 }
 
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
 <style>
     .page-header {
         display: flex;
@@ -112,11 +114,17 @@
         border: 1px solid rgba(184, 147, 90, 0.2);
     }
 
+    /* Actions Styling */
+    .actions-wrapper {
+        display: flex;
+        gap: 8px;
+    }
+
     .action-btn {
         color: white;
         background: var(--primary-gold);
         border: none;
-        padding: 0.6rem 1.2rem;
+        padding: 0.6rem 1rem;
         border-radius: 10px;
         text-decoration: none;
         font-weight: 800;
@@ -135,9 +143,45 @@
             box-shadow: 0 6px 15px rgba(184, 147, 90, 0.3);
             color: white;
         }
+
+    .action-btn-outline {
+        color: var(--primary-gold);
+        background: rgba(184, 147, 90, 0.05);
+        border: 1px solid rgba(184, 147, 90, 0.2);
+        padding: 0.6rem 1rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 800;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .action-btn-outline:hover {
+            background: var(--primary-gold);
+            color: white;
+        }
+
+    .action-btn-danger {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.05);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        padding: 0.6rem 1rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .action-btn-danger:hover {
+            background: #ef4444;
+            color: white;
+        }
 </style>
 
 <div>
+    @Html.AntiForgeryToken()
     <div class="page-header">
         <h2 class="page-title"><i class="fa-solid fa-file-invoice-dollar"></i> @Localizer["سجل الفواتير الضريبية"]</h2>
         <a href="@Url.Action("Create", "Invoices")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إصدار فاتورة جديدة"]</a>
@@ -170,9 +214,17 @@
                             </td>
                             <td><span class="inv-amount">$@inv.TotalAmount</span></td>
                             <td>
-                                <a href="@Url.Action("Details", "Invoices", new { id = inv.Id })" class="action-btn">
-                                    <i class="fa-solid fa-print"></i> @Localizer["طباعة"]
-                                </a>
+                                <div class="actions-wrapper">
+                                    <a href="@Url.Action("Details", "Invoices", new { id = inv.Id })" class="action-btn" title="@Localizer["طباعة وعرض الفاتورة"]">
+                                        <i class="fa-solid fa-print"></i>
+                                    </a>
+                                    <a href="@Url.Action("Edit", "Invoices", new { id = inv.Id })" class="action-btn-outline" title="@Localizer["تعديل الفاتورة"]">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <button type="button" class="action-btn-danger" onclick="confirmDelete(@inv.Id)" title="@Localizer["حذف الفاتورة"]">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -183,7 +235,48 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
     <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
+                text: '@Html.Raw(Localizer["عند حذف الفاتورة، سيتم خصم مبلغها من المديونية الحالية للعميل تلقائياً."])',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: 'var(--primary-navy)',
+                confirmButtonText: '@Html.Raw(Localizer["نعم، احذفها!"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Invoices")/' + id,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: '@Html.Raw(Localizer["تم الحذف!"])',
+                                    text: '@Html.Raw(Localizer["تم حذف الفاتورة وتعديل حساب العميل بنجاح."])',
+                                    icon: 'success',
+                                    confirmButtonColor: 'var(--primary-gold)'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', response.message || '@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])', 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["لا يمكن الاتصال بالخادم."])', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
         $(document).ready(function () {
             var dir = $('html').attr('dir') === 'rtl';
             $('#invoicesDataTable').DataTable({

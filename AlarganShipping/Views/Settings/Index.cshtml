@@ -1,4 +1,5 @@
-﻿@{
+﻿@model AlarganShipping.Controllers.SettingsViewModel
+@{
     ViewData["Title"] = Localizer["إعدادات النظام والقواعد"];
 }
 
@@ -17,23 +18,15 @@
         margin: 0;
     }
 
-    .page-subtitle {
-        color: var(--text-muted);
-        font-size: 0.9rem;
-        font-weight: 600;
-    }
-
     .btn-save-settings {
         background: var(--primary-gold);
         color: white;
         border: none;
-        padding: 0.85rem 2rem;
+        padding: 0.85rem 2.5rem;
         border-radius: 1rem;
         font-weight: 800;
-        font-size: 1rem;
         cursor: pointer;
         transition: 0.3s;
-        box-shadow: 0 4px 15px rgba(184, 147, 90, 0.3);
         display: flex;
         align-items: center;
         gap: 10px;
@@ -41,7 +34,6 @@
 
         .btn-save-settings:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(184, 147, 90, 0.4);
             background: var(--secondary-gold);
         }
 
@@ -56,7 +48,7 @@
         border-radius: 1.5rem;
         padding: 2.5rem;
         border: 1px solid #e2e8f0;
-        box-shadow: 0 10px 30px rgba(44, 62, 80, 0.02);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
     }
 
     .settings-card-header {
@@ -67,67 +59,26 @@
     }
 
     .settings-card-title {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
         font-weight: 900;
         color: var(--primary-navy);
         margin: 0;
     }
 
-    .settings-icon {
-        width: 45px;
-        height: 45px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-    }
-
-    .icon-green {
-        background: #f0fdf4;
-        color: #16a34a;
-    }
-
-    .icon-navy {
-        background: rgba(44, 62, 80, 0.1);
-        color: var(--primary-navy);
-    }
-
-    .icon-red {
-        background: #fef2f2;
-        color: #ef4444;
-    }
-
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-label {
-        display: block;
-        font-size: 0.85rem;
-        font-weight: 800;
-        color: var(--text-muted);
-        margin-bottom: 0.5rem;
-    }
-
     .form-control {
         width: 100%;
-        padding: 1rem 1.25rem;
+        padding: 1rem;
         border: 2px solid #e2e8f0;
         border-radius: 1rem;
         background: #f8fafc;
-        font-family: inherit;
-        font-weight: 900;
+        font-weight: 800;
         color: var(--primary-navy);
-        font-size: 1.1rem;
-        outline: none;
-        transition: 0.3s;
     }
 
         .form-control:focus {
             border-color: var(--primary-gold);
             background: white;
-            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
+            outline: none;
         }
 
     .danger-zone {
@@ -136,100 +87,257 @@
         border-radius: 1rem;
         padding: 1.5rem;
         text-align: center;
-        margin-top: 1rem;
     }
 
     .btn-danger {
         background: #ef4444;
         color: white;
         border: none;
-        padding: 0.75rem 2rem;
+        padding: 0.85rem;
         border-radius: 0.75rem;
         font-weight: 800;
         width: 100%;
         cursor: pointer;
+    }
+
+    .btn-pdf {
+        background: white;
+        color: var(--primary-navy);
+        border: 2px solid #e2e8f0;
+        padding: 0.85rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+        width: 100%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
         transition: 0.3s;
     }
 
-        .btn-danger:hover {
-            background: #dc2626;
+        .btn-pdf:hover {
+            border-color: var(--primary-gold);
+            color: var(--primary-gold);
+        }
+
+    /* تنسيق خاص للتقرير المخفي للـ PDF */
+    #pdfReportTemplate {
+        display: none;
+    }
+
+    .pdf-header {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 2px solid var(--primary-gold);
+        margin-bottom: 30px;
+    }
+
+    .pdf-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+        .pdf-table td, .pdf-table th {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            text-align: right;
+        }
+
+        .pdf-table th {
+            background-color: #f8fafc;
+            color: var(--primary-navy);
+            font-weight: 900;
         }
 </style>
 
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
 <div>
-    <div class="page-header">
-        <div>
-            <h2 class="page-title">@Localizer["إعدادات النظام والقواعد"]</h2>
-            <div class="page-subtitle">@Localizer["إدارة القواعد المالية، الضرائب، وأسعار الصرف"]</div>
-        </div>
-        <button class="btn-save-settings"><i class="fa-solid fa-floppy-disk"></i> @Localizer["حفظ جميع الإعدادات"]</button>
-    </div>
-
-    <div class="settings-grid">
-        <!-- أسعار الصرف -->
-        <div class="settings-card">
-            <div class="settings-card-header">
-                <h3 class="settings-card-title">@Localizer["أسعار صرف العملات"]</h3>
-                <div class="settings-icon icon-green"><i class="fa-solid fa-coins"></i></div>
+    <form id="settingsForm" asp-action="SaveSettings" method="post">
+        @Html.AntiForgeryToken()
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">@Localizer["إعدادات النظام والقواعد"]</h2>
+                <div style="color: var(--text-muted); font-weight: 600;">@Localizer["إدارة الثوابت المالية لشركة الأرجان"]</div>
             </div>
-
-            <div class="form-group">
-                <label class="form-label">@Localizer["سعر صرف الدولار (1 OMR = ? USD)"]</label>
-                <input type="text" class="form-control" value="0.385" dir="ltr" style="text-align: end;" />
-                <span style="font-size: 0.7rem; color: #94a3b8;">* السعر المستخدم في تحويل تكاليف الشراء من أمريكا</span>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">@Localizer["سعر صرف الدرهم (1 OMR = ? AED)"]</label>
-                <input type="text" class="form-control" value="0.105" dir="ltr" style="text-align: end;" />
-                <span style="font-size: 0.7rem; color: #94a3b8;">* السعر المستخدم في تحويل تكاليف الشراء من الإمارات</span>
-            </div>
+            <button type="submit" class="btn-save-settings" id="btnSave">
+                <i class="fa-solid fa-floppy-disk"></i> @Localizer["حفظ الإعدادات"]
+            </button>
         </div>
 
-        <!-- القواعد المالية -->
-        <div class="settings-card">
-            <div class="settings-card-header">
-                <h3 class="settings-card-title">@Localizer["القواعد المالية والضرائب"]</h3>
-                <div class="settings-icon icon-navy"><i class="fa-solid fa-percent"></i></div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">@Localizer["نسبة الجمارك العمانية (%)"]</label>
-                <input type="text" class="form-control" value="5" dir="ltr" style="text-align: end;" />
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">@Localizer["نسبة ضريبة القيمة المضافة VAT (%)"]</label>
-                <input type="text" class="form-control" value="5" dir="ltr" style="text-align: end;" />
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">@Localizer["عمولة الشركة الافتراضية (OMR)"]</label>
-                <input type="text" class="form-control" value="150" dir="ltr" style="text-align: end;" />
-                <span style="font-size: 0.7rem; color: #94a3b8;">* المبلغ الثابت الذي يتم إضافته كربح للشركة لكل سيارة</span>
-            </div>
-        </div>
-
-        <!-- صيانة النظام -->
-        <div class="settings-card" style="grid-column: 1 / -1;">
-            <div class="settings-card-header">
-                <h3 class="settings-card-title">@Localizer["صيانة النظام والبيانات"]</h3>
-                <div class="settings-icon icon-red"><i class="fa-solid fa-shield-halved"></i></div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
-                <div class="danger-zone">
-                    <h4 style="color: #ef4444; font-weight: 900; margin-bottom: 0.5rem;">@Localizer["تصفير البيانات"]</h4>
-                    <p style="font-size: 0.8rem; color: #991b1b; margin-bottom: 1rem;">@Localizer["حذف جميع البيانات والبدء من جديد (لا يمكن التراجع)"]</p>
-                    <button class="btn-danger">@Localizer["تصفير النظام"]</button>
+        <div class="settings-grid">
+            <!-- كرت أسعار الصرف -->
+            <div class="settings-card">
+                <div class="settings-card-header">
+                    <h3 class="settings-card-title">@Localizer["أسعار الصرف (Exchange Rates)"]</h3>
+                    <div style="color: #16a34a; font-size: 1.5rem;"><i class="fa-solid fa-coins"></i></div>
                 </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:700;">@Localizer["سعر الدولار مقابل الريال (OMR/USD)"]</label>
+                    <input asp-for="UsdExchangeRate" type="number" step="0.001" class="form-control" dir="ltr" />
+                </div>
+                <div>
+                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:700;">@Localizer["رقم الواتساب للاستفسارات"]</label>
+                    <input asp-for="InquiryPhoneNumber" type="text" class="form-control" dir="ltr" />
+                </div>
+            </div>
 
+            <!-- كرت الضرائب -->
+            <div class="settings-card">
+                <div class="settings-card-header">
+                    <h3 class="settings-card-title">@Localizer["الضرائب والعمولات"]</h3>
+                    <div style="color: var(--primary-navy); font-size: 1.5rem;"><i class="fa-solid fa-percent"></i></div>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:700;">@Localizer["نسبة الجمارك (%)"]</label>
+                    <input asp-for="CustomsPercentage" type="number" step="0.1" class="form-control" dir="ltr" />
+                </div>
+                <div>
+                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:700;">@Localizer["عمولة الشركة الافتراضية (OMR)"]</label>
+                    <input asp-for="DefaultCommission" type="number" class="form-control" dir="ltr" />
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- منطقة صيانة النظام -->
+    <div class="settings-grid" style="margin-top: 2rem;">
+        <div class="settings-card" style="grid-column: 1 / -1;">
+            <h3 class="settings-card-title" style="margin-bottom: 2rem;"><i class="fa-solid fa-shield-halved"></i> @Localizer["صيانة النظام والتقارير"]</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                 <div class="danger-zone" style="background: #f8fafc; border-color: #e2e8f0;">
-                    <h4 style="color: var(--primary-navy); font-weight: 900; margin-bottom: 0.5rem;">@Localizer["تصدير قاعدة البيانات"]</h4>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">@Localizer["تحميل نسخة احتياطية من جميع البيانات بتنسيق JSON"]</p>
-                    <button class="btn-danger" style="background: white; color: var(--primary-navy); border: 2px solid #e2e8f0;">@Localizer["تصدير الآن"]</button>
+                    <h4 style="margin-bottom: 0.5rem;">@Localizer["تقرير حالة النظام"]</h4>
+                    <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 1rem;">@Localizer["توليد ملف PDF رسمي يحتوي على كافة الإحصائيات والقواعد الحالية"]</p>
+                    <button type="button" class="btn-pdf" onclick="generatePDF()">
+                        <i class="fa-solid fa-file-pdf" style="color: #ef4444; font-size: 1.2rem;"></i> @Localizer["تصدير تقرير PDF"]
+                    </button>
+                </div>
+                <div class="danger-zone">
+                    <h4 style="color: #ef4444; margin-bottom: 0.5rem;">@Localizer["تصفير البيانات"]</h4>
+                    <p style="font-size: 0.8rem; color: #991b1b; margin-bottom: 1rem;">@Localizer["حذف جميع العمليات والبدء من جديد (لا يمكن التراجع)"]</p>
+                    <button type="button" class="btn-danger" onclick="confirmWipe()">@Localizer["تصفير النظام بالكامل"]</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- ==============================================
+     قالب التقرير للطباعة (يظهر فقط في الـ PDF)
+     ============================================== -->
+<div id="pdfReportTemplate">
+    <div class="pdf-header">
+        <h1 style="color: #1a252f; margin: 0;">ALARGAN AUTO SHIPPING</h1>
+        <p style="color: #b8935a; font-weight: bold; letter-spacing: 2px;">نظام الإدارة اللوجستية - تقرير حالة النظام</p>
+        <p style="font-size: 0.9rem; color: #64748b;">تاريخ التقرير: @DateTime.Now.ToString("yyyy-MM-dd HH:mm")</p>
+    </div>
+
+    <h3 style="color: #1a252f; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">أولاً: الإحصائيات الحالية</h3>
+    <table class="pdf-table">
+        <tr>
+            <th>إجمالي العملاء المسجلين</th>
+            <td>@ViewBag.TotalCustomers</td>
+            <th>إجمالي السيارات في النظام</th>
+            <td>@ViewBag.TotalCars</td>
+        </tr>
+        <tr>
+            <th>عدد الفواتير الصادرة</th>
+            <td>@ViewBag.TotalInvoices</td>
+            <th>إجمالي المديونية الحالية (OMR)</th>
+            <td style="color: #ef4444; font-weight: bold;">@ViewBag.TotalBalance.ToString("N2")</td>
+        </tr>
+    </table>
+
+    <h3 style="color: #1a252f; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-top: 30px;">ثانياً: القواعد المالية المطبقة</h3>
+    <table class="pdf-table">
+        <tr>
+            <th>سعر صرف الدولار المعتمد</th>
+            <td dir="ltr">@Model.UsdExchangeRate</td>
+        </tr>
+        <tr>
+            <th>نسبة الجمارك المطبقة</th>
+            <td dir="ltr">@Model.CustomsPercentage %</td>
+        </tr>
+        <tr>
+            <th>عمولة الشركة الثابتة</th>
+            <td dir="ltr">@Model.DefaultCommission OMR</td>
+        </tr>
+        <tr>
+            <th>رقم تواصل الاستفسارات</th>
+            <td dir="ltr">@Model.InquiryPhoneNumber</td>
+        </tr>
+    </table>
+
+    <div style="margin-top: 50px; text-align: center; color: #94a3b8; font-size: 0.8rem;">
+        تقرير آلي مستخرج من منصة الأرجان للشحن - صلالة، سلطنة عمان.
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+    <!-- مكتبة تحويل HTML إلى PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        // دالة توليد الـ PDF
+        function generatePDF() {
+            const element = document.getElementById('pdfReportTemplate');
+            element.style.display = 'block'; // إظهاره مؤقتاً للمكتبة
+
+            const options = {
+                margin: 10,
+                filename: 'Alargan_System_Report.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(options).from(element).save().then(() => {
+                element.style.display = 'none'; // إخفاؤه مرة أخرى
+            });
+        }
+
+        $(document).ready(function() {
+            $('#settingsForm').on('submit', function(e) {
+                e.preventDefault();
+                var btn = $('#btnSave');
+                var originalHtml = btn.html();
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> حفظ...').prop('disabled', true);
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function(res) {
+                        if(res.success) {
+                            Swal.fire({ title: 'تم الحفظ!', icon: 'success', confirmButtonColor: 'var(--primary-gold)' });
+                        }
+                        btn.html(originalHtml).prop('disabled', false);
+                    }
+                });
+            });
+        });
+
+        function confirmWipe() {
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: "سيتم مسح كافة البيانات والعمليات نهائياً!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'نعم، امسح الكل'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post('@Url.Action("WipeData", "Settings")', {
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    }, function(res) {
+                        if(res.success) location.reload();
+                    });
+                }
+            });
+        }
+    </script>
+}

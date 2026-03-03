@@ -3,6 +3,8 @@
     ViewData["Title"] = Localizer["شركات النقل والريكفري"];
 }
 
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
 <style>
     .page-header-container {
         display: flex;
@@ -84,20 +86,36 @@
             vertical-align: middle;
         }
 
+        .table-enterprise tbody tr:hover {
+            background-color: #f8fafc;
+            transition: 0.2s;
+        }
+
     .rating-stars {
         color: #f59e0b;
         font-size: 0.9rem;
     }
+
+    .action-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: 0.3s;
+        padding: 5px;
+    }
 </style>
 
 <div>
+    @Html.AntiForgeryToken()
     <div class="page-header-container">
         <div class="page-header-text">
             <h2><i class="fa-solid fa-truck-fast"></i> @Localizer["شركات النقل الداخلي (Towing)"]</h2>
             <p style="color: var(--text-muted); font-weight: 600; margin-top: 5px;">• @Localizer["إدارة الموردين وشركات الريكفري في بلد التصدير"]</p>
         </div>
         <div class="header-actions">
-            <a href="#" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة ناقل جديد"]</a>
+            <!-- تم ربط زر الإضافة -->
+            <a href="@Url.Action("Create", "Transporters")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة ناقل جديد"]</a>
         </div>
     </div>
 
@@ -141,7 +159,9 @@
                                 }
                             </td>
                             <td>
-                                <a href="#" style="color: var(--primary-gold); margin-inline-end: 15px;"><i class="fa-solid fa-pen-to-square"></i></a>
+                                <!-- أزرار التعديل والحذف -->
+                                <a href="@Url.Action("Edit", "Transporters", new { id = trans.Id })" class="action-btn" style="color: var(--primary-gold); margin-inline-end: 15px;" title="@Localizer["تعديل"]"><i class="fa-solid fa-pen-to-square"></i></a>
+                                <button type="button" onclick="confirmDelete(@trans.Id)" class="action-btn" style="color: #ef4444;" title="@Localizer["حذف"]"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
                     }
@@ -152,7 +172,48 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
     <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
+                text: '@Html.Raw(Localizer["لن تتمكن من التراجع عن عملية الحذف!"])',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: 'var(--primary-navy)',
+                confirmButtonText: '@Html.Raw(Localizer["نعم، احذفه!"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Transporters")/' + id,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: '@Html.Raw(Localizer["تم الحذف!"])',
+                                    text: '@Html.Raw(Localizer["تم حذف الناقل بنجاح."])',
+                                    icon: 'success',
+                                    confirmButtonColor: 'var(--primary-gold)'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', response.message || '@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])', 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["لا يمكن الاتصال بالخادم."])', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
         $(document).ready(function () {
             var dir = $('html').attr('dir') === 'rtl';
             $('#transportersTable').DataTable({

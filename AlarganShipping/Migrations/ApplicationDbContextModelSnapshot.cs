@@ -818,8 +818,23 @@ namespace AlarganShipping.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("CanManageCars")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CanManageCustomers")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CanManageFinance")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CanManageSettings")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("DepartmentIcon")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -832,13 +847,22 @@ namespace AlarganShipping.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<string>("JobTitle")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("ShowOnContactPage")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -993,7 +1017,7 @@ namespace AlarganShipping.Migrations
                         .HasForeignKey("CustomerId");
 
                     b.HasOne("AlarganShipping.Models.User", "User")
-                        .WithMany("Notifications")
+                        .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("Customer");
@@ -1095,11 +1119,6 @@ namespace AlarganShipping.Migrations
             modelBuilder.Entity("AlarganShipping.Models.Transporter", b =>
                 {
                     b.Navigation("DispatchOrders");
-                });
-
-            modelBuilder.Entity("AlarganShipping.Models.User", b =>
-                {
-                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }

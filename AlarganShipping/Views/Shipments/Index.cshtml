@@ -3,6 +3,8 @@
     ViewData["Title"] = Localizer["إدارة الشحنات والحاويات"];
 }
 
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
 <style>
     .page-header {
         display: flex;
@@ -149,6 +151,7 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        cursor: pointer;
     }
 
         .action-btn:hover {
@@ -160,6 +163,7 @@
 </style>
 
 <div>
+    @Html.AntiForgeryToken()
     <div class="page-header">
         <h2 class="page-title"><i class="fa-solid fa-ship"></i> @Localizer["إدارة الشحنات والحاويات"]</h2>
         <a href="@Url.Action("Create", "Shipments")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة شحنة جديدة"]</a>
@@ -203,9 +207,17 @@
                                 <span class="status-badge @badgeClass">@Localizer[ship.Status ?? "Pending"]</span>
                             </td>
                             <td>
-                                <a href="@Url.Action("Details", "Shipments", new { id = ship.Id })" class="action-btn">
-                                    <i class="fa-solid fa-box-open"></i> @Localizer["المحتويات"]
-                                </a>
+                                <div style="display: flex; gap: 8px;">
+                                    <a href="@Url.Action("Details", "Shipments", new { id = ship.Id })" class="action-btn">
+                                        <i class="fa-solid fa-box-open"></i> @Localizer["المحتويات"]
+                                    </a>
+                                    <a href="@Url.Action("Edit", "Shipments", new { id = ship.Id })" class="action-btn" style="color: var(--primary-gold); border-color: var(--primary-gold); background: rgba(184,147,90,0.05);" title="@Localizer["تعديل"]">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <button type="button" onclick="confirmDelete(@ship.Id)" class="action-btn" style="color: #ef4444; border-color: #ef4444; background: rgba(239,68,68,0.05);" title="@Localizer["حذف"]">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -216,7 +228,48 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
     <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
+                text: '@Html.Raw(Localizer["لن تتمكن من التراجع عن عملية الحذف!"])',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: 'var(--primary-navy)',
+                confirmButtonText: '@Html.Raw(Localizer["نعم، احذفها!"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Shipments")/' + id,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: '@Html.Raw(Localizer["تم الحذف!"])',
+                                    text: '@Html.Raw(Localizer["تم حذف الشحنة بنجاح."])',
+                                    icon: 'success',
+                                    confirmButtonColor: 'var(--primary-gold)'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', response.message || '@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])', 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["لا يمكن الاتصال بالخادم."])', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
         $(document).ready(function () {
             var dir = $('html').attr('dir') === 'rtl';
             $('#shipmentsDataTable').DataTable({
@@ -224,6 +277,7 @@
                 "pageLength": 10,
                 "ordering": true,
                 "responsive": true,
+                "order": [[ 3, "desc" ]], // الترتيب بالتاريخ الافتراضي
                 "dom": '<"top"f>rt<"bottom"lp><"clear">'
             });
         });

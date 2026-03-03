@@ -1,0 +1,299 @@
+﻿@model AlarganShipping.Models.DispatchOrder
+@{
+    ViewData["Title"] = Localizer["تعديل أمر نقل داخلي"];
+}
+
+<style>
+    .form-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-page-title {
+        font-size: 1.75rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+    }
+
+    .btn-back {
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        color: var(--text-muted);
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn-back:hover {
+            background-color: #f8fafc;
+            color: var(--primary-navy);
+        }
+
+    .premium-form-card {
+        background-color: #ffffff;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 30px rgba(44, 62, 80, 0.03);
+        border: 1px solid #f1f5f9;
+        padding: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .premium-form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary-navy), var(--primary-gold));
+        }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    @@media (min-width: 768px) {
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group-full {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        font-weight: 800;
+        color: var(--primary-navy);
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        padding: 1rem 1.25rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        font-family: inherit;
+        font-size: 1rem;
+        color: var(--text-dark);
+        background-color: #f8fafc;
+        transition: 0.3s;
+        outline: none;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-gold);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
+        }
+
+    .select2-container--default .select2-selection--single {
+        background-color: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        transition: 0.3s;
+    }
+
+        .select2-container--default .select2-selection--single:focus, .select2-container--focus .select2-selection--single {
+            border-color: var(--primary-gold);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--text-dark);
+            font-weight: 600;
+            padding-left: 1.25rem;
+            padding-right: 1.25rem;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 48px;
+            right: 10px;
+        }
+
+    html[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
+        left: 10px;
+        right: auto;
+    }
+
+    .form-actions {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .btn-submit {
+        background: var(--primary-navy);
+        color: #ffffff;
+        border: none;
+        padding: 1rem 3rem;
+        border-radius: 1rem;
+        font-weight: 800;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .btn-submit:hover {
+            background: var(--secondary-navy);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(44, 62, 80, 0.4);
+        }
+
+    .btn-cancel {
+        background: transparent;
+        color: var(--text-dark);
+        border: none;
+        font-weight: 800;
+        cursor: pointer;
+        text-decoration: none;
+        padding: 1rem 2rem;
+    }
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
+<div>
+    <div class="form-page-header">
+        <h2 class="form-page-title"><i class="fa-solid fa-pen-to-square" style="color: var(--primary-gold); margin-inline-end: 10px;"></i> @Localizer["تعديل أمر نقل (Dispatch)"]</h2>
+        <a href="@Url.Action("Index", "DispatchOrders")" class="btn-back">@Localizer["العودة للقائمة"]</a>
+    </div>
+
+    <div class="premium-form-card">
+        <form asp-action="Edit" method="post" id="dispatchEditForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="DispatchDate" />
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label asp-for="OrderNumber" class="form-label">@Localizer["رقم الأمر"]</label>
+                    <input asp-for="OrderNumber" class="form-control" readonly style="background: #e2e8f0; color: #64748b;" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Status" class="form-label">@Localizer["الحالة"] *</label>
+                    <select asp-for="Status" class="form-control select2-search" required>
+                        <option value="Assigned">@Localizer["Assigned"]</option>
+                        <option value="PickedUp">@Localizer["PickedUp"]</option>
+                        <option value="Delivered">@Localizer["Delivered"]</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="CarId" class="form-label">@Localizer["السيارة المراد نقلها"] *</label>
+                    <select asp-for="CarId" class="form-control select2-search" asp-items="ViewBag.CarId" required>
+                        <option value="">-- @Localizer["اختر السيارة (بالشاصي)"] --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="TransporterId" class="form-label">@Localizer["الناقل (شركة الريكفري)"] *</label>
+                    <select asp-for="TransporterId" class="form-control select2-search" asp-items="ViewBag.TransporterId" required>
+                        <option value="">-- @Localizer["اختر الناقل"] --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="TowingFee" class="form-label">@Localizer["تكلفة النقل المتفق عليها ($)"] *</label>
+                    <input asp-for="TowingFee" type="number" step="0.01" class="form-control" required dir="ltr" style="text-align: end; font-family: monospace; font-size: 1.2rem; color: #16a34a;" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="OriginLocationId" class="form-label">@Localizer["موقع الانطلاق (من)"] *</label>
+                    <select asp-for="OriginLocationId" class="form-control select2-search" asp-items="ViewBag.LocationId" required>
+                        <option value="">-- @Localizer["المزاد أو الساحة"] --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="DestinationLocationId" class="form-label">@Localizer["موقع الوصول (إلى)"] *</label>
+                    <select asp-for="DestinationLocationId" class="form-control select2-search" asp-items="ViewBag.LocationId" required>
+                        <option value="">-- @Localizer["المستودع الوجهة"] --</option>
+                    </select>
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label asp-for="DriverNotes" class="form-label">@Localizer["ملاحظات السائق (أعطال/نواقص)"] *</label>
+                    <textarea asp-for="DriverNotes" class="form-control" rows="3" placeholder="@Localizer["أضف أي ملاحظات بخصوص حالة السيارة..."]" required></textarea>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="javascript:history.back()">@Localizer["إلغاء"]</button>
+                <button type="submit" class="btn-submit" id="btnSubmit">
+                    <i class="fa-solid fa-save"></i> @Localizer["تحديث البيانات"]
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var dir = $('html').attr('dir');
+            $('.select2-search').select2({ dir: dir, width: '100%' });
+
+            $('#dispatchEditForm').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
+
+                var btn = $('#btnSubmit');
+                var originalText = btn.html();
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Html.Raw(Localizer["جاري التحديث..."])').prop('disabled', true);
+
+                $.ajax({
+                    url: form.attr('action'), type: form.attr('method'), data: form.serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: '@Html.Raw(Localizer["تم التحديث بنجاح!"])', icon: 'success', confirmButtonColor: 'var(--primary-gold)',
+                                confirmButtonText: '@Html.Raw(Localizer["العودة للقائمة"])'
+                            }).then(() => { window.location.href = '@Url.Action("Index", "DispatchOrders")'; });
+                        } else {
+                            var errorMsg = response.errors ? response.errors.join('\n') : '@Html.Raw(Localizer["تأكد من البيانات المدخلة"])';
+                            Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: errorMsg, icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                            btn.html(originalText).prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: '@Html.Raw(Localizer["حدث خطأ أثناء الاتصال بالخادم."])', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                        btn.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+}
