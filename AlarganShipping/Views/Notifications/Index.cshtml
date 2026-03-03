@@ -14,7 +14,7 @@
         background: white;
         padding: 1.5rem;
         border-radius: 1.5rem;
-        box-shadow: 0 5px 20px rgba(26, 38, 52, 0.03);
+        box-shadow: 0 5px 20px rgba(44, 62, 80, 0.03);
         border: 1px solid #f1f5f9;
         margin-bottom: 2rem;
     }
@@ -78,7 +78,7 @@
         /* ستايل للإشعار غير المقروء */
         .notif-card.unread {
             background: #f8fafc;
-            border-color: rgba(190, 149, 91, 0.3);
+            border-color: rgba(184, 147, 90, 0.3);
         }
 
             .notif-card.unread::before {
@@ -103,7 +103,7 @@
     }
 
     .icon-system {
-        background: rgba(26, 38, 52, 0.1);
+        background: rgba(44, 62, 80, 0.1);
         color: var(--primary-navy);
     }
 
@@ -113,7 +113,7 @@
     }
 
     .icon-tracking {
-        background: rgba(190, 149, 91, 0.1);
+        background: rgba(184, 147, 90, 0.1);
         color: var(--primary-gold);
     }
 
@@ -254,7 +254,6 @@
 </div>
 
 @section Scripts {
-    <!-- إضافة SweetAlert للتنبيهات -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
 
@@ -270,8 +269,6 @@
                         var card = $('#notif-' + id);
                         card.removeClass('unread'); // إزالة الخلفية والحد الذهبي
                         card.find('.btn-read').fadeOut(); // إخفاء زر التحديد
-
-                        // يمكن هنا أيضاً تحديث رقم الـ Badge في الـ Layout لاحقاً
                     }
                 }
             });

@@ -17,141 +17,173 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = AlarganShipping
 build_property.RootNamespace = AlarganShipping
-build_property.ProjectDir = D:\Dev\AlarganShipping\AlarganShipping\
+build_property.ProjectDir = C:\Users\MOHAMED ABO-ELM3ATY\Downloads\AlarganShipping\AlarganShipping\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\Dev\AlarganShipping\AlarganShipping
+build_property.MSBuildProjectDirectory = C:\Users\MOHAMED ABO-ELM3ATY\Downloads\AlarganShipping\AlarganShipping
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Account/Login.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Accounting/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudGluZ1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Calculator/Index.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Auctions/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXVjdGlvbnNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Calculator/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FsY3VsYXRvclxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/CarInspections/Create.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/CarInspections/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FySW5zcGVjdGlvbnNcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Cars/Create.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Cars/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2Fyc1xDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Cars/Details.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Cars/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2Fyc1xEZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Cars/Index.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Cars/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2Fyc1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Cars/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2Fyc1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Contact/Index.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Contact/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29udGFjdFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Customers/Create.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Customers/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tZXJzXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Customers/Details.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Customers/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tZXJzXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Customers/Index.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Customers/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tZXJzXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Customers/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tZXJzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/DocumentAttachments/Create.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/DispatchOrders/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGlzcGF0Y2hPcmRlcnNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/DispatchOrders/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGlzcGF0Y2hPcmRlcnNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/DocumentAttachments/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9jdW1lbnRBdHRhY2htZW50c1xDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Home/Index.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Home/Privacy.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Invoices/Create.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Invoices/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52b2ljZXNcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Invoices/Details.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Invoices/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52b2ljZXNcRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Invoices/Index.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Invoices/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52b2ljZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Notifications/Index.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Locations/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9jYXRpb25zXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Notifications/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTm90aWZpY2F0aW9uc1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/PaymentReceipts/Create.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/PaymentReceipts/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5bWVudFJlY2VpcHRzXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/PaymentReceipts/Index.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/PaymentReceipts/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5bWVudFJlY2VpcHRzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Services/Index.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Services/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2VydmljZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Shared/Error.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Settings/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2V0dGluZ3NcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Shared/_AuctionBanner.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Shared/_AuctionBanner.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9BdWN0aW9uQmFubmVyLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Shipments/Create.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Shipments/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hpcG1lbnRzXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Shipments/Details.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Shipments/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hpcG1lbnRzXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Shipments/Index.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Shipments/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hpcG1lbnRzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/TrackingLogs/Create.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/TrackingLogs/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVHJhY2tpbmdMb2dzXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Tracking/Index.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Tracking/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVHJhY2tpbmdcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Tracking/Result.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Tracking/Result.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVHJhY2tpbmdcUmVzdWx0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/_ViewImports.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Transporters/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVHJhbnNwb3J0ZXJzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/_ViewStart.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Dev/AlarganShipping/AlarganShipping/Views/Shared/_Layout.cshtml]
+[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AlarganShipping/AlarganShipping/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-y9xpmi3lkw

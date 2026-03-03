@@ -38,12 +38,12 @@ namespace AlarganShipping.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CivilId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TotalBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TotalPaid = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CustomerCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PortalUsername = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PortalPassword = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsPortalActive = table.Column<bool>(type: "bit", nullable: false),
-                    CustomerCode = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    TotalPaid = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -136,12 +136,12 @@ namespace AlarganShipping.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ReceiptNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReferenceNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false)
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -189,12 +189,12 @@ namespace AlarganShipping.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ContainerNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BookingNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BillOfLading = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ShippingLine = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BookingNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BillOfLading = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ShippingLine = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ExpectedTimeOfDeparture = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ExpectedTimeOfArrival = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LoadingPortId = table.Column<int>(type: "int", nullable: true),
                     DischargePortId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -248,18 +248,30 @@ namespace AlarganShipping.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    VIN = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VIN = table.Column<string>(type: "nvarchar(17)", maxLength: 17, nullable: false),
                     Make = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Model = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Year = table.Column<int>(type: "int", nullable: false),
                     Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PurchasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    EstimatedProfit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    InternalCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LotNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    InternalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StatusId = table.Column<int>(type: "int", nullable: false),
+                    PurchasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    EstimatedProfit = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    LotNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AddDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PlateNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CurrentLocation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CardNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EngineNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TaxType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TaxAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    CustomsDeclaration = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InsuranceNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VehicleType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TaxMethod = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VehicleShape = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CustomerId = table.Column<int>(type: "int", nullable: false),
-                    AuctionId = table.Column<int>(type: "int", nullable: true),
+                    AuctionId = table.Column<int>(type: "int", nullable: false),
                     ShipmentId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -269,7 +281,8 @@ namespace AlarganShipping.Migrations
                         name: "FK_Cars_Auctions_AuctionId",
                         column: x => x.AuctionId,
                         principalTable: "Auctions",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Cars_Customers_CustomerId",
                         column: x => x.CustomerId,
@@ -427,6 +440,8 @@ namespace AlarganShipping.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     InvoiceNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IssueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CarId = table.Column<int>(type: "int", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
                     CarPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     AuctionFees = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     LandFreight = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -434,9 +449,7 @@ namespace AlarganShipping.Migrations
                     CustomsFees = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     AdminFees = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    IsPaid = table.Column<bool>(type: "bit", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    CarId = table.Column<int>(type: "int", nullable: false)
+                    IsPaid = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

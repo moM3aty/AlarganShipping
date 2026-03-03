@@ -1,0 +1,193 @@
+﻿@model IEnumerable<AlarganShipping.Models.DispatchOrder>
+@{
+    ViewData["Title"] = Localizer["أوامر النقل الداخلي"];
+}
+
+<style>
+    .page-header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 5px 20px rgba(44, 62, 80, 0.03);
+        border: 1px solid #f1f5f9;
+        margin-bottom: 2rem;
+    }
+
+    .page-header-text h2 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .page-header-text h2 i {
+            color: var(--primary-gold);
+        }
+
+    .btn-add {
+        background: linear-gradient(to right, var(--primary-gold), var(--secondary-gold));
+        color: #ffffff;
+        font-weight: 800;
+        padding: 0.85rem 1.75rem;
+        border-radius: 1rem;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(184, 147, 90, 0.3);
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(184, 147, 90, 0.4);
+            color: white;
+        }
+
+    .data-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+        overflow-x: auto;
+    }
+
+    .table-enterprise {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+        .table-enterprise th {
+            background-color: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 800;
+            padding: 1.25rem 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            text-align: start;
+            white-space: nowrap;
+        }
+
+        .table-enterprise td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-dark);
+            font-weight: 700;
+            vertical-align: middle;
+        }
+
+    .order-number {
+        background: rgba(44,62,80,0.05);
+        color: var(--primary-navy);
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-family: monospace;
+        font-weight: 900;
+        border: 1px solid rgba(44,62,80,0.1);
+    }
+
+    .route-arrow {
+        color: #cbd5e1;
+        margin: 0 8px;
+    }
+
+    .status-pill {
+        padding: 4px 10px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        display: inline-block;
+    }
+
+    .s-assigned {
+        background: #eff6ff;
+        color: #3b82f6;
+        border: 1px solid #bfdbfe;
+    }
+
+    .s-picked {
+        background: #fef3c7;
+        color: #d97706;
+        border: 1px solid #fde68a;
+    }
+
+    .s-delivered {
+        background: #dcfce7;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+    }
+</style>
+
+<div>
+    <div class="page-header-container">
+        <div class="page-header-text">
+            <h2><i class="fa-solid fa-route"></i> @Localizer["أوامر النقل الداخلي (Dispatch)"]</h2>
+            <p style="color: var(--text-muted); font-weight: 600; margin-top: 5px;">• @Localizer["تتبع نقل السيارات من المزادات إلى المستودعات"]</p>
+        </div>
+        <div class="header-actions">
+            <a href="@Url.Action("Create", "DispatchOrders")" class="btn-add"><i class="fa-solid fa-file-signature"></i> @Localizer["إنشاء أمر نقل"]</a>
+        </div>
+    </div>
+
+    <div class="data-card">
+        <table id="dispatchTable" class="table-enterprise display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>@Localizer["رقم الأمر"]</th>
+                    <th>@Localizer["السيارة"]</th>
+                    <th>@Localizer["الناقل (Transporter)"]</th>
+                    <th>@Localizer["المسار (من - إلى)"]</th>
+                    <th>@Localizer["تكلفة النقل"]</th>
+                    <th>@Localizer["الحالة"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var order in Model)
+                    {
+                        <tr>
+                            <td><span class="order-number">@order.OrderNumber</span></td>
+                            <td>
+                                <div style="font-weight: 900; color: var(--primary-navy);">@(order.Car?.Make) @(order.Car?.Model)</div>
+                                <div style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">@(order.Car?.VIN)</div>
+                            </td>
+                            <td><i class="fa-solid fa-truck" style="color: var(--primary-gold); margin-inline-end: 5px;"></i> @(order.Transporter?.Name)</td>
+                            <td>
+                                <div>@(order.OriginLocation?.Name ?? "المزاد") <i class="fa-solid fa-arrow-left-long route-arrow"></i> @(order.DestinationLocation?.Name ?? "المستودع")</div>
+                            </td>
+                            <td style="color: #16a34a; font-weight: 900;">$@order.TowingFee</td>
+                            <td>
+                                @{
+                                    string sClass = order.Status == "Delivered" ? "s-delivered" : order.Status == "PickedUp" ? "s-picked" : "s-assigned";
+                                }
+                                <span class="status-pill @sClass">@Localizer[order.Status]</span>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var dir = $('html').attr('dir') === 'rtl';
+            $('#dispatchTable').DataTable({
+                "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" },
+                "pageLength": 10,
+                "responsive": true,
+                "order": [[0, "desc"]]
+            });
+        });
+    </script>
+}

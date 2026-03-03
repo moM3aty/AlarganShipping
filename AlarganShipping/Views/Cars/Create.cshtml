@@ -1,10 +1,10 @@
-﻿<!-- مسار الملف في المشروع: Views/Cars/Create.cshtml -->
-@model AlarganShipping.Models.Car
+﻿@model AlarganShipping.Models.Car
 @{
-    ViewData["Title"] = Localizer["إضافة سيارة جديدة"];
+    ViewData["Title"] = Localizer["إدارة بيانات المركبة - جديدة"];
 }
 
 <style>
+    /* ... (احتفظ بنفس ستايلاتك السابقة هنا، سأركز على الكود الأساسي للفورم) ... */
     .form-page-header {
         display: flex;
         justify-content: space-between;
@@ -13,17 +13,20 @@
     }
 
     .form-page-title {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
         font-weight: 900;
         color: var(--primary-navy);
         margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .btn-back {
         background-color: white;
         border: 1px solid #e2e8f0;
         color: var(--text-muted);
-        padding: 0.75rem 1.5rem;
+        padding: 0.6rem 1.2rem;
         border-radius: 0.75rem;
         font-weight: 700;
         text-decoration: none;
@@ -38,32 +41,28 @@
     .premium-form-card {
         background-color: #ffffff;
         border-radius: 1.5rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        box-shadow: 0 10px 30px rgba(44, 62, 80, 0.03);
         border: 1px solid #f1f5f9;
         padding: 3rem;
         position: relative;
         overflow: hidden;
     }
 
-        .premium-form-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            left: 0;
-            height: 6px;
-            background: linear-gradient(to right, var(--primary-navy), var(--primary-gold));
-        }
-
-    .form-grid {
+    .form-grid-4 {
         display: grid;
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
 
     @@media (min-width: 768px) {
-        .form-grid {
+        .form-grid-4 {
             grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (min-width: 1200px) {
+        .form-grid-4 {
+            grid-template-columns: repeat(4, 1fr);
         }
     }
 
@@ -74,35 +73,44 @@
 
     .form-label {
         font-weight: 800;
-        color: var(--primary-navy);
+        color: var(--text-muted);
         margin-bottom: 0.5rem;
-        font-size: 0.95rem;
+        font-size: 0.85rem;
     }
 
     .form-control {
-        padding: 1rem 1.25rem;
+        padding: 0.85rem 1rem;
         border: 2px solid #e2e8f0;
         border-radius: 0.75rem;
         font-family: inherit;
-        font-size: 1rem;
-        color: var(--text-dark);
-        background-color: #f8fafc;
+        font-size: 0.95rem;
+        color: var(--primary-navy);
+        font-weight: 700;
+        background-color: white;
         transition: 0.3s;
         outline: none;
     }
 
         .form-control:focus {
             border-color: var(--primary-gold);
-            background-color: #ffffff;
-            box-shadow: 0 0 0 4px rgba(195, 154, 92, 0.1);
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
 
-    /* Select2 Custom Premium Styling */
+    .input-vin {
+        border-color: #fca5a5;
+        background-color: #fef2f2;
+    }
+
+        .input-vin:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+        }
+
     .select2-container--default .select2-selection--single {
-        background-color: #f8fafc;
+        background-color: white;
         border: 2px solid #e2e8f0;
         border-radius: 0.75rem;
-        height: 50px;
+        height: 45px;
         display: flex;
         align-items: center;
         transition: 0.3s;
@@ -110,19 +118,19 @@
 
         .select2-container--default .select2-selection--single:focus, .select2-container--focus .select2-selection--single {
             border-color: var(--primary-gold);
-            background-color: #ffffff;
-            box-shadow: 0 0 0 4px rgba(195, 154, 92, 0.1);
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
 
         .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: var(--text-dark);
-            font-weight: 600;
-            padding-left: 1.25rem;
-            padding-right: 1.25rem;
+            color: var(--primary-navy);
+            font-weight: 700;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            font-size: 0.95rem;
         }
 
         .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 48px;
+            height: 43px;
             right: 10px;
         }
 
@@ -131,42 +139,82 @@
         right: auto;
     }
 
+    .input-group-dynamic {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+        .input-group-dynamic .select2-container {
+            flex: 1;
+        }
+
+    .btn-quick-add {
+        background: rgba(184, 147, 90, 0.1);
+        color: var(--primary-gold);
+        border: 1px solid rgba(184, 147, 90, 0.2);
+        width: 45px;
+        height: 45px;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: 0.3s;
+        flex-shrink: 0;
+    }
+
+        .btn-quick-add:hover {
+            background: var(--primary-gold);
+            color: white;
+            box-shadow: 0 4px 10px rgba(184, 147, 90, 0.2);
+        }
+
     .form-actions {
         margin-top: 3rem;
         padding-top: 1.5rem;
         border-top: 1px solid #f1f5f9;
         display: flex;
-        justify-content: flex-end;
+        justify-content: flex-start;
+        gap: 1rem;
+        align-items: center;
     }
 
     .btn-submit {
-        background: var(--primary-navy);
-        color: #ffffff;
+        background: #e2e8f0;
+        color: #94a3b8;
         border: none;
-        padding: 1rem 3rem;
-        border-radius: 1rem;
+        padding: 0.85rem 2.5rem;
+        border-radius: 0.75rem;
         font-weight: 800;
-        font-size: 1.1rem;
+        font-size: 1rem;
         cursor: pointer;
         transition: 0.3s;
-        box-shadow: 0 4px 15px rgba(26, 42, 58, 0.3);
         font-family: inherit;
         display: inline-flex;
         align-items: center;
         gap: 10px;
     }
 
-        .btn-submit:hover {
-            background: var(--secondary-navy);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(26, 42, 58, 0.4);
+        .btn-submit.ready {
+            background: var(--primary-navy);
+            color: white;
+            box-shadow: 0 4px 15px rgba(26, 37, 47, 0.2);
         }
 
-    .text-danger {
-        color: #ef4444;
-        font-size: 0.85rem;
-        font-weight: 700;
-        margin-top: 0.4rem;
+            .btn-submit.ready:hover {
+                background: var(--secondary-navy);
+                transform: translateY(-2px);
+            }
+
+    .btn-cancel {
+        background: transparent;
+        color: var(--text-dark);
+        border: none;
+        font-weight: 800;
+        cursor: pointer;
+        text-decoration: none;
+        padding: 0.85rem 1rem;
     }
 </style>
 
@@ -175,72 +223,173 @@
 
 <div>
     <div class="form-page-header">
-        <h2 class="form-page-title"><i class="fa-solid fa-car" style="color: var(--primary-gold); margin-inline-end: 10px;"></i> @Localizer["إضافة سيارة جديدة"]</h2>
-        <a href="@Url.Action("Index", "Cars")" class="btn-back">@Localizer["عودة للقائمة"]</a>
+        <h2 class="form-page-title">@Localizer["إدارة بيانات المركبة - جديدة"] <i class="fa-solid fa-car-side" style="color: var(--primary-gold); background: rgba(184, 147, 90, 0.1); padding: 8px; border-radius: 8px; font-size:1.2rem;"></i></h2>
+        <a href="javascript:history.back()" class="btn-back"><i class="fa-solid fa-xmark"></i></a>
     </div>
 
     <div class="premium-form-card">
-        <form asp-action="Create" method="post" id="carForm">
+        <!-- أضفنا enctype لدعم رفع الصور -->
+        <form asp-action="Create" method="post" id="carForm" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="form-grid">
-                <div class="form-group">
-                    <label asp-for="VIN" class="form-label">@Localizer["رقم الشاصي"] (VIN)</label>
-                    <input asp-for="VIN" class="form-control" dir="ltr" placeholder="@Localizer["أدخل رقم الشاصي"]" required />
-                    <span asp-validation-for="VIN" class="text-danger"></span>
+            <div class="form-grid-4">
+                <!-- إضافة حقل رفع الصورة (في بداية الفورم ليكون بارزاً) -->
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">@Localizer["صورة السيارة الرئيسية"]</label>
+                    <input type="file" name="mainImage" class="form-control" accept="image/*" style="padding: 0.6rem; background: #f8fafc;" />
                 </div>
 
+                <!-- الصف الأول -->
                 <div class="form-group">
-                    <label asp-for="CustomerId" class="form-label">@Localizer["العميل المالك"]</label>
-                    <select asp-for="CustomerId" class="form-control select2-search" asp-items="ViewBag.CustomerId" required>
-                        <option value="">-- @Localizer["ابحث عن العميل"] --</option>
+                    <label asp-for="VIN" class="form-label">@Localizer["رقم الشاصي"] *</label>
+                    <input asp-for="VIN" class="form-control input-vin" dir="ltr" placeholder="@Localizer["أدخل رقم الشاصي..."]" required />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Year" class="form-label">@Localizer["سنة الصنع"] *</label>
+                    <input asp-for="Year" class="form-control" type="number" placeholder="2026" required />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Make" class="form-label">@Localizer["الماركة"] *</label>
+                    <div class="input-group-dynamic">
+                        <select asp-for="Make" class="form-control select2-search" required>
+                            <option value="">@Localizer["اختر الماركة..."]</option>
+                            <option value="Toyota">Toyota</option>
+                            <option value="BMW">BMW</option>
+                            <option value="Lexus">Lexus</option>
+                        </select>
+                        <button type="button" class="btn-quick-add" onclick="quickAddOption('Make', '@Html.Raw(Localizer["إضافة ماركة سيارة جديدة"])')"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Model" class="form-label">@Localizer["الموديل والنوع"] *</label>
+                    <input asp-for="Model" class="form-control" placeholder="@Localizer["أدخل الموديل..."]" required />
+                </div>
+
+                <!-- الصف الثاني -->
+                <div class="form-group">
+                    <label asp-for="CustomerId" class="form-label">@Localizer["العميل (مطلوب)"] *</label>
+                    <div class="input-group-dynamic">
+                        <select asp-for="CustomerId" class="form-control select2-search input-customer" asp-items="ViewBag.CustomerId" required>
+                            <option value="">@Localizer["اختر العميل..."]</option>
+                        </select>
+                        <button type="button" class="btn-quick-add" onclick="quickAddOption('CustomerId', '@Html.Raw(Localizer["إضافة عميل سريع"])')"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AuctionId" class="form-label">@Localizer["المعرض"] *</label>
+                    <div class="input-group-dynamic">
+                        <select asp-for="AuctionId" class="form-control select2-search" asp-items="ViewBag.AuctionId" required>
+                            <option value="">@Localizer["اختر المعرض..."]</option>
+                        </select>
+                        <button type="button" class="btn-quick-add" onclick="quickAddOption('AuctionId', '@Html.Raw(Localizer["إضافة معرض جديد"])')"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="StatusId" class="form-label">@Localizer["حالة المركبة"] *</label>
+                    <select asp-for="StatusId" class="form-control select2-search" required>
+                        <option value="">@Localizer["اختر الحالة..."]</option>
+                        <option value="1">@Localizer["تم الشراء"]</option>
+                        <option value="2">@Localizer["في المستودع"]</option>
+                        <option value="3">@Localizer["الشحن البحري"]</option>
+                        <option value="4">@Localizer["واصلة الميناء"]</option>
                     </select>
-                    <span asp-validation-for="CustomerId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AddDate" class="form-label">@Localizer["تاريخ الإضافة"]</label>
+                    <input asp-for="AddDate" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                </div>
+
+                <!-- الصف الثالث -->
+                <div class="form-group">
+                    <label asp-for="PlateNo" class="form-label">@Localizer["رقم اللوحة"]</label>
+                    <input asp-for="PlateNo" class="form-control" placeholder="@Localizer["أدخل رقم اللوحة..."]" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="CurrentLocation" class="form-label">@Localizer["توجد في"]</label>
+                    <input asp-for="CurrentLocation" class="form-control" placeholder="@Localizer["موقع السيارة الحالي..."]" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="CardNo" class="form-label">@Localizer["رقم الكرت"]</label>
+                    <input asp-for="CardNo" class="form-control" placeholder="@Localizer["أدخل رقم الكرت..."]" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="EngineNo" class="form-label">@Localizer["رقم الماكينة"]</label>
+                    <input asp-for="EngineNo" class="form-control" placeholder="@Localizer["أدخل رقم الماكينة..."]" />
+                </div>
+
+                <!-- الصف الرابع -->
+                <div class="form-group">
+                    <label asp-for="Color" class="form-label">@Localizer["اللون"] *</label>
+                    <input asp-for="Color" class="form-control" placeholder="@Localizer["اختر اللون..."]" required />
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Make" class="form-label">@Localizer["الشركة المصنعة"]</label>
-                    <input asp-for="Make" class="form-control" placeholder="Toyota, Ford..." required />
-                    <span asp-validation-for="Make" class="text-danger"></span>
+                    <label asp-for="TaxType" class="form-label">@Localizer["نوع الضريبة"]</label>
+                    <div class="input-group-dynamic">
+                        <select asp-for="TaxType" class="form-control select2-search" asp-items="ViewBag.TaxTypes">
+                            <option value="">@Localizer["اختر النوع..."]</option>
+                        </select>
+                        <button type="button" class="btn-quick-add" onclick="quickAddOption('TaxType', '@Html.Raw(Localizer["إضافة نوع ضريبة جديد"])')"><i class="fa-solid fa-plus"></i></button>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Model" class="form-label">@Localizer["الموديل"]</label>
-                    <input asp-for="Model" class="form-control" placeholder="Camry, Mustang..." required />
-                    <span asp-validation-for="Model" class="text-danger"></span>
+                    <label asp-for="TaxAmount" class="form-label">@Localizer["مبلغ الضريبة / النسبة"]</label>
+                    <input asp-for="TaxAmount" type="number" step="0.01" class="form-control" placeholder="0" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="CustomsDeclaration" class="form-label">@Localizer["البيان الجمركي"]</label>
+                    <input asp-for="CustomsDeclaration" class="form-control" placeholder="@Localizer["رقم البيان الجمركي..."]" />
                 </div>
 
+                <!-- الصف الخامس -->
                 <div class="form-group">
-                    <label asp-for="Year" class="form-label">@Localizer["سنة الصنع"]</label>
-                    <input asp-for="Year" class="form-control" type="number" min="1990" max="2026" placeholder="2024" required />
-                    <span asp-validation-for="Year" class="text-danger"></span>
+                    <label asp-for="InsuranceNo" class="form-label">@Localizer["الرقم التأميني"]</label>
+                    <input asp-for="InsuranceNo" class="form-control" placeholder="@Localizer["رقم التأمين..."]" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="VehicleType" class="form-label">@Localizer["نوع المركبة"]</label>
+                    <div class="input-group-dynamic">
+                        <select asp-for="VehicleType" class="form-control select2-search">
+                            <option value="">@Localizer["اختر النوع..."]</option>
+                            <option value="Sedan">@Localizer["صالون (Sedan)"]</option>
+                            <option value="SUV">@Localizer["دفع رباعي (SUV)"]</option>
+                            <option value="Pickup">@Localizer["بيك أب (Pickup)"]</option>
+                        </select>
+                        <button type="button" class="btn-quick-add" onclick="quickAddOption('VehicleType', '@Html.Raw(Localizer["إضافة نوع مركبة جديد"])')"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TaxMethod" class="form-label">@Localizer["طريقة الضريبة"]</label>
+                    <div class="input-group-dynamic">
+                        <select asp-for="TaxMethod" class="form-control select2-search" asp-items="ViewBag.TaxMethods">
+                            <option value="">@Localizer["اختر الطريقة..."]</option>
+                        </select>
+                        <button type="button" class="btn-quick-add" onclick="quickAddOption('TaxMethod', '@Html.Raw(Localizer["إضافة طريقة ضريبة جديدة"])')"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="VehicleShape" class="form-label">@Localizer["الشكل"]</label>
+                    <div class="input-group-dynamic">
+                        <select asp-for="VehicleShape" class="form-control select2-search" asp-items="ViewBag.VehicleShapes">
+                            <option value="">@Localizer["اختر الشكل..."]</option>
+                        </select>
+                        <button type="button" class="btn-quick-add" onclick="quickAddOption('VehicleShape', '@Html.Raw(Localizer["إضافة شكل سيارة جديد"])')"><i class="fa-solid fa-plus"></i></button>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label asp-for="Color" class="form-label">@Localizer["اللون"]</label>
-                    <input asp-for="Color" class="form-control" placeholder="@Localizer["لون السيارة"]" />
-                    <span asp-validation-for="Color" class="text-danger"></span>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="PurchasePrice" class="form-label">@Localizer["سعر الشراء"] ($)</label>
-                    <input asp-for="PurchasePrice" class="form-control" type="number" step="0.01" placeholder="0.00" dir="ltr" required />
-                    <span asp-validation-for="PurchasePrice" class="text-danger"></span>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="AuctionId" class="form-label">@Localizer["المزاد (اختياري)"]</label>
-                    <select asp-for="AuctionId" class="form-control select2-search" asp-items="ViewBag.AuctionId">
-                        <option value="">-- @Localizer["اختر المزاد"] --</option>
-                    </select>
-                </div>
+                <input asp-for="PurchasePrice" type="hidden" value="0" />
             </div>
 
             <div class="form-actions">
                 <button type="submit" class="btn-submit" id="btnSubmit">
-                    <i class="fa-solid fa-save"></i> @Localizer["حفظ بيانات السيارة"]
+                    <i class="fa-solid fa-save"></i> @Localizer["حفظ بيانات المركبة"]
                 </button>
+                <a href="javascript:history.back()" class="btn-cancel">@Localizer["إلغاء"]</a>
+
+                <div class="form-hint">
+                    <i class="fa-solid fa-circle-info"></i> @Localizer["ملاحظة: سيتم تحديث حقل 'آخر تحديث' تلقائياً عند حفظ التغييرات لضمان دقة التتبع."]
+                </div>
             </div>
         </form>
     </div>
@@ -252,10 +401,51 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
 
     <script>
+        function quickAddOption(selectId, titleText) {
+            Swal.fire({
+                title: titleText,
+                input: 'text',
+                inputPlaceholder: '@Html.Raw(Localizer["أدخل الاسم هنا..."])',
+                showCancelButton: true,
+                confirmButtonText: '@Html.Raw(Localizer["إضافة"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])',
+                confirmButtonColor: 'var(--primary-gold)',
+                cancelButtonColor: 'var(--primary-navy)',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return '@Html.Raw(Localizer["لا يمكن ترك الحقل فارغاً!"])'
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var newOption = new Option(result.value, result.value, true, true);
+                    $('#' + selectId).append(newOption).trigger('change');
+
+                    Swal.fire({
+                        title: '@Html.Raw(Localizer["تمت الإضافة!"])',
+                        text: '@Html.Raw(Localizer["تم إضافة الخيار بنجاح ويمكنك استخدامه الآن."])',
+                        icon: 'success',
+                        confirmButtonColor: 'var(--primary-gold)',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+
         $(document).ready(function() {
             var dir = $('html').attr('dir');
             $('.select2-search').select2({ dir: dir, width: '100%' });
 
+            $('#VIN').on('input', function() {
+                if($(this).val().length > 0) {
+                    $('#btnSubmit').addClass('ready');
+                } else {
+                    $('#btnSubmit').removeClass('ready');
+                }
+            });
+
+            // تحديث كود إرسال الفورم ليدعم الملفات (FormData)
             $('#carForm').on('submit', function(e) {
                 e.preventDefault();
                 var form = $(this);
@@ -263,26 +453,31 @@
 
                 var btn = $('#btnSubmit');
                 var originalText = btn.html();
-                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Localizer["جاري الحفظ..."]').prop('disabled', true);
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Html.Raw(Localizer["جاري الحفظ..."])').prop('disabled', true);
+
+                // استخدام FormData للتمكن من رفع الصورة مع البيانات
+                var formData = new FormData(form[0]);
 
                 $.ajax({
-                    url: form.attr('action'), type: form.attr('method'), data: form.serialize(),
-                    success: function () {
-                        Swal.fire({
-                            title: '@Localizer["تم الحفظ بنجاح!"]',
-                            icon: 'success',
-                            confirmButtonColor: 'var(--primary-gold)',
-                            confirmButtonText: '@Localizer["العودة للقائمة"]',
-                            showCancelButton: true,
-                            cancelButtonText: '@Localizer["إضافة سيارة أخرى"]',
-                            cancelButtonColor: 'var(--primary-navy)'
-                        }).then((result) => {
-                            if (result.isConfirmed) { window.location.href = '@Url.Action("Index", "Cars")'; }
-                            else { form[0].reset(); $('.select2-search').val(null).trigger('change'); btn.html(originalText).prop('disabled', false); }
-                        });
+                    url: form.attr('action'),
+                    type: form.attr('method'),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: '@Html.Raw(Localizer["تم الحفظ بنجاح!"])', icon: 'success', confirmButtonColor: 'var(--primary-gold)',
+                                confirmButtonText: '@Html.Raw(Localizer["العودة للقائمة"])'
+                            }).then(() => { window.location.href = '@Url.Action("Index", "Cars")'; });
+                        } else {
+                            var errorMsg = response.errors ? response.errors.join('\n') : '@Html.Raw(Localizer["تأكد من البيانات المدخلة"])';
+                            Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: errorMsg, icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                            btn.html(originalText).prop('disabled', false);
+                        }
                     },
                     error: function () {
-                        Swal.fire({ title: '@Localizer["خطأ!"]', text: '@Localizer["حدث خطأ أثناء الحفظ."]', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                        Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: '@Html.Raw(Localizer["حدث خطأ أثناء الحفظ."])', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
                         btn.html(originalText).prop('disabled', false);
                     }
                 });

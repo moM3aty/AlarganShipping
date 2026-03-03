@@ -1,15 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Threading.Tasks;
 using AlarganShipping.Models;
 
 namespace AlarganShipping.Controllers
 {
-    // متحكم تقارير فحص السيارات (لمطابقة حالة السيارة عند الاستلام)
-    [Authorize]
     public class CarInspectionsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -19,10 +14,9 @@ namespace AlarganShipping.Controllers
             _context = context;
         }
 
-        // شاشة إضافة تقرير فحص جديد
         public IActionResult Create(int? carId)
         {
-            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "VIN", carId);
+            ViewBag.CarId = new SelectList(_context.Cars, "Id", "VIN", carId);
             return View();
         }
 
@@ -30,17 +24,16 @@ namespace AlarganShipping.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CarInspection inspection)
         {
+            ModelState.Remove("Car");
+
             if (ModelState.IsValid)
             {
                 inspection.InspectionDate = DateTime.Now;
                 _context.Add(inspection);
                 await _context.SaveChangesAsync();
-
-                // العودة إلى تفاصيل السيارة لمشاهدة التقرير
-                return RedirectToAction("Details", "Cars", new { id = inspection.CarId });
+                return Json(new { success = true });
             }
-            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "VIN", inspection.CarId);
-            return View(inspection);
+            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
     }
 }

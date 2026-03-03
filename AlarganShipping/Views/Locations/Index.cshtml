@@ -1,0 +1,175 @@
+﻿@model IEnumerable<AlarganShipping.Models.Location>
+@{
+    ViewData["Title"] = Localizer["المواقع والمستودعات"];
+}
+
+<style>
+    /* نفس تنسيقات الصفحة السابقة للاتساق */
+    .page-header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 5px 20px rgba(44, 62, 80, 0.03);
+        border: 1px solid #f1f5f9;
+        margin-bottom: 2rem;
+    }
+
+    .page-header-text h2 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .page-header-text h2 i {
+            color: var(--primary-gold);
+        }
+
+    .btn-add {
+        background: linear-gradient(to right, var(--primary-navy), var(--secondary-navy));
+        color: #ffffff;
+        font-weight: 800;
+        padding: 0.85rem 1.75rem;
+        border-radius: 1rem;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(44, 62, 80, 0.3);
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(44, 62, 80, 0.4);
+            background: linear-gradient(to right, var(--primary-gold), var(--secondary-gold));
+            color: white;
+        }
+
+    .data-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+        overflow-x: auto;
+    }
+
+    .table-enterprise {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+        .table-enterprise th {
+            background-color: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 800;
+            padding: 1.25rem 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            text-align: start;
+            white-space: nowrap;
+        }
+
+        .table-enterprise td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-dark);
+            font-weight: 700;
+            vertical-align: middle;
+        }
+
+    .type-badge {
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        display: inline-block;
+    }
+
+    .type-port {
+        background: rgba(44, 62, 80, 0.1);
+        color: var(--primary-navy);
+        border: 1px solid rgba(44, 62, 80, 0.2);
+    }
+
+    .type-warehouse {
+        background: rgba(184, 147, 90, 0.1);
+        color: var(--primary-gold);
+        border: 1px solid rgba(184, 147, 90, 0.2);
+    }
+</style>
+
+<div>
+    <div class="page-header-container">
+        <div class="page-header-text">
+            <h2><i class="fa-solid fa-map-location-dot"></i> @Localizer["المواقع والموانئ"]</h2>
+            <p style="color: var(--text-muted); font-weight: 600; margin-top: 5px;">• @Localizer["إدارة المستودعات وموانئ التحميل والوصول"]</p>
+        </div>
+        <div class="header-actions">
+            <a href="#" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة موقع جديد"]</a>
+        </div>
+    </div>
+
+    <div class="data-card">
+        <table id="locationsTable" class="table-enterprise display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>@Localizer["اسم الموقع"]</th>
+                    <th>@Localizer["النوع"]</th>
+                    <th>@Localizer["الدولة / الولاية"]</th>
+                    <th>@Localizer["الشخص المسؤول"]</th>
+                    <th>@Localizer["رقم التواصل"]</th>
+                    <th>@Localizer["إجراءات"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var loc in Model)
+                    {
+                        <tr>
+                            <td style="font-weight: 900; color: var(--primary-navy);">@loc.Name</td>
+                            <td>
+                                @if (loc.LocationType == "Port")
+                                {
+                                    <span class="type-badge type-port"><i class="fa-solid fa-anchor"></i> @Localizer["ميناء"]</span>
+                                }
+                                else
+                                {
+
+                                    <span class="type-badge type-warehouse"><i class="fa-solid fa-warehouse"></i> @Localizer["مستودع"]</span>
+                                }
+                            </td>
+                            <td><i class="fa-solid fa-globe" style="color: #cbd5e1; margin-inline-end: 5px;"></i> @loc.Country - @loc.StateOrProvince</td>
+                            <td style="color: var(--text-muted);">@loc.ContactPerson</td>
+                            <td dir="ltr" style="text-align: end; font-family: monospace;">@loc.ContactPhone</td>
+                            <td>
+                                <a href="#" style="color: var(--primary-gold); margin-inline-end: 15px;" title="@Localizer["تعديل"]"><i class="fa-solid fa-pen-to-square"></i></a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var dir = $('html').attr('dir') === 'rtl';
+            $('#locationsTable').DataTable({
+                "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" },
+                "pageLength": 10,
+                "responsive": true
+            });
+        });
+    </script>
+}

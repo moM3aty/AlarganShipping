@@ -1,52 +1,47 @@
-﻿// مسار الملف: Controllers/CarsController.cs
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using System.Linq;
 using AlarganShipping.Models;
-using System;
 
 namespace AlarganShipping.Controllers
 {
-    [Authorize]
     public class CarsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _env; // لرفع الملفات
 
-        public CarsController(ApplicationDbContext context)
+        public CarsController(ApplicationDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
-        // قائمة السيارات
         public async Task<IActionResult> Index()
         {
             var cars = await _context.Cars
-                .Include(c => c.Customer) // ربط بيانات العميل
-                .Include(c => c.Auction)  // ربط بيانات المزاد
-                .Include(c => c.Shipment) // ربط بيانات الشحنة
+                .Include(c => c.Customer)
+                .Include(c => c.Auction)
                 .OrderByDescending(c => c.Id)
                 .ToListAsync();
             return View(cars);
         }
 
-        // شاشة الإضافة
         public IActionResult Create()
         {
-            // تعبئة القوائم المنسدلة للعملاء والمزادات
-            ViewData["CustomerId"] = new SelectList(_context.Customers.OrderBy(c => c.Name), "Id", "Name");
-            ViewData["AuctionId"] = new SelectList(_context.Auctions.OrderBy(a => a.Name), "Id", "Name");
+            ViewBag.CustomerId = new SelectList(_context.Customers, "Id", "Name");
+            ViewBag.AuctionId = new SelectList(_context.Auctions, "Id", "Name");
+
+            ViewBag.TaxTypes = new SelectList(new List<string> { "ضريبة قيمة مضافة", "ضريبة جمركية", "رسوم ميناء" });
+            ViewBag.TaxMethods = new SelectList(new List<string> { "نسبة مئوية (%)", "مبلغ مقطوع ($)" });
+            ViewBag.VehicleShapes = new SelectList(new List<string> { "صالون (Sedan)", "دفع رباعي (SUV)", "بيك أب (Pickup)" });
+
             return View();
         }
 
-        // حفظ السيارة الجديدة (AJAX)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Car car)
+        public async Task<IActionResult> Create(Car car, IFormFile? mainImage)
         {
-            // 💡 الحل الجذري: مسح أخطاء التحقق للقوائم والكائنات المرتبطة التي لا نرسلها من الفورم
             ModelState.Remove("Customer");
             ModelState.Remove("Auction");
             ModelState.Remove("Shipment");
@@ -57,62 +52,154 @@ namespace AlarganShipping.Controllers
 
             if (ModelState.IsValid)
             {
-                car.StatusId = 1; // تعيين الحالة الافتراضية "تم الشراء"
+                car.AddDate = DateTime.Now;
 
-                // توليد كود داخلي للسيارة إذا كان فارغاً
+                // 1. توليد كود السيارة الداخلي التلقائي
                 if (string.IsNullOrEmpty(car.InternalCode))
                 {
                     car.InternalCode = "AUTO-" + DateTime.Now.Year + "-" + new Random().Next(1000, 9999);
                 }
 
-                try
+                // 2. معالجة ورفع الصورة
+                if (mainImage != null && mainImage.Length > 0)
                 {
-                    _context.Add(car);
-                    await _context.SaveChangesAsync(); // الحفظ الفعلي في قاعدة البيانات
+                    var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "cars");
+                    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(mainImage.FileName);
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
-                        return Json(new { success = true });
+                        await mainImage.CopyToAsync(fileStream);
                     }
-
-                    return RedirectToAction(nameof(Index));
+                    car.MainImageUrl = "/uploads/cars/" + uniqueFileName;
                 }
-                catch (Exception ex)
-                {
-                    // التقاط أي خطأ من قاعدة البيانات وإرساله للواجهة
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                        return Json(new { success = false, errors = new[] { ex.InnerException?.Message ?? ex.Message } });
-                }
-            }
 
-            // في حالة فشل التحقق، نرسل الأخطاء للواجهة
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                return Json(new { success = false, errors = errors });
+                _context.Add(car);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
             }
+            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+        }
 
-            // إعادة تعبئة القوائم في حال تم الإرسال العادي (بدون AJAX) وفشل التحقق
-            ViewData["CustomerId"] = new SelectList(_context.Customers.OrderBy(c => c.Name), "Id", "Name", car.CustomerId);
-            ViewData["AuctionId"] = new SelectList(_context.Auctions.OrderBy(a => a.Name), "Id", "Name", car.AuctionId);
+        // ==========================================
+        // 1. عرض شاشة التعديل (GET)
+        // ==========================================
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var car = await _context.Cars.FindAsync(id);
+            if (car == null) return NotFound();
+
+            ViewBag.CustomerId = new SelectList(_context.Customers, "Id", "Name", car.CustomerId);
+            ViewBag.AuctionId = new SelectList(_context.Auctions, "Id", "Name", car.AuctionId);
+
+            ViewBag.TaxTypes = new SelectList(new List<string> { "ضريبة قيمة مضافة", "ضريبة جمركية", "رسوم ميناء" });
+            ViewBag.TaxMethods = new SelectList(new List<string> { "نسبة مئوية (%)", "مبلغ مقطوع ($)" });
+            ViewBag.VehicleShapes = new SelectList(new List<string> { "صالون (Sedan)", "دفع رباعي (SUV)", "بيك أب (Pickup)" });
+
             return View(car);
         }
 
-        // تفاصيل السيارة والتتبع
+        // ==========================================
+        // 2. حفظ التعديلات في قاعدة البيانات (POST)
+        // ==========================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Car car, IFormFile? mainImage)
+        {
+            if (id != car.Id) return NotFound();
+
+            ModelState.Remove("Customer");
+            ModelState.Remove("Auction");
+            ModelState.Remove("Shipment");
+            ModelState.Remove("TrackingLogs");
+            ModelState.Remove("Invoices");
+            ModelState.Remove("DocumentAttachments");
+            ModelState.Remove("CarInspections");
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // إذا تم رفع صورة جديدة، قم بمعالجتها وتحديث المسار
+                    if (mainImage != null && mainImage.Length > 0)
+                    {
+                        var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "cars");
+                        if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                        var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(mainImage.FileName);
+                        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await mainImage.CopyToAsync(fileStream);
+                        }
+                        car.MainImageUrl = "/uploads/cars/" + uniqueFileName;
+                    }
+                    // ملاحظة: إذا لم يرفع صورة جديدة، سيتم الاحتفاظ بالصورة القديمة لأننا نمررها كـ Hidden Field في الفورم
+
+                    _context.Update(car);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!CarExists(car.Id)) return NotFound();
+                    else throw;
+                }
+                return Json(new { success = true });
+            }
+            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+        }
+
+        private bool CarExists(int id)
+        {
+            return _context.Cars.Any(e => e.Id == id);
+        }
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
 
+            // تحديث جلب البيانات ليشمل التقارير والمستندات
             var car = await _context.Cars
                 .Include(c => c.Customer)
                 .Include(c => c.Auction)
-                .Include(c => c.Shipment)
-                .Include(c => c.TrackingLogs.OrderByDescending(t => t.UpdateDate)) // جلب سجلات التتبع مرتبة
+                .Include(c => c.TrackingLogs)
+                .Include(c => c.CarInspections)
+                .Include(c => c.DocumentAttachments)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (car == null) return NotFound();
-
             return View(car);
+        }
+
+        // ==========================================
+        // حذف السيارة (POST)
+        // ==========================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var car = await _context.Cars.FindAsync(id);
+            if (car == null)
+            {
+                return Json(new { success = false, message = "السيارة غير موجودة." });
+            }
+
+            try
+            {
+                _context.Cars.Remove(car);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                // في حال وجود ارتباطات مثل فواتير أو شحنات تمنع الحذف
+                return Json(new { success = false, message = "لا يمكن حذف السيارة لارتباطها ببيانات أخرى (شحنات، فواتير)." });
+            }
         }
     }
 }

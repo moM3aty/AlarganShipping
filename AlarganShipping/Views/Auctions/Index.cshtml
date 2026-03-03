@@ -1,0 +1,165 @@
+﻿@model IEnumerable<AlarganShipping.Models.Auction>
+@{
+    ViewData["Title"] = Localizer["إدارة المزادات"];
+}
+
+<style>
+    .page-header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 5px 20px rgba(44, 62, 80, 0.03);
+        border: 1px solid #f1f5f9;
+        margin-bottom: 2rem;
+    }
+
+    .page-header-text h2 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .page-header-text h2 i {
+            color: var(--primary-gold);
+        }
+
+    .btn-add {
+        background: linear-gradient(to right, var(--primary-navy), var(--secondary-navy));
+        color: #ffffff;
+        font-weight: 800;
+        padding: 0.85rem 1.75rem;
+        border-radius: 1rem;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(44, 62, 80, 0.3);
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(44, 62, 80, 0.4);
+            background: linear-gradient(to right, var(--primary-gold), var(--secondary-gold));
+            color: white;
+        }
+
+    .data-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+        overflow-x: auto;
+    }
+
+    .table-enterprise {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+        .table-enterprise th {
+            background-color: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 800;
+            padding: 1.25rem 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            text-align: start;
+            white-space: nowrap;
+        }
+
+        .table-enterprise td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-dark);
+            font-weight: 700;
+            vertical-align: middle;
+        }
+
+        .table-enterprise tbody tr:hover {
+            background-color: #f8fafc;
+            transition: 0.2s;
+        }
+
+    .auction-logo {
+        width: 45px;
+        height: 45px;
+        background: rgba(184, 147, 90, 0.1);
+        color: var(--primary-gold);
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin-inline-end: 15px;
+        vertical-align: middle;
+    }
+</style>
+
+<div>
+    <div class="page-header-container">
+        <div class="page-header-text">
+            <h2><i class="fa-solid fa-gavel"></i> @Localizer["إدارة المزادات"]</h2>
+            <p style="color: var(--text-muted); font-weight: 600; margin-top: 5px;">• @Localizer["قائمة المزادات المعتمدة وحسابات الشراء"]</p>
+        </div>
+        <div class="header-actions">
+            <a href="#" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة مزاد جديد"]</a>
+        </div>
+    </div>
+
+    <div class="data-card">
+        <table id="auctionsTable" class="table-enterprise display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>@Localizer["اسم المزاد"]</th>
+                    <th>@Localizer["الموقع الأساسي"]</th>
+                    <th>@Localizer["رقم المشتري (Buyer No)"]</th>
+                    <th>@Localizer["رسوم المزاد الافتراضية"]</th>
+                    <th>@Localizer["إجراءات"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var auc in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="auction-logo"><i class="fa-solid fa-building-columns"></i></div>
+                                <span style="font-weight: 900; color: var(--primary-navy); font-size: 1.1rem;">@auc.Name</span>
+                            </td>
+                            <td style="color: var(--text-muted);"><i class="fa-solid fa-location-dot" style="margin-inline-end: 5px;"></i> @auc.Location</td>
+                            <td style="font-family: monospace; font-weight: 900; color: var(--primary-navy);">@auc.BuyerNumber</td>
+                            <td style="color: #16a34a; font-weight: 900;">$@auc.DefaultAuctionFee</td>
+                            <td>
+                                <a href="#" style="color: var(--primary-gold); margin-inline-end: 15px;" title="@Localizer["تعديل"]"><i class="fa-solid fa-pen-to-square"></i></a>
+                                <a href="#" style="color: #ef4444;" title="@Localizer["حذف"]"><i class="fa-solid fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var dir = $('html').attr('dir') === 'rtl';
+            $('#auctionsTable').DataTable({
+                "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" },
+                "pageLength": 10,
+                "responsive": true
+            });
+        });
+    </script>
+}

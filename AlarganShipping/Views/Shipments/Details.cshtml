@@ -1,5 +1,4 @@
-﻿<!-- مسار الملف في المشروع: Views/Shipments/Details.cshtml -->
-@model AlarganShipping.Models.Shipment
+﻿@model AlarganShipping.Models.Shipment
 @{
     ViewData["Title"] = Localizer["تفاصيل الشحنة والحاوية"];
 }
@@ -8,49 +7,52 @@
     .details-header {
         background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%);
         color: white;
-        padding: 2.5rem;
+        padding: 3rem;
         border-radius: 1.5rem;
         margin-bottom: 2rem;
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 15px 30px rgba(26, 42, 58, 0.15);
+        align-items: flex-start;
+        box-shadow: 0 15px 30px rgba(44, 62, 80, 0.15);
         position: relative;
         overflow: hidden;
     }
 
-        .details-header::after {
-            content: '\26F4'; /* Ship icon */
+        .details-header::before {
+            content: '\f21a';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
             position: absolute;
-            top: -20%;
-            inset-inline-start: -5%;
+            top: -20px;
+            inset-inline-end: -20px;
             font-size: 15rem;
-            color: rgba(255,255,255,0.03);
+            color: rgba(184,147,90,0.1);
             z-index: 1;
         }
 
-    .shipment-title-large {
-        font-size: 2rem;
+    .header-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .container-title {
+        font-size: 2.5rem;
         font-weight: 900;
         margin: 0 0 0.5rem 0;
         color: var(--primary-gold);
-        position: relative;
-        z-index: 2;
+        font-family: monospace;
         letter-spacing: 2px;
     }
 
-    .info-badge {
-        background-color: rgba(255,255,255,0.1);
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        font-size: 0.95rem;
-        position: relative;
-        z-index: 2;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-inline-end: 1rem;
+    .status-badge-lg {
+        display: inline-block;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 800;
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
         border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.1);
     }
 
     .btn-outline-light {
@@ -71,71 +73,118 @@
             color: var(--primary-navy);
         }
 
-    .route-card {
-        background: white;
-        border-radius: 1.5rem;
-        padding: 2rem;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
         margin-bottom: 2.5rem;
-        border: 1px solid #e2e8f0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
     }
 
-    .port-section {
+    .info-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1.25rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+    }
+
+    .info-label {
+        display: block;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+    }
+
+        .info-value i {
+            color: var(--primary-gold);
+            margin-inline-end: 5px;
+        }
+
+    /* مسار الشحنة البصري */
+    .route-visualizer {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .port-node {
         text-align: center;
         flex: 1;
     }
 
-    .port-label {
-        color: var(--text-muted);
-        font-weight: 800;
-        margin-bottom: 0.5rem;
-        display: block;
-    }
-
-    .port-value {
-        color: var(--primary-navy);
-        font-size: 1.5rem;
-        font-weight: 900;
-    }
-
-    .port-date {
-        color: var(--primary-gold);
-        font-weight: 800;
-        font-size: 0.9rem;
-        margin-top: 0.25rem;
-        display: block;
-    }
-
-    .route-divider {
-        flex: 1;
+    .port-icon {
+        width: 60px;
+        height: 60px;
+        background: #f8fafc;
+        border: 2px solid var(--primary-gold);
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        position: relative;
-    }
-
-        .route-divider::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 2px;
-            background: dashed 2px #cbd5e1;
-            z-index: 1;
-        }
-
-    .route-icon {
-        background: white;
-        color: var(--primary-gold);
-        font-size: 2rem;
-        position: relative;
+        font-size: 1.5rem;
+        color: var(--primary-navy);
+        margin: 0 auto 1rem;
         z-index: 2;
-        padding: 0 1rem;
-        transform: @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "scaleX(-1)" : "none");
+        position: relative;
     }
 
+    .port-name {
+        font-weight: 900;
+        color: var(--primary-navy);
+        font-size: 1.1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .port-date {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 700;
+        font-family: monospace;
+    }
+
+    .route-line {
+        flex: 2;
+        height: 4px;
+        background: #e2e8f0;
+        position: relative;
+        margin: 0 1rem;
+        border-radius: 10px;
+    }
+
+    .route-line-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: var(--primary-gold);
+        border-radius: 10px;
+        width: 50%;
+    }
+
+    .ship-icon {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 1.5rem;
+        color: var(--primary-navy);
+        background: white;
+        padding: 0 10px;
+    }
+
+    /* قسم محتويات الحاوية (السيارات) */
     .section-container {
         background: white;
         border-radius: 1.5rem;
@@ -144,18 +193,46 @@
         border: 1px solid #e2e8f0;
     }
 
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
     .section-title {
         font-size: 1.5rem;
         font-weight: 900;
         color: var(--primary-navy);
-        margin-bottom: 1.5rem;
+        margin: 0;
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 10px;
     }
 
         .section-title i {
             color: var(--primary-gold);
+        }
+
+    .btn-add-car {
+        background: var(--primary-gold);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-add-car:hover {
+            background: var(--secondary-gold);
+            transform: translateY(-2px);
+            color: white;
         }
 
     .data-table {
@@ -177,60 +254,139 @@
             border-bottom: 1px solid #f1f5f9;
             color: var(--text-dark);
             font-weight: 700;
+            vertical-align: middle;
         }
 
         .data-table tr:hover {
             background-color: #f8fafc;
         }
 
-    .btn-sm-gold {
+    .car-td-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .car-td-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(184,147,90,0.1);
         color: var(--primary-gold);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-sm-navy {
+        color: var(--primary-navy);
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
         font-weight: 800;
         text-decoration: none;
         padding: 0.4rem 1rem;
         border-radius: 8px;
-        background: rgba(195,154,92,0.1);
+        transition: 0.3s;
+        display: inline-block;
+    }
+
+        .btn-sm-navy:hover {
+            background: var(--primary-navy);
+            color: white;
+            border-color: var(--primary-navy);
+        }
+
+    .btn-sm-danger {
+        color: #ef4444;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1rem;
+        padding: 0.5rem;
         transition: 0.3s;
     }
 
-        .btn-sm-gold:hover {
-            background: var(--primary-gold);
-            color: white;
+        .btn-sm-danger:hover {
+            color: #b91c1c;
+            transform: scale(1.1);
         }
 </style>
 
 <div>
     <div class="details-header">
-        <div style="z-index: 2;">
-            <h1 class="shipment-title-large">@Localizer["حاوية:"] @Model.ContainerNumber</h1>
-            <span class="info-badge"><i class="fa-solid fa-ship"></i> @Localizer["خط الملاحة:"] @Model.ShippingLine</span>
-            <span class="info-badge"><i class="fa-solid fa-file-contract"></i> @Localizer["بوليصة الشحن (B/L):"] @(string.IsNullOrEmpty(Model.BillOfLading) ? Localizer["قيد الانتظار"] : Model.BillOfLading)</span>
+        <div class="header-content">
+            <div class="status-badge-lg">
+                <i class="fa-solid fa-circle-dot" style="color: #4ade80; margin-inline-end: 5px; font-size: 0.8rem;"></i>
+                @Localizer[Model.Status ?? "Pending"]
+            </div>
+            <h1 class="container-title">@Model.ContainerNumber</h1>
+            <p style="color: #cbd5e1; font-weight: 700; margin: 0; font-size: 1.1rem;">
+                @Localizer["خط الملاحة:"] @Model.ShippingLine | @Localizer["رقم الحجز:"] @Model.BookingNumber
+            </p>
         </div>
-        <div style="z-index: 2;">
-            <a href="@Url.Action("Index", "Shipments")" class="btn-outline-light">@Localizer["العودة للشحنات"]</a>
-        </div>
-    </div>
-
-    <div class="route-card">
-        <div class="port-section">
-            <span class="port-label">@Localizer["ميناء التحميل"]</span>
-            <span class="port-value">@(Model.LoadingPort?.Name ?? Localizer["غير محدد"].Value)</span>
-            <span class="port-date">ETD: @(Model.ExpectedTimeOfDeparture?.ToString("dd/MM/yyyy") ?? "-")</span>
-        </div>
-        <div class="route-divider">
-            <span class="route-icon">✈</span>
-        </div>
-        <div class="port-section">
-            <span class="port-label">@Localizer["ميناء الوصول"]</span>
-            <span class="port-value">@(Model.DischargePort?.Name ?? Localizer["غير محدد"].Value)</span>
-            <span class="port-date">ETA: @(Model.ExpectedTimeOfArrival?.ToString("dd/MM/yyyy") ?? "-")</span>
+        <div>
+            <a href="@Url.Action("Index", "Shipments")" class="btn-outline-light"><i class="fa-solid fa-arrow-right-long"></i> @Localizer["العودة للشحنات"]</a>
         </div>
     </div>
 
+    <!-- مسار الشحنة البصري -->
+    <div class="route-visualizer">
+        <div class="port-node">
+            <div class="port-icon"><i class="fa-solid fa-ship"></i></div>
+            <div class="port-name">@(Model.LoadingPort?.Name ?? Localizer["غير محدد"].Value)</div>
+            <div class="port-date">ETD: @(Model.ExpectedTimeOfDeparture?.ToString("dd MMM yyyy") ?? "-")</div>
+        </div>
+
+        <div class="route-line">
+            <div class="route-line-fill"></div>
+            <div class="ship-icon"><i class="fa-solid fa-ferry"></i></div>
+        </div>
+
+        <div class="port-node">
+            <div class="port-icon"><i class="fa-solid fa-anchor"></i></div>
+            <div class="port-name">@(Model.DischargePort?.Name ?? Localizer["غير محدد"].Value)</div>
+            <div class="port-date">ETA: @(Model.ExpectedTimeOfArrival?.ToString("dd MMM yyyy") ?? "-")</div>
+        </div>
+    </div>
+
+    <!-- معلومات إضافية -->
+    <div class="info-grid">
+        <div class="info-card">
+            <span class="info-label">@Localizer["بوليصة الشحن (B/L)"]</span>
+            <div class="info-value" style="font-family: monospace;">@(string.IsNullOrEmpty(Model.BillOfLading) ? "-" : Model.BillOfLading)</div>
+        </div>
+        <div class="info-card">
+            <span class="info-label">@Localizer["عدد السيارات المحملة"]</span>
+            <div class="info-value"><i class="fa-solid fa-car-side"></i> @(Model.Cars?.Count ?? 0) / 4 @Localizer["سيارات"]</div>
+        </div>
+        <div class="info-card">
+            <span class="info-label">@Localizer["ميناء التحميل"] (Origin)</span>
+            <div class="info-value">@(Model.LoadingPort?.Name ?? "-")</div>
+        </div>
+        <div class="info-card">
+            <span class="info-label">@Localizer["ميناء الوصول"] (Destination)</span>
+            <div class="info-value">@(Model.DischargePort?.Name ?? "-")</div>
+        </div>
+    </div>
+
+    <!-- السيارات المرتبطة بالحاوية -->
     <div class="section-container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h2 class="section-title" style="margin: 0;"><i class="fa-solid fa-cars"></i> @Localizer["السيارات داخل الحاوية"]</h2>
-            <span style="background: #f8fafc; color: var(--primary-navy); padding: 0.5rem 1.5rem; border-radius: 0.75rem; font-weight: 800; border: 1px solid #e2e8f0;">@Localizer["العدد:"] @(Model.Cars?.Count ?? 0) @Localizer["سيارة"]</span>
+        <div class="section-header">
+            <h2 class="section-title"><i class="fa-solid fa-cubes"></i> @Localizer["السيارات المحملة في هذه الحاوية"]</h2>
+
+            <!-- زر لإضافة سيارة للشحنة (يفتح Modal أو يوجه لصفحة التعديل) -->
+            @if ((Model.Cars?.Count ?? 0) < 4)
+            {
+                <button class="btn-add-car" onclick="alert('@Localizer["سيتم فتح نافذة لاختيار السيارات المتوفرة في المستودع لربطها بهذه الحاوية."]')">
+                    <i class="fa-solid fa-link"></i> @Localizer["ربط سيارة بالحاوية"]
+                </button>
+            }
+            else
+            {
+                <span style="color: #ef4444; font-weight: 800; background: #fef2f2; padding: 0.5rem 1rem; border-radius: 8px;">
+                    <i class="fa-solid fa-lock"></i> @Localizer["الحاوية ممتلئة (4/4)"]
+                </span>
+            }
         </div>
 
         <div style="overflow-x: auto;">
@@ -238,8 +394,8 @@
                 <thead>
                     <tr>
                         <th>@Localizer["السيارة"]</th>
-                        <th>@Localizer["رقم الشاصي (VIN)"]</th>
-                        <th>@Localizer["العميل المالك"]</th>
+                        <th>@Localizer["رقم الشاصي"] (VIN)</th>
+                        <th>@Localizer["المالك"]</th>
                         <th>@Localizer["إجراءات"]</th>
                     </tr>
                 </thead>
@@ -249,17 +405,33 @@
                         foreach (var car in Model.Cars)
                         {
                             <tr>
-                                <td>@car.Make @car.Model @car.Year</td>
+                                <td>
+                                    <div class="car-td-info">
+                                        <div class="car-td-icon"><i class="fa-solid fa-car"></i></div>
+                                        <div>
+                                            <div style="color: var(--primary-navy); font-weight: 900;">@car.Make @car.Model</div>
+                                            <div style="color: var(--text-muted); font-size: 0.85rem;">@car.Year</div>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td style="font-family: monospace; color: var(--text-muted);">@car.VIN</td>
-                                <td>@(car.Customer?.Name ?? "-")</td>
-                                <td><a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn-sm-gold">@Localizer["عرض السيارة"]</a></td>
+                                <td><i class="fa-solid fa-user-tie" style="color: #cbd5e1; margin-inline-end: 5px;"></i> @(car.Customer?.Name ?? "-")</td>
+                                <td>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn-sm-navy">@Localizer["التفاصيل"]</a>
+                                        <button class="btn-sm-danger" title="@Localizer["إزالة من الحاوية"]" onclick="confirmRemove()"><i class="fa-solid fa-unlink"></i></button>
+                                    </div>
+                                </td>
                             </tr>
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem; font-weight: 700;">@Localizer["لم يتم تحميل أي سيارات في هذه الحاوية بعد."]</td>
+                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                                <i class="fa-solid fa-box-open" style="font-size: 3rem; color: #e2e8f0; margin-bottom: 1rem; display: block;"></i>
+                                @Localizer["الحاوية فارغة حالياً. قم بربط السيارات من المستودع."]
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -267,3 +439,31 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+    <script>
+        function confirmRemove() {
+            Swal.fire({
+                title: '@Localizer["هل أنت متأكد؟"]',
+                text: '@Localizer["سيتم فك ارتباط هذه السيارة من الحاوية وإعادتها لحالة المستودع."]',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: 'var(--primary-navy)',
+                confirmButtonText: '@Localizer["نعم، إزالة"]',
+                cancelButtonText: '@Localizer["إلغاء"]'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // هنا يمكن إضافة كود AJAX لفك الارتباط فعلياً من الداتا بيز
+                    Swal.fire({
+                        title: 'تم!',
+                        text: 'تم إزالة السيارة من الحاوية.',
+                        icon: 'success',
+                        confirmButtonColor: 'var(--primary-gold)'
+                    });
+                }
+            });
+        }
+    </script>
+}

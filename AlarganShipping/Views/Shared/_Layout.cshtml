@@ -1,5 +1,4 @@
-﻿<!-- مسار الملف في المشروع: Views/Shared/_Layout.cshtml -->
-@{
+﻿@{
     var isRtl = System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
     var currentCulture = System.Globalization.CultureInfo.CurrentCulture.Name;
     var htmlDir = isRtl ? "rtl" : "ltr";
@@ -13,174 +12,428 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- إضافة DataTables لتنسيق الجداول باحترافية -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
-    
+
     <style>
         :root {
-            /* ألوان الهوية البصرية لشعار الأرجان */
-            --primary-navy: #1a2634;
-            --secondary-navy: #2b3f56;
-            --primary-gold: #be955b;
-            --secondary-gold: #d4af7a;
-            --bg-body: #f8fafc;
-            --text-dark: #0f172a;
+            /* ألوان هوية الأرجان المستخرجة من الشعار */
+            --primary-navy: #2C3E50;
+            --secondary-navy: #1A252F;
+            --primary-gold: #B8935A;
+            --secondary-gold: #967443;
+            --bg-body: #f4f7f9;
+            --text-dark: #1e293b;
             --text-muted: #64748b;
-            --sidebar-width: 320px;
+            --sidebar-width: 300px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-body); display: flex; height: 100vh; overflow: hidden; color: var(--text-dark); }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        /* --- خلفية القائمة الجانبية للموبايل --- */
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-body);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            color: var(--text-dark);
+        }
+
         .sidebar-overlay {
-            position: fixed; inset: 0; background: rgba(26, 38, 52, 0.6);
-            z-index: 999; opacity: 0; visibility: hidden; transition: 0.3s ease;
+            position: fixed;
+            inset: 0;
+            background: rgba(26, 37, 47, 0.6);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s ease;
             backdrop-filter: blur(4px);
         }
-        .sidebar-overlay.show { opacity: 1; visibility: visible; }
 
-        /* --- القائمة الجانبية (Sidebar) --- */
-        .sidebar { 
-            width: var(--sidebar-width); background: #ffffff; display: flex; flex-direction: column; 
-            z-index: 1000; border-inline-end: 1px solid #e2e8f0; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            .sidebar-overlay.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            border-inline-end: 1px solid #e2e8f0;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
-        
-        .sidebar-header { padding: 2.5rem 2rem 1.5rem; text-align: center; }
-        
-        .logo-placeholder { 
-            width: 100px; height: 100px; background: white; border-radius: 30px; 
-            margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 10px 25px rgba(26, 38, 52, 0.1); border: 2px solid #f1f5f9; padding: 5px;
-        }
-        .logo-placeholder img { max-width: 100%; height: auto; border-radius: 25px; }
-        
-        .brand-name { font-size: 1.4rem; font-weight: 900; color: var(--primary-navy); margin: 0 0 0.25rem 0; letter-spacing: 0.5px; }
-        .brand-sub { font-size: 0.75rem; color: var(--primary-gold); font-weight: 800; letter-spacing: 3px; text-transform: uppercase; }
 
-        .nav-menu { flex: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; }
-        
-        .nav-item { 
-            display: flex; align-items: center; gap: 15px; padding: 1.2rem 1.5rem; 
-            border-radius: 18px; color: var(--text-muted); font-weight: 800; text-decoration: none; 
-            transition: all 0.3s ease; position: relative;font-size:14px;
+        .sidebar-header {
+            padding: 2.5rem 2rem 1.5rem;
+            text-align: center;
         }
-        /* دعم الاتجاهين في التحريك عند التمرير */
-        .nav-item:hover { background: #f8fafc; color: var(--primary-navy); transform: translateX(@(isRtl ? "-5px" : "5px")); }
-        .nav-item i { width: 25px; text-align: center; font-size: 1.2rem; color: #cbd5e1; transition: 0.3s; }
-        .nav-item:hover i { color: var(--primary-gold); }
-        
-        .nav-item.active { background: var(--primary-navy); color: white; box-shadow: 0 10px 25px rgba(26, 38, 52, 0.2); }
-        .nav-item.active:hover { transform: none; }
-        .nav-item.active i { color: var(--primary-gold); }
+
+        .logo-placeholder {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(184, 147, 90, 0.15);
+            color: var(--primary-navy);
+            font-size: 2.5rem;
+            border: 3px solid var(--primary-gold);
+            overflow: hidden;
+        }
+
+            .logo-placeholder img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+
+        .brand-name {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--primary-navy);
+            margin: 0 0 0.25rem 0;
+        }
+
+        .brand-sub {
+            font-size: 0.7rem;
+            color: var(--primary-gold);
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 1rem 1.25rem;
+            border-radius: 14px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+            .nav-item:hover {
+                background: #f8fafc;
+                color: var(--primary-navy);
+            }
+
+            .nav-item i {
+                width: 25px;
+                text-align: center;
+                font-size: 1.1rem;
+                color: #cbd5e1;
+                transition: 0.3s;
+            }
+
+            .nav-item:hover i {
+                color: var(--primary-gold);
+            }
+
+            .nav-item.active {
+                background: var(--primary-navy);
+                color: white;
+                box-shadow: 0 4px 15px rgba(44, 62, 80, 0.2);
+            }
+
+                .nav-item.active i {
+                    color: var(--primary-gold);
+                }
 
         .user-profile-bottom {
-            margin: 1.5rem; padding: 1rem; background: #f8fafc; border-radius: 20px;
-            display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0;
-        }
-        .user-info { display: flex; flex-direction: column; }
-        .user-name { font-weight: 900; color: var(--primary-navy); font-size: 0.95rem; }
-        .user-role { font-weight: 700; color: var(--primary-gold); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
-        .user-avatar { 
-            width: 45px; height: 45px; border-radius: 14px; background: white; color: var(--primary-navy); 
-            display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.2rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
+            margin: 1.5rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #e2e8f0;
         }
 
-        /* --- المنطقة الرئيسية (Main Content) --- */
-        .main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--bg-body); }
-        
-        /* --- الشريط العلوي (Top Header) --- */
-        .top-header { 
-            height: 90px; display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 2.5rem; background: transparent; margin-top: 1rem;
+        .user-info {
+            display: flex;
+            flex-direction: column;
         }
-        
-        .header-right { display: flex; align-items: center; gap: 15px; }
-        
+
+        .user-name {
+            font-weight: 900;
+            color: var(--primary-navy);
+            font-size: 0.9rem;
+        }
+
+        .user-role {
+            font-weight: 800;
+            color: var(--primary-gold);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--primary-navy);
+            color: var(--primary-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid rgba(184, 147, 90, 0.3);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background: var(--bg-body);
+        }
+
+        .top-header {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.5rem;
+            background: transparent;
+            margin-top: 0.5rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .mobile-toggle-btn {
-            display: none; background: white; border: 1px solid #e2e8f0; color: var(--primary-navy);
-            font-size: 1.4rem; padding: 8px 14px; border-radius: 12px; cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02); transition: 0.3s;
-        }
-        .mobile-toggle-btn:hover { color: var(--primary-gold); border-color: var(--primary-gold); }
-
-        .lang-switch form { margin: 0; }
-        .lang-btn { 
-            background: white; border: 1px solid #e2e8f0; color: var(--primary-navy); font-weight: 800; 
-            padding: 0.75rem 1.25rem; border-radius: 12px; cursor: pointer; font-family: inherit; 
-            display: flex; align-items: center; gap: 8px; transition: 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        }
-        .lang-btn:hover { border-color: var(--primary-gold); color: var(--primary-gold); }
-
-        .header-left { display: flex; align-items: center; gap: 1.5rem; }
-        
-        .date-box {
-            background: white; padding: 0.75rem 1.5rem; border-radius: 50px;
-            font-weight: 800; color: var(--text-muted); display: flex; align-items: center; gap: 10px;
-            border: 1px solid #e2e8f0; box-shadow: 0 2px 10px rgba(0,0,0,0.02); font-size: 0.9rem;
-        }
-        .date-box i { color: var(--primary-gold); }
-
-        .notification-bell { 
-            position: relative; width: 45px; height: 45px; border-radius: 50%; background: white;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            color: var(--primary-navy); font-size: 1.3rem; transition: 0.3s; border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        }
-        .notification-bell:hover { border-color: var(--primary-gold); color: var(--primary-gold); }
-        .notification-badge { 
-            position: absolute; top: 10px; inset-inline-end: 12px; width: 10px; height: 10px; 
-            background: #ef4444; border-radius: 50%; border: 2px solid white; 
+            display: none;
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: var(--primary-navy);
+            font-size: 1.4rem;
+            padding: 8px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
         }
 
-        .btn-logout { 
-            background: var(--primary-navy); color: white; font-weight: 800; text-decoration: none; 
-            display: flex; align-items: center; gap: 10px; padding: 0.85rem 1.75rem; border-radius: 50px; 
-            transition: 0.3s; box-shadow: 0 4px 15px rgba(26, 38, 52, 0.2); font-size: 0.95rem; white-space: nowrap;
-        }
-        .btn-logout:hover { background: #ef4444; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3); }
-
-        .page-body { flex: 1; padding: 1rem 2.5rem 2.5rem; overflow-y: auto; }
-
-        /* DataTables Custom Override for Premium Look */
-        .dataTables_wrapper .dataTables_filter input { border: 2px solid #e2e8f0; border-radius: 12px; padding: 8px 15px; outline: none; font-family: inherit; font-weight: 700; color: var(--primary-navy); }
-        .dataTables_wrapper .dataTables_filter input:focus { border-color: var(--primary-gold); }
-        .dataTables_wrapper .dataTables_length select { border-radius: 10px; padding: 5px 10px; font-family: inherit; font-weight: 700; border: 2px solid #e2e8f0; outline: none; }
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current { background: var(--primary-navy) !important; color: white !important; border: none !important; border-radius: 10px; font-weight: 800; }
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover { background: var(--primary-gold) !important; color: white !important; border: none !important; border-radius: 10px; }
-
-        /* --- Media Queries للتجاوب مع كافة الشاشات --- */
-        @@media (max-width: 1024px) { 
-            /* إخفاء القائمة الجانبية افتراضياً على الموبايل والتابلت وتفعيل التحريك */
-            .sidebar { 
-                position: fixed; top: 0; bottom: 0; height: 100vh;
-                transform: translateX(var(--translate-val)); 
+            .mobile-toggle-btn:hover {
+                color: var(--primary-gold);
+                border-color: var(--primary-gold);
             }
-            html[dir="rtl"] .sidebar { --translate-val: 100%; right: 0; }
-            html[dir="ltr"] .sidebar { --translate-val: -100%; left: 0; }
-            
-            .sidebar.open { transform: translateX(0); }
-            
-            /* إظهار زر فتح القائمة وتعديل الشريط العلوي */
-            .mobile-toggle-btn { display: block; }
-            .top-header { padding: 0 1.5rem; height: 80px; margin-top: 0.5rem; }
-            .page-body { padding: 1rem 1.5rem 2.5rem; }
-            
-            /* إخفاء صندوق التاريخ لتوفير المساحة */
-            .date-box { display: none; }
-            .header-left { gap: 0.75rem; }
-            
-            .btn-logout span { display: none; } /* إخفاء النص لزر الخروج وعرض الأيقونة فقط */
-            .btn-logout { padding: 0.85rem 1rem; }
-            
-            .lang-btn span { display: none; } /* تصغير زر اللغة */
+
+        .lang-switch form {
+            margin: 0;
         }
-        
-        @@media (max-width: 480px) {
-            .page-body { padding: 1rem 1rem 2.5rem; }
+
+        .lang-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: var(--primary-navy);
+            font-weight: 800;
+            padding: 0.6rem 1.25rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            font-size: 0.85rem;
+        }
+
+            .lang-btn:hover {
+                border-color: var(--primary-gold);
+                color: var(--primary-gold);
+            }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .date-box {
+            background: white;
+            padding: 0.6rem 1.25rem;
+            border-radius: 50px;
+            font-weight: 800;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+        }
+
+            .date-box i {
+                color: var(--primary-gold);
+            }
+
+        .notification-bell {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+            .notification-bell:hover {
+                color: var(--primary-gold);
+                border-color: var(--primary-gold);
+            }
+
+        .notification-badge {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+        }
+
+        .btn-logout {
+            background: var(--primary-navy);
+            color: white;
+            font-weight: 800;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            border: 1px solid var(--primary-navy);
+        }
+
+            .btn-logout:hover {
+                background: var(--primary-gold);
+                border-color: var(--primary-gold);
+                color: white;
+            }
+
+        .page-body {
+            flex: 1;
+            padding: 1rem 2.5rem 2.5rem;
+            overflow-y: auto;
+        }
+
+        /* DataTables Custom Override */
+        .dataTables_wrapper .dataTables_filter input {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 8px 15px;
+            outline: none;
+            font-family: inherit;
+            font-weight: 700;
+            color: var(--primary-navy);
+        }
+
+            .dataTables_wrapper .dataTables_filter input:focus {
+                border-color: var(--primary-gold);
+            }
+
+        .dataTables_wrapper .dataTables_length select {
+            border-radius: 10px;
+            padding: 5px 10px;
+            font-family: inherit;
+            font-weight: 700;
+            border: 2px solid #e2e8f0;
+            outline: none;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: var(--primary-navy) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 10px;
+            font-weight: 800;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: var(--primary-gold) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 10px;
+        }
+
+        /* ========================================================
+                   تصحيح الـ Media Query ليصبح متجاوباً بالكامل وبدون أخطاء
+                   ======================================================== */
+        @@media (max-width: 1024px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                height: 100vh;
+                z-index: 1000;
+                transition: transform 0.4s ease;
+            }
+            /* إخفاء الشريط الجانبي بناءً على اتجاه اللغة */
+            html[dir="rtl"] .sidebar {
+                right: 0;
+                transform: translateX(100%);
+            }
+
+            html[dir="ltr"] .sidebar {
+                left: 0;
+                transform: translateX(-100%);
+            }
+                /* إظهار الشريط الجانبي عند إضافة كلاس open */
+                html[dir="rtl"] .sidebar.open,
+                html[dir="ltr"] .sidebar.open {
+                    transform: translateX(0);
+                }
+
+            .mobile-toggle-btn {
+                display: block;
+            }
+
+            .top-header {
+                padding: 0 1.5rem;
+            }
+
+            .page-body {
+                padding: 1rem 1.5rem;
+            }
+
+            .date-box, .btn-logout span, .lang-btn span {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -193,32 +446,42 @@
         <aside class="sidebar" id="mainSidebar">
             <div class="sidebar-header">
                 <div class="logo-placeholder">
-                    <img src="~/images/logo.jpg" alt="Alargan Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-anchor\' style=\'font-size:3rem;color:var(--primary-navy);\'></i>'" />
+                    <img src="~/images/logo.jpg" alt="Alargan Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-anchor\'></i>'" />
                 </div>
                 <h2 class="brand-name">@Localizer["شركة الارجان للشحن"]</h2>
-                <span class="brand-sub">@Localizer["ALARGAN AUTO SHIPPING"]</span>
+                <span class="brand-sub">ALARGAN AUTO SHIPPING</span>
             </div>
 
             <nav class="nav-menu">
                 <a href="@Url.Action("Index", "Home")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")"><i class="fa-solid fa-chart-pie"></i> @Localizer["لوحة التحكم الشاملة"]</a>
                 <a href="@Url.Action("Index", "Cars")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Cars" ? "active" : "")"><i class="fa-solid fa-car-side"></i> @Localizer["إدارة السيارات والمخزون"]</a>
-                <a href="@Url.Action("Index", "Customers")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customers" ? "active" : "")"><i class="fa-solid fa-user-tie"></i> @Localizer["إدارة شؤون العملاء"]</a>
+                <a href="@Url.Action("Index", "Customers")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customers" ? "active" : "")"><i class="fa-solid fa-users"></i> @Localizer["إدارة شؤون العملاء"]</a>
+
+                <a href="@Url.Action("Index", "Auctions")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Auctions" ? "active" : "")"><i class="fa-solid fa-gavel"></i> @Localizer["إدارة المزادات"]</a>
+                <a href="@Url.Action("Index", "Locations")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Locations" ? "active" : "")"><i class="fa-solid fa-map-location-dot"></i> @Localizer["المواقع والمستودعات"]</a>
+                <a href="@Url.Action("Index", "Transporters")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Transporters" ? "active" : "")"><i class="fa-solid fa-truck-fast"></i> @Localizer["شركات النقل الداخلي"]</a>
+                <a href="@Url.Action("Index", "DispatchOrders")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "DispatchOrders" ? "active" : "")"><i class="fa-solid fa-route"></i> @Localizer["أوامر النقل (Dispatch)"]</a>
+
                 <a href="@Url.Action("Index", "Shipments")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Shipments" ? "active" : "")"><i class="fa-solid fa-ship"></i> @Localizer["الشحنات والحاويات"]</a>
-                <a href="@Url.Action("Index", "Invoices")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Invoices" ? "active" : "")"><i class="fa-solid fa-file-invoice-dollar"></i> @Localizer["المحاسبة والتقارير المالية"]</a>
-                <a href="@Url.Action("Index", "PaymentReceipts")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "PaymentReceipts" ? "active" : "")"><i class="fa-solid fa-receipt"></i> @Localizer["سندات القبض"]</a>
-                <a href="@Url.Action("Index", "Services")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Services" ? "active" : "")"><i class="fa-solid fa-hand-holding-dollar"></i> @Localizer["دليل الخدمات والأسعار"]</a>
-                <a href="@Url.Action("Index", "Tracking")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Tracking" ? "active" : "")"><i class="fa-solid fa-location-crosshairs"></i> @Localizer["بوابة تتبع الشحنات"]</a>
+                <a href="@Url.Action("Index", "Accounting")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Accounting" ? "active" : "")"><i class="fa-solid fa-calculator"></i> @Localizer["المحاسبة والتقارير المالية"]</a>
+                <a href="@Url.Action("Index", "Invoices")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Invoices" ? "active" : "")"><i class="fa-solid fa-file-invoice-dollar"></i> @Localizer["الفواتير الضريبية"]</a>
+                <a href="@Url.Action("Index", "PaymentReceipts")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "PaymentReceipts" ? "active" : "")"><i class="fa-solid fa-hand-holding-dollar"></i> @Localizer["سندات القبض"]</a>
+                <a href="@Url.Action("Index", "Services")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Services" ? "active" : "")"><i class="fa-solid fa-tags"></i> @Localizer["دليل الخدمات والأسعار"]</a>
+                <a href="@Url.Action("Index", "Tracking")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Tracking" ? "active" : "")"><i class="fa-solid fa-location-dot"></i> @Localizer["بوابة تتبع الشحنات"]</a>
+                <a href="@Url.Action("Index", "Calculator")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Calculator" ? "active" : "")"><i class="fa-solid fa-mobile-screen"></i> @Localizer["حاسبة تكاليف الشحن"]</a>
                 <a href="@Url.Action("Index", "Contact")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Contact" ? "active" : "")"><i class="fa-solid fa-headset"></i> @Localizer["اتصل بنا"]</a>
+
+                <div style="margin-top: 1rem; border-top: 1px solid #e2e8f0; padding-top: 1rem;"></div>
+                <a href="@Url.Action("Index", "Settings")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Settings" ? "active" : "")"><i class="fa-solid fa-gear"></i> @Localizer["إعدادات النظام والقواعد"]</a>
             </nav>
 
             <div class="user-profile-bottom">
                 <div class="user-info">
                     <span class="user-name">@Localizer["المسؤول الرئيسي"]</span>
-                    <span class="user-role">@User.Identity.Name</span>
+                    <span class="user-role">ADMIN</span>
                 </div>
                 <div class="user-avatar">
-                    <!-- أول حرف من اسم المستخدم -->
-                    @(string.IsNullOrEmpty(User.Identity.Name) ? "A" : User.Identity.Name.Substring(0,1).ToUpper())
+                    @(string.IsNullOrEmpty(User.Identity?.Name) ? "A" : User.Identity.Name.Substring(0, 1).ToUpper())
                 </div>
             </div>
         </aside>
@@ -226,50 +489,26 @@
         <main class="main-content">
             <header class="top-header">
                 <div class="header-right">
-                    <!-- زر القائمة الجانبية للموبايل -->
-                    <button class="mobile-toggle-btn" id="sidebarToggle">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
-
-                    <!-- تغيير اللغة -->
+                    <button class="mobile-toggle-btn" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
                     <div class="lang-switch">
                         <form asp-controller="Home" asp-action="SetLanguage" method="post" asp-route-returnUrl="@Context.Request.Path">
                             @if (currentCulture.StartsWith("ar"))
                             {
-                                <button type="submit" name="culture" value="en-US" class="lang-btn">
-                                    <i class="fa-solid fa-globe" style="color: var(--primary-gold);"></i> <span>English</span>
-                                </button>
+                                <button type="submit" name="culture" value="en-US" class="lang-btn"><i class="fa-solid fa-globe" style="color: var(--primary-gold);"></i> <span>English</span></button>
                             }
                             else
                             {
-                                <button type="submit" name="culture" value="ar" class="lang-btn">
-                                    <i class="fa-solid fa-globe" style="color: var(--primary-gold);"></i> <span>العربية</span>
-                                </button>
+                                <button type="submit" name="culture" value="ar" class="lang-btn"><i class="fa-solid fa-globe" style="color: var(--primary-gold);"></i> <span>العربية</span></button>
                             }
                         </form>
                     </div>
                 </div>
-
                 <div class="header-left">
-                    <div class="date-box">
-                        <i class="fa-regular fa-calendar-days"></i>
-                        <!-- استخدام 'D' ليقوم النظام بجلب التاريخ المطول باللغة المختارة بشكل تلقائي -->
-                        @DateTime.Now.ToString("D", new System.Globalization.CultureInfo(currentCulture))
-                    </div>
-                    
-                    <a href="@Url.Action("Index", "Notifications")" style="text-decoration: none;">
-                        <div class="notification-bell" title="@Localizer["الإشعارات"]">
-                            <i class="fa-regular fa-bell"></i>
-                            <span class="notification-badge"></span>
-                        </div>
-                    </a>
-
-                    <a href="@Url.Action("Logout", "Account")" class="btn-logout" title="@Localizer["تسجيل الخروج"]">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>@Localizer["تسجيل الخروج"]</span>
-                    </a>
+                    <div class="date-box"><i class="fa-regular fa-calendar"></i> @DateTime.Now.ToString("D", new System.Globalization.CultureInfo(currentCulture))</div>
+                    <a href="@Url.Action("Index", "Notifications")" class="notification-bell"><i class="fa-regular fa-bell"></i><span class="notification-badge" id="unreadNotifBadge" style="display:none;"></span></a>
+                    <a href="@Url.Action("Logout", "Account")" class="btn-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> <span>@Localizer["تسجيل الخروج"]</span></a>
                 </div>
             </header>
-
             <div class="page-body">
                 @RenderBody()
             </div>
@@ -280,31 +519,33 @@
         @RenderBody()
     }
 
-    <!-- jQuery & DataTables Global Scripts for Professional Data Grids -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    
-    <!-- سكريبت تفعيل القائمة الجانبية للموبايل -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const toggleBtn = document.getElementById('sidebarToggle');
-            const sidebar = document.getElementById('mainSidebar');
-            const overlay = document.getElementById('sidebarOverlay');
+            const toggleBtn = document.getElementById('sidebarToggle'),
+                  sidebar = document.getElementById('mainSidebar'),
+                  overlay = document.getElementById('sidebarOverlay');
 
             if(toggleBtn && sidebar && overlay) {
-                toggleBtn.addEventListener('click', function () {
+                toggleBtn.addEventListener('click', () => {
                     sidebar.classList.add('open');
                     overlay.classList.add('show');
                 });
-
-                overlay.addEventListener('click', function () {
+                overlay.addEventListener('click', () => {
                     sidebar.classList.remove('open');
                     overlay.classList.remove('show');
                 });
             }
+
+            // جلب الإشعارات غير المقروءة ديناميكياً
+            $.get('/Notifications/GetUnreadCount', function(data) {
+                if(data && data > 0) {
+                    $('#unreadNotifBadge').text(data).show();
+                }
+            });
         });
     </script>
-    
     @RenderSection("Scripts", required: false)
 </body>
 </html>

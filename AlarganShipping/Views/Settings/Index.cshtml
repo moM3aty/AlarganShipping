@@ -1,0 +1,235 @@
+﻿@{
+    ViewData["Title"] = Localizer["إعدادات النظام والقواعد"];
+}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+    }
+
+    .page-subtitle {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .btn-save-settings {
+        background: var(--primary-gold);
+        color: white;
+        border: none;
+        padding: 0.85rem 2rem;
+        border-radius: 1rem;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(184, 147, 90, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .btn-save-settings:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(184, 147, 90, 0.4);
+            background: var(--secondary-gold);
+        }
+
+    .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 2rem;
+    }
+
+    .settings-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 30px rgba(44, 62, 80, 0.02);
+    }
+
+    .settings-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .settings-card-title {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+    }
+
+    .settings-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .icon-green {
+        background: #f0fdf4;
+        color: #16a34a;
+    }
+
+    .icon-navy {
+        background: rgba(44, 62, 80, 0.1);
+        color: var(--primary-navy);
+    }
+
+    .icon-red {
+        background: #fef2f2;
+        color: #ef4444;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 1rem;
+        background: #f8fafc;
+        font-family: inherit;
+        font-weight: 900;
+        color: var(--primary-navy);
+        font-size: 1.1rem;
+        outline: none;
+        transition: 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-gold);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
+        }
+
+    .danger-zone {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .btn-danger {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+        width: 100%;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+</style>
+
+<div>
+    <div class="page-header">
+        <div>
+            <h2 class="page-title">@Localizer["إعدادات النظام والقواعد"]</h2>
+            <div class="page-subtitle">@Localizer["إدارة القواعد المالية، الضرائب، وأسعار الصرف"]</div>
+        </div>
+        <button class="btn-save-settings"><i class="fa-solid fa-floppy-disk"></i> @Localizer["حفظ جميع الإعدادات"]</button>
+    </div>
+
+    <div class="settings-grid">
+        <!-- أسعار الصرف -->
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <h3 class="settings-card-title">@Localizer["أسعار صرف العملات"]</h3>
+                <div class="settings-icon icon-green"><i class="fa-solid fa-coins"></i></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">@Localizer["سعر صرف الدولار (1 OMR = ? USD)"]</label>
+                <input type="text" class="form-control" value="0.385" dir="ltr" style="text-align: end;" />
+                <span style="font-size: 0.7rem; color: #94a3b8;">* السعر المستخدم في تحويل تكاليف الشراء من أمريكا</span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">@Localizer["سعر صرف الدرهم (1 OMR = ? AED)"]</label>
+                <input type="text" class="form-control" value="0.105" dir="ltr" style="text-align: end;" />
+                <span style="font-size: 0.7rem; color: #94a3b8;">* السعر المستخدم في تحويل تكاليف الشراء من الإمارات</span>
+            </div>
+        </div>
+
+        <!-- القواعد المالية -->
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <h3 class="settings-card-title">@Localizer["القواعد المالية والضرائب"]</h3>
+                <div class="settings-icon icon-navy"><i class="fa-solid fa-percent"></i></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">@Localizer["نسبة الجمارك العمانية (%)"]</label>
+                <input type="text" class="form-control" value="5" dir="ltr" style="text-align: end;" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">@Localizer["نسبة ضريبة القيمة المضافة VAT (%)"]</label>
+                <input type="text" class="form-control" value="5" dir="ltr" style="text-align: end;" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">@Localizer["عمولة الشركة الافتراضية (OMR)"]</label>
+                <input type="text" class="form-control" value="150" dir="ltr" style="text-align: end;" />
+                <span style="font-size: 0.7rem; color: #94a3b8;">* المبلغ الثابت الذي يتم إضافته كربح للشركة لكل سيارة</span>
+            </div>
+        </div>
+
+        <!-- صيانة النظام -->
+        <div class="settings-card" style="grid-column: 1 / -1;">
+            <div class="settings-card-header">
+                <h3 class="settings-card-title">@Localizer["صيانة النظام والبيانات"]</h3>
+                <div class="settings-icon icon-red"><i class="fa-solid fa-shield-halved"></i></div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                <div class="danger-zone">
+                    <h4 style="color: #ef4444; font-weight: 900; margin-bottom: 0.5rem;">@Localizer["تصفير البيانات"]</h4>
+                    <p style="font-size: 0.8rem; color: #991b1b; margin-bottom: 1rem;">@Localizer["حذف جميع البيانات والبدء من جديد (لا يمكن التراجع)"]</p>
+                    <button class="btn-danger">@Localizer["تصفير النظام"]</button>
+                </div>
+
+                <div class="danger-zone" style="background: #f8fafc; border-color: #e2e8f0;">
+                    <h4 style="color: var(--primary-navy); font-weight: 900; margin-bottom: 0.5rem;">@Localizer["تصدير قاعدة البيانات"]</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">@Localizer["تحميل نسخة احتياطية من جميع البيانات بتنسيق JSON"]</p>
+                    <button class="btn-danger" style="background: white; color: var(--primary-navy); border: 2px solid #e2e8f0;">@Localizer["تصدير الآن"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

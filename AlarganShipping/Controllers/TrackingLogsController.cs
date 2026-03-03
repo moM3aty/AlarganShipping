@@ -1,16 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using AlarganShipping.Models;
 
 namespace AlarganShipping.Controllers
 {
-    // متحكم إضافة سجلات التتبع للسيارات
-    [Authorize]
     public class TrackingLogsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,40 +14,39 @@ namespace AlarganShipping.Controllers
             _context = context;
         }
 
-        // شاشة إضافة تحديث لسيارة معينة (يتم تمرير رقم السيارة)
         public IActionResult Create(int? carId)
         {
-            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "VIN", carId);
+            ViewBag.CarId = new SelectList(_context.Cars, "Id", "VIN", carId);
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(TrackingLog trackingLog)
+        public async Task<IActionResult> Create(TrackingLog log)
         {
+            ModelState.Remove("Car");
+
             if (ModelState.IsValid)
             {
-                trackingLog.UpdateDate = DateTime.Now;
-                _context.Add(trackingLog);
+                log.UpdateDate = DateTime.Now;
+                _context.Add(log);
 
-                // تحديث حالة السيارة تلقائياً بناءً على نسبة الإنجاز
-                var car = await _context.Cars.FindAsync(trackingLog.CarId);
+                // تحديث حالة السيارة أوتوماتيكياً بناءً على نسبة الإنجاز
+                var car = await _context.Cars.FindAsync(log.CarId);
                 if (car != null)
                 {
-                    if (trackingLog.ProgressPercentage >= 100) car.StatusId = 4; // وصلت
-                    else if (trackingLog.ProgressPercentage >= 66) car.StatusId = 3; // أبحرت
-                    else if (trackingLog.ProgressPercentage >= 33) car.StatusId = 2; // في المستودع
+                    if (log.ProgressPercentage >= 100) car.StatusId = 4; // واصلة الميناء
+                    else if (log.ProgressPercentage >= 66) car.StatusId = 3; // أبحرت
+                    else if (log.ProgressPercentage >= 33) car.StatusId = 2; // في المستودع
+                    else car.StatusId = 1; // تم الشراء
 
                     _context.Update(car);
                 }
 
                 await _context.SaveChangesAsync();
-
-                // العودة إلى شاشة تفاصيل السيارة بعد إضافة التحديث
-                return RedirectToAction("Details", "Cars", new { id = trackingLog.CarId });
+                return Json(new { success = true });
             }
-            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "VIN", trackingLog.CarId);
-            return View(trackingLog);
+            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
     }
 }

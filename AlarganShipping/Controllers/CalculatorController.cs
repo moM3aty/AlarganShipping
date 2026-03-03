@@ -1,16 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AlarganShipping.Controllers
 {
-    // المتحكم المسؤول عن حاسبة تكاليف الشحن
+    [Authorize]
     public class CalculatorController : Controller
     {
         public IActionResult Index()
         {
             return View();
         }
-
-        // في الواقع، يمكن إضافة Action هنا لاستقبال البيانات وحسابها برمجياً
-        // لكن التصميم الحالي يعتمد على واجهة تفاعلية.
     }
 }

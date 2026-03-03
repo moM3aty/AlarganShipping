@@ -5,7 +5,7 @@
 
 <style>
     .details-header {
-        background: var(--primary-navy);
+        background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--primary-navy) 100%);
         color: white;
         padding: 3rem;
         border-radius: 1.5rem;
@@ -13,7 +13,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 15px 35px rgba(26, 42, 58, 0.15);
+        box-shadow: 0 15px 35px rgba(26, 37, 47, 0.15);
         position: relative;
         overflow: hidden;
     }
@@ -26,8 +26,31 @@
             width: 200px;
             height: 200px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(195,154,92,0.2) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(184, 147, 90, 0.2) 0%, transparent 70%);
         }
+
+    .car-header-info {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        z-index: 2;
+        position: relative;
+    }
+
+    .car-main-img {
+        width: 150px;
+        height: 150px;
+        border-radius: 1rem;
+        object-fit: cover;
+        border: 4px solid var(--primary-gold);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #cbd5e1;
+    }
 
     .car-title-large {
         font-size: 2.5rem;
@@ -44,6 +67,7 @@
         font-size: 1.1rem;
         letter-spacing: 2px;
         border: 1px solid rgba(255,255,255,0.2);
+        display: inline-block;
     }
 
     .btn-action-light {
@@ -131,7 +155,7 @@
         border-color: var(--primary-gold);
         background-color: var(--primary-gold);
         color: white;
-        box-shadow: 0 0 0 5px white, 0 4px 15px rgba(195, 154, 92, 0.4);
+        box-shadow: 0 0 0 5px white, 0 4px 15px rgba(184, 147, 90, 0.4);
     }
 
     .step-label {
@@ -199,16 +223,129 @@
         color: var(--text-dark);
         font-weight: 900;
     }
+
+    /* Tabs Styling for Reports and Documents */
+    .tabs-container {
+        margin-top: 2.5rem;
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+        border: 1px solid #e2e8f0;
+    }
+
+    .tabs-header {
+        display: flex;
+        gap: 1rem;
+        border-bottom: 2px solid #f1f5f9;
+        margin-bottom: 2rem;
+    }
+
+    .tab-btn {
+        background: transparent;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: var(--text-muted);
+        cursor: pointer;
+        position: relative;
+        transition: 0.3s;
+    }
+
+        .tab-btn:hover {
+            color: var(--primary-navy);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-gold);
+        }
+
+            .tab-btn.active::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: var(--primary-gold);
+                border-radius: 4px 4px 0 0;
+            }
+
+    .tab-content {
+        display: none;
+    }
+
+        .tab-content.active {
+            display: block;
+        }
+
+    /* Table inside tabs */
+    .doc-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: start;
+    }
+
+        .doc-table th {
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 800;
+            padding: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .doc-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+    .btn-download {
+        background: rgba(184, 147, 90, 0.1);
+        color: var(--primary-gold);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: 0.3s;
+    }
+
+        .btn-download:hover {
+            background: var(--primary-gold);
+            color: white;
+        }
 </style>
 
 <div>
     <div class="details-header">
-        <div style="z-index: 2;">
-            <h1 class="car-title-large">@Model.Make @Model.Model @Model.Year</h1>
-            <span class="vin-badge">VIN: @Model.VIN</span>
+        <div class="car-header-info">
+            @if (!string.IsNullOrEmpty(Model.MainImageUrl))
+            {
+                <img src="@Model.MainImageUrl" alt="@Model.Make @Model.Model" class="car-main-img" />
+            }
+            else
+            {
+                <div class="car-main-img"><i class="fa-solid fa-car"></i></div>
+            }
+
+            <div>
+                <h1 class="car-title-large">@Model.Make @Model.Model @Model.Year</h1>
+                <div class="vin-badge">VIN: @Model.VIN</div>
+                @if (!string.IsNullOrEmpty(Model.InternalCode))
+                {
+                    <div style="margin-top: 10px; font-weight: 800; color: #cbd5e1;">@Localizer["الكود:"] @Model.InternalCode</div>
+                }
+            </div>
         </div>
+
         <div style="z-index: 2; display: flex; flex-direction: column; gap: 10px;">
             <a href="@Url.Action("Index", "Cars")" class="btn-action-light"><i class="fa-solid fa-list"></i> @Localizer["قائمة السيارات"]</a>
+            <a href="@Url.Action("Create", "DocumentAttachments", new { carId = Model.Id })" class="btn-action-light" style="background: rgba(255,255,255,0.2);"><i class="fa-solid fa-paperclip"></i> @Localizer["رفع مستند للسيارة"]</a>
             <a href="@Url.Action("Create", "CarInspections", new { carId = Model.Id })" class="btn-action-light" style="background: var(--primary-gold); border-color: var(--primary-gold);"><i class="fa-solid fa-clipboard-check"></i> @Localizer["إضافة تقرير فحص"]</a>
         </div>
     </div>
@@ -219,7 +356,6 @@
 
         @{
             int status = Model.StatusId;
-            // شريط التقدم يعتمد على الاتجاه، لذلك نستخدم CSS Logical properties
             string lineWidth = status == 1 ? "0%" : status == 2 ? "33%" : status == 3 ? "66%" : status >= 4 ? "100%" : "0%";
         }
 
@@ -265,14 +401,124 @@
             <div class="info-row"><span class="info-label">@Localizer["الموديل"]</span><span class="info-value">@Model.Model</span></div>
             <div class="info-row"><span class="info-label">@Localizer["سنة الصنع"]</span><span class="info-value">@Model.Year</span></div>
             <div class="info-row"><span class="info-label">@Localizer["اللون"]</span><span class="info-value">@Model.Color</span></div>
+            <div class="info-row"><span class="info-label">@Localizer["نوع المركبة والشكل"]</span><span class="info-value">@Model.VehicleType - @Model.VehicleShape</span></div>
         </div>
 
         <div class="info-card">
-            <h3 class="info-card-title"><i class="fa-solid fa-user-tie"></i> @Localizer["معلومات المالك"]</h3>
+            <h3 class="info-card-title"><i class="fa-solid fa-user-tie"></i> @Localizer["معلومات المالك والشراء"]</h3>
             <div class="info-row"><span class="info-label">@Localizer["اسم العميل"]</span><span class="info-value">@(Model.Customer?.Name ?? Localizer["غير محدد"].Value)</span></div>
             <div class="info-row"><span class="info-label">@Localizer["رقم الهاتف"]</span><span class="info-value" dir="ltr">@(Model.Customer?.Phone ?? "-")</span></div>
             <div class="info-row"><span class="info-label">@Localizer["سعر الشراء"]</span><span class="info-value" style="color: #16a34a;">$@Model.PurchasePrice</span></div>
             <div class="info-row"><span class="info-label">@Localizer["المزاد"]</span><span class="info-value">@(Model.Auction?.Name ?? Localizer["خارجي"].Value)</span></div>
+            <div class="info-row"><span class="info-label">@Localizer["الموقع الحالي"]</span><span class="info-value">@(Model.CurrentLocation ?? "-")</span></div>
+        </div>
+    </div>
+
+    <!-- قسم التقارير والمستندات (Tabs) -->
+    <div class="tabs-container">
+        <div class="tabs-header">
+            <button class="tab-btn active" onclick="openTab('inspections')"><i class="fa-solid fa-clipboard-list"></i> @Localizer["تقارير الفحص"] (@(Model.CarInspections?.Count ?? 0))</button>
+            <button class="tab-btn" onclick="openTab('documents')"><i class="fa-solid fa-folder-open"></i> @Localizer["المستندات والملفات"] (@(Model.DocumentAttachments?.Count ?? 0))</button>
+        </div>
+
+        <!-- تبويب تقارير الفحص -->
+        <div id="inspections" class="tab-content active">
+            @if (Model.CarInspections != null && Model.CarInspections.Any())
+            {
+                <table class="doc-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["مرحلة الفحص"]</th>
+                            <th>@Localizer["تاريخ الفحص"]</th>
+                            <th>@Localizer["الفاحص"]</th>
+                            <th>@Localizer["مفاتيح"]</th>
+                            <th>@Localizer["الملكية"]</th>
+                            <th>@Localizer["تشغيل"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var insp in Model.CarInspections.OrderByDescending(i => i.InspectionDate))
+                        {
+                            <tr>
+                                <td style="color: var(--primary-navy); font-weight: 900;">@Localizer[insp.InspectionStage]</td>
+                                <td>@insp.InspectionDate.ToString("dd MMM yyyy")</td>
+                                <td>@insp.InspectorName</td>
+                                <td>@(insp.HasKeys ? "✅" : "❌")</td>
+                                <td>@(insp.HasTitle ? "✅" : "❌")</td>
+                                <td>@(insp.IsRunAndDrive ? "✅" : "❌")</td>
+                            </tr>
+                            @if (!string.IsNullOrEmpty(insp.DamageNotes))
+                            {
+                                <tr>
+                                    <td colspan="6" style="background: #fef2f2; color: #ef4444; font-size: 0.9rem; padding: 0.5rem 1rem;">
+                                        <strong>@Localizer["ملاحظات الأضرار:"]</strong> @insp.DamageNotes
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    <i class="fa-regular fa-folder-open" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p>@Localizer["لا توجد تقارير فحص لهذه السيارة بعد."]</p>
+                </div>
+            }
+        </div>
+
+        <!-- تبويب المستندات المرفقة -->
+        <div id="documents" class="tab-content">
+            @if (Model.DocumentAttachments != null && Model.DocumentAttachments.Any())
+            {
+                <table class="doc-table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["نوع المستند"]</th>
+                            <th>@Localizer["اسم الملف"]</th>
+                            <th>@Localizer["تاريخ الرفع"]</th>
+                            <th>@Localizer["إجراءات"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var doc in Model.DocumentAttachments.OrderByDescending(d => d.UploadDate))
+                        {
+                            <tr>
+                                <td style="font-weight: 900; color: var(--primary-navy);">@Localizer[doc.DocumentType]</td>
+                                <td dir="ltr" style="font-family: monospace; color: var(--text-muted);">@doc.FileName</td>
+                                <td>@doc.UploadDate.ToString("dd MMM yyyy - HH:mm")</td>
+                                <td>
+                                    <a href="@doc.FilePath" target="_blank" class="btn-download">
+                                        <i class="fa-solid fa-cloud-arrow-down"></i> @Localizer["عرض / تحميل"]
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-file-circle-xmark" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p>@Localizer["لا توجد مستندات مرفقة لهذه السيارة بعد."]</p>
+                </div>
+            }
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function openTab(tabId) {
+            // إخفاء كل المحتوى وإزالة التفعيل من الأزرار
+            $('.tab-content').removeClass('active');
+            $('.tab-btn').removeClass('active');
+
+            // إظهار التبويب المطلوب وتفعيل زره
+            $('#' + tabId).addClass('active');
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+}

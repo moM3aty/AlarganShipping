@@ -1,17 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Threading.Tasks;
-using System.Linq;
 using AlarganShipping.Models;
+using Microsoft.AspNetCore.Authorization; // تمت الإضافة
 
 namespace AlarganShipping.Controllers
 {
-    // متحكم لوحة التحكم الرئيسية (Dashboard)
-    [Authorize] // حماية الصفحة لعدم دخول غير المسجلين
+    [Authorize] // هذا السطر يجبر النظام على عدم فتح لوحة التحكم إلا للمسجلين
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,17 +17,18 @@ namespace AlarganShipping.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // جلب الإحصائيات لعرضها في البطاقات العلوية
             ViewBag.TotalCars = await _context.Cars.CountAsync();
-            ViewBag.ActiveShipments = await _context.Shipments.CountAsync(s => s.Status != "Cleared" && s.Status != "Delivered");
-            ViewBag.TotalCustomers = await _context.Customers.CountAsync();
+            ViewBag.ActiveShipments = await _context.Shipments.CountAsync(s => s.Status != "Arrived" && s.Status != "Cleared");
 
-            // حساب إجمالي المبالغ المعلقة للعملاء
-            ViewBag.PendingAmounts = await _context.Customers.SumAsync(c => c.TotalBalance);
+            decimal totalSales = await _context.Invoices.SumAsync(i => (decimal?)i.TotalAmount) ?? 0;
+            decimal totalPaid = await _context.PaymentReceipts.SumAsync(p => (decimal?)p.Amount) ?? 0;
 
-            // جلب أحدث 5 سيارات تمت إضافتها للنظام لعرضها في جدول سريع
+            ViewBag.TotalSales = totalSales;
+            ViewBag.PendingAmounts = totalSales - totalPaid;
+
             var recentCars = await _context.Cars
                 .Include(c => c.Customer)
+                .Include(c => c.Auction)
                 .OrderByDescending(c => c.Id)
                 .Take(5)
                 .ToListAsync();
@@ -41,17 +36,16 @@ namespace AlarganShipping.Controllers
             return View(recentCars);
         }
 
-        // دالة لتغيير لغة الموقع وحفظها في Cookie
         [HttpPost]
+        [AllowAnonymous] // السماح بتغيير اللغة حتى في شاشة الدخول
         public IActionResult SetLanguage(string culture, string returnUrl)
         {
             Response.Cookies.Append(
-                CookieRequestCultureProvider.DefaultCookieName,
-                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                Microsoft.AspNetCore.Localization.CookieRequestCultureProvider.DefaultCookieName,
+                Microsoft.AspNetCore.Localization.CookieRequestCultureProvider.MakeCookieValue(new Microsoft.AspNetCore.Localization.RequestCulture(culture)),
                 new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
             );
-
-            return LocalRedirect(returnUrl ?? "/");
+            return LocalRedirect(returnUrl);
         }
     }
 }

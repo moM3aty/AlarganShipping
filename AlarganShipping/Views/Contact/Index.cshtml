@@ -1,429 +1,362 @@
-﻿<!-- مسار الملف في المشروع: Views/Contact/Index.cshtml -->
-@{
+﻿@{
     ViewData["Title"] = Localizer["اتصل بنا"];
 }
 
 <style>
-    .page-header-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
+    /* تطبيق الخلفية الداكنة المخصصة لهذه الصفحة لتتوافق مع الهوية البصرية */
+    body {
+        background-color: var(--secondary-navy) !important;
+    }
+
+    .main-content {
+        background-color: var(--secondary-navy) !important;
+    }
+
+    .top-header .date-box, .top-header .notification-bell, .top-header .lang-btn, .mobile-toggle-btn {
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.1);
+        color: white;
+    }
+
+    .contact-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        color: white;
+        padding-top: 2rem;
+    }
+
+    .contact-header {
+        text-align: center;
         margin-bottom: 3rem;
     }
 
-    .page-header-text h2 {
-        font-size: 2.2rem;
-        font-weight: 900;
-        color: #1a2634;
-        margin: 0;
-    }
+        .contact-header .badge {
+            background: rgba(255,255,255,0.1);
+            color: var(--primary-gold);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            display: inline-block;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(184, 147, 90, 0.3);
+        }
 
-    .page-header-text p {
-        color: #64748b;
-        font-size: 1rem;
-        font-weight: 600;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .intro-text {
-        text-align: center;
-        max-width: 700px;
-        margin: 0 auto 4rem auto;
-    }
-
-        .intro-text h1 {
-            font-size: 3rem;
+        .contact-header h1 {
+            font-size: 2.5rem;
             font-weight: 900;
-            color: #1a2634;
             margin-bottom: 1rem;
         }
 
-        .intro-text p {
+        .contact-header p {
+            color: #94a3b8;
             font-size: 1.1rem;
-            color: #64748b;
-            line-height: 1.8;
-            font-weight: 600;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
         }
 
-    .badge-support {
-        background: rgba(190, 149, 91, 0.1);
-        color: #be955b;
-        padding: 0.5rem 1.5rem;
-        border-radius: 50px;
-        font-weight: 800;
-        display: inline-block;
-        margin-bottom: 1.5rem;
-        border: 1px solid rgba(190, 149, 91, 0.2);
+    /* البطاقة الذهبية الكبيرة */
+    .promo-card {
+        background: linear-gradient(135deg, var(--primary-gold) 0%, var(--secondary-gold) 100%);
+        border-radius: 2rem;
+        padding: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 3rem;
+        box-shadow: 0 20px 40px rgba(184, 147, 90, 0.2);
     }
 
-    .dept-grid {
+    .promo-icon {
+        width: 120px;
+        height: 120px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        transform: rotate(-15deg);
+        color: white;
+    }
+
+    .promo-content {
+        flex: 1;
+        margin-inline-start: 3rem;
+    }
+
+        .promo-content h2 {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .promo-content p {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+    .promo-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-promo-solid {
+        background: white;
+        color: var(--primary-navy);
+        padding: 1rem 2.5rem;
+        border-radius: 1rem;
+        font-weight: 900;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn-promo-solid:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+    .btn-promo-outline {
+        background: transparent;
+        color: white;
+        border: 2px solid rgba(255,255,255,0.5);
+        padding: 1rem 2.5rem;
+        border-radius: 1rem;
+        font-weight: 900;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn-promo-outline:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+    /* بطاقات الأقسام (بيضاء) */
+    .depts-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        margin-bottom: 5rem;
+        gap: 1.5rem;
+        margin-bottom: 4rem;
     }
 
     .dept-card {
         background: white;
-        border-radius: 2rem;
-        padding: 3rem 2rem;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
         text-align: center;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.02);
-        border: 1px solid #f1f5f9;
-        transition: 0.3s;
+        color: var(--primary-navy);
     }
 
-        .dept-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 50px rgba(26,38,52,0.08);
-            border-color: #be955b;
-        }
-
     .dept-icon {
-        width: 70px;
-        height: 70px;
-        margin: 0 auto 1.5rem auto;
-        border-radius: 20px;
+        width: 60px;
+        height: 60px;
+        background: rgba(184, 147, 90, 0.1);
+        color: var(--primary-gold);
+        border-radius: 1rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2rem;
-        background: rgba(190, 149, 91, 0.1);
-        color: #be955b;
+        font-size: 1.5rem;
+        margin: 0 auto 1.5rem;
     }
 
     .dept-card h3 {
         font-size: 1.5rem;
         font-weight: 900;
-        color: #1a2634;
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
     }
 
     .dept-card p {
         color: #64748b;
-        font-size: 0.9rem;
-        font-weight: 600;
+        font-size: 0.95rem;
         margin-bottom: 2rem;
-        line-height: 1.6;
+        min-height: 40px;
     }
 
-    .contact-box {
-        background: #f8fafc;
-        border-radius: 1.25rem;
-        padding: 1.25rem;
-        margin-bottom: 1rem;
+    .phone-box {
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 1rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border: 1px solid #e2e8f0;
+        margin-bottom: 1rem;
     }
 
-        .contact-box .number {
-            font-size: 1.2rem;
-            font-weight: 900;
-            color: #1a2634;
-            font-family: monospace;
-        }
-
-        .contact-box .label {
-            font-size: 0.8rem;
-            color: #64748b;
-            font-weight: 800;
-            display: block;
-            margin-bottom: 0.2rem;
-            text-align: right;
-        }
-
-    .contact-actions {
-        display: flex;
-        gap: 10px;
+    .phone-number {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        font-family: monospace;
     }
 
-    .action-circle {
-        width: 40px;
-        height: 40px;
-        background: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .phone-actions a {
         color: #94a3b8;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        font-size: 1.2rem;
+        margin-inline-start: 10px;
         transition: 0.3s;
-        text-decoration: none;
     }
 
-        .action-circle:hover {
-            background: #1a2634;
-            color: white;
+        .phone-actions a:hover {
+            color: var(--primary-gold);
         }
 
-    .branches-header {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 2rem;
-        justify-content: center;
-    }
-
-        .branches-header h2 {
-            font-size: 2rem;
-            font-weight: 900;
-            color: #1a2634;
-            margin: 0;
-        }
-
-    .branches-icon {
-        width: 50px;
-        height: 50px;
-        background: rgba(190, 149, 91, 0.1);
-        color: #be955b;
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-    }
-
-    .branch-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1.5rem;
+    /* الفروع */
+    .branches-section {
+        text-align: center;
         margin-bottom: 4rem;
     }
 
-    .branch-card {
-        background: white;
-        padding: 2rem;
-        border-radius: 1.5rem;
-        display: flex;
-        justify-content: space-between;
+    .branches-title {
+        display: inline-flex;
         align-items: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
-        border: 1px solid #f1f5f9;
+        gap: 10px;
+        font-size: 1.3rem;
+        font-weight: 900;
+        margin-bottom: 2rem;
+        color: white;
+    }
+
+    .branches-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .branch-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         transition: 0.3s;
     }
 
         .branch-card:hover {
-            border-color: #be955b;
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 5px 15px rgba(184, 147, 90, 0.1);
         }
 
-        .branch-card.main {
-            border: 2px solid #be955b;
-            box-shadow: 0 10px 30px rgba(190, 149, 91, 0.15);
-        }
-
-    .branch-info h4 {
-        font-size: 1.2rem;
-        font-weight: 900;
-        color: #1a2634;
-        margin: 0 0 0.5rem 0;
+    .branch-info {
+        text-align: right;
     }
 
-    .branch-info p {
-        color: #64748b;
-        font-weight: 600;
-        margin: 0;
-        font-size: 0.95rem;
-    }
-
-    .branch-pin {
-        width: 45px;
-        height: 45px;
-        background: #f8fafc;
-        color: #1a2634;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-    }
-
-    /* البانر الأزرق تم تغييره للون الكحلي/الذهبي */
-    .cta-banner {
-        background: linear-gradient(135deg, #1a2634 0%, #2b3f56 100%);
-        border-radius: 2rem;
-        padding: 4rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
-
-        .cta-banner::before {
-            content: '\f0e3';
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            position: absolute;
-            left: -20px;
-            top: 50%;
-            transform: translateY(-50%) rotate(-15deg);
-            font-size: 15rem;
-            color: rgba(190,149,91,0.05);
-        }
-
-    .cta-content {
-        max-width: 600px;
-        position: relative;
-        z-index: 2;
-    }
-
-        .cta-content h2 {
-            font-size: 2.5rem;
-            font-weight: 900;
-            margin: 0 0 1rem 0;
-            color: #be955b;
-        }
-
-        .cta-content p {
+        .branch-info h4 {
             font-size: 1.1rem;
-            line-height: 1.8;
-            font-weight: 600;
-            opacity: 0.9;
+            font-weight: 900;
+            margin-bottom: 0.3rem;
+            color: white;
+        }
+
+        .branch-info p {
+            font-size: 0.85rem;
+            color: #94a3b8;
             margin: 0;
         }
 
-    .cta-actions {
+    .branch-icon {
+        color: var(--primary-gold);
+        font-size: 1.5rem;
+        background: rgba(184, 147, 90, 0.2);
+        width: 45px;
+        height: 45px;
+        border-radius: 10px;
         display: flex;
-        gap: 1rem;
-        position: relative;
-        z-index: 2;
+        align-items: center;
+        justify-content: center;
     }
-
-    .btn-cta-primary {
-        background: linear-gradient(to right, #be955b, #d4af7a);
-        color: white;
-        padding: 1rem 2.5rem;
-        border-radius: 1rem;
-        font-weight: 800;
-        text-decoration: none;
-        transition: 0.3s;
-        border: none;
-    }
-
-        .btn-cta-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(190,149,91,0.3);
-        }
-
-    .btn-cta-secondary {
-        background: transparent;
-        color: white;
-        padding: 1rem 2.5rem;
-        border-radius: 1rem;
-        font-weight: 800;
-        text-decoration: none;
-        border: 1px solid rgba(255,255,255,0.3);
-        transition: 0.3s;
-    }
-
-        .btn-cta-secondary:hover {
-            background: rgba(190,149,91,0.1);
-            border-color: #be955b;
-            color: #be955b;
-        }
 </style>
 
-<div>
-    <div class="page-header-container">
-        <div class="page-header-text" style="text-align: right; width: 100%;">
-            <h2>@Localizer["اتصل بنا"]</h2>
-            <p><span style="width: 6px; height: 6px; background: #be955b; border-radius: 50%;"></span> @Localizer["نظام الإدارة اللوجستية التقني"]</p>
-        </div>
-    </div>
-
-    <div class="intro-text">
-        <div class="badge-support">@Localizer["دعم فني متواصل"]</div>
-        <h1>@Localizer["تواصل مع خبراء الارجان"]</h1>
+<div class="contact-page">
+    <div class="contact-header">
+        <span class="badge">@Localizer["دعم فني متواصل"]</span>
+        <h1>@Localizer["تواصل مع خبراء الأرجان"]</h1>
         <p>@Localizer["نحن هنا لخدمتك. يمكنك التواصل مباشرة مع القسم المختص للحصول على استجابة سريعة ودقيقة لاستفساراتك أو زيارة أحد فروعنا المنتشرة في السلطنة."]</p>
     </div>
 
-    <div class="dept-grid">
-        <!-- Sales -->
-        <div class="dept-card">
-            <div class="dept-icon"><i class="fa-solid fa-tags"></i></div>
-            <h3>@Localizer["قسم المبيعات"]</h3>
-            <p>@Localizer["للاستفسارات التجارية، عروض الأسعار، والتعاقدات الجديدة."]</p>
-            <div class="contact-box">
-                <div class="contact-actions"><a href="#" class="action-circle"><i class="fa-solid fa-phone"></i></a><a href="#" class="action-circle"><i class="fa-brands fa-whatsapp"></i></a></div>
-                <div style="text-align: right;"><span class="label">@Localizer["مبيعات 1"]</span><span class="number">94203663</span></div>
-            </div>
-            <div class="contact-box">
-                <div class="contact-actions"><a href="#" class="action-circle"><i class="fa-solid fa-phone"></i></a><a href="#" class="action-circle"><i class="fa-brands fa-whatsapp"></i></a></div>
-                <div style="text-align: right;"><span class="label">@Localizer["مبيعات 2"]</span><span class="number">77263111</span></div>
+    <div class="promo-card">
+        <div class="promo-icon"><i class="fa-solid fa-gavel"></i></div>
+        <div class="promo-content">
+            <h2>@Localizer["هل ترغب في الحصول على حساب مزاد؟"]</h2>
+            <p>@Localizer["فريقنا المتواجد في صلالة أو نزوى أو مسقط وأمريكا مستعد لتزويدك بكافة الأدوات اللازمة لبدء استيراد سياراتك بأقل التكاليف وبأعلى درجة من الأمان."]</p>
+            <div class="promo-actions">
+                <a href="#" class="btn-promo-solid">@Localizer["اطلب حسابك الآن"]</a>
+                <a href="#" class="btn-promo-outline">@Localizer["تواصل مع قسم المزادات"]</a>
             </div>
         </div>
+    </div>
 
-        <!-- Customer Service -->
-        <div class="dept-card">
-            <div class="dept-icon"><i class="fa-solid fa-headset"></i></div>
-            <h3>@Localizer["قسم خدمة العملاء"]</h3>
-            <p>@Localizer["لمتابعة حالة الشحنات، الدعم الفني، وتقديم الاقتراحات."]</p>
-            <div class="contact-box">
-                <div class="contact-actions"><a href="#" class="action-circle"><i class="fa-solid fa-phone"></i></a><a href="#" class="action-circle"><i class="fa-brands fa-whatsapp"></i></a></div>
-                <div style="text-align: right;"><span class="label">@Localizer["خدمة العملاء"]</span><span class="number">77521020</span></div>
-            </div>
-        </div>
-
-        <!-- Auctions -->
+    <div class="depts-grid">
         <div class="dept-card">
             <div class="dept-icon"><i class="fa-solid fa-gavel"></i></div>
             <h3>@Localizer["قسم المزادات"]</h3>
             <p>@Localizer["للدعم الفني في حسابات كوبارت و IAAI والمزايدة المباشرة."]</p>
-            <div class="contact-box">
-                <div class="contact-actions"><a href="#" class="action-circle"><i class="fa-solid fa-phone"></i></a><a href="#" class="action-circle"><i class="fa-brands fa-whatsapp"></i></a></div>
-                <div style="text-align: right;"><span class="label">@Localizer["دعم المزادات 1"]</span><span class="number">96505777</span></div>
+            <div class="phone-box">
+                <div class="phone-number" dir="ltr">96505777</div>
+                <div class="phone-actions"><a href="#"><i class="fa-brands fa-whatsapp"></i></a><a href="#"><i class="fa-solid fa-phone"></i></a></div>
             </div>
-            <div class="contact-box">
-                <div class="contact-actions"><a href="#" class="action-circle"><i class="fa-solid fa-phone"></i></a><a href="#" class="action-circle"><i class="fa-brands fa-whatsapp"></i></a></div>
-                <div style="text-align: right;"><span class="label">@Localizer["دعم المزادات 2"]</span><span class="number">96202777</span></div>
+            <div class="phone-box">
+                <div class="phone-number" dir="ltr">96202777</div>
+                <div class="phone-actions"><a href="#"><i class="fa-brands fa-whatsapp"></i></a><a href="#"><i class="fa-solid fa-phone"></i></a></div>
+            </div>
+        </div>
+
+        <div class="dept-card">
+            <div class="dept-icon"><i class="fa-solid fa-headset"></i></div>
+            <h3>@Localizer["قسم خدمة العملاء"]</h3>
+            <p>@Localizer["لمتابعة حالة الشحنات، الدعم الفني، وتقديم الاقتراحات."]</p>
+            <div class="phone-box">
+                <div class="phone-number" dir="ltr">77521020</div>
+                <div class="phone-actions"><a href="#"><i class="fa-brands fa-whatsapp"></i></a><a href="#"><i class="fa-solid fa-phone"></i></a></div>
+            </div>
+        </div>
+
+        <div class="dept-card">
+            <div class="dept-icon"><i class="fa-solid fa-tags"></i></div>
+            <h3>@Localizer["قسم المبيعات"]</h3>
+            <p>@Localizer["للاستفسارات التجارية، عروض الأسعار، والتعاقدات الجديدة."]</p>
+            <div class="phone-box">
+                <div class="phone-number" dir="ltr">94203663</div>
+                <div class="phone-actions"><a href="#"><i class="fa-brands fa-whatsapp"></i></a><a href="#"><i class="fa-solid fa-phone"></i></a></div>
+            </div>
+            <div class="phone-box">
+                <div class="phone-number" dir="ltr">77263111</div>
+                <div class="phone-actions"><a href="#"><i class="fa-brands fa-whatsapp"></i></a><a href="#"><i class="fa-solid fa-phone"></i></a></div>
             </div>
         </div>
     </div>
 
-    <div class="branches-header">
-        <h2>@Localizer["فروعنا في سلطنة عمان"]</h2>
-        <div class="branches-icon"><i class="fa-solid fa-map-location-dot"></i></div>
-    </div>
-
-    <div class="branch-grid">
-        <div class="branch-card main">
-            <div class="branch-info">
-                <h4>@Localizer["المركز الرئيسي - صلالة"]</h4>
-                <p>@Localizer["خلف مركز شرطة عوقد"]</p>
+    <div class="branches-section">
+        <div class="branches-title"><i class="fa-solid fa-map-location-dot"></i> @Localizer["فروعنا في سلطنة عمان"]</div>
+        <div class="branches-grid">
+            <div class="branch-card" style="border-color: var(--primary-gold); background: rgba(184,147,90,0.05);">
+                <div class="branch-info">
+                    <h4>@Localizer["المركز الرئيسي - صلالة"]</h4>
+                    <p>@Localizer["خلف مركز شرطة عوقد"]</p>
+                </div>
+                <div class="branch-icon"><i class="fa-solid fa-star"></i></div>
             </div>
-            <div class="branch-pin" style="background: #1a2634; color: white;"><i class="fa-solid fa-star"></i></div>
-        </div>
-        <div class="branch-card">
-            <div class="branch-info">
-                <h4>@Localizer["فرع نزوى - نزوى"]</h4>
-                <p>@Localizer["صناعية كرشا"]</p>
+            <div class="branch-card">
+                <div class="branch-info">
+                    <h4>@Localizer["فرع نزوى - نزوى"]</h4>
+                    <p>@Localizer["صناعية كرشا"]</p>
+                </div>
+                <div class="branch-icon"><i class="fa-solid fa-location-dot"></i></div>
             </div>
-            <div class="branch-pin"><i class="fa-solid fa-location-dot"></i></div>
-        </div>
-        <div class="branch-card">
-            <div class="branch-info">
-                <h4>@Localizer["فرع مسقط - مسقط"]</h4>
-                <p>@Localizer["المعبيلة الصناعية"]</p>
+            <div class="branch-card">
+                <div class="branch-info">
+                    <h4>@Localizer["فرع مسقط - مسقط"]</h4>
+                    <p>@Localizer["المعبيلة الصناعية"]</p>
+                </div>
+                <div class="branch-icon"><i class="fa-solid fa-location-dot"></i></div>
             </div>
-            <div class="branch-pin"><i class="fa-solid fa-location-dot"></i></div>
-        </div>
-    </div>
-
-    <!-- Blue CTA Banner Updated to Brand Colors -->
-    <div class="cta-banner">
-        <div class="cta-content">
-            <h2>@Localizer["هل ترغب في الحصول على حساب مزاد؟"]</h2>
-            <p>@Localizer["فريقنا المتواجد في صلالة او نزوى او مسقط وأمريكا مستعد لتزويدك بكافة الأدوات اللازمة لبدء استيراد سيارتك بأقل التكاليف وبأعلى درجة من الأمان."]</p>
-        </div>
-        <div class="cta-actions">
-            <a href="#" class="btn-cta-secondary">@Localizer["تواصل مع قسم المزادات"]</a>
-            <a href="#" class="btn-cta-primary">@Localizer["اطلب حسابك الآن"]</a>
         </div>
     </div>
 </div>

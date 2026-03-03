@@ -1,5 +1,4 @@
-﻿<!-- مسار الملف في المشروع: Views/Services/Index.cshtml -->
-@{
+﻿@{
     ViewData["Title"] = Localizer["دليل الخدمات والأسعار"];
 }
 
@@ -14,12 +13,12 @@
     .page-header-text h2 {
         font-size: 2.2rem;
         font-weight: 900;
-        color: #1a2634;
+        color: var(--primary-navy);
         margin: 0;
     }
 
     .page-header-text p {
-        color: #64748b;
+        color: var(--text-muted);
         font-size: 1rem;
         font-weight: 600;
         margin: 0;
@@ -37,13 +36,13 @@
         .intro-text h1 {
             font-size: 3rem;
             font-weight: 900;
-            color: #1a2634;
+            color: var(--primary-navy);
             margin-bottom: 1rem;
         }
 
         .intro-text p {
             font-size: 1.1rem;
-            color: #64748b;
+            color: var(--text-muted);
             line-height: 1.8;
             font-weight: 600;
         }
@@ -60,7 +59,7 @@
         border-radius: 2rem;
         padding: 3rem 2rem;
         text-align: center;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.02);
+        box-shadow: 0 15px 40px rgba(44, 62, 80, 0.02);
         border: 1px solid #f1f5f9;
         transition: 0.3s;
         display: flex;
@@ -69,8 +68,8 @@
 
         .service-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 50px rgba(26,38,52,0.08);
-            border-color: #be955b;
+            box-shadow: 0 20px 50px rgba(44, 62, 80, 0.08);
+            border-color: var(--primary-gold);
         }
 
     .srv-icon {
@@ -82,19 +81,19 @@
         align-items: center;
         justify-content: center;
         font-size: 2.5rem;
-        background: rgba(190, 149, 91, 0.1);
-        color: #be955b;
+        background: rgba(184, 147, 90, 0.1);
+        color: var(--primary-gold);
     }
 
     .service-card h3 {
         font-size: 1.5rem;
         font-weight: 900;
-        color: #1a2634;
+        color: var(--primary-navy);
         margin-bottom: 1rem;
     }
 
     .service-card p {
-        color: #64748b;
+        color: var(--text-muted);
         font-size: 1rem;
         font-weight: 600;
         margin-bottom: 2rem;
@@ -103,7 +102,7 @@
     }
 
     .btn-srv-link {
-        color: #1a2634;
+        color: var(--primary-navy);
         font-weight: 800;
         text-decoration: none;
         font-size: 0.95rem;
@@ -115,12 +114,12 @@
     }
 
         .btn-srv-link:hover {
-            color: #be955b;
+            color: var(--primary-gold);
             gap: 12px;
         }
 
     .cta-banner-dark {
-        background: #1a2634;
+        background: var(--primary-navy);
         border-radius: 2.5rem;
         padding: 4rem;
         display: flex;
@@ -140,7 +139,7 @@
             top: 50%;
             transform: translateY(-50%) rotate(-15deg);
             font-size: 15rem;
-            color: rgba(190,149,91,0.05);
+            color: rgba(184, 147, 90, 0.05);
         }
 
     .cta-content {
@@ -154,7 +153,7 @@
             font-size: 2.5rem;
             font-weight: 900;
             margin: 0 0 1rem 0;
-            color: #be955b;
+            color: var(--primary-gold);
         }
 
         .cta-content p {
@@ -166,7 +165,7 @@
         }
 
     .btn-cta-outline {
-        background: #be955b;
+        background: var(--primary-gold);
         color: white;
         padding: 1rem 2.5rem;
         border-radius: 1rem;
@@ -176,11 +175,11 @@
         transition: 0.3s;
         position: relative;
         z-index: 2;
-        box-shadow: 0 4px 15px rgba(190,149,91,0.3);
+        box-shadow: 0 4px 15px rgba(184, 147, 90, 0.3);
     }
 
         .btn-cta-outline:hover {
-            background: #a67c46;
+            background: var(--secondary-gold);
             transform: translateY(-2px);
         }
 </style>
@@ -189,7 +188,7 @@
     <div class="page-header-container">
         <div class="page-header-text" style="text-align: right; width: 100%;">
             <h2>@Localizer["دليل الخدمات والأسعار"]</h2>
-            <p><span style="width: 6px; height: 6px; background: #be955b; border-radius: 50%;"></span> @Localizer["نظام الإدارة اللوجستية التقني"]</p>
+            <p><span style="width: 6px; height: 6px; background: var(--primary-gold); border-radius: 50%;"></span> @Localizer["نظام الإدارة اللوجستية التقني"]</p>
         </div>
     </div>
 

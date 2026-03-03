@@ -1,11 +1,10 @@
-﻿<!-- مسار الملف في المشروع: Views/Cars/Index.cshtml -->
-@model IEnumerable<AlarganShipping.Models.Car>
+﻿@model IEnumerable<AlarganShipping.Models.Car>
 @{
     ViewData["Title"] = Localizer["إدارة السيارات والمخزون"];
 }
 
 <style>
-    /* --- التنسيقات المشتركة --- */
+    /* ... (احتفظ بالستايلات السابقة كما هي) ... */
     .page-header-container {
         display: flex;
         justify-content: space-between;
@@ -13,15 +12,15 @@
         background: white;
         padding: 1.5rem;
         border-radius: 1.5rem;
-        box-shadow: 0 5px 20px rgba(26, 38, 52, 0.03);
-        border: 1px solid #f1f5f9;
+        box-shadow: 0 5px 20px rgba(44, 62, 80, 0.03);
         margin-bottom: 2rem;
+        border: 1px solid #f1f5f9;
     }
 
     .page-header-text h2 {
         font-size: 1.8rem;
         font-weight: 900;
-        color: #1a2634;
+        color: var(--primary-navy);
         margin: 0;
         display: flex;
         align-items: center;
@@ -29,11 +28,11 @@
     }
 
         .page-header-text h2 i {
-            color: #be955b;
+            color: var(--primary-gold);
         }
 
     .page-header-text p {
-        color: #64748b;
+        color: var(--text-muted);
         font-size: 0.9rem;
         font-weight: 600;
         margin: 0;
@@ -47,26 +46,25 @@
     }
 
     .btn-add {
-        background: linear-gradient(to right, #be955b, #d4af7a);
-        color: #ffffff;
+        background: var(--primary-navy);
+        color: white;
         font-weight: 800;
         padding: 0.85rem 1.75rem;
         border-radius: 1rem;
         text-decoration: none;
-        box-shadow: 0 4px 10px rgba(190, 149, 91, 0.3);
         transition: 0.3s;
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        border: 1px solid var(--primary-navy);
     }
 
         .btn-add:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(190, 149, 91, 0.4);
+            background: var(--primary-gold);
+            border-color: var(--primary-gold);
             color: white;
         }
 
-    /* --- أزرار التبديل (Toggle System) --- */
     .view-toggle-wrapper {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
@@ -79,7 +77,7 @@
     .view-toggle-btn {
         background: transparent;
         border: none;
-        color: #94a3b8;
+        color: var(--text-muted);
         padding: 8px 16px;
         border-radius: 8px;
         cursor: pointer;
@@ -87,17 +85,12 @@
         font-size: 1.1rem;
     }
 
-        .view-toggle-btn:hover {
-            color: #1a2634;
-        }
-
         .view-toggle-btn.active {
             background: white;
-            color: #1a2634;
+            color: var(--primary-navy);
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
-    /* --- تنسيق عرض البطاقات (Grid View) --- */
     .cars-grid-modern {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
@@ -118,13 +111,13 @@
 
         .car-card-pro:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 50px rgba(26, 38, 52, 0.08);
-            border-color: #be955b;
+            box-shadow: 0 15px 50px rgba(44, 62, 80, 0.08);
+            border-color: var(--primary-gold);
         }
 
     .car-image-area {
         height: 220px;
-        background: linear-gradient(135deg, #1a2634 0%, #2b3f56 100%);
+        background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--primary-navy) 100%);
         position: relative;
         display: flex;
         align-items: center;
@@ -139,7 +132,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, transparent 40%, rgba(26,38,52,0.8) 100%);
+            background: linear-gradient(to bottom, transparent 40%, rgba(26,37,47,0.8) 100%);
         }
 
     .car-badge-code {
@@ -151,7 +144,7 @@
         border-radius: 12px;
         font-weight: 900;
         font-size: 0.8rem;
-        color: #1a2634;
+        color: var(--primary-navy);
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         z-index: 2;
         border: 1px solid #e2e8f0;
@@ -163,24 +156,23 @@
         inset-inline-end: 2rem;
         width: 60px;
         height: 60px;
-        background: #be955b;
+        background: var(--primary-gold);
         border-radius: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
         font-size: 1.5rem;
-        box-shadow: 0 10px 20px rgba(190, 149, 91, 0.3);
+        box-shadow: 0 10px 20px rgba(184, 147, 90, 0.3);
         z-index: 2;
         text-decoration: none;
         transition: 0.3s;
     }
 
         .car-action-floating:hover {
-            background: #1a2634;
+            background: var(--primary-navy);
             transform: scale(1.05);
             color: white;
-            box-shadow: 0 10px 20px rgba(26, 38, 52, 0.3);
         }
 
     .car-details-area {
@@ -192,39 +184,36 @@
     }
 
     .status-pill {
-        background: rgba(190, 149, 91, 0.1);
-        color: #be955b;
-        padding: 0.3rem 1rem;
+        background: rgba(184, 147, 90, 0.1);
+        color: var(--primary-gold);
+        padding: 0.4rem 1.2rem;
         border-radius: 50px;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         font-weight: 800;
-        border: 1px solid rgba(190, 149, 91, 0.2);
+        border: 1px solid rgba(184, 147, 90, 0.2);
         margin-bottom: 1.5rem;
         display: inline-block;
         align-self: center;
     }
 
     .car-title-pro {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
         font-weight: 900;
-        color: #1a2634;
+        color: var(--primary-navy);
         margin: 0 0 0.5rem 0;
     }
 
     .car-owner-pro {
-        color: #be955b;
+        color: var(--text-muted);
         font-weight: 800;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         margin-bottom: 1.5rem;
-        text-transform: uppercase;
     }
 
-        .car-owner-pro span {
-            color: #94a3b8;
-            font-weight: 600;
+        .car-owner-pro strong {
+            color: var(--primary-gold);
         }
 
-    /* Stepper Styling */
     .stepper-container {
         background: #f8fafc;
         border-radius: 20px;
@@ -241,11 +230,11 @@
         margin-bottom: 1rem;
         font-size: 0.8rem;
         font-weight: 800;
-        color: #64748b;
+        color: var(--text-muted);
     }
 
         .stepper-header .percentage {
-            color: #1a2634;
+            color: var(--primary-navy);
             font-size: 1.2rem;
             font-weight: 900;
         }
@@ -275,7 +264,7 @@
         position: absolute;
         top: 50%;
         height: 6px;
-        background: #be955b;
+        background: var(--primary-gold);
         transform: translateY(-50%);
         border-radius: 10px;
         z-index: 2;
@@ -298,21 +287,22 @@
     }
 
         .step-node.active {
-            border-color: #be955b;
-            background: #be955b;
+            border-color: var(--primary-gold);
+            background: var(--primary-gold);
             color: white;
             box-shadow: 0 0 0 4px #fff;
         }
 
     .vin-display {
-        background: #f1f5f9;
-        color: #64748b;
+        background: rgba(44, 62, 80, 0.05);
+        color: var(--primary-navy);
         font-family: monospace;
-        font-size: 0.9rem;
-        font-weight: 800;
+        font-size: 1rem;
+        font-weight: 900;
         padding: 0.8rem;
         border-radius: 12px;
         margin-bottom: 1.5rem;
+        border: 1px dashed #cbd5e1;
     }
 
     .fin-summary-grid {
@@ -324,9 +314,9 @@
     }
 
     .fin-box {
-        background: white;
+        background: #f8fafc;
         padding: 1rem;
-        border-radius: 16px;
+        border-radius: 12px;
         border: 1px solid #e2e8f0;
     }
 
@@ -334,32 +324,23 @@
             display: block;
             font-size: 0.75rem;
             font-weight: 800;
-            color: #94a3b8;
-            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            margin-bottom: 0.2rem;
         }
 
         .fin-box .value {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 900;
-            color: #1a2634;
+            color: var(--primary-navy);
         }
 
-    .val-green {
-        color: #16a34a !important;
-    }
-
-    .val-red {
-        color: #ef4444 !important;
-    }
-
-    /* --- تنسيق عرض الجدول (List View - DataTables) --- */
     .data-card {
         background: white;
         border-radius: 1.5rem;
         padding: 2.5rem;
         box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         border: 1px solid #f1f5f9;
-        display: none; /* مخفي افتراضياً */
+        display: none;
         overflow-x: auto;
     }
 
@@ -371,7 +352,7 @@
 
         .table-enterprise th {
             background-color: #f8fafc;
-            color: #64748b;
+            color: var(--text-muted);
             font-weight: 800;
             padding: 1.25rem 1rem;
             border-bottom: 2px solid #e2e8f0;
@@ -382,13 +363,13 @@
         .table-enterprise td {
             padding: 1.25rem 1rem;
             border-bottom: 1px solid #f1f5f9;
-            color: #1e293b;
+            color: var(--text-dark);
             font-weight: 700;
             vertical-align: middle;
         }
 
         .table-enterprise tbody tr:hover {
-            background-color: #f8fafc;
+            background: #f8fafc;
             transition: 0.2s;
         }
 
@@ -401,40 +382,35 @@
     .car-icon-box {
         width: 45px;
         height: 45px;
-        background: rgba(190,149,91,0.1);
-        color: #be955b;
+        background: rgba(184, 147, 90, 0.1);
+        color: var(--primary-gold);
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.2rem;
+        overflow: hidden;
     }
 
-    .status-badge-list {
+        .car-icon-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .badge-sub {
         background: #f1f5f9;
-        color: #64748b;
-        padding: 0.4rem 1rem;
-        border-radius: 50px;
-        font-size: 0.85rem;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.8rem;
         font-weight: 800;
+        color: var(--text-muted);
         display: inline-block;
-        border: 1px solid #e2e8f0;
-    }
-
-    .status-1 {
-        background: rgba(190, 149, 91, 0.1);
-        color: #be955b;
-        border-color: rgba(190, 149, 91, 0.2);
-    }
-
-    .status-4 {
-        background: rgba(34, 197, 94, 0.1);
-        color: #22c55e;
-        border-color: rgba(34, 197, 94, 0.2);
+        margin-top: 4px;
     }
 
     .action-btn {
-        color: #1a2634;
+        color: var(--primary-navy);
         background: #f8fafc;
         border: 1px solid #e2e8f0;
         padding: 0.5rem 1rem;
@@ -449,10 +425,9 @@
     }
 
         .action-btn:hover {
-            background: #1a2634;
+            background: var(--primary-navy);
             color: white;
-            border-color: #1a2634;
-            box-shadow: 0 4px 10px rgba(26, 38, 52, 0.2);
+            border-color: var(--primary-navy);
         }
 </style>
 
@@ -460,105 +435,78 @@
     <div class="page-header-container">
         <div class="page-header-text">
             <h2><i class="fa-solid fa-car-side"></i> @Localizer["إدارة السيارات والمخزون"]</h2>
-            <p>• @Localizer["النظام الهجين للبطاقات والجداول"]</p>
+            <p>• @Localizer["قاعدة بيانات المركبات المتقدمة"]</p>
         </div>
         <div class="header-actions">
-            <!-- أزرار تبديل العرض -->
             <div class="view-toggle-wrapper">
-                <button class="view-toggle-btn active" id="btnGridView" onclick="switchView('grid')" title="@Localizer["عرض البطاقات"]">
-                    <i class="fa-solid fa-border-all"></i>
-                </button>
-                <button class="view-toggle-btn" id="btnListView" onclick="switchView('list')" title="@Localizer["عرض الجدول"]">
-                    <i class="fa-solid fa-list-ul"></i>
-                </button>
+                <button class="view-toggle-btn active" id="btnGridView" onclick="switchView('grid')"><i class="fa-solid fa-border-all"></i></button>
+                <button class="view-toggle-btn" id="btnListView" onclick="switchView('list')"><i class="fa-solid fa-list-ul"></i></button>
             </div>
-
-            <a href="@Url.Action("Create", "Cars")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة سيارة"]</a>
+            <a href="@Url.Action("Create", "Cars")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة مركبة جديدة"]</a>
         </div>
     </div>
 
-    <!-- 1. عرض البطاقات (Grid View) -->
+    <!-- البطاقات المتقدمة -->
     <div id="carsGridView" class="cars-grid-modern">
         @if (Model != null && Model.Any())
         {
             foreach (var car in Model)
             {
-                // يمكن مستقبلاً جلب الصورة من المرفقات، هنا استخدمنا خلفية افتراضية أنيقة
-                string bgImage = car.Make == "Toyota" ? "https://images.unsplash.com/photo-1629897048514-3dd74142fffc?auto=format&fit=crop&w=800&q=80" :
-                car.Make == "BMW" ? "https://images.unsplash.com/photo-1555353540-64fd1b6b4c0b?auto=format&fit=crop&w=800&q=80" :
-                "https://images.unsplash.com/photo-1502877338535-349c6722c608?auto=format&fit=crop&w=800&q=80";
+                // عرض الصورة المرفوعة، وإذا لم تكن موجودة نعرض صورة افتراضية
+                string bgImage = !string.IsNullOrEmpty(car.MainImageUrl) ? car.MainImageUrl : "https://images.unsplash.com/photo-1502877338535-349c6722c608?auto=format&fit=crop&w=800&q=80";
 
                 string statusLabel = car.StatusId == 1 ? "تم الشراء" : car.StatusId == 3 ? "الشحن البحري" : car.StatusId >= 4 ? "وصلت عمان" : "في الطريق";
 
                 <div class="car-card-pro">
-                    <!-- إذا لم تكن هناك صورة، ستظهر الأيقونة بسبب الـ CSS -->
                     <div class="car-image-area" style="background-image: url('@bgImage');">
                         <div class="car-badge-code">@car.InternalCode</div>
                         <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="car-action-floating">
                             <i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i>
                         </a>
                     </div>
-
                     <div class="car-details-area">
-                        <div class="status-pill">@Localizer[statusLabel]</div>
+                        <div class="status-pill"><i class="fa-solid fa-circle-dot"></i> @Localizer[statusLabel]</div>
                         <h3 class="car-title-pro">@car.Make @car.Model</h3>
-                        <div class="car-owner-pro"><i class="fa-solid fa-user-tie"></i> @(car.Customer?.Name?.ToUpper() ?? Localizer["غير محدد"].Value) <span>• @car.Year</span></div>
+                        <div class="car-owner-pro">@Localizer["العميل:"] <strong>@(car.Customer?.Name?.ToUpper() ?? Localizer["غير محدد"].Value)</strong></div>
 
                         @{
-                            int status = car.StatusId;
-                            string fillWidth = status == 1 ? "25%" : status == 2 ? "50%" : status == 3 ? "75%" : status >= 4 ? "100%" : "0%";
+                            int status = car.StatusId; string fillWidth = status == 1 ? "25%" : status == 2 ? "50%" : status == 3 ? "75%" : status >= 4 ? "100%" : "0%";
                         }
                         <div class="stepper-container">
-                            <div class="stepper-header">
-                                <span><i class="fa-solid fa-route"></i> @Localizer["مسار الشحن والخدمات اللوجستية"]</span>
-                                <span class="percentage">@fillWidth</span>
-                            </div>
+                            <div class="stepper-header"><span><i class="fa-solid fa-route"></i> @Localizer["مسار الشحن"]</span><span class="percentage">@fillWidth</span></div>
                             <div class="stepper-track-wrapper">
                                 <div class="stepper-line-bg"></div>
                                 <div class="stepper-line-fill" style="width: @fillWidth; @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "right: 0; left: auto;" : "left: 0; right: auto;")"></div>
-                                <div class="step-node @(status >= 1 ? "active" : "")" title="@Localizer["المزاد"]"><i class="fa-solid fa-gavel"></i></div>
+                                <div class="step-node @(status >= 1 ? "active" : "")" title="@Localizer["تم الشراء"]"><i class="fa-solid fa-gavel"></i></div>
                                 <div class="step-node @(status >= 2 ? "active" : "")" title="@Localizer["المستودع"]"><i class="fa-solid fa-warehouse"></i></div>
                                 <div class="step-node @(status >= 3 ? "active" : "")" title="@Localizer["الشحن البحري"]"><i class="fa-solid fa-ship"></i></div>
-                                <div class="step-node @(status >= 4 ? "active" : "")" title="@Localizer["الميناء الوجهة"]"><i class="fa-solid fa-anchor"></i></div>
+                                <div class="step-node @(status >= 4 ? "active" : "")" title="@Localizer["الوصول"]"><i class="fa-solid fa-anchor"></i></div>
                             </div>
                         </div>
 
-                        <div class="vin-display">
-                            ...VIN: @(string.IsNullOrEmpty(car.VIN) ? "-" : (car.VIN.Length > 10 ? car.VIN.Substring(0, 10) : car.VIN))
-                        </div>
+                        <div class="vin-display">VIN: @(string.IsNullOrEmpty(car.VIN) ? "-" : car.VIN)</div>
 
                         <div class="fin-summary-grid">
-                            <div class="fin-box">
-                                <label>@Localizer["سعر الشراء"]</label>
-                                <div class="value val-green">$@car.PurchasePrice</div>
-                            </div>
-                            <div class="fin-box">
-                                <label>@Localizer["متبقي للعميل"]</label>
-                                <div class="value val-red">@(car.Customer?.TotalBalance ?? 0) <span>ر.ع</span></div>
-                            </div>
+                            <div class="fin-box"><label>@Localizer["المعرض / المزاد"]</label><div class="value">@(car.Auction?.Name ?? "-")</div></div>
+                            <div class="fin-box"><label>@Localizer["الموقع الحالي"]</label><div class="value">@Localizer["مستودع أمريكا"]</div></div>
+                            <div class="fin-box"><label>@Localizer["سنة الصنع - اللون"]</label><div class="value">@car.Year - @(string.IsNullOrEmpty(car.Color) ? "-" : car.Color)</div></div>
+                            <div class="fin-box"><label>@Localizer["نوع المركبة"]</label><div class="value">@car.VehicleShape</div></div>
                         </div>
                     </div>
                 </div>
             }
         }
-        else
-        {
-            <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; background: white; border-radius: 1.5rem; color: #94a3b8;">
-                <i class="fa-solid fa-folder-open" style="font-size: 4rem; margin-bottom: 1rem; color: #be955b;"></i>
-                <h3>@Localizer["لا توجد سيارات مضافة حالياً."]</h3>
-            </div>
-        }
     </div>
 
-    <!-- 2. عرض الجدول (List View - DataTables) -->
+    <!-- الجدول المتقدم -->
     <div id="carsTableView" class="data-card">
         <table id="carsDataTable" class="table-enterprise display" style="width:100%">
             <thead>
                 <tr>
-                    <th>@Localizer["السيارة"]</th>
+                    <th>@Localizer["المركبة"]</th>
                     <th>@Localizer["رقم الشاصي (VIN)"]</th>
-                    <th>@Localizer["اسم العميل"]</th>
-                    <th>@Localizer["سعر الشراء"]</th>
+                    <th>@Localizer["العميل"]</th>
+                    <th>@Localizer["المعرض والموقع"]</th>
                     <th>@Localizer["الحالة"]</th>
                     <th>@Localizer["إجراءات"]</th>
                 </tr>
@@ -571,27 +519,44 @@
                         <tr>
                             <td>
                                 <div class="car-info-td">
-                                    <div class="car-icon-box"><i class="fa-solid fa-car"></i></div>
+                                    <div class="car-icon-box">
+                                        @if (!string.IsNullOrEmpty(car.MainImageUrl))
+                                        {
+                                            <img src="@car.MainImageUrl" alt="Car" />
+                                        }
+                                        else
+                                        {
+                                            <i class="fa-solid fa-car"></i>
+                                        }
+                                    </div>
                                     <div>
-                                        <div style="font-weight: 900; color: #1a2634; font-size: 1.1rem;">@car.Make @car.Model</div>
-                                        <div style="color: #64748b; font-size: 0.85rem;">@car.Year - @car.Color</div>
+                                        <div style="font-weight: 900; color: var(--primary-navy); font-size: 1.1rem;">@car.Make @car.Model</div>
+                                        <div style="color: var(--text-muted); font-size: 0.85rem; font-weight: 800;">@car.Year | @car.Color</div>
                                     </div>
                                 </div>
                             </td>
-                            <td style="font-family: monospace; color: #64748b; font-size: 1.1rem;">@car.VIN</td>
-                            <td><i class="fa-solid fa-user-tie" style="color: #cbd5e1; margin-inline-end: 5px;"></i> @(car.Customer?.Name ?? Localizer["غير محدد"].Value)</td>
-                            <td style="font-family: monospace; font-size: 1.1rem; color: #16a34a;">$@car.PurchasePrice</td>
+                            <td>
+                                <div style="font-family: monospace; font-weight: 900; color: var(--primary-navy); font-size: 1.1rem;">@car.VIN</div>
+                                <div style="font-family: monospace; color: var(--text-muted); font-size: 0.8rem;">@car.InternalCode</div>
+                            </td>
+                            <td><i class="fa-solid fa-user-tie" style="color: #cbd5e1; margin-inline-end: 5px;"></i> @(car.Customer?.Name ?? "-")</td>
+                            <td>
+                                <div style="font-weight: 800; color: var(--primary-navy);">@(car.Auction?.Name ?? "-")</div>
+                                <div class="badge-sub"><i class="fa-solid fa-location-dot"></i> @Localizer["مستودع أمريكا"]</div>
+                            </td>
                             <td>
                                 @{
                                     string badgeClass = car.StatusId == 1 ? "status-1" : car.StatusId >= 4 ? "status-4" : "";
                                     string statusText = car.StatusId == 1 ? "تم الشراء" : car.StatusId == 3 ? "الشحن البحري" : car.StatusId >= 4 ? "واصلة الميناء" : "قيد الشحن";
                                 }
-                                <span class="status-badge-list @badgeClass">@Localizer[statusText]</span>
+                                <span style="background: rgba(184, 147, 90, 0.1); color: var(--primary-gold); padding: 5px 12px; border-radius: 8px; font-weight: 800; border: 1px solid rgba(184, 147, 90, 0.2);">@Localizer[statusText]</span>
                             </td>
                             <td>
-                                <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="action-btn">
-                                    <i class="fa-regular fa-eye"></i> @Localizer["التفاصيل"]
-                                </a>
+                                <!-- تمت إضافة زر التعديل هنا بجانب زر التفاصيل -->
+                                <div style="display:flex; gap: 8px;">
+                                    <a href="@Url.Action("Edit", "Cars", new { id = car.Id })" class="action-btn" style="color: var(--primary-gold); border-color: var(--primary-gold); background: rgba(184,147,90,0.05);"><i class="fa-solid fa-pen-to-square"></i> @Localizer["تعديل"]</a>
+                                    <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="action-btn"><i class="fa-regular fa-eye"></i> @Localizer["التفاصيل"]</a>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -603,42 +568,22 @@
 
 @section Scripts {
     <script>
-        // دالة التبديل بين أشكال العرض
         function switchView(viewType) {
             if (viewType === 'list') {
-                $('#carsGridView').hide();
-                $('#carsTableView').fadeIn(300);
-                $('#btnListView').addClass('active');
-                $('#btnGridView').removeClass('active');
+                $('#carsGridView').hide(); $('#carsTableView').fadeIn(300);
+                $('#btnListView').addClass('active'); $('#btnGridView').removeClass('active');
                 localStorage.setItem('preferredCarView', 'list');
-
-                // إعادة ضبط عرض أعمدة الجدول
-                if ($.fn.DataTable.isDataTable('#carsDataTable')) {
-                    $('#carsDataTable').DataTable().columns.adjust().responsive.recalc();
-                }
+                if ($.fn.DataTable.isDataTable('#carsDataTable')) { $('#carsDataTable').DataTable().columns.adjust().responsive.recalc(); }
             } else {
-                $('#carsTableView').hide();
-                $('#carsGridView').fadeIn(300);
-                $('#btnGridView').addClass('active');
-                $('#btnListView').removeClass('active');
+                $('#carsTableView').hide(); $('#carsGridView').fadeIn(300);
+                $('#btnGridView').addClass('active'); $('#btnListView').removeClass('active');
                 localStorage.setItem('preferredCarView', 'grid');
             }
         }
-
         $(document).ready(function () {
-            // تهيئة جدول DataTables
             var dir = $('html').attr('dir') === 'rtl';
-            var table = $('#carsDataTable').DataTable({
-                "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" },
-                "pageLength": 10,
-                "ordering": true,
-                "responsive": true,
-                "dom": '<"top"f>rt<"bottom"lp><"clear">'
-            });
-
-            // قراءة التفضيل السابق للمستخدم وتطبيقه فوراً
-            var savedView = localStorage.getItem('preferredCarView') || 'grid';
-            switchView(savedView);
+            $('#carsDataTable').DataTable({ "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" }, "pageLength": 10, "responsive": true });
+            switchView(localStorage.getItem('preferredCarView') || 'grid');
         });
     </script>
 }

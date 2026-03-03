@@ -1,5 +1,4 @@
-﻿<!-- مسار الملف في المشروع: Views/TrackingLogs/Create.cshtml -->
-@model AlarganShipping.Models.TrackingLog
+﻿@model AlarganShipping.Models.TrackingLog
 @{
     ViewData["Title"] = Localizer["إضافة تحديث تتبع"];
 }
@@ -38,7 +37,7 @@
     .premium-form-card {
         background-color: #ffffff;
         border-radius: 1.5rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        box-shadow: 0 10px 30px rgba(44, 62, 80, 0.03);
         border: 1px solid #f1f5f9;
         padding: 3rem;
         position: relative;
@@ -98,7 +97,7 @@
         .form-control:focus {
             border-color: var(--primary-gold);
             background-color: #ffffff;
-            box-shadow: 0 0 0 4px rgba(195, 154, 92, 0.1);
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
 
     /* Select2 Custom Premium Styling */
@@ -115,7 +114,7 @@
         .select2-container--default .select2-selection--single:focus, .select2-container--focus .select2-selection--single {
             border-color: var(--primary-gold);
             background-color: #ffffff;
-            box-shadow: 0 0 0 4px rgba(195, 154, 92, 0.1);
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
 
         .select2-container--default .select2-selection--single .select2-selection__rendered {
@@ -153,7 +152,7 @@
         font-size: 1.1rem;
         cursor: pointer;
         transition: 0.3s;
-        box-shadow: 0 4px 15px rgba(26, 42, 58, 0.3);
+        box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
         font-family: inherit;
         display: inline-flex;
         align-items: center;
@@ -163,7 +162,7 @@
         .btn-submit:hover {
             background: var(--secondary-navy);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(26, 42, 58, 0.4);
+            box-shadow: 0 8px 20px rgba(44, 62, 80, 0.4);
         }
 
     .text-danger {
@@ -174,7 +173,7 @@
     }
 </style>
 
-<!-- CSS Libraries for Professional UI -->
+<!-- Scripts for Professional UI -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
 
@@ -186,7 +185,6 @@
 
     <div class="premium-form-card">
         <form asp-action="Create" method="post" id="trackingForm">
-            <!-- استخدام AntiForgeryToken أساسي للأمان في طلبات الـ AJAX -->
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -240,14 +238,12 @@
 </div>
 
 @section Scripts {
-    <!-- Scripts for Professional UI -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
 
     <script>
         $(document).ready(function() {
-            // 1. تفعيل ميزة البحث الذكي للقوائم المنسدلة (Select2)
             var dir = $('html').attr('dir');
             $('.select2-search').select2({
                 dir: dir,
@@ -256,9 +252,8 @@
                 width: '100%'
             });
 
-            // 2. إرسال البيانات باستخدام AJAX الحقيقي لمنع إعادة تحميل الصفحة (SPA Experience)
             $('#trackingForm').on('submit', function(e) {
-                e.preventDefault(); // إيقاف الإرسال الافتراضي
+                e.preventDefault();
 
                 var form = $(this);
                 if (!form[0].checkValidity()) {
@@ -269,7 +264,6 @@
                 var btn = $('#btnSubmit');
                 var originalText = btn.html();
 
-                // إضافة حالة التحميل
                 btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Localizer["جاري النشر..."]').prop('disabled', true);
 
                 $.ajax({
@@ -277,7 +271,6 @@
                     type: form.attr('method'),
                     data: form.serialize(),
                     success: function (response) {
-                        // إظهار رسالة النجاح الاحترافية
                         Swal.fire({
                             title: '@Localizer["تم النشر بنجاح!"]',
                             text: '@Localizer["تم إضافة تحديث التتبع لسيارة العميل ويمكنه رؤيته الآن عبر بوابته."]',
@@ -289,10 +282,8 @@
                             cancelButtonColor: 'var(--primary-navy)'
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                // توجيه لصفحة تفاصيل السيارة لو رغب بذلك
                                 window.location.href = '@Url.Action("Details", "Cars")/' + $('#CarId').val();
                             } else {
-                                // إعادة تعيين النموذج لإضافة تحديث آخر
                                 form[0].reset();
                                 $('.select2-search').val(null).trigger('change');
                                 btn.html(originalText).prop('disabled', false);

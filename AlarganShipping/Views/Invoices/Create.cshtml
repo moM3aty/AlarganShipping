@@ -1,5 +1,4 @@
-﻿<!-- مسار الملف في المشروع: Views/Invoices/Create.cshtml -->
-@model AlarganShipping.Models.Invoice
+﻿@model AlarganShipping.Models.Invoice
 @{
     ViewData["Title"] = Localizer["إصدار فاتورة جديدة"];
 }
@@ -13,17 +12,20 @@
     }
 
     .form-page-title {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
         font-weight: 900;
         color: var(--primary-navy);
         margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .btn-back {
         background-color: white;
         border: 1px solid #e2e8f0;
         color: var(--text-muted);
-        padding: 0.75rem 1.5rem;
+        padding: 0.6rem 1.2rem;
         border-radius: 0.75rem;
         font-weight: 700;
         text-decoration: none;
@@ -38,7 +40,7 @@
     .premium-form-card {
         background-color: #ffffff;
         border-radius: 1.5rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        box-shadow: 0 10px 30px rgba(44, 62, 80, 0.03);
         border: 1px solid #f1f5f9;
         padding: 3rem;
         position: relative;
@@ -55,15 +57,31 @@
             background: linear-gradient(to right, var(--primary-navy), var(--primary-gold));
         }
 
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 0.5rem;
+    }
+
     .form-grid {
         display: grid;
         grid-template-columns: 1fr;
         gap: 1.5rem;
+        margin-bottom: 2rem;
     }
 
     @@media (min-width: 768px) {
         .form-grid {
             grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (min-width: 1024px) {
+        .form-grid-3 {
+            grid-template-columns: repeat(3, 1fr);
         }
     }
 
@@ -74,18 +92,19 @@
 
     .form-label {
         font-weight: 800;
-        color: var(--primary-navy);
+        color: var(--text-muted);
         margin-bottom: 0.5rem;
-        font-size: 0.95rem;
+        font-size: 0.85rem;
     }
 
     .form-control {
-        padding: 1rem 1.25rem;
+        padding: 0.85rem 1rem;
         border: 2px solid #e2e8f0;
         border-radius: 0.75rem;
         font-family: inherit;
-        font-size: 1rem;
-        color: var(--text-dark);
+        font-size: 0.95rem;
+        color: var(--primary-navy);
+        font-weight: 700;
         background-color: #f8fafc;
         transition: 0.3s;
         outline: none;
@@ -93,46 +112,67 @@
 
         .form-control:focus {
             border-color: var(--primary-gold);
-            background-color: #ffffff;
-            box-shadow: 0 0 0 4px rgba(195, 154, 92, 0.1);
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
 
-    .section-divider {
-        grid-column: 1 / -1;
-        margin: 1.5rem 0 0.5rem 0;
-        font-size: 1.25rem;
-        font-weight: 900;
-        color: var(--primary-gold);
-        border-bottom: 2px dashed #e2e8f0;
-        padding-bottom: 0.5rem;
+    .calc-input {
+        text-align: end;
+        font-family: monospace;
+        font-size: 1.1rem;
+        color: var(--primary-navy);
     }
 
-    /* Select2 Custom Premium Styling */
+    /* Total Box */
+    .total-box {
+        background: rgba(44, 62, 80, 0.03);
+        border: 2px dashed var(--primary-navy);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+    }
+
+    .total-label {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+    }
+
+    .total-amount {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--primary-gold);
+        font-family: monospace;
+    }
+
+    /* Select2 */
     .select2-container--default .select2-selection--single {
         background-color: #f8fafc;
         border: 2px solid #e2e8f0;
         border-radius: 0.75rem;
-        height: 50px;
+        height: 45px;
         display: flex;
         align-items: center;
         transition: 0.3s;
     }
 
-        .select2-container--default .select2-selection--single:focus, .select2-container--focus .select2-selection--single {
+        .select2-container--default .select2-selection--single:focus {
             border-color: var(--primary-gold);
-            background-color: #ffffff;
-            box-shadow: 0 0 0 4px rgba(195, 154, 92, 0.1);
+            background-color: white;
         }
 
         .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: var(--text-dark);
-            font-weight: 600;
-            padding-left: 1.25rem;
-            padding-right: 1.25rem;
+            color: var(--primary-navy);
+            font-weight: 700;
+            padding-left: 1rem;
+            padding-right: 1rem;
         }
 
         .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 48px;
+            height: 43px;
             right: 10px;
         }
 
@@ -147,37 +187,29 @@
         border-top: 1px solid #f1f5f9;
         display: flex;
         justify-content: flex-end;
+        gap: 1rem;
     }
 
     .btn-submit {
         background: var(--primary-navy);
-        color: #ffffff;
+        color: white;
         border: none;
-        padding: 1rem 3rem;
-        border-radius: 1rem;
+        padding: 0.85rem 2.5rem;
+        border-radius: 0.75rem;
         font-weight: 800;
-        font-size: 1.1rem;
+        font-size: 1rem;
         cursor: pointer;
         transition: 0.3s;
-        box-shadow: 0 4px 15px rgba(26, 42, 58, 0.3);
-        font-family: inherit;
         display: inline-flex;
         align-items: center;
         gap: 10px;
     }
 
         .btn-submit:hover {
-            background: var(--secondary-navy);
+            background: var(--primary-gold);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(26, 42, 58, 0.4);
+            box-shadow: 0 4px 15px rgba(184, 147, 90, 0.3);
         }
-
-    .text-danger {
-        color: #ef4444;
-        font-size: 0.85rem;
-        font-weight: 700;
-        margin-top: 0.4rem;
-    }
 </style>
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -185,68 +217,68 @@
 
 <div>
     <div class="form-page-header">
-        <h2 class="form-page-title"><i class="fa-solid fa-file-invoice-dollar" style="color: var(--primary-gold); margin-inline-end: 10px;"></i> @Localizer["إصدار فاتورة جديدة"]</h2>
-        <a href="@Url.Action("Index", "Invoices")" class="btn-back">@Localizer["عودة للقائمة"]</a>
+        <h2 class="form-page-title"><i class="fa-solid fa-file-invoice-dollar" style="color: var(--primary-gold);"></i> @Localizer["إصدار فاتورة جديدة"]</h2>
+        <a href="@Url.Action("Index", "Invoices")" class="btn-back"><i class="fa-solid fa-arrow-right-long"></i> @Localizer["العودة"]</a>
     </div>
 
     <div class="premium-form-card">
         <form asp-action="Create" method="post" id="invoiceForm">
             @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+            <h3 class="section-title">@Localizer["البيانات الأساسية"]</h3>
             <div class="form-grid">
-                <div class="section-divider">@Localizer["المعلومات الأساسية"]</div>
-
                 <div class="form-group">
-                    <label asp-for="CustomerId" class="form-label">@Localizer["العميل"]</label>
+                    <label asp-for="CustomerId" class="form-label">@Localizer["العميل"] *</label>
                     <select asp-for="CustomerId" class="form-control select2-search" asp-items="ViewBag.CustomerId" required>
-                        <option value="">-- @Localizer["ابحث عن العميل المطالب بالدفع"] --</option>
+                        <option value="">@Localizer["اختر العميل..."]</option>
                     </select>
                 </div>
-
                 <div class="form-group">
-                    <label asp-for="CarId" class="form-label">@Localizer["السيارة المرتبطة بالفاتورة"]</label>
+                    <label asp-for="CarId" class="form-label">@Localizer["السيارة المرتبطة"] *</label>
                     <select asp-for="CarId" class="form-control select2-search" asp-items="ViewBag.CarId" required>
-                        <option value="">-- @Localizer["ابحث عن السيارة"] --</option>
+                        <option value="">@Localizer["اختر السيارة أو ابحث بالشاصي..."]</option>
                     </select>
-                </div>
-
-                <div class="section-divider">@Localizer["تفصيل التكاليف (بالدولار $)"]</div>
-
-                <div class="form-group">
-                    <label asp-for="CarPrice" class="form-label">@Localizer["قيمة السيارة (من المزاد)"]</label>
-                    <input asp-for="CarPrice" class="form-control" type="number" step="0.01" value="0.00" dir="ltr" required />
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="AuctionFees" class="form-label">@Localizer["رسوم المزاد / البوابة"]</label>
-                    <input asp-for="AuctionFees" class="form-control" type="number" step="0.01" value="0.00" dir="ltr" />
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="LandFreight" class="form-label">@Localizer["النقل الداخلي (الريكفري بأمريكا)"]</label>
-                    <input asp-for="LandFreight" class="form-control" type="number" step="0.01" value="0.00" dir="ltr" />
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="SeaFreight" class="form-label">@Localizer["الشحن البحري"]</label>
-                    <input asp-for="SeaFreight" class="form-control" type="number" step="0.01" value="0.00" dir="ltr" />
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="CustomsFees" class="form-label">@Localizer["رسوم التخليص الجمركي"]</label>
-                    <input asp-for="CustomsFees" class="form-control" type="number" step="0.01" value="0.00" dir="ltr" />
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="AdminFees" class="form-label">@Localizer["الرسوم الإدارية / عمولة الشركة"]</label>
-                    <input asp-for="AdminFees" class="form-control" type="number" step="0.01" value="0.00" dir="ltr" />
                 </div>
             </div>
 
+            <h3 class="section-title">@Localizer["التفاصيل المالية (بالدولار أو الريال العماني حسب الاتفاق)"]</h3>
+            <div class="form-grid form-grid-3">
+                <div class="form-group">
+                    <label asp-for="CarPrice" class="form-label">@Localizer["سعر شراء السيارة"]</label>
+                    <input asp-for="CarPrice" type="number" step="0.01" class="form-control calc-input" value="0" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="AuctionFees" class="form-label">@Localizer["رسوم المزاد"]</label>
+                    <input asp-for="AuctionFees" type="number" step="0.01" class="form-control calc-input" value="0" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="LandFreight" class="form-label">@Localizer["النقل الداخلي (Towing)"]</label>
+                    <input asp-for="LandFreight" type="number" step="0.01" class="form-control calc-input" value="0" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="SeaFreight" class="form-label">@Localizer["الشحن البحري"]</label>
+                    <input asp-for="SeaFreight" type="number" step="0.01" class="form-control calc-input" value="0" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="CustomsFees" class="form-label">@Localizer["الجمارك والضرائب"]</label>
+                    <input asp-for="CustomsFees" type="number" step="0.01" class="form-control calc-input" value="0" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="AdminFees" class="form-label">@Localizer["عمولة الشركة (أتعاب إدارية)"]</label>
+                    <input asp-for="AdminFees" type="number" step="0.01" class="form-control calc-input" value="150" />
+                </div>
+            </div>
+
+            <div class="total-box">
+                <span class="total-label">@Localizer["الإجمالي المستحق على العميل:"]</span>
+                <span class="total-amount" id="displayTotal">0.00</span>
+                <input type="hidden" asp-for="TotalAmount" id="TotalAmount" />
+            </div>
+
             <div class="form-actions">
+                <button type="button" class="btn-back" onclick="javascript:history.back()">@Localizer["إلغاء"]</button>
                 <button type="submit" class="btn-submit" id="btnSubmit">
-                    <i class="fa-solid fa-file-signature"></i> @Localizer["حفظ وإصدار الفاتورة"]
+                    <i class="fa-solid fa-file-invoice"></i> @Localizer["إصدار وحفظ الفاتورة"]
                 </button>
             </div>
         </form>
@@ -263,6 +295,22 @@
             var dir = $('html').attr('dir');
             $('.select2-search').select2({ dir: dir, width: '100%' });
 
+            // دالة الحساب التلقائي للإجمالي
+            function calculateTotal() {
+                let total = 0;
+                $('.calc-input').each(function() {
+                    let val = parseFloat($(this).val()) || 0;
+                    total += val;
+                });
+                $('#displayTotal').text(total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                $('#TotalAmount').val(total);
+            }
+
+            // استدعاء دالة الحساب عند تغيير أي رقم
+            $('.calc-input').on('input', calculateTotal);
+            calculateTotal(); // حساب مبدئي
+
+            // إرسال البيانات بالـ AJAX
             $('#invoiceForm').on('submit', function(e) {
                 e.preventDefault();
                 var form = $(this);
@@ -270,26 +318,24 @@
 
                 var btn = $('#btnSubmit');
                 var originalText = btn.html();
-                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Localizer["جاري الإصدار..."]').prop('disabled', true);
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i>').prop('disabled', true);
 
                 $.ajax({
                     url: form.attr('action'), type: form.attr('method'), data: form.serialize(),
-                    success: function () {
-                        Swal.fire({
-                            title: '@Localizer["تم إصدار الفاتورة!"]',
-                            icon: 'success',
-                            confirmButtonColor: 'var(--primary-gold)',
-                            confirmButtonText: '@Localizer["العودة لقائمة الفواتير"]',
-                            showCancelButton: true,
-                            cancelButtonText: '@Localizer["إصدار فاتورة أخرى"]',
-                            cancelButtonColor: 'var(--primary-navy)'
-                        }).then((result) => {
-                            if (result.isConfirmed) { window.location.href = '@Url.Action("Index", "Invoices")'; }
-                            else { form[0].reset(); $('.select2-search').val(null).trigger('change'); btn.html(originalText).prop('disabled', false); }
-                        });
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: '@Html.Raw(Localizer["تم إصدار الفاتورة!"])', text: '@Html.Raw(Localizer["تم إضافة المبلغ لمديونية العميل بنجاح."])',
+                                icon: 'success', confirmButtonColor: 'var(--primary-gold)'
+                            }).then(() => { window.location.href = '@Url.Action("Index", "Invoices")'; });
+                        } else {
+                            var errorMsg = response.errors ? response.errors.join('\n') : '@Html.Raw(Localizer["تأكد من البيانات"])';
+                            Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: errorMsg, icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                            btn.html(originalText).prop('disabled', false);
+                        }
                     },
                     error: function () {
-                        Swal.fire({ title: '@Localizer["خطأ!"]', text: '@Localizer["حدث خطأ أثناء الحفظ."]', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                        Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
                         btn.html(originalText).prop('disabled', false);
                     }
                 });

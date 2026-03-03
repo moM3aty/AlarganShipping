@@ -1,15 +1,9 @@
-﻿// مسار الملف: Controllers/CustomersController.cs
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using AlarganShipping.Models;
-using System.Linq;
-using System;
 
 namespace AlarganShipping.Controllers
 {
-    [Authorize]
     public class CustomersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -19,96 +13,140 @@ namespace AlarganShipping.Controllers
             _context = context;
         }
 
-        // عرض قائمة العملاء
         public async Task<IActionResult> Index()
         {
-            var customers = await _context.Customers
-                                          .OrderByDescending(c => c.Id)
-                                          .ToListAsync();
+            var customers = await _context.Customers.OrderByDescending(c => c.Id).ToListAsync();
             return View(customers);
         }
 
-        // شاشة إضافة عميل جديد
         public IActionResult Create()
         {
             return View();
         }
 
-        // حفظ بيانات العميل الجديد (AJAX)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Customer customer)
         {
-            // 💡 الحل الجذري والنهائي: مسح كافة أخطاء الـ Validation لأي حقل غير موجود في الفورم
-            var keys = ModelState.Keys.ToList();
-            foreach (var key in keys)
-            {
-                if (key != "Name" && key != "Phone" && key != "Email" && key != "CivilId" && key != "Address")
-                {
-                    ModelState.Remove(key);
-                }
-            }
+            ModelState.Remove("Cars");
+            ModelState.Remove("PaymentReceipts");
+            ModelState.Remove("Invoices");
+            ModelState.Remove("CustomerCode");
+            ModelState.Remove("Notifications");
 
             if (ModelState.IsValid)
             {
-                // توليد كود العميل تلقائياً إذا لم يتم إدخاله
-                if (string.IsNullOrEmpty(customer.CustomerCode))
-                {
-                    customer.CustomerCode = "CUST-" + DateTime.Now.ToString("yyyyMMddHHmmss");
-                }
+                customer.CustomerCode = "CUST-" + new Random().Next(1000, 9999);
 
-                // تعيين قيم افتراضية للبوابة
+                // إذا لم يدخل الموظف يوزر أو باسورد، نقوم بتوليدهم تلقائياً
                 if (string.IsNullOrEmpty(customer.PortalUsername))
-                {
-                    customer.PortalUsername = customer.Phone?.Replace("+", "").Replace(" ", "") ?? "user" + DateTime.Now.ToString("HHmmss");
-                }
+                    customer.PortalUsername = "user" + new Random().Next(100, 999);
                 if (string.IsNullOrEmpty(customer.PortalPassword))
-                {
-                    customer.PortalPassword = "password123";
-                }
+                    customer.PortalPassword = new Random().Next(100000, 999999).ToString();
+
+                customer.TotalBalance = 0;
+                customer.TotalPaid = 0;
 
                 try
                 {
                     _context.Add(customer);
-                    await _context.SaveChangesAsync(); // الحفظ الفعلي
-
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    {
-                        return Json(new { success = true });
-                    }
-                    return RedirectToAction(nameof(Index));
+                    await _context.SaveChangesAsync();
+                    return Json(new { success = true });
                 }
                 catch (Exception ex)
                 {
-                    // إذا حدث خطأ في قاعدة البيانات نفسها
-                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                        return Json(new { success = false, errors = new[] { ex.InnerException?.Message ?? ex.Message } });
+                    return Json(new { success = false, errors = new[] { "خطأ في قاعدة البيانات." } });
                 }
             }
+            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+        }
 
-            // إرجاع الأخطاء الحقيقية للواجهة
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                return Json(new { success = false, errors = errors });
-            }
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var customer = await _context.Customers.FindAsync(id);
+            if (customer == null) return NotFound();
 
             return View(customer);
         }
 
-        // عرض تفاصيل العميل
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Customer customer)
+        {
+            if (id != customer.Id) return Json(new { success = false, errors = new[] { "خطأ في المعرف." } });
+
+            ModelState.Remove("Cars");
+            ModelState.Remove("PaymentReceipts");
+            ModelState.Remove("Invoices");
+            ModelState.Remove("Notifications");
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var existingCustomer = await _context.Customers.FindAsync(id);
+                    if (existingCustomer != null)
+                    {
+                        existingCustomer.Name = customer.Name;
+                        existingCustomer.Phone = customer.Phone;
+                        existingCustomer.Email = customer.Email;
+                        existingCustomer.CivilId = customer.CivilId;
+                        existingCustomer.Address = customer.Address;
+
+                        // تحديث بيانات البوابة
+                        existingCustomer.PortalUsername = customer.PortalUsername;
+                        existingCustomer.PortalPassword = customer.PortalPassword;
+                        existingCustomer.IsPortalActive = customer.IsPortalActive;
+
+                        _context.Update(existingCustomer);
+                        await _context.SaveChangesAsync();
+                        return Json(new { success = true });
+                    }
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Customers.Any(e => e.Id == customer.Id))
+                        return Json(new { success = false, errors = new[] { "العميل غير موجود." } });
+                    else throw;
+                }
+            }
+            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var customer = await _context.Customers.FindAsync(id);
+            if (customer == null) return Json(new { success = false, message = "العميل غير موجود." });
+
+            bool hasCars = await _context.Cars.AnyAsync(c => c.CustomerId == id);
+            if (hasCars) return Json(new { success = false, message = "لا يمكن حذف العميل لارتباطه بسيارات." });
+
+            try
+            {
+                _context.Customers.Remove(customer);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "لا يمكن الحذف لوجود ارتباطات مالية." });
+            }
+        }
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
-
             var customer = await _context.Customers
-                .Include(c => c.Cars) // ربط السيارات
-                .Include(c => c.PaymentReceipts) // ربط المدفوعات
-                .Include(c => c.Invoices) // ربط الفواتير
+                .Include(c => c.Cars)
+                .Include(c => c.Invoices)
+                .Include(c => c.PaymentReceipts)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (customer == null) return NotFound();
-
             return View(customer);
         }
     }

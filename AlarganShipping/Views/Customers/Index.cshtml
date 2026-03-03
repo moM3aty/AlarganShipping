@@ -1,8 +1,9 @@
-﻿<!-- مسار الملف في المشروع: Views/Customers/Index.cshtml -->
-@model IEnumerable<AlarganShipping.Models.Customer>
+﻿@model IEnumerable<AlarganShipping.Models.Customer>
 @{
     ViewData["Title"] = Localizer["إدارة شؤون العملاء"];
 }
+
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
 
 <style>
     /* --- التنسيقات المشتركة --- */
@@ -21,7 +22,7 @@
     .page-header-text h2 {
         font-size: 1.8rem;
         font-weight: 900;
-        color: #1a2634;
+        color: var(--primary-navy);
         margin: 0;
         display: flex;
         align-items: center;
@@ -29,11 +30,11 @@
     }
 
         .page-header-text h2 i {
-            color: #be955b;
+            color: var(--primary-gold);
         }
 
     .page-header-text p {
-        color: #64748b;
+        color: var(--text-muted);
         font-size: 0.9rem;
         font-weight: 600;
         margin: 0;
@@ -47,13 +48,13 @@
     }
 
     .btn-add {
-        background: linear-gradient(to right, #be955b, #d4af7a);
+        background: linear-gradient(to right, var(--primary-gold), var(--secondary-gold));
         color: #ffffff;
         font-weight: 800;
         padding: 0.85rem 1.75rem;
         border-radius: 1rem;
         text-decoration: none;
-        box-shadow: 0 4px 10px rgba(190, 149, 91, 0.3);
+        box-shadow: 0 4px 10px rgba(184, 147, 90, 0.3);
         transition: 0.3s;
         display: inline-flex;
         align-items: center;
@@ -62,7 +63,7 @@
 
         .btn-add:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(190, 149, 91, 0.4);
+            box-shadow: 0 6px 15px rgba(184, 147, 90, 0.4);
             color: white;
         }
 
@@ -79,7 +80,7 @@
     .view-toggle-btn {
         background: transparent;
         border: none;
-        color: #94a3b8;
+        color: var(--text-muted);
         padding: 8px 16px;
         border-radius: 8px;
         cursor: pointer;
@@ -88,12 +89,12 @@
     }
 
         .view-toggle-btn:hover {
-            color: #1a2634;
+            color: var(--primary-navy);
         }
 
         .view-toggle-btn.active {
             background: white;
-            color: #1a2634;
+            color: var(--primary-navy);
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
@@ -118,7 +119,7 @@
         .cust-card-pro:hover {
             box-shadow: 0 15px 40px rgba(26, 38, 52, 0.08);
             transform: translateY(-5px);
-            border-color: #be955b;
+            border-color: var(--primary-gold);
         }
 
     .cust-card-header {
@@ -128,22 +129,33 @@
         margin-bottom: 2rem;
     }
 
+    /* --- زر البوابة الديناميكي --- */
     .portal-switch {
         display: flex;
         align-items: center;
         gap: 8px;
         font-size: 0.8rem;
         font-weight: 800;
-        color: #16a34a;
+        color: #16a34a; /* أخضر في حالة التنشيط */
+        transition: color 0.3s;
     }
+
+        .portal-switch.inactive {
+            color: #94a3b8; /* رمادي في حالة التعطيل */
+        }
 
     .switch-icon {
         width: 36px;
         height: 20px;
-        background: #be955b;
+        background: var(--primary-gold);
         border-radius: 20px;
         position: relative;
+        transition: background 0.3s;
     }
+
+        .switch-icon.inactive {
+            background: #cbd5e1;
+        }
 
         .switch-icon::after {
             content: '';
@@ -154,17 +166,23 @@
             height: 16px;
             background: white;
             border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .switch-icon.inactive::after {
+            inset-inline-end: auto;
+            inset-inline-start: 2px;
         }
 
     .cust-code {
-        background: rgba(190, 149, 91, 0.1);
-        color: #be955b;
+        background: rgba(184, 147, 90, 0.1);
+        color: var(--primary-gold);
         padding: 5px 12px;
         border-radius: 8px;
         font-family: monospace;
         font-weight: 900;
         font-size: 0.85rem;
-        border: 1px solid rgba(190, 149, 91, 0.2);
+        border: 1px solid rgba(184, 147, 90, 0.2);
     }
 
     .cust-profile-area {
@@ -183,12 +201,12 @@
         .cust-name-info h3 {
             font-size: 1.4rem;
             font-weight: 900;
-            color: #1a2634;
+            color: var(--primary-navy);
             margin: 0 0 0.5rem 0;
         }
 
         .cust-name-info p {
-            color: #64748b;
+            color: var(--text-muted);
             font-weight: 700;
             margin: 0;
             font-family: monospace;
@@ -222,7 +240,7 @@
         .fin-item label {
             display: block;
             font-size: 0.8rem;
-            color: #64748b;
+            color: var(--text-muted);
             font-weight: 800;
             margin-bottom: 0.25rem;
         }
@@ -260,7 +278,7 @@
 
     .progress-bar-fill {
         height: 100%;
-        background: #be955b;
+        background: var(--primary-gold);
         border-radius: 10px;
     }
 
@@ -301,7 +319,7 @@
         .cred-field label {
             display: block;
             font-size: 0.7rem;
-            color: #64748b;
+            color: var(--text-muted);
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
@@ -311,35 +329,80 @@
             border: 1px solid #e2e8f0;
             padding: 0.5rem;
             border-radius: 8px;
-            color: #1a2634;
+            color: var(--primary-navy);
             font-family: monospace;
             font-weight: 800;
             font-size: 0.9rem;
         }
 
+    /* أزرار البطاقات */
+    .card-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: auto;
+    }
+
     .btn-action-dark {
-        background: #1a2634;
+        background: var(--primary-navy);
         color: white;
         border: none;
-        padding: 1.2rem;
+        padding: 1rem;
         border-radius: 16px;
         font-weight: 800;
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-family: inherit;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
+        gap: 8px;
         text-decoration: none;
         transition: 0.3s;
-        width: 100%;
+        flex: 1;
     }
 
         .btn-action-dark:hover {
-            background: #2b3f56;
+            background: var(--secondary-navy);
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(26,38,52,0.2);
             color: white;
+        }
+
+    .btn-edit-card {
+        background: rgba(184, 147, 90, 0.1);
+        color: var(--primary-gold);
+        border: 1px solid rgba(184, 147, 90, 0.2);
+        padding: 1rem;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn-edit-card:hover {
+            background: var(--primary-gold);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .btn-delete-card {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        padding: 1rem;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .btn-delete-card:hover {
+            background: #ef4444;
+            color: white;
+            transform: translateY(-2px);
         }
 
     /* --- تنسيق عرض الجدول (List View - DataTables) --- */
@@ -360,7 +423,7 @@
 
         .table-enterprise th {
             background-color: #f8fafc;
-            color: #64748b;
+            color: var(--text-muted);
             font-weight: 800;
             padding: 1.25rem 1rem;
             border-bottom: 2px solid #e2e8f0;
@@ -371,7 +434,7 @@
         .table-enterprise td {
             padding: 1.25rem 1rem;
             border-bottom: 1px solid #f1f5f9;
-            color: #1e293b;
+            color: var(--text-dark);
             font-weight: 700;
             vertical-align: middle;
         }
@@ -419,10 +482,17 @@
         color: #ef4444;
     }
 
-    .action-btn {
-        color: var(--primary-navy);
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
+    /* أزرار الجدول */
+    .actions-cell {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .action-btn-primary {
+        color: white;
+        background: var(--primary-navy);
+        border: none;
         padding: 0.5rem 1rem;
         border-radius: 8px;
         text-decoration: none;
@@ -434,14 +504,45 @@
         gap: 5px;
     }
 
-        .action-btn:hover {
-            background: var(--primary-navy);
+        .action-btn-primary:hover {
+            background: var(--secondary-navy);
             color: white;
-            border-color: var(--primary-navy);
+        }
+
+    .action-btn-edit {
+        color: var(--primary-gold);
+        background: rgba(184,147,90,0.1);
+        border: 1px solid rgba(184,147,90,0.2);
+        padding: 0.5rem 0.8rem;
+        border-radius: 8px;
+        transition: 0.3s;
+        text-decoration: none;
+    }
+
+        .action-btn-edit:hover {
+            background: var(--primary-gold);
+            color: white;
+        }
+
+    .action-btn-delete {
+        color: #ef4444;
+        background: rgba(239,68,68,0.1);
+        border: 1px solid rgba(239,68,68,0.2);
+        padding: 0.5rem 0.8rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .action-btn-delete:hover {
+            background: #ef4444;
+            color: white;
         }
 </style>
 
 <div>
+    @Html.AntiForgeryToken()
+
     <div class="page-header-container">
         <div class="page-header-text">
             <h2><i class="fa-solid fa-users"></i> @Localizer["إدارة شؤون العملاء"]</h2>
@@ -473,9 +574,10 @@
 
                 <div class="cust-card-pro">
                     <div class="cust-card-header">
-                        <div class="portal-switch">
-                            <div class="switch-icon"></div>
-                            <span>@Localizer["البوابة نشطة"]</span>
+                        <!-- جعل الزر ديناميكي يعتمد على قيمة IsPortalActive -->
+                        <div class="portal-switch @(customer.IsPortalActive ? "" : "inactive")" title="@(customer.IsPortalActive? Localizer["البوابة نشطة"] : Localizer["البوابة معطلة"])">
+                            <div class="switch-icon @(customer.IsPortalActive ? "" : "inactive")"></div>
+                            <span>@(customer.IsPortalActive? Localizer["البوابة نشطة"] : Localizer["البوابة معطلة"])</span>
                         </div>
                         <div class="cust-code">@customer.CustomerCode</div>
                     </div>
@@ -523,16 +625,24 @@
                         </div>
                     </div>
 
-                    <a href="@Url.Action("Details", "Customers", new { id = customer.Id })" class="btn-action-dark">
-                        <i class="fa-solid fa-file-invoice"></i> @Localizer["إصدار كشف حساب"]
-                    </a>
+                    <div class="card-actions">
+                        <button type="button" class="btn-delete-card" onclick="confirmDelete(@customer.Id)" title="@Localizer["حذف"]">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                        <a href="@Url.Action("Edit", "Customers", new { id = customer.Id })" class="btn-edit-card" title="@Localizer["تعديل بيانات العميل"]">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <a href="@Url.Action("Details", "Customers", new { id = customer.Id })" class="btn-action-dark">
+                            <i class="fa-solid fa-file-invoice"></i> @Localizer["كشف حساب"]
+                        </a>
+                    </div>
                 </div>
             }
         }
         else
         {
-            <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; background: white; border-radius: 1.5rem; color: #94a3b8;">
-                <i class="fa-solid fa-users-slash" style="font-size: 3rem; margin-bottom: 1rem; color: #be955b;"></i>
+            <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; background: white; border-radius: 1.5rem; color: var(--text-muted);">
+                <i class="fa-solid fa-users-slash" style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary-gold);"></i>
                 <h3>@Localizer["لا يوجد عملاء مسجلين حالياً."]</h3>
             </div>
         }
@@ -571,9 +681,17 @@
                             <td><span class="fin-badge fin-success">$@cust.TotalPaid</span></td>
                             <td><span class="fin-badge fin-danger">$@cust.TotalBalance</span></td>
                             <td>
-                                <a href="@Url.Action("Details", "Customers", new { id = cust.Id })" class="action-btn">
-                                    <i class="fa-solid fa-file-invoice"></i> @Localizer["كشف حساب"]
-                                </a>
+                                <div class="actions-cell">
+                                    <a href="@Url.Action("Details", "Customers", new { id = cust.Id })" class="action-btn-primary" title="@Localizer["كشف حساب"]">
+                                        <i class="fa-solid fa-file-invoice"></i> @Localizer["كشف"]
+                                    </a>
+                                    <a href="@Url.Action("Edit", "Customers", new { id = cust.Id })" class="action-btn-edit" title="@Localizer["تعديل"]">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <button type="button" class="action-btn-delete" onclick="confirmDelete(@cust.Id)" title="@Localizer["حذف"]">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -584,7 +702,49 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
     <script>
+        // دالة التأكيد قبل الحذف
+        function confirmDelete(id) {
+            Swal.fire({
+                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
+                text: '@Html.Raw(Localizer["لن تتمكن من التراجع عن عملية الحذف!"])',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: 'var(--primary-navy)',
+                confirmButtonText: '@Html.Raw(Localizer["نعم، احذفه!"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Customers")/' + id,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: '@Html.Raw(Localizer["تم الحذف!"])',
+                                    text: '@Html.Raw(Localizer["تم حذف بيانات العميل بنجاح."])',
+                                    icon: 'success',
+                                    confirmButtonColor: 'var(--primary-gold)'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', response.message || '@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])', 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["لا يمكن الاتصال بالخادم."])', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
         // دالة التبديل بين أشكال العرض
         function switchView(viewType) {
             if (viewType === 'list') {

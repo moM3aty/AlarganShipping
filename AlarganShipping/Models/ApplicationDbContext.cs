@@ -24,7 +24,9 @@ namespace AlarganShipping.Models
         public DbSet<ServiceRate> ServiceRates { get; set; }
         public DbSet<CarInspection> CarInspections { get; set; }
         public DbSet<DocumentAttachment> DocumentAttachments { get; set; }
-
+        public DbSet<VehicleShape> VehicleShapes { get; set; }
+        public DbSet<TaxType> TaxTypes { get; set; }
+        public DbSet<TaxMethod> TaxMethods { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

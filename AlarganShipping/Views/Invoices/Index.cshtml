@@ -1,5 +1,4 @@
-﻿<!-- مسار الملف في المشروع: Views/Invoices/Index.cshtml -->
-@model IEnumerable<AlarganShipping.Models.Invoice>
+﻿@model IEnumerable<AlarganShipping.Models.Invoice>
 @{
     ViewData["Title"] = Localizer["المالية والفواتير"];
 }
@@ -12,7 +11,7 @@
         background-color: #ffffff;
         padding: 1.5rem;
         border-radius: 1.5rem;
-        box-shadow: 0 5px 20px rgba(26, 38, 52, 0.03);
+        box-shadow: 0 5px 20px rgba(44, 62, 80, 0.03);
         margin-bottom: 2rem;
         border: 1px solid #f1f5f9;
         flex-wrap: wrap;
@@ -40,7 +39,7 @@
         padding: 0.85rem 1.75rem;
         border-radius: 1rem;
         text-decoration: none;
-        box-shadow: 0 4px 10px rgba(26, 38, 52, 0.3);
+        box-shadow: 0 4px 10px rgba(44, 62, 80, 0.3);
         transition: 0.3s;
         display: inline-flex;
         align-items: center;
@@ -49,8 +48,9 @@
 
         .btn-add:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(26, 38, 52, 0.4);
+            box-shadow: 0 6px 15px rgba(44, 62, 80, 0.4);
             color: white;
+            background: linear-gradient(to right, var(--primary-gold), var(--secondary-gold));
         }
 
     .data-card {
@@ -96,7 +96,7 @@
         font-size: 1.1rem;
         font-weight: 900;
         color: var(--primary-navy);
-        background: rgba(26,38,52,0.05);
+        background: rgba(44, 62, 80, 0.05);
         padding: 0.3rem 0.8rem;
         border-radius: 6px;
     }
@@ -106,10 +106,10 @@
         font-size: 1.2rem;
         font-weight: 900;
         color: var(--primary-gold);
-        background: rgba(190, 149, 91, 0.1);
+        background: rgba(184, 147, 90, 0.1);
         padding: 0.4rem 1rem;
         border-radius: 8px;
-        border: 1px solid rgba(190, 149, 91, 0.2);
+        border: 1px solid rgba(184, 147, 90, 0.2);
     }
 
     .action-btn {
@@ -126,13 +126,13 @@
         align-items: center;
         gap: 8px;
         cursor: pointer;
-        box-shadow: 0 4px 10px rgba(190, 149, 91, 0.2);
+        box-shadow: 0 4px 10px rgba(184, 147, 90, 0.2);
     }
 
         .action-btn:hover {
-            background: #a67c46;
+            background: var(--secondary-gold);
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(190, 149, 91, 0.3);
+            box-shadow: 0 6px 15px rgba(184, 147, 90, 0.3);
             color: white;
         }
 </style>

@@ -1,0 +1,275 @@
+﻿@{
+    ViewData["Title"] = Localizer["المحاسبة والتقارير المالية"];
+}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+    }
+
+    .page-subtitle {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    /* تبويبات المحاسبة (مشتريات، مبيعات، مصاريف، الخ) */
+    .accounting-tabs {
+        display: flex;
+        gap: 10px;
+        background: white;
+        padding: 0.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        overflow-x: auto;
+        border: 1px solid #e2e8f0;
+    }
+
+    .acc-tab {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        white-space: nowrap;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+    }
+
+        .acc-tab:hover {
+            background: #f8fafc;
+            color: var(--primary-navy);
+        }
+
+        .acc-tab.active {
+            background: var(--primary-navy);
+            color: white;
+        }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .fin-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    }
+
+    .fin-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .fin-card-title {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+    }
+
+    .fin-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(184, 147, 90, 0.1);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-gold);
+    }
+
+    .fin-data-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        text-align: center;
+    }
+
+    .fin-data-box {
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 1rem;
+        border: 1px solid #f1f5f9;
+    }
+
+    .fin-label {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .fin-value {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+    }
+
+        .fin-value.green {
+            color: #16a34a;
+        }
+
+        .fin-value.red {
+            color: #ef4444;
+        }
+
+    .chart-container {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        margin-top: 1.5rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    }
+
+    .chart-title {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin-bottom: 1.5rem;
+    }
+</style>
+
+<div>
+    <div class="page-header">
+        <div>
+            <h2 class="page-title">@Localizer["المحاسبة والتقارير المالية"]</h2>
+            <div class="page-subtitle">@Localizer["نظام الإدارة المحاسبية الذكي"]</div>
+        </div>
+    </div>
+
+    <!-- الأقسام المحاسبية الأساسية -->
+    <div class="accounting-tabs">
+        <button class="acc-tab active"><i class="fa-solid fa-chart-pie"></i> @Localizer["نظرة عامة"]</button>
+        <button class="acc-tab"><i class="fa-solid fa-cart-shopping"></i> @Localizer["المشتريات (مزادات ونقل)"]</button>
+        <button class="acc-tab"><i class="fa-solid fa-tags"></i> @Localizer["المبيعات (فواتير العملاء)"]</button>
+        <button class="acc-tab"><i class="fa-solid fa-money-bill-wave"></i> @Localizer["المصاريف العامة"]</button>
+        <a href="@Url.Action("Index", "PaymentReceipts")" class="acc-tab"><i class="fa-solid fa-arrow-down-to-line"></i> @Localizer["سندات القبض"]</a>
+        <button class="acc-tab"><i class="fa-solid fa-arrow-up-from-bracket"></i> @Localizer["سندات الصرف"]</button>
+        <button class="acc-tab"><i class="fa-solid fa-file-invoice"></i> @Localizer["التقارير الضريبية"]</button>
+    </div>
+
+    <div class="stats-grid">
+        <!-- بطاقة المبيعات (العملاء) -->
+        <div class="fin-card">
+            <div class="fin-card-header">
+                <h3 class="fin-card-title">@Localizer["المبيعات والإيرادات"]</h3>
+                <div class="fin-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+            </div>
+            <div class="fin-data-grid">
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["إجمالي المبيعات"]</span>
+                    <span class="fin-value" dir="ltr">OMR @ViewBag.TotalSales</span>
+                </div>
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["المستلم (سندات قبض)"]</span>
+                    <span class="fin-value green" dir="ltr">OMR @(ViewBag.TotalSales - ViewBag.PendingCollections)</span>
+                </div>
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["المتأخرات (ذمم)"]</span>
+                    <span class="fin-value red" dir="ltr">OMR @ViewBag.PendingCollections</span>
+                </div>
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["عدد الفواتير"]</span>
+                    <span class="fin-value">12</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- بطاقة المشتريات (مزادات وشحن) -->
+        <div class="fin-card">
+            <div class="fin-card-header">
+                <h3 class="fin-card-title">@Localizer["المشتريات والتكاليف"]</h3>
+                <div class="fin-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+            </div>
+            <div class="fin-data-grid">
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["إجمالي المشتريات"]</span>
+                    <span class="fin-value" dir="ltr">OMR @ViewBag.TotalPurchases</span>
+                </div>
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["المدفوع (سندات صرف)"]</span>
+                    <span class="fin-value" dir="ltr">OMR @ViewBag.TotalPurchases</span>
+                </div>
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["المصاريف التشغيلية"]</span>
+                    <span class="fin-value red" dir="ltr">OMR @ViewBag.TotalExpenses</span>
+                </div>
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["سيارات مشتراة"]</span>
+                    <span class="fin-value">8</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- رسم بياني للمحاسبة (Chart.js) -->
+    <div class="chart-container">
+        <h3 class="chart-title">@Localizer["نظرة عامة على التدفقات النقدية (الإيرادات vs المصروفات)"]</h3>
+        <canvas id="financeChart" height="100"></canvas>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // تهيئة الرسم البياني ليطابق ألوان الهوية البصرية
+        const rootStyles = getComputedStyle(document.documentElement);
+        const goldColor = rootStyles.getPropertyValue('--primary-gold').trim();
+        const navyColor = rootStyles.getPropertyValue('--primary-navy').trim();
+
+        const ctx = document.getElementById('financeChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: '@Localizer["المبيعات (إيرادات)"]',
+                        data: [15000, 22000, 38000, 35000, 28000, 19000, 15000, 10000, 12000, 15000, 20000, 25000],
+                        borderColor: navyColor, // لون كحلي للإيرادات
+                        tension: 0.4,
+                        borderWidth: 3
+                    },
+                    {
+                        label: '@Localizer["المشتريات والتكاليف"]',
+                        data: [10000, 18000, 25000, 20000, 15000, 12000, 8000, 5000, 8000, 10000, 12000, 18000],
+                        borderColor: goldColor, // لون ذهبي للتكاليف
+                        tension: 0.4,
+                        borderWidth: 3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'top', labels: { font: { family: 'Cairo', weight: 'bold' } } } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    </script>
+}

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlarganShipping.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260301010831_initialCreate")]
-    partial class initialCreate
+    [Migration("20260302235558_initialCreate3")]
+    partial class initialCreate3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,25 +61,44 @@ namespace AlarganShipping.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AuctionId")
+                    b.Property<DateTime?>("AddDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("AuctionId")
                         .HasColumnType("int");
+
+                    b.Property<string>("CardNo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Color")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CurrentLocation")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("EstimatedProfit")
+                    b.Property<string>("CustomsDeclaration")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EngineNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("EstimatedProfit")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("InsuranceNo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("InternalCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LotNumber")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MainImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Make")
@@ -88,6 +107,9 @@ namespace AlarganShipping.Migrations
 
                     b.Property<string>("Model")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlateNo")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("PurchasePrice")
@@ -99,8 +121,24 @@ namespace AlarganShipping.Migrations
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("TaxAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("TaxMethod")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TaxType")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("VIN")
                         .IsRequired()
+                        .HasMaxLength(17)
+                        .HasColumnType("nvarchar(17)");
+
+                    b.Property<string>("VehicleShape")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VehicleType")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Year")
@@ -630,11 +668,9 @@ namespace AlarganShipping.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BillOfLading")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BookingNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ContainerNumber")
@@ -654,11 +690,9 @@ namespace AlarganShipping.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ShippingLine")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -668,6 +702,40 @@ namespace AlarganShipping.Migrations
                     b.HasIndex("LoadingPortId");
 
                     b.ToTable("Shipments");
+                });
+
+            modelBuilder.Entity("AlarganShipping.Models.TaxMethod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TaxMethods");
+                });
+
+            modelBuilder.Entity("AlarganShipping.Models.TaxType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TaxTypes");
                 });
 
             modelBuilder.Entity("AlarganShipping.Models.TrackingLog", b =>
@@ -780,11 +848,30 @@ namespace AlarganShipping.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("AlarganShipping.Models.VehicleShape", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VehicleShapes");
+                });
+
             modelBuilder.Entity("AlarganShipping.Models.Car", b =>
                 {
                     b.HasOne("AlarganShipping.Models.Auction", "Auction")
                         .WithMany("Cars")
-                        .HasForeignKey("AuctionId");
+                        .HasForeignKey("AuctionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AlarganShipping.Models.Customer", "Customer")
                         .WithMany("Cars")
@@ -806,7 +893,7 @@ namespace AlarganShipping.Migrations
             modelBuilder.Entity("AlarganShipping.Models.CarInspection", b =>
                 {
                     b.HasOne("AlarganShipping.Models.Car", "Car")
-                        .WithMany("Inspections")
+                        .WithMany("CarInspections")
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -850,11 +937,11 @@ namespace AlarganShipping.Migrations
             modelBuilder.Entity("AlarganShipping.Models.DocumentAttachment", b =>
                 {
                     b.HasOne("AlarganShipping.Models.Car", "Car")
-                        .WithMany("Documents")
+                        .WithMany("DocumentAttachments")
                         .HasForeignKey("CarId");
 
                     b.HasOne("AlarganShipping.Models.Customer", "Customer")
-                        .WithMany("Documents")
+                        .WithMany()
                         .HasForeignKey("CustomerId");
 
                     b.HasOne("AlarganShipping.Models.Shipment", "Shipment")
@@ -976,9 +1063,9 @@ namespace AlarganShipping.Migrations
 
             modelBuilder.Entity("AlarganShipping.Models.Car", b =>
                 {
-                    b.Navigation("Documents");
+                    b.Navigation("CarInspections");
 
-                    b.Navigation("Inspections");
+                    b.Navigation("DocumentAttachments");
 
                     b.Navigation("Invoices");
 
@@ -988,8 +1075,6 @@ namespace AlarganShipping.Migrations
             modelBuilder.Entity("AlarganShipping.Models.Customer", b =>
                 {
                     b.Navigation("Cars");
-
-                    b.Navigation("Documents");
 
                     b.Navigation("Invoices");
 
