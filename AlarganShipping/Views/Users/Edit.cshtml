@@ -4,11 +4,13 @@
 }
 
 <style>
+    /* --- هيدر الصفحة --- */
     .form-page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 2rem;
+        gap: 1rem;
     }
 
     .btn-back {
@@ -20,6 +22,9 @@
         font-weight: 700;
         text-decoration: none;
         transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
         .btn-back:hover {
@@ -27,6 +32,7 @@
             color: var(--primary-navy);
         }
 
+    /* --- بطاقة النموذج الفاخرة --- */
     .premium-form-card {
         background: white;
         border-radius: 1.5rem;
@@ -44,7 +50,7 @@
             left: 0;
             right: 0;
             height: 6px;
-            background: var(--primary-gold);
+            background: linear-gradient(to right, var(--primary-navy), var(--primary-gold));
         }
 
     .form-grid {
@@ -75,13 +81,16 @@
         background-color: #f8fafc;
         outline: none;
         transition: 0.3s;
+        color: var(--primary-navy);
     }
 
         .form-control:focus {
             border-color: var(--primary-gold);
             background-color: white;
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
 
+    /* صناديق الصلاحيات */
     .permission-box {
         background: #f8fafc;
         padding: 1.5rem;
@@ -118,6 +127,7 @@
         transition: 0.3s;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 10px;
     }
 
@@ -127,7 +137,7 @@
             box-shadow: 0 5px 15px rgba(184, 147, 90, 0.2);
         }
 
-    /* تخصيص Select2 للقوائم */
+    /* تخصيص Select2 */
     .select2-container--default .select2-selection--single {
         background-color: #f8fafc;
         border: 2px solid #e2e8f0;
@@ -137,26 +147,51 @@
         align-items: center;
     }
 
-        .select2-container--default .select2-selection--single:focus, .select2-container--focus .select2-selection--single {
-            border-color: var(--primary-gold);
-            background-color: white;
-        }
-
         .select2-container--default .select2-selection--single .select2-selection__rendered {
             color: var(--primary-navy);
             font-weight: 700;
-            padding-left: 1rem;
-            padding-right: 1rem;
         }
 
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 43px;
-            right: 10px;
+    /* ========================================================
+           تعديلات الموبايل (الميديا كويري)
+           ======================================================== */
+    @@media (max-width: 768px) {
+        .form-page-header {
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
         }
 
-    html[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
-        left: 10px;
-        right: auto;
+        .btn-back {
+            justify-content: center;
+        }
+
+        .premium-form-card {
+            padding: 1.5rem;
+            border-radius: 1.25rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .permission-box {
+            padding: 1.25rem;
+        }
+
+        .perm-grid-mobile {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+
+        .btn-save {
+            width: 100%;
+        }
+
+        .form-actions-mobile {
+            text-align: center !important;
+        }
     }
 </style>
 
@@ -172,32 +207,32 @@
     <form asp-action="Edit" method="post" id="userEditForm">
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="Id" />
-        <input type="hidden" asp-for="PasswordHash" /> @* الحفاظ على الباسورد القديم *@
+        <input type="hidden" asp-for="PasswordHash" /> @* الحفاظ على كلمة المرور الأصلية *@
 
         <div class="form-grid">
             <div class="form-group">
-                <label class="form-label">@Localizer["الاسم الكامل"]</label>
+                <label class="form-label">@Localizer["الاسم الكامل"] *</label>
                 <input asp-for="FullName" class="form-control" required />
             </div>
             <div class="form-group">
                 <label class="form-label">@Localizer["البريد الإلكتروني"]</label>
-                <input asp-for="Email" class="form-control" readonly style="background: #e2e8f0; color: #94a3b8;" />
+                <input asp-for="Email" class="form-control" readonly style="background: #e2e8f0; color: #94a3b8;" dir="ltr" />
             </div>
             <div class="form-group">
                 <label class="form-label">@Localizer["حالة الحساب"]</label>
                 <select asp-for="IsActive" class="form-control">
-                    <option value="true">نشط (يمكنه الدخول)</option>
-                    <option value="false">معطل (لا يمكنه الدخول)</option>
+                    <option value="true">@Localizer["نشط (يمكنه الدخول)"]</option>
+                    <option value="false">@Localizer["معطل (لا يمكنه الدخول)"]</option>
                 </select>
             </div>
 
             <div class="permission-box" style="grid-column: 1 / -1;">
-                <h4 style="margin-bottom: 1.5rem; color: var(--primary-navy); font-weight: 900;"><i class="fa-solid fa-shield-halved"></i> تحديث الصلاحيات</h4>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-                    <label class="perm-item"><input type="checkbox" asp-for="CanManageCars" /> إدارة السيارات</label>
-                    <label class="perm-item"><input type="checkbox" asp-for="CanManageCustomers" /> إدارة العملاء</label>
-                    <label class="perm-item"><input type="checkbox" asp-for="CanManageFinance" /> إدارة المالية</label>
-                    <label class="perm-item"><input type="checkbox" asp-for="CanManageSettings" /> إدارة الإعدادات</label>
+                <h4 style="margin-bottom: 1.5rem; color: var(--primary-navy); font-weight: 900;"><i class="fa-solid fa-shield-halved"></i> @Localizer["تحديث صلاحيات الوصول"]</h4>
+                <div class="perm-grid-mobile" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                    <label class="perm-item"><input type="checkbox" asp-for="CanManageCars" /> @Localizer["إدارة السيارات"]</label>
+                    <label class="perm-item"><input type="checkbox" asp-for="CanManageCustomers" /> @Localizer["إدارة العملاء"]</label>
+                    <label class="perm-item"><input type="checkbox" asp-for="CanManageFinance" /> @Localizer["إدارة المالية والفواتير"]</label>
+                    <label class="perm-item"><input type="checkbox" asp-for="CanManageSettings" /> @Localizer["إدارة الإعدادات"]</label>
                 </div>
             </div>
 
@@ -230,8 +265,10 @@
             </div>
         </div>
 
-        <div style="margin-top: 3rem; text-align: left; border-top: 1px solid #f1f5f9; padding-top: 2rem;">
-            <button type="submit" class="btn-save" id="btnSubmit"><i class="fa-solid fa-save"></i> @Localizer["تحديث الصلاحيات والحساب"]</button>
+        <div class="form-actions-mobile" style="margin-top: 3rem; text-align: left; border-top: 1px solid #f1f5f9; padding-top: 2rem;">
+            <button type="submit" class="btn-save" id="btnSubmit">
+                <i class="fa-solid fa-save"></i> @Localizer["تحديث الصلاحيات والحساب"]
+            </button>
         </div>
     </form>
 </div>
@@ -272,15 +309,19 @@
                     data: form.serialize(),
                     success: function(res) {
                         if(res.success) {
-                            Swal.fire({ title: '@Html.Raw(Localizer["تم التحديث!"])', icon: 'success', confirmButtonColor: 'var(--primary-gold)' })
-                            .then(() => window.location.href = '@Url.Action("Index", "Users")');
+                            Swal.fire({
+                                title: "@Html.Raw(Localizer["تم التحديث!"])",
+                                text: "@Html.Raw(Localizer["تم حفظ التعديلات وتحديث الصلاحيات بنجاح."])",
+                                icon: 'success',
+                                confirmButtonColor: 'var(--primary-gold)'
+                            }).then(() => window.location.href = '@Url.Action("Index", "Users")');
                         } else {
-                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["حدث خطأ أثناء التحديث"])', 'error');
+                            Swal.fire("@Html.Raw(Localizer["خطأ!"])", "@Html.Raw(Localizer["حدث خطأ أثناء التحديث"])", 'error');
                             btn.html(originalText).prop('disabled', false);
                         }
                     },
                     error: function() {
-                        Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["لا يمكن الاتصال بالسيرفر."])', 'error');
+                        Swal.fire("@Html.Raw(Localizer["خطأ!"])", "@Html.Raw(Localizer["لا يمكن الاتصال بالسيرفر."])", 'error');
                         btn.html(originalText).prop('disabled', false);
                     }
                 });

@@ -3,17 +3,22 @@
     ViewData["Title"] = Localizer["تفاصيل الشحنة والحاوية"];
 }
 
+<!-- استدعاء مكتبات التنسيق الضرورية -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
 <style>
+    /* هيدر الصفحة الفاخر */
     .details-header {
         background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%);
         color: white;
         padding: 3rem;
         border-radius: 1.5rem;
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
-        box-shadow: 0 15px 30px rgba(44, 62, 80, 0.15);
+        align-items: center;
+        box-shadow: 0 15px 35px rgba(44, 62, 80, 0.15);
         position: relative;
         overflow: hidden;
     }
@@ -26,7 +31,7 @@
             top: -20px;
             inset-inline-end: -20px;
             font-size: 15rem;
-            color: rgba(184,147,90,0.1);
+            color: rgba(184,147,90,0.08);
             z-index: 1;
         }
 
@@ -45,27 +50,30 @@
     }
 
     .status-badge-lg {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         padding: 0.5rem 1.5rem;
         border-radius: 50px;
         font-weight: 800;
-        font-size: 1rem;
-        margin-bottom: 1.5rem;
         border: 1px solid rgba(255,255,255,0.2);
         background: rgba(255,255,255,0.1);
+        margin-bottom: 1rem;
     }
 
     .btn-outline-light {
         background: rgba(255,255,255,0.1);
         color: white;
-        padding: 0.75rem 1.5rem;
+        padding: 0.8rem 1.5rem;
         border-radius: 0.75rem;
-        font-weight: 700;
+        font-weight: 800;
         text-decoration: none;
         border: 1px solid rgba(255,255,255,0.2);
         transition: 0.3s;
-        position: relative;
         z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
     }
 
         .btn-outline-light:hover {
@@ -73,9 +81,89 @@
             color: var(--primary-navy);
         }
 
+    /* مسار الشحنة البصري (المتطور) */
+    .route-visualizer {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 3rem;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .port-node {
+        text-align: center;
+        flex: 1;
+        z-index: 5;
+    }
+
+    .port-icon {
+        width: 65px;
+        height: 65px;
+        background: white;
+        border: 3px solid var(--primary-gold);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: var(--primary-navy);
+        margin: 0 auto 1.2rem;
+        box-shadow: 0 5px 15px rgba(184, 147, 90, 0.2);
+    }
+
+    .port-name {
+        font-weight: 900;
+        color: var(--primary-navy);
+        font-size: 1.2rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .port-date {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        font-weight: 800;
+        font-family: monospace;
+    }
+
+    .route-line {
+        flex: 2;
+        height: 6px;
+        background: #f1f5f9;
+        position: relative;
+        margin: 0 1rem;
+        border-radius: 10px;
+    }
+
+    .route-line-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: var(--primary-gold);
+        border-radius: 10px;
+        width: 50%;
+        transition: 1.5s ease;
+    }
+
+    .ship-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.8rem;
+        color: var(--primary-navy);
+        background: white;
+        padding: 0 15px;
+    }
+
+    /* كروت المعلومات */
     .info-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 1.5rem;
         margin-bottom: 2.5rem;
     }
@@ -90,10 +178,11 @@
 
     .info-label {
         display: block;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         color: var(--text-muted);
         font-weight: 800;
         margin-bottom: 0.5rem;
+        text-transform: uppercase;
     }
 
     .info-value {
@@ -102,95 +191,13 @@
         color: var(--primary-navy);
     }
 
-        .info-value i {
-            color: var(--primary-gold);
-            margin-inline-end: 5px;
-        }
-
-    /* مسار الشحنة البصري */
-    .route-visualizer {
-        background: white;
-        border-radius: 1.5rem;
-        padding: 2.5rem;
-        border: 1px solid #e2e8f0;
-        margin-bottom: 2.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .port-node {
-        text-align: center;
-        flex: 1;
-    }
-
-    .port-icon {
-        width: 60px;
-        height: 60px;
-        background: #f8fafc;
-        border: 2px solid var(--primary-gold);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        color: var(--primary-navy);
-        margin: 0 auto 1rem;
-        z-index: 2;
-        position: relative;
-    }
-
-    .port-name {
-        font-weight: 900;
-        color: var(--primary-navy);
-        font-size: 1.1rem;
-        margin-bottom: 0.2rem;
-    }
-
-    .port-date {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        font-weight: 700;
-        font-family: monospace;
-    }
-
-    .route-line {
-        flex: 2;
-        height: 4px;
-        background: #e2e8f0;
-        position: relative;
-        margin: 0 1rem;
-        border-radius: 10px;
-    }
-
-    .route-line-fill {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        background: var(--primary-gold);
-        border-radius: 10px;
-        width: 50%;
-    }
-
-    .ship-icon {
-        position: absolute;
-        top: -15px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 1.5rem;
-        color: var(--primary-navy);
-        background: white;
-        padding: 0 10px;
-    }
-
-    /* قسم محتويات الحاوية (السيارات) */
+    /* جدول السيارات */
     .section-container {
         background: white;
         border-radius: 1.5rem;
         padding: 2.5rem;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
         border: 1px solid #e2e8f0;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.03);
     }
 
     .section-header {
@@ -204,246 +211,256 @@
         font-size: 1.5rem;
         font-weight: 900;
         color: var(--primary-navy);
-        margin: 0;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
+        margin: 0;
     }
-
-        .section-title i {
-            color: var(--primary-gold);
-        }
 
     .btn-add-car {
         background: var(--primary-gold);
         color: white;
         border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.75rem;
+        padding: 0.8rem 1.5rem;
+        border-radius: 0.8rem;
         font-weight: 800;
         cursor: pointer;
         transition: 0.3s;
-        text-decoration: none;
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
+        text-decoration: none;
     }
 
         .btn-add-car:hover {
             background: var(--secondary-gold);
             transform: translateY(-2px);
-            color: white;
-            box-shadow: 0 5px 15px rgba(184,147,90,0.3);
+            box-shadow: 0 8px 20px rgba(184, 147, 90, 0.3);
         }
 
     .data-table {
         width: 100%;
         border-collapse: collapse;
-        text-align: start;
     }
 
         .data-table th {
-            background-color: #f8fafc;
+            background: #f8fafc;
             color: var(--text-muted);
             font-weight: 800;
-            padding: 1rem;
+            padding: 1.2rem 1rem;
             border-bottom: 2px solid #e2e8f0;
+            text-align: start;
         }
 
         .data-table td {
-            padding: 1rem;
+            padding: 1.2rem 1rem;
             border-bottom: 1px solid #f1f5f9;
             color: var(--text-dark);
             font-weight: 700;
             vertical-align: middle;
         }
 
-        .data-table tr:hover {
-            background-color: #f8fafc;
-        }
-
     .car-td-info {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
     }
 
     .car-td-icon {
-        width: 40px;
-        height: 40px;
+        width: 42px;
+        height: 42px;
         background: rgba(184,147,90,0.1);
         color: var(--primary-gold);
         border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
+        font-size: 1.2rem;
     }
 
-    .btn-sm-navy {
-        color: var(--primary-navy);
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        font-weight: 800;
-        text-decoration: none;
-        padding: 0.4rem 1rem;
-        border-radius: 8px;
-        transition: 0.3s;
-        display: inline-block;
-    }
-
-        .btn-sm-navy:hover {
-            background: var(--primary-navy);
-            color: white;
-            border-color: var(--primary-navy);
-        }
-
-    .btn-sm-danger {
-        color: #ef4444;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        font-size: 1.1rem;
-        padding: 0.5rem;
-        transition: 0.3s;
-    }
-
-        .btn-sm-danger:hover {
-            color: #b91c1c;
-            transform: scale(1.1);
-        }
-
-    /* Modal Styling */
+    /* إصلاحات الـ Modal (الحل الجذري للمشكلة) */
     .custom-modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(26, 37, 47, 0.8);
+        background: rgba(26, 37, 47, 0.85);
         z-index: 10000;
         display: none;
         align-items: center;
         justify-content: center;
-        backdrop-filter: blur(5px);
+        backdrop-filter: blur(8px);
+        padding: 1.5rem;
     }
 
     .custom-modal {
         background: white;
-        border-radius: 1.5rem;
+        border-radius: 2rem;
         width: 100%;
-        max-width: 500px;
-        padding: 2rem;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-        transform: translateY(-50px);
-        transition: transform 0.3s ease, opacity 0.3s ease;
+        max-width: 550px;
+        padding: 2.5rem;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+        transform: scale(0.9);
         opacity: 0;
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
         .custom-modal.show {
-            transform: translateY(0);
+            transform: scale(1);
             opacity: 1;
         }
 
     .modal-title {
-        font-size: 1.3rem;
+        font-size: 1.6rem;
         font-weight: 900;
         color: var(--primary-navy);
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
     }
 
-    .modal-select {
-        width: 100%;
-        padding: 1rem;
-        border-radius: 1rem;
-        border: 2px solid #e2e8f0;
-        font-family: inherit;
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--primary-navy);
-        outline: none;
-        margin-bottom: 1.5rem;
+    /* تخصيص Select2 داخل المودال ليكون بريميوم */
+    .select2-container--default .select2-selection--single {
+        height: 55px !important;
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 1rem !important;
+        display: flex !important;
+        align-items: center !important;
+        font-weight: 700 !important;
+        background: #f8fafc !important;
     }
 
-        .modal-select:focus {
-            border-color: var(--primary-gold);
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            padding-inline-start: 1.2rem !important;
+            color: var(--primary-navy) !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 53px !important;
+            top: 0 !important;
         }
 
     .modal-actions {
         display: flex;
         justify-content: flex-end;
-        gap: 10px;
+        gap: 1rem;
+        margin-top: 2.5rem;
+    }
+
+    .btn-modal {
+        padding: 0.9rem 2rem;
+        border-radius: 1rem;
+        font-weight: 800;
+        cursor: pointer;
+        border: none;
+        transition: 0.3s;
+        font-family: inherit;
+        font-size: 1rem;
     }
 
     .btn-modal-cancel {
         background: #f1f5f9;
         color: var(--text-muted);
-        border: none;
-        padding: 0.8rem 1.5rem;
-        border-radius: 0.8rem;
-        font-weight: 800;
-        cursor: pointer;
-        transition: 0.3s;
     }
-
-        .btn-modal-cancel:hover {
-            background: #e2e8f0;
-            color: var(--primary-navy);
-        }
 
     .btn-modal-confirm {
         background: var(--primary-navy);
         color: white;
-        border: none;
-        padding: 0.8rem 1.5rem;
-        border-radius: 0.8rem;
-        font-weight: 800;
-        cursor: pointer;
-        transition: 0.3s;
+        box-shadow: 0 5px 15px rgba(44, 62, 80, 0.2);
     }
 
         .btn-modal-confirm:hover {
             background: var(--primary-gold);
         }
+
+    /* ميديا كويري للموبايل */
+    @@media (max-width: 768px) {
+        .details-header {
+            flex-direction: column;
+            text-align: center;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        .container-title {
+            font-size: 1.8rem;
+        }
+
+        .btn-outline-light {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .route-visualizer {
+            flex-direction: column;
+            gap: 2.5rem;
+            padding: 2.5rem 1.5rem;
+        }
+
+        .route-line {
+            width: 6px;
+            height: 100px;
+            margin: 0;
+        }
+
+        .route-line-fill {
+            width: 100%;
+            height: 50%;
+            top: 0;
+        }
+
+        .ship-icon {
+            transform: translate(-50%, -50%) rotate(90deg);
+            top: 50%;
+        }
+
+        .section-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .btn-add-car {
+            justify-content: center;
+        }
+
+        .section-title {
+            justify-content: center;
+        }
+    }
 </style>
 
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-<div>
+<div class="shipment-details-page">
     @Html.AntiForgeryToken()
     <input type="hidden" id="currentShipmentId" value="@Model.Id" />
 
+    <!-- 1. الهيدر -->
     <div class="details-header">
         <div class="header-content">
             <div class="status-badge-lg">
-                <i class="fa-solid fa-circle-dot" style="color: #4ade80; margin-inline-end: 5px; font-size: 0.8rem;"></i>
+                <i class="fa-solid fa-circle-dot" style="color: #4ade80;"></i>
                 @Localizer[Model.Status ?? "Pending"]
             </div>
             <h1 class="container-title">@Model.ContainerNumber</h1>
-            <p style="color: #cbd5e1; font-weight: 700; margin: 0; font-size: 1.1rem;">
-                @Localizer["خط الملاحة:"] @Model.ShippingLine | @Localizer["رقم الحجز:"] @Model.BookingNumber
-            </p>
+            <p>@Localizer["خط الملاحة:"] @Model.ShippingLine | @Localizer["رقم الحجز:"] @Model.BookingNumber</p>
         </div>
-        <div>
-            <a href="@Url.Action("Index", "Shipments")" class="btn-outline-light"><i class="fa-solid fa-arrow-right-long"></i> @Localizer["العودة للشحنات"]</a>
-        </div>
+        <a href="@Url.Action("Index", "Shipments")" class="btn-outline-light"><i class="fa-solid fa-arrow-right-long"></i> @Localizer["العودة للشحنات"]</a>
     </div>
 
-    <!-- مسار الشحنة البصري -->
+    <!-- 2. متتبع المسار -->
     <div class="route-visualizer">
         <div class="port-node">
             <div class="port-icon"><i class="fa-solid fa-ship"></i></div>
             <div class="port-name">@(Model.LoadingPort?.Name ?? Localizer["غير محدد"].Value)</div>
             <div class="port-date">ETD: @(Model.ExpectedTimeOfDeparture?.ToString("dd MMM yyyy") ?? "-")</div>
         </div>
-
         <div class="route-line">
-            <div class="route-line-fill"></div>
+            <div class="route-line-fill" style="width: @(Model.Status == "Arrived" || Model.Status == "Cleared" ? "100%" : "50%")"></div>
             <div class="ship-icon"><i class="fa-solid fa-ferry"></i></div>
         </div>
-
         <div class="port-node">
             <div class="port-icon"><i class="fa-solid fa-anchor"></i></div>
             <div class="port-name">@(Model.DischargePort?.Name ?? Localizer["غير محدد"].Value)</div>
@@ -451,53 +468,46 @@
         </div>
     </div>
 
-    <!-- معلومات إضافية -->
+    <!-- 3. كروت المعلومات -->
     <div class="info-grid">
         <div class="info-card">
             <span class="info-label">@Localizer["بوليصة الشحن (B/L)"]</span>
             <div class="info-value" style="font-family: monospace;">@(string.IsNullOrEmpty(Model.BillOfLading) ? "-" : Model.BillOfLading)</div>
         </div>
         <div class="info-card">
-            <span class="info-label">@Localizer["عدد السيارات المحملة"]</span>
-            <div class="info-value"><i class="fa-solid fa-car-side"></i> @(Model.Cars?.Count ?? 0) / 4 @Localizer["سيارات"]</div>
+            <span class="info-label">@Localizer["عدد السيارات"]</span>
+            <div class="info-value"><i class="fa-solid fa-car-side"></i> @(Model.Cars?.Count ?? 0) / 4</div>
         </div>
         <div class="info-card">
-            <span class="info-label">@Localizer["ميناء التحميل"] (Origin)</span>
+            <span class="info-label">@Localizer["ميناء التحميل"]</span>
             <div class="info-value">@(Model.LoadingPort?.Name ?? "-")</div>
         </div>
         <div class="info-card">
-            <span class="info-label">@Localizer["ميناء الوصول"] (Destination)</span>
+            <span class="info-label">@Localizer["ميناء الوصول"]</span>
             <div class="info-value">@(Model.DischargePort?.Name ?? "-")</div>
         </div>
     </div>
 
-    <!-- السيارات المرتبطة بالحاوية -->
+    <!-- 4. جدول السيارات -->
     <div class="section-container">
         <div class="section-header">
             <h2 class="section-title"><i class="fa-solid fa-cubes"></i> @Localizer["السيارات المحملة في هذه الحاوية"]</h2>
-
             @if ((Model.Cars?.Count ?? 0) < 4)
             {
                 <button type="button" class="btn-add-car" onclick="openLinkModal()">
                     <i class="fa-solid fa-link"></i> @Localizer["ربط سيارة بالحاوية"]
                 </button>
             }
-            else
-            {
-                <span style="color: #ef4444; font-weight: 800; background: #fef2f2; padding: 0.5rem 1rem; border-radius: 8px;">
-                    <i class="fa-solid fa-lock"></i> @Localizer["الحاوية ممتلئة (4/4)"]
-                </span>
-            }
         </div>
 
-        <div style="overflow-x: auto;">
+        <div style="overflow-x: auto; margin-top: 1rem;">
             <table class="data-table">
                 <thead>
                     <tr>
                         <th>@Localizer["السيارة"]</th>
                         <th>@Localizer["رقم الشاصي"] (VIN)</th>
                         <th>@Localizer["المالك"]</th>
-                        <th>@Localizer["إجراءات"]</th>
+                        <th style="text-align: center;">@Localizer["إجراءات"]</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -510,17 +520,17 @@
                                     <div class="car-td-info">
                                         <div class="car-td-icon"><i class="fa-solid fa-car"></i></div>
                                         <div>
-                                            <div style="color: var(--primary-navy); font-weight: 900;">@car.Make @car.Model</div>
+                                            <div style="color: var(--primary-navy); font-weight: 900; white-space: nowrap;">@car.Make @car.Model</div>
                                             <div style="color: var(--text-muted); font-size: 0.85rem;">@car.Year</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td style="font-family: monospace; color: var(--text-muted);">@car.VIN</td>
-                                <td><i class="fa-solid fa-user-tie" style="color: #cbd5e1; margin-inline-end: 5px;"></i> @(car.Customer?.Name ?? "-")</td>
-                                <td>
-                                    <div style="display: flex; gap: 10px; align-items: center;">
-                                        <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn-sm-navy">@Localizer["التفاصيل"]</a>
-                                        <button type="button" class="btn-sm-danger" title="@Localizer["إزالة من الحاوية"]" onclick="confirmUnlink(@car.Id)"><i class="fa-solid fa-unlink"></i></button>
+                                <td style="font-family: monospace; color: var(--text-muted); font-weight: 800;">@car.VIN</td>
+                                <td style="white-space: nowrap;"><i class="fa-solid fa-user-tie" style="color: #cbd5e1; margin-inline-end: 8px;"></i> @(car.Customer?.Name ?? "-")</td>
+                                <td style="text-align: center;">
+                                    <div style="display: flex; gap: 10px; justify-content: center;">
+                                        <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn-sm-navy" style="text-decoration:none;">@Localizer["التفاصيل"]</a>
+                                        <button type="button" class="btn-sm-danger" style="background:transparent; border:none; color:#ef4444; cursor:pointer;" onclick="confirmUnlink(@car.Id)"><i class="fa-solid fa-unlink"></i></button>
                                     </div>
                                 </td>
                             </tr>
@@ -529,8 +539,8 @@
                     else
                     {
                         <tr>
-                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 3rem;">
-                                <i class="fa-solid fa-box-open" style="font-size: 3rem; color: #e2e8f0; margin-bottom: 1rem; display: block;"></i>
+                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 4rem;">
+                                <i class="fa-solid fa-box-open" style="font-size: 3.5rem; color: #f1f5f9; margin-bottom: 1.5rem; display: block;"></i>
                                 @Localizer["الحاوية فارغة حالياً. قم بربط السيارات من المستودع."]
                             </td>
                         </tr>
@@ -541,16 +551,25 @@
     </div>
 </div>
 
-<!-- Modal لربط السيارة -->
+<!-- المودال المصلح والمحسن لربط السيارة -->
 <div class="custom-modal-overlay" id="linkCarModal">
     <div class="custom-modal">
-        <h3 class="modal-title"><i class="fa-solid fa-link" style="color: var(--primary-gold);"></i> @Localizer["اختر سيارة لربطها"]</h3>
-        <select id="carSelect" class="modal-select select2-modal">
-            <option value="">-- @Localizer["جاري التحميل..."] --</option>
-        </select>
+        <div class="modal-title">
+            <i class="fa-solid fa-car-on" style="color: var(--primary-gold);"></i>
+            @Localizer["اختر سيارة لربطها"]
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+            <select id="carSelect" class="select2-modal-pro">
+                <option value="">-- @Localizer["جاري التحميل..."] --</option>
+            </select>
+        </div>
+
         <div class="modal-actions">
-            <button type="button" class="btn-modal-cancel" onclick="closeLinkModal()">@Localizer["إلغاء"]</button>
-            <button type="button" class="btn-modal-confirm" id="btnSubmitLink" onclick="submitLinkCar()">@Localizer["تأكيد الربط"]</button>
+            <button type="button" class="btn-modal btn-modal-cancel" onclick="closeLinkModal()">@Localizer["إلغاء"]</button>
+            <button type="button" class="btn-modal btn-modal-confirm" id="btnSubmitLink" onclick="submitLinkCar()">
+                <i class="fa-solid fa-check-circle"></i> @Localizer["تأكيد الربط"]
+            </button>
         </div>
     </div>
 </div>
@@ -561,35 +580,44 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
     <script>
         $(document).ready(function() {
+            // تهيئة أولية لـ Select2 مع تحديد الوالد (Modal) لحل مشكلة الظهور
+            initializeSelect2();
+        });
+
+        function initializeSelect2() {
             var dir = $('html').attr('dir');
-            $('.select2-modal').select2({
+            $('.select2-modal-pro').select2({
                 dir: dir,
                 width: '100%',
-                dropdownParent: $('#linkCarModal') // لضمان ظهور القائمة فوق المودال
+                dropdownParent: $('#linkCarModal'), // هذا السطر يحل مشكلة ظهور القائمة خلف المودال
+                placeholder: "@Localizer["اختر السيارة..."]"
             });
-        });
+        }
 
         function openLinkModal() {
             $('#carSelect').empty().append('<option value="">-- @Html.Raw(Localizer["جاري التحميل..."]) --</option>');
-            $('#linkCarModal').css('display', 'flex');
+            $('#linkCarModal').css('display', 'flex').hide().fadeIn(200);
             setTimeout(() => $('.custom-modal').addClass('show'), 10);
 
-            // جلب السيارات المتاحة عبر AJAX
+            // جلب السيارات المتاحة
             $.get('@Url.Action("GetAvailableCars", "Shipments")', function(data) {
                 $('#carSelect').empty().append('<option value="">-- @Html.Raw(Localizer["اختر السيارة..."]) --</option>');
                 if(data && data.length > 0) {
                     data.forEach(c => {
-                        $('#carSelect').append(new Option(c.make + ' ' + c.model + ' (' + c.vin + ')', c.id));
+                        var text = c.make + ' ' + c.model + ' (' + c.vin + ')';
+                        $('#carSelect').append(new Option(text, c.id));
                     });
                 } else {
                     $('#carSelect').empty().append('<option value="">-- @Html.Raw(Localizer["لا توجد سيارات متاحة في المستودع"]) --</option>');
                 }
+                // تحديث Select2 بعد إضافة الخيارات
+                $('.select2-modal-pro').trigger('change');
             });
         }
 
         function closeLinkModal() {
             $('.custom-modal').removeClass('show');
-            setTimeout(() => $('#linkCarModal').hide(), 300);
+            $('#linkCarModal').fadeOut(200);
         }
 
         function submitLinkCar() {
@@ -597,7 +625,7 @@
             var shipmentId = $('#currentShipmentId').val();
 
             if(!carId) {
-                Swal.fire('@Html.Raw(Localizer["تنبيه!"])', '@Html.Raw(Localizer["يرجى اختيار سيارة أولاً"])', 'warning');
+                Swal.fire({ title: "@Html.Raw(Localizer["تنبيه!"])", text: "@Html.Raw(Localizer["يرجى اختيار سيارة أولاً"])", icon: 'warning', confirmButtonColor: 'var(--primary-gold)' });
                 return;
             }
 
@@ -612,25 +640,25 @@
                 if(res.success) {
                     location.reload();
                 } else {
-                    Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
-                    btn.prop('disabled', false).html('@Html.Raw(Localizer["تأكيد الربط"])');
+                    Swal.fire({ title: "@Html.Raw(Localizer["خطأ!"])", text: res.message, icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                    btn.prop('disabled', false).html('<i class="fa-solid fa-check-circle"></i> @Html.Raw(Localizer["تأكيد الربط"])');
                 }
             }).fail(function() {
-                Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["حدث خطأ أثناء الاتصال بالخادم."])', 'error');
-                btn.prop('disabled', false).html('@Html.Raw(Localizer["تأكيد الربط"])');
+                Swal.fire({ title: "@Html.Raw(Localizer["خطأ!"])", text: "@Html.Raw(Localizer["حدث خطأ أثناء الاتصال بالخادم."])", icon: 'error' });
+                btn.prop('disabled', false).html('<i class="fa-solid fa-check-circle"></i> @Html.Raw(Localizer["تأكيد الربط"])');
             });
         }
 
         function confirmUnlink(carId) {
             Swal.fire({
-                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
-                text: '@Html.Raw(Localizer["سيتم فك ارتباط هذه السيارة من الحاوية وإعادتها لحالة المستودع."])',
+                title: "@Html.Raw(Localizer["هل أنت متأكد؟"])",
+                text: "@Html.Raw(Localizer["سيتم فك ارتباط هذه السيارة من الحاوية وإعادتها لحالة المستودع."])",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: 'var(--primary-navy)',
-                confirmButtonText: '@Html.Raw(Localizer["نعم، إزالة"])',
-                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+                confirmButtonText: "@Html.Raw(Localizer["نعم، إزالة"])",
+                cancelButtonText: "@Html.Raw(Localizer["إلغاء"])"
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.post('@Url.Action("UnlinkCar", "Shipments")', {
@@ -640,7 +668,7 @@
                         if(res.success) {
                             location.reload();
                         } else {
-                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+                            Swal.fire({ title: "@Html.Raw(Localizer["خطأ!"])", text: res.message, icon: 'error' });
                         }
                     });
                 }

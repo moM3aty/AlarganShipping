@@ -155,6 +155,7 @@
             transform: translateY(-50%) rotate(-15deg);
             font-size: 15rem;
             color: rgba(184, 147, 90, 0.05);
+            z-index: 1;
         }
 
     .cta-content {
@@ -197,11 +198,77 @@
             background: var(--secondary-gold);
             transform: translateY(-2px);
         }
+
+    /* ========================================================
+           تعديلات الموبايل (الميديا كويري)
+           ======================================================== */
+    @@media (max-width: 768px) {
+        .page-header-container {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .page-header-text h2 {
+            font-size: 1.8rem;
+        }
+
+        .page-header-text p {
+            justify-content: center;
+        }
+
+        .intro-text {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+            .intro-text h1 {
+                font-size: 2.2rem;
+            }
+
+            .intro-text p {
+                font-size: 1rem;
+            }
+
+        .service-card {
+            padding: 2rem 1.5rem;
+        }
+
+            .service-card h3 {
+                font-size: 1.3rem;
+            }
+
+        .cta-banner-dark {
+            flex-direction: column;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            gap: 2rem;
+            border-radius: 1.5rem;
+        }
+
+        .cta-content {
+            text-align: center;
+        }
+
+            .cta-content h2 {
+                font-size: 1.8rem;
+            }
+
+            .cta-content p {
+                font-size: 1rem;
+            }
+
+        .btn-cta-outline {
+            width: 100%;
+            text-align: center;
+            padding: 1rem;
+        }
+    }
 </style>
 
 <div>
     <div class="page-header-container">
-        <div class="page-header-text" style="text-align: right; width: 100%;">
+        <div class="page-header-text">
             <h2>@Localizer["دليل الخدمات والأسعار"]</h2>
             <p><span style="width: 6px; height: 6px; background: var(--primary-gold); border-radius: 50%;"></span> @Localizer["نظام الإدارة اللوجستية التقني"]</p>
         </div>
@@ -260,9 +327,9 @@
     </div>
 
     <div class="cta-banner-dark">
-        <div class="cta-content" style="text-align: right; flex: 1;">
-            <h2 style="color: var(--primary-gold); font-size: 2rem; font-weight: 900; margin-bottom: 1rem;">@Localizer["هل ترغب في الحصول على حساب مزاد؟"]</h2>
-            <p style="font-size: 1.1rem; opacity: 0.8;">@Localizer["فريقنا مستعد لتزويدك بكافة الأدوات لبدء استيراد سيارتك بأمان."]</p>
+        <div class="cta-content">
+            <h2>@Localizer["هل ترغب في الحصول على حساب مزاد؟"]</h2>
+            <p>@Localizer["فريقنا مستعد لتزويدك بكافة الأدوات لبدء استيراد سيارتك بأمان."]</p>
         </div>
         <a href="@Url.Action("Index", "Contact")" class="btn-cta-outline">@Localizer["طلب عرض سعر"]</a>
     </div>

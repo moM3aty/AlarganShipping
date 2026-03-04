@@ -3,11 +3,14 @@
 }
 
 <style>
+    /* --- التنسيقات الأساسية --- */
     .page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
     .page-title {
@@ -21,9 +24,10 @@
         color: var(--text-muted);
         font-size: 0.9rem;
         font-weight: 600;
+        margin-top: 5px;
     }
 
-    /* تبويبات المحاسبة */
+    /* تبويبات المحاسبة المطورة */
     .accounting-tabs {
         display: flex;
         gap: 10px;
@@ -33,7 +37,13 @@
         box-shadow: 0 4px 15px rgba(0,0,0,0.02);
         overflow-x: auto;
         border: 1px solid #e2e8f0;
+        scrollbar-width: none; /* لإخفاء شريط التمرير في Firefox */
     }
+
+        .accounting-tabs::-webkit-scrollbar {
+            display: none;
+        }
+    /* لإخفاء شريط التمرير في Chrome/Safari */
 
     .acc-tab {
         padding: 0.75rem 1.5rem;
@@ -60,11 +70,13 @@
         .acc-tab.active {
             background: var(--primary-navy);
             color: white;
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
         }
 
+    /* شبكة الكروت */
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
         gap: 1.5rem;
         margin-top: 2rem;
     }
@@ -75,6 +87,8 @@
         padding: 2rem;
         border: 1px solid #e2e8f0;
         box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        display: flex;
+        flex-direction: column;
     }
 
     .fin-card-header {
@@ -85,37 +99,43 @@
     }
 
     .fin-card-title {
-        font-size: 1.2rem;
+        font-size: 1.25rem;
         font-weight: 900;
         color: var(--primary-navy);
         margin: 0;
     }
 
     .fin-icon {
-        width: 40px;
-        height: 40px;
+        width: 45px;
+        height: 45px;
         background: rgba(184, 147, 90, 0.1);
-        border-radius: 10px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--primary-gold);
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
 
     .fin-data-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-        text-align: center;
+        gap: 1.25rem;
     }
 
     .fin-data-box {
-        padding: 1rem;
+        padding: 1.25rem;
         background: #f8fafc;
-        border-radius: 1rem;
+        border-radius: 1.25rem;
         border: 1px solid #f1f5f9;
+        text-align: center;
+        transition: 0.3s;
     }
+
+        .fin-data-box:hover {
+            border-color: var(--primary-gold);
+            background: white;
+        }
 
     .fin-label {
         display: block;
@@ -126,7 +146,7 @@
     }
 
     .fin-value {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         font-weight: 900;
         color: var(--primary-navy);
         font-family: monospace;
@@ -144,20 +164,66 @@
         background: white;
         border-radius: 1.5rem;
         padding: 2rem;
-        margin-top: 1.5rem;
+        margin-top: 2rem;
         border: 1px solid #e2e8f0;
         box-shadow: 0 10px 30px rgba(0,0,0,0.02);
     }
 
     .chart-title {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         font-weight: 900;
         color: var(--primary-navy);
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* ========================================================
+           تعديلات الموبايل (الميديا كويري)
+           ======================================================== */
+    @@media (max-width: 768px) {
+        .page-header
+
+    {
+        text-align: center;
+        justify-content: center;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fin-card {
+        padding: 1.5rem;
+    }
+
+    .fin-data-grid {
+        grid-template-columns: 1fr;
+    }
+    /* تحويل المبالغ لعمود واحد في الموبايل */
+
+    .fin-value {
+        font-size: 1.2rem;
+    }
+
+    .chart-container {
+        padding: 1.25rem;
+    }
+
+    .chart-title {
+        font-size: 1.1rem;
+    }
+
     }
 </style>
 
-<div>
+<div class="accounting-dashboard-page">
+    <!-- الهيدر -->
     <div class="page-header">
         <div>
             <h2 class="page-title">@Localizer["المحاسبة والتقارير المالية"]</h2>
@@ -165,7 +231,7 @@
         </div>
     </div>
 
-    <!-- الأقسام المحاسبية الأساسية (أصبحت روابط حقيقية ديناميكية) -->
+    <!-- شريط التبويبات -->
     <div class="accounting-tabs">
         <a href="@Url.Action("Index", "Accounting")" class="acc-tab active"><i class="fa-solid fa-chart-pie"></i> @Localizer["نظرة عامة"]</a>
         <a href="@Url.Action("Index", "Cars")" class="acc-tab"><i class="fa-solid fa-cart-shopping"></i> @Localizer["المشتريات (السيارات)"]</a>
@@ -228,21 +294,22 @@
         </div>
     </div>
 
-    <!-- رسم بياني للمحاسبة (Chart.js) - ديناميكي بالكامل -->
+    <!-- الرسم البياني (Chart.js) -->
     <div class="chart-container">
-        <h3 class="chart-title">@Localizer["نظرة عامة على التدفقات النقدية لعام"] @ViewBag.CurrentYear</h3>
-        <canvas id="financeChart" height="100"></canvas>
+        <h3 class="chart-title"><i class="fa-solid fa-chart-line" style="color: var(--primary-gold);"></i> @Localizer["نظرة عامة على التدفقات النقدية لعام"] @ViewBag.CurrentYear</h3>
+        <div style="width: 100%; position: relative;">
+            <canvas id="financeChart" height="120"></canvas>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // استقبال البيانات الديناميكية من السيرفر باستخدام Html.Raw و Json.Serialize
+        // استقبال البيانات الديناميكية من السيرفر
         const salesData = @Html.Raw(Json.Serialize(ViewBag.MonthlySales));
         const purchasesData = @Html.Raw(Json.Serialize(ViewBag.MonthlyPurchases));
 
-        // مصفوفة الشهور المترجمة ديناميكياً
         const monthLabels = [
             '@Html.Raw(Localizer["يناير"])', '@Html.Raw(Localizer["فبراير"])', '@Html.Raw(Localizer["مارس"])',
             '@Html.Raw(Localizer["أبريل"])', '@Html.Raw(Localizer["مايو"])', '@Html.Raw(Localizer["يونيو"])',
@@ -250,7 +317,6 @@
             '@Html.Raw(Localizer["أكتوبر"])', '@Html.Raw(Localizer["نوفمبر"])', '@Html.Raw(Localizer["ديسمبر"])'
         ];
 
-        // تهيئة الرسم البياني ليطابق ألوان الهوية البصرية
         const rootStyles = getComputedStyle(document.documentElement);
         const goldColor = rootStyles.getPropertyValue('--primary-gold').trim();
         const navyColor = rootStyles.getPropertyValue('--primary-navy').trim();
@@ -265,26 +331,40 @@
                         label: '@Html.Raw(Localizer["المبيعات (إيرادات الفواتير OMR)"])',
                         data: salesData,
                         borderColor: navyColor,
-                        backgroundColor: navyColor + '20', // لون شفاف للتعبئة أسفل الخط
+                        backgroundColor: navyColor + '10',
                         tension: 0.4,
                         borderWidth: 3,
+                        pointRadius: 4,
                         fill: true
                     },
                     {
                         label: '@Html.Raw(Localizer["المشتريات (تكلفة السيارات USD)"])',
                         data: purchasesData,
                         borderColor: goldColor,
-                        backgroundColor: goldColor + '20',
+                        backgroundColor: goldColor + '10',
                         tension: 0.4,
                         borderWidth: 3,
+                        pointRadius: 4,
                         fill: true
                     }
                 ]
             },
             options: {
                 responsive: true,
-                plugins: { legend: { position: 'top', labels: { font: { family: 'Cairo', weight: 'bold' } } } },
-                scales: { y: { beginAtZero: true } },
+                maintainAspectRatio: false, // لضمان التحكم في الارتفاع يدوياً عبر الـ CSS
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            font: { family: 'Cairo', weight: 'bold', size: 12 }
+                        }
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { font: { family: 'monospace', weight: 'bold' } } },
+                    x: { ticks: { font: { family: 'Cairo', weight: 'bold' } } }
+                },
                 interaction: { mode: 'index', intersect: false }
             }
         });

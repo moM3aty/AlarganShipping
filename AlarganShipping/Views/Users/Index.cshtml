@@ -4,6 +4,7 @@
 }
 
 <style>
+    /* --- الهيدر الرئيسي للمستخدمين --- */
     .page-header {
         display: flex;
         justify-content: space-between;
@@ -14,6 +15,8 @@
         border-radius: 1.5rem;
         border: 1px solid #f1f5f9;
         box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
     .page-title {
@@ -21,6 +24,9 @@
         font-weight: 900;
         color: var(--primary-navy);
         margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .btn-add {
@@ -31,7 +37,7 @@
         text-decoration: none;
         font-weight: 800;
         transition: 0.3s;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 8px;
     }
@@ -40,20 +46,23 @@
             background: var(--primary-gold);
             transform: translateY(-2px);
             color: white;
+            box-shadow: 0 5px 15px rgba(184, 147, 90, 0.3);
         }
 
+    /* --- حاوية البيانات (الجدول) --- */
     .data-card {
         background: white;
         border-radius: 1.5rem;
         padding: 2rem;
         border: 1px solid #f1f5f9;
         box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-        overflow-x: auto;
+        overflow-x: auto; /* السماح بالتمرير الأفقي على الموبايل */
     }
 
     .user-table {
         width: 100%;
         border-collapse: collapse;
+        min-width: 800px; /* لضمان عدم تداخل البيانات في الشاشات الصغيرة جداً */
     }
 
         .user-table th {
@@ -63,6 +72,7 @@
             font-weight: 800;
             border-bottom: 2px solid #f1f5f9;
             white-space: nowrap;
+            font-size: 0.9rem;
         }
 
         .user-table td {
@@ -71,6 +81,7 @@
             vertical-align: middle;
         }
 
+    /* خلية معلومات الموظف */
     .user-info-cell {
         display: flex;
         align-items: center;
@@ -78,8 +89,8 @@
     }
 
     .user-avatar {
-        width: 45px;
-        height: 45px;
+        width: 48px;
+        height: 48px;
         background: rgba(44, 62, 80, 0.05);
         color: var(--primary-navy);
         border-radius: 12px;
@@ -88,54 +99,128 @@
         justify-content: center;
         font-weight: 900;
         font-size: 1.2rem;
+        border: 1px solid #f1f5f9;
+        flex-shrink: 0;
     }
 
+    /* الشارات والأوسمة */
     .role-badge {
-        padding: 4px 12px;
+        padding: 5px 12px;
         border-radius: 50px;
         font-size: 0.75rem;
         font-weight: 800;
         background: #f1f5f9;
         color: var(--text-muted);
+        white-space: nowrap;
     }
 
     .role-admin {
         background: rgba(184, 147, 90, 0.1);
         color: var(--primary-gold);
+        border: 1px solid rgba(184, 147, 90, 0.2);
     }
 
     .perm-pill {
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        padding: 4px 8px;
-        border-radius: 6px;
+        padding: 4px 10px;
+        border-radius: 8px;
         font-size: 0.75rem;
         font-weight: 700;
         background: #f0fdf4;
         color: #16a34a;
         margin: 2px;
+        border: 1px solid #dcfce7;
     }
 
+    .status-indicator {
+        font-weight: 800;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* أزرار الإجراءات المربعة */
     .action-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         color: var(--text-muted);
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
         transition: 0.3s;
-        font-size: 1.1rem;
-        padding: 5px;
+        text-decoration: none;
     }
 
         .action-btn:hover {
-            color: var(--primary-gold);
+            background: var(--primary-gold);
+            color: white;
+            border-color: var(--primary-gold);
         }
 
     .btn-delete:hover {
-        color: #ef4444;
+        background: #ef4444;
+        border-color: #ef4444;
+    }
+
+    /* ========================================================
+           تعديلات الموبايل (الميديا كويري)
+           ======================================================== */
+    @@media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+            padding: 1.25rem;
+        }
+
+        .page-title {
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .btn-add {
+            justify-content: center;
+            width: 100%;
+        }
+
+        .data-card {
+            padding: 1rem;
+            border-radius: 1rem;
+        }
+
+        .user-table td, .user-table th {
+            padding: 1rem 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+
+        .perm-pill {
+            padding: 3px 6px;
+            font-size: 0.7rem;
+        }
     }
 </style>
 
+@Html.AntiForgeryToken()
+
 <div class="page-header">
-    <h2 class="page-title"><i class="fa-solid fa-users-gear" style="color: var(--primary-gold); margin-inline-end: 10px;"></i> @Localizer["إدارة موظفي النظام"]</h2>
-    <a href="@Url.Action("Create", "Users")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة موظف جديد"]</a>
+    <h2 class="page-title">
+        <i class="fa-solid fa-users-gear" style="color: var(--primary-gold);"></i>
+        @Localizer["إدارة موظفي النظام"]
+    </h2>
+    <a href="@Url.Action("Create", "Users")" class="btn-add">
+        <i class="fa-solid fa-plus"></i> @Localizer["إضافة موظف جديد"]
+    </a>
 </div>
 
 <div class="data-card">
@@ -146,7 +231,7 @@
                 <th>@Localizer["الدور الوظيفي"]</th>
                 <th>@Localizer["صلاحيات الوصول"]</th>
                 <th>@Localizer["الحالة"]</th>
-                <th>@Localizer["إجراءات"]</th>
+                <th style="text-align: center;">@Localizer["إجراءات"]</th>
             </tr>
         </thead>
         <tbody>
@@ -155,10 +240,12 @@
                 <tr>
                     <td>
                         <div class="user-info-cell">
-                            <div class="user-avatar">@user.FullName.Substring(0, 1).ToUpper()</div>
+                            <div class="user-avatar">
+                                @(string.IsNullOrEmpty(user.FullName) ? "?" : user.FullName.Substring(0, 1).ToUpper())
+                            </div>
                             <div>
-                                <div style="font-weight: 900; color: var(--primary-navy);">@user.FullName</div>
-                                <div style="font-size: 0.85rem; color: var(--text-muted);" dir="ltr">@user.Email</div>
+                                <div style="font-weight: 900; color: var(--primary-navy); font-size: 1rem;">@user.FullName</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);" dir="ltr">@user.Email</div>
                             </div>
                         </div>
                     </td>
@@ -166,44 +253,58 @@
                         <span class="role-badge @(user.Role == "Admin" ? "role-admin" : "")">@user.Role</span>
                         @if (user.ShowOnContactPage)
                         {
-                            <div style="font-size: 0.75rem; color: var(--primary-gold); margin-top: 8px; font-weight: 700;"><i class="fa-solid fa-eye"></i> @Localizer["يظهر للعملاء"]</div>
+                            <div style="font-size: 0.7rem; color: var(--primary-gold); margin-top: 6px; font-weight: 800;">
+                                <i class="fa-solid fa-eye"></i> @Localizer["يظهر للعملاء"]
+                            </div>
                         }
                     </td>
                     <td>
-                        <div style="max-width: 320px; display: flex; flex-wrap: wrap;">
-                            @if (user.CanManageCars)
-                            {
-                                <span class="perm-pill">إدارة السيارات</span>
-                            }
-                            @if (user.CanManageCustomers)
-                            {
-                                <span class="perm-pill">العملاء</span>
-                            }
-                            @if (user.CanManageFinance)
-                            {
-                                <span class="perm-pill">المالية</span>
-                            }
-                            @if (user.CanManageSettings)
-                            {
-                                <span class="perm-pill">الإعدادات</span>
-                            }
+                        <div style="max-width: 300px; display: flex; flex-wrap: wrap;">
                             @if (user.Role == "Admin")
                             {
-                                <span class="perm-pill" style="background: #eff6ff; color: #3b82f6;">كامل الصلاحيات (Admin)</span>
+                                <span class="perm-pill" style="background: #eff6ff; color: #3b82f6; border-color: #dbeafe;">@Localizer["كامل الصلاحيات (Admin)"]</span>
+                            }
+                            else
+                            {
+                                if (user.CanManageCars)
+                                {
+
+                                    <span class="perm-pill">@Localizer["إدارة السيارات"]</span>
+                                }
+                                if (user.CanManageCustomers)
+                                {
+
+                                    <span class="perm-pill">@Localizer["العملاء"]</span>
+                                }
+                                if (user.CanManageFinance)
+                                {
+
+                                    <span class="perm-pill">@Localizer["المالية"]</span>
+                                }
+                                if (user.CanManageSettings)
+                                {
+
+                                    <span class="perm-pill">@Localizer["الإعدادات"]</span>
+                                }
                             }
                         </div>
                     </td>
                     <td>
-                        <span style="color: @(user.IsActive ? "#16a34a" : "#ef4444"); font-weight: 800; font-size: 0.9rem;">
-                            <i class="fa-solid fa-circle" style="font-size: 0.6rem; margin-inline-end: 4px;"></i> @(user.IsActive ? "نشط" : "معطل")
-                        </span>
+                        <div class="status-indicator" style="color: @(user.IsActive ? "#16a34a" : "#ef4444");">
+                            <i class="fa-solid fa-circle" style="font-size: 0.6rem;"></i>
+                            @(user.IsActive? Localizer["نشط"].Value : Localizer["معطل"].Value)
+                        </div>
                     </td>
-                    <td>
-                        <div style="display: flex; gap: 12px;">
-                            <a href="@Url.Action("Edit", "Users", new { id = user.Id })" class="action-btn" title="تعديل"><i class="fa-solid fa-pen-to-square"></i></a>
+                    <td style="text-align: center;">
+                        <div style="display: flex; gap: 8px; justify-content: center;">
+                            <a href="@Url.Action("Edit", "Users", new { id = user.Id })" class="action-btn" title="@Localizer["تعديل"]">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
                             @if (user.Email != "admin@alargan.com")
                             {
-                                <button type="button" onclick="confirmDelete(@user.Id)" class="action-btn btn-delete" title="حذف" style="background: transparent; border: none; cursor: pointer;"><i class="fa-solid fa-trash-can"></i></button>
+                                <button type="button" onclick="confirmDelete(@user.Id)" class="action-btn btn-delete" title="@Localizer["حذف"]" style="cursor: pointer;">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
                             }
                         </div>
                     </td>
@@ -218,17 +319,29 @@
     <script>
         function confirmDelete(id) {
             Swal.fire({
-                title: 'هل أنت متأكد؟',
-                text: "سيتم إيقاف وصول هذا الموظف للنظام نهائياً.",
+                title: "@Html.Raw(Localizer["هل أنت متأكد؟"])",
+                text: "@Html.Raw(Localizer["سيتم إيقاف وصول هذا الموظف للنظام نهائياً."])",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
-                confirmButtonText: 'نعم، احذف الحساب',
-                cancelButtonText: 'إلغاء'
+                cancelButtonColor: 'var(--primary-navy)',
+                confirmButtonText: "@Html.Raw(Localizer["نعم، احذف الحساب"])",
+                cancelButtonText: "@Html.Raw(Localizer["إلغاء"])"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.post('@Url.Action("Delete", "Users")/' + id, function(res) {
-                        if(res.success) location.reload();
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Users")/' + id,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                location.reload();
+                            } else {
+                                Swal.fire("@Localizer["خطأ!"]", "@Localizer["لا يمكن حذف هذا المستخدم."]", "error");
+                            }
+                        }
                     });
                 }
             });

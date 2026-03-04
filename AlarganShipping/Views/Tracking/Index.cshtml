@@ -13,10 +13,10 @@
     <title>@ViewData["Title"] - ALARGAN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="~/images/logo.jpg" rel="icon" type="image/x-icon" />
 
     <style>
         :root {
-            /* الألوان المستخرجة من الشعار للاستخدام الخارجي */
             --primary-navy: #2C3E50;
             --secondary-navy: #1A252F;
             --primary-gold: #B8935A;
@@ -39,7 +39,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 4rem 1rem;
+            padding: 2rem 1rem;
             text-align: center;
             width: 100%;
             max-width: 800px;
@@ -58,6 +58,7 @@
             border: 4px solid var(--primary-gold);
             padding: 15px;
             overflow: hidden;
+            transition: 0.3s;
         }
 
             .track-logo-box img {
@@ -72,6 +73,7 @@
             font-weight: 900;
             color: var(--primary-navy);
             margin: 0 0 0.5rem 0;
+            transition: 0.3s;
         }
 
         .track-portal-header p {
@@ -99,6 +101,7 @@
             padding: 0.5rem;
             border: 2px solid transparent;
             transition: 0.3s;
+            gap: 10px;
         }
 
             .search-input-wrapper:focus-within {
@@ -111,7 +114,7 @@
                 flex: 1;
                 border: none;
                 background: transparent;
-                padding: 1.25rem 1.5rem;
+                padding: 1.25rem 1rem;
                 font-size: 1.1rem;
                 font-family: inherit;
                 outline: none;
@@ -119,19 +122,21 @@
                 color: var(--primary-navy);
                 font-weight: 800;
                 text-transform: uppercase;
+                width: 100%;
             }
 
                 .search-input-wrapper input::placeholder {
                     color: #94a3b8;
                     font-weight: 600;
                     text-transform: none;
+                    font-size: 0.95rem;
                 }
 
         .btn-track-now {
             background: linear-gradient(to right, var(--primary-gold), var(--secondary-gold));
             color: white;
             border: none;
-            padding: 1rem 2.5rem;
+            padding: 1rem 2rem;
             border-radius: 1.25rem;
             font-weight: 900;
             font-size: 1.1rem;
@@ -141,7 +146,9 @@
             box-shadow: 0 5px 15px rgba(184, 147, 90, 0.4);
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
+            white-space: nowrap;
         }
 
             .btn-track-now:hover {
@@ -154,6 +161,10 @@
             color: #64748b;
             font-size: 0.95rem;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .error-message {
@@ -163,33 +174,106 @@
             border-radius: 1rem;
             margin-bottom: 2rem;
             font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* ========================================================
+                   تعديلات الموبايل (الميديا كويري)
+                   ======================================================== */
+        @@media (max-width: 768px) {
+            .track-logo-box
+
+        {
+            width: 100px;
+            height: 100px;
+            padding: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .track-portal-header h2 {
+            font-size: 1.8rem;
+        }
+
+        .track-portal-header p {
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-card {
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+        }
+
+        .search-input-wrapper {
+            flex-direction: column;
+            background: transparent;
+            padding: 0;
+            gap: 15px;
+        }
+
+            .search-input-wrapper input {
+                background: #f8fafc;
+                border-radius: 1.25rem;
+                border: 2px solid #e2e8f0;
+                padding: 1rem;
+                font-size: 1rem;
+            }
+
+        .btn-track-now {
+            width: 100%;
+            padding: 1.2rem;
+            border-radius: 1.25rem;
+            font-size: 1.1rem;
+        }
+
+        .track-hint {
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+
         }
     </style>
 </head>
 <body>
     <div class="track-portal-container">
+        <!-- شعار الشركة -->
         <div class="track-logo-box">
-            <img src="~/images/logo.jpg" alt="Alargan Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-ship\' style=\'font-size: 4rem; color: var(--primary-navy);\'></i>'" />
+            <img src="~/images/logo.jpg" alt="Alargan Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-ship\' style=\'font-size: 3rem; color: var(--primary-navy);\'></i>'" />
         </div>
 
+        <!-- نصوص الترحيب -->
         <div class="track-portal-header">
             <h2>@Localizer["بوابة تتبع الشحنات"]</h2>
             <p>@Localizer["نظام الإدارة اللوجستية التقني"]</p>
         </div>
 
+        <!-- بطاقة البحث -->
         <div class="search-card">
             @if (!string.IsNullOrEmpty(ViewBag.Error))
             {
-                <div class="error-message"><i class="fa-solid fa-circle-exclamation"></i> @ViewBag.Error</div>
+                <div class="error-message">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>@ViewBag.Error</span>
+                </div>
             }
 
             <form asp-controller="Tracking" asp-action="Search" method="post">
                 <div class="search-input-wrapper">
                     <input type="text" name="vin" placeholder="@Localizer["أدخل رقم الشاصي (VIN) المكون من 17 رمزاً..."]" required dir="ltr" />
-                    <button type="submit" class="btn-track-now"><i class="fa-solid fa-magnifying-glass-location"></i> @Localizer["تتبع الآن"]</button>
+                    <button type="submit" class="btn-track-now">
+                        <i class="fa-solid fa-magnifying-glass-location"></i>
+                        <span>@Localizer["تتبع الآن"]</span>
+                    </button>
                 </div>
             </form>
-            <p class="track-hint"><i class="fa-solid fa-shield-halved"></i> @Localizer["تتبع حالة سيارتك لحظة بلحظة من المزاد وحتى باب منزلك"]</p>
+
+            <div class="track-hint">
+                <i class="fa-solid fa-shield-halved" style="color: var(--primary-gold);"></i>
+                <span>@Localizer["تتبع حالة سيارتك لحظة بلحظة من المزاد وحتى باب منزلك"]</span>
+            </div>
         </div>
     </div>
 </body>

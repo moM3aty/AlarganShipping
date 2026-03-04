@@ -100,7 +100,6 @@
             box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
 
-    /* Select2 Custom Premium Styling */
     .select2-container--default .select2-selection--single {
         background-color: #f8fafc;
         border: 2px solid #e2e8f0;
@@ -164,16 +163,8 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(44, 62, 80, 0.4);
         }
-
-    .text-danger {
-        color: #ef4444;
-        font-size: 0.85rem;
-        font-weight: 700;
-        margin-top: 0.4rem;
-    }
 </style>
 
-<!-- Scripts for Professional UI -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
 
@@ -186,8 +177,6 @@
     <div class="premium-form-card">
         <form asp-action="Create" method="post" id="trackingForm">
             @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
             <div class="form-grid">
                 <div class="form-group form-group-full">
                     <label asp-for="CarId" class="form-label">@Localizer["ابحث برقم الشاصي (VIN) أو اختر السيارة"]</label>
@@ -195,7 +184,6 @@
                         <option value="">-- @Localizer["اضغط للبحث عن سيارة..."] --</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label asp-for="Title" class="form-label">@Localizer["عنوان التحديث"]</label>
                     <select asp-for="Title" class="form-control">
@@ -206,7 +194,6 @@
                         <option value="وصلت إلى الميناء الوجهة">@Localizer["وصلت إلى الميناء الوجهة"]</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label asp-for="ProgressPercentage" class="form-label">@Localizer["نسبة الإنجاز (لتحريك شريط التقدم)"]</label>
                     <select asp-for="ProgressPercentage" class="form-control">
@@ -216,18 +203,15 @@
                         <option value="100">@Localizer["100% - وصلت وتخصلت"]</option>
                     </select>
                 </div>
-
                 <div class="form-group form-group-full">
                     <label asp-for="Location" class="form-label">@Localizer["الموقع الحالي"]</label>
                     <input asp-for="Location" class="form-control" placeholder="New Jersey, Salalah Port..." />
                 </div>
-
                 <div class="form-group form-group-full">
-                    <label asp-for="Description" class="form-label">@Localizer["تفاصيل إضافية للعميل (اختياري)"]</label>
+                    <label asp-for="Description" class="form-label">@Localizer["تفاصيل إضافية للعميل "]</label>
                     <textarea asp-for="Description" class="form-control" rows="3" placeholder="@Localizer["أضف أي تفاصيل تطمئن العميل..."]"></textarea>
                 </div>
             </div>
-
             <div class="form-actions">
                 <button type="submit" class="btn-submit" id="btnSubmit">
                     <i class="fa-solid fa-paper-plane"></i> @Localizer["نشر التحديث"]
@@ -241,29 +225,18 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
-
     <script>
         $(document).ready(function() {
             var dir = $('html').attr('dir');
-            $('.select2-search').select2({
-                dir: dir,
-                placeholder: '@Localizer["اضغط للبحث عن سيارة..."]',
-                allowClear: true,
-                width: '100%'
-            });
+            $('.select2-search').select2({ dir: dir, placeholder: '@Localizer["اضغط للبحث عن سيارة..."]', allowClear: true, width: '100%' });
 
             $('#trackingForm').on('submit', function(e) {
                 e.preventDefault();
-
                 var form = $(this);
-                if (!form[0].checkValidity()) {
-                    form[0].reportValidity();
-                    return;
-                }
+                if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
 
                 var btn = $('#btnSubmit');
                 var originalText = btn.html();
-
                 btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Localizer["جاري النشر..."]').prop('disabled', true);
 
                 $.ajax({
@@ -271,32 +244,35 @@
                     type: form.attr('method'),
                     data: form.serialize(),
                     success: function (response) {
-                        Swal.fire({
-                            title: '@Localizer["تم النشر بنجاح!"]',
-                            text: '@Localizer["تم إضافة تحديث التتبع لسيارة العميل ويمكنه رؤيته الآن عبر بوابته."]',
-                            icon: 'success',
-                            confirmButtonColor: 'var(--primary-gold)',
-                            confirmButtonText: '@Localizer["العودة لتفاصيل السيارة"]',
-                            showCancelButton: true,
-                            cancelButtonText: '@Localizer["إضافة تحديث آخر"]',
-                            cancelButtonColor: 'var(--primary-navy)'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = '@Url.Action("Details", "Cars")/' + $('#CarId').val();
-                            } else {
-                                form[0].reset();
-                                $('.select2-search').val(null).trigger('change');
-                                btn.html(originalText).prop('disabled', false);
-                            }
-                        });
+                        // تم إصلاح المنطق هنا للتحقق من نجاح الحفظ فعلياً
+                        if (response.success) {
+                            Swal.fire({
+                                title: '@Localizer["تم النشر بنجاح!"]',
+                                text: '@Localizer["تم إضافة تحديث التتبع لسيارة العميل ويمكنه رؤيته الآن عبر بوابته."]',
+                                icon: 'success',
+                                confirmButtonColor: 'var(--primary-gold)',
+                                confirmButtonText: '@Localizer["العودة لتفاصيل السيارة"]',
+                                showCancelButton: true,
+                                cancelButtonText: '@Localizer["إضافة تحديث آخر"]',
+                                cancelButtonColor: 'var(--primary-navy)'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '@Url.Action("Details", "Cars")/' + $('#CarId').val();
+                                } else {
+                                    form[0].reset();
+                                    $('.select2-search').val(null).trigger('change');
+                                    btn.html(originalText).prop('disabled', false);
+                                }
+                            });
+                        } else {
+                            // إظهار رسالة الخطأ الحقيقية القادمة من السيرفر
+                            var errorMsg = response.errors ? response.errors.join('\n') : '@Localizer["حدث خطأ أثناء الحفظ."]';
+                            Swal.fire({ title: '@Localizer["خطأ!"]', text: errorMsg, icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                            btn.html(originalText).prop('disabled', false);
+                        }
                     },
-                    error: function (xhr) {
-                        Swal.fire({
-                            title: '@Localizer["خطأ!"]',
-                            text: '@Localizer["حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة لاحقاً."]',
-                            icon: 'error',
-                            confirmButtonColor: 'var(--primary-navy)'
-                        });
+                    error: function () {
+                        Swal.fire({ title: '@Localizer["خطأ!"]', text: '@Localizer["حدث خطأ أثناء الاتصال بالخادم."]', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
                         btn.html(originalText).prop('disabled', false);
                     }
                 });

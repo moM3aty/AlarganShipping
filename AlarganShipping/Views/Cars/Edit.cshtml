@@ -30,6 +30,7 @@
         font-weight: 700;
         text-decoration: none;
         transition: 0.3s;
+        flex-shrink: 0;
     }
 
         .btn-back:hover {
@@ -44,6 +45,7 @@
         border: 1px solid #f1f5f9;
         padding: 3rem;
         position: relative;
+        width:fit-content;
         overflow: hidden;
     }
 
@@ -88,6 +90,7 @@
         background-color: white;
         transition: 0.3s;
         outline: none;
+
     }
 
         .form-control:focus {
@@ -146,6 +149,7 @@
 
         .input-group-dynamic .select2-container {
             flex: 1;
+            width: auto !important;
         }
 
     .btn-quick-add {
@@ -194,6 +198,7 @@
         align-items: center;
         gap: 10px;
         box-shadow: 0 4px 15px rgba(26, 37, 47, 0.2);
+        justify-content: center;
     }
 
         .btn-submit:hover {
@@ -209,6 +214,8 @@
         cursor: pointer;
         text-decoration: none;
         padding: 0.85rem 1rem;
+        display: inline-flex;
+        justify-content: center;
     }
 
     .form-hint {
@@ -220,7 +227,6 @@
         margin-inline-start: auto;
     }
 
-    /* ستايل زر الحذف */
     .btn-delete {
         background: transparent;
         color: #ef4444;
@@ -235,6 +241,7 @@
         gap: 8px;
         margin-inline-end: auto;
         text-decoration: none;
+        justify-content: center;
     }
 
         .btn-delete:hover {
@@ -242,6 +249,96 @@
             color: white;
             box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
         }
+
+    .image-upload-wrapper {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        border: 1px dashed #cbd5e1;
+        width:75vw;
+    }
+
+    /* ========================================================
+           تعديلات الموبايل (الميديا كويري) المطورة لصفحة التعديل
+           ======================================================== */
+    @@media (max-width: 768px) {
+        .form-page-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .form-control{
+            width: 65vw;
+        }
+        .form-page-title {
+            font-size: 1.2rem;
+            justify-content: center;
+        }
+
+        .btn-back {
+            width: 100%;
+            text-align: center;
+            justify-content: center;
+            display: flex;
+        }
+
+        .premium-form-card {
+            padding: 1.5rem;
+            border-radius: 1.2rem;
+        }
+
+        .image-upload-wrapper {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+
+            .image-upload-wrapper img {
+                width: 80px !important;
+                height: 80px !important;
+            }
+
+        .form-actions {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+        /* ترتيب الأزرار بذكاء على الموبايل */
+        .btn-submit {
+            order: 1;
+            width: 100%;
+            margin: 0;
+        }
+
+        .btn-cancel {
+            order: 2;
+            width: 100%;
+            margin: 0;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn-delete {
+            order: 3;
+            width: 100%;
+            margin: 0;
+            margin-top: 1rem;
+        }
+
+        .form-hint {
+            display: none; /* إخفاء الملاحظة لتوفير مساحة على الموبايل */
+        }
+    }
 </style>
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -249,7 +346,7 @@
 
 <div>
     <div class="form-page-header">
-        <h2 class="form-page-title">@Localizer["تعديل بيانات المركبة"] <i class="fa-solid fa-pen-to-square" style="color: var(--primary-gold); background: rgba(184, 147, 90, 0.1); padding: 8px; border-radius: 8px; font-size:1.2rem;"></i></h2>
+        <h2 class="form-page-title">@Localizer["تعديل بيانات المركبة"] <i class="fa-solid fa-pen-to-square" style="color: var(--primary-gold); background: rgba(184, 147, 90, 0.1); padding: 8px; border-radius: 8px; font-size:1.1rem;"></i></h2>
         <a href="@Url.Action("Index", "Cars")" class="btn-back"><i class="fa-solid fa-arrow-right-long"></i> @Localizer["العودة للقائمة"]</a>
     </div>
 
@@ -265,7 +362,7 @@
 
             <div class="form-grid-4">
                 <!-- صورة السيارة -->
-                <div class="form-group" style="grid-column: 1 / -1; display: flex; align-items: center; gap: 1.5rem; background: #f8fafc; padding: 1.5rem; border-radius: 1rem; border: 1px dashed #cbd5e1;">
+                <div class="form-group image-upload-wrapper">
                     @if (!string.IsNullOrEmpty(Model.MainImageUrl))
                     {
                         <img src="@Model.MainImageUrl" alt="Car" style="width: 100px; height: 100px; border-radius: 1rem; object-fit: cover; border: 2px solid var(--primary-gold);" />
@@ -274,7 +371,7 @@
                     {
                         <div style="width: 100px; height: 100px; border-radius: 1rem; background: #e2e8f0; display:flex; align-items:center; justify-content:center; font-size: 2rem; color: #94a3b8;"><i class="fa-solid fa-car"></i></div>
                     }
-                    <div style="flex: 1;">
+                    <div style="flex: 1; width: 100%;">
                         <label class="form-label" style="color: var(--primary-navy);">@Localizer["تغيير صورة السيارة الرئيسية (اختياري)"]</label>
                         <input type="file" name="mainImage" class="form-control" accept="image/*" style="padding: 0.5rem; background: white;" />
                     </div>

@@ -6,7 +6,7 @@
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
 
 <style>
-    /* --- التنسيقات المشتركة --- */
+    /* --- التنسيقات المشتركة للهيدر --- */
     .page-header-container {
         display: flex;
         justify-content: space-between;
@@ -67,41 +67,90 @@
             color: white;
         }
 
-    /* --- أزرار التبديل (Toggle System) --- */
+    /* --- أزرار التبديل (Grid/List) --- */
     .view-toggle-wrapper {
-        background: #f8fafc;
+        background: #f1f5f9;
         border: 1px solid #e2e8f0;
         border-radius: 12px;
         display: inline-flex;
-        padding: 5px;
-        gap: 5px;
+        padding: 4px;
+        gap: 4px;
     }
 
     .view-toggle-btn {
         background: transparent;
         border: none;
         color: var(--text-muted);
-        padding: 8px 16px;
-        border-radius: 8px;
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
         cursor: pointer;
         transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-size: 1.1rem;
     }
-
-        .view-toggle-btn:hover {
-            color: var(--primary-navy);
-        }
 
         .view-toggle-btn.active {
             background: white;
             color: var(--primary-navy);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-    /* --- تنسيق عرض البطاقات (Grid View) --- */
+    /* --- ستايل الأيقونات والأزرار الموحد (Premium Icons) --- */
+    .action-btn-pro {
+        width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        transition: 0.3s;
+        text-decoration: none;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        cursor: pointer;
+        font-size: 1.1rem;
+    }
+
+    .btn-details-pro {
+        color: var(--primary-navy);
+    }
+
+        .btn-details-pro:hover {
+            background: var(--primary-navy);
+            color: white;
+            border-color: var(--primary-navy);
+            transform: scale(1.1);
+        }
+
+    .btn-edit-pro {
+        color: var(--primary-gold);
+    }
+
+        .btn-edit-pro:hover {
+            background: var(--primary-gold);
+            color: white;
+            border-color: var(--primary-gold);
+            transform: scale(1.1);
+        }
+
+    .btn-delete-pro {
+        color: #ef4444;
+    }
+
+        .btn-delete-pro:hover {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+            transform: scale(1.1);
+        }
+
+    /* --- تنسيق البطاقات (Grid View) --- */
     .cust-grid-modern {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
         gap: 2rem;
     }
 
@@ -114,6 +163,7 @@
         display: flex;
         flex-direction: column;
         transition: 0.3s;
+        position: relative;
     }
 
         .cust-card-pro:hover {
@@ -129,131 +179,97 @@
         margin-bottom: 2rem;
     }
 
-    /* --- زر البوابة الديناميكي --- */
-    .portal-switch {
+    .portal-status {
         display: flex;
         align-items: center;
         gap: 8px;
         font-size: 0.8rem;
         font-weight: 800;
-        color: #16a34a; /* أخضر في حالة التنشيط */
-        transition: color 0.3s;
+        padding: 5px 12px;
+        border-radius: 50px;
     }
 
-        .portal-switch.inactive {
-            color: #94a3b8; /* رمادي في حالة التعطيل */
-        }
-
-    .switch-icon {
-        width: 36px;
-        height: 20px;
-        background: var(--primary-gold);
-        border-radius: 20px;
-        position: relative;
-        transition: background 0.3s;
+    .status-online {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #dcfce7;
     }
 
-        .switch-icon.inactive {
-            background: #cbd5e1;
-        }
-
-        .switch-icon::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            inset-inline-end: 2px;
-            width: 16px;
-            height: 16px;
-            background: white;
-            border-radius: 50%;
-            transition: all 0.3s;
-        }
-
-        .switch-icon.inactive::after {
-            inset-inline-end: auto;
-            inset-inline-start: 2px;
-        }
+    .status-offline {
+        background: #fef2f2;
+        color: #ef4444;
+        border: 1px solid #fee2e2;
+    }
 
     .cust-code {
-        background: rgba(184, 147, 90, 0.1);
+        background: rgba(184, 147, 90, 0.05);
         color: var(--primary-gold);
         padding: 5px 12px;
-        border-radius: 8px;
+        border-radius: 10px;
         font-family: monospace;
         font-weight: 900;
         font-size: 0.85rem;
         border: 1px solid rgba(184, 147, 90, 0.2);
     }
 
-    .cust-profile-area {
+    .cust-profile-main {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        gap: 1.5rem;
         margin-bottom: 2rem;
     }
 
-    .cust-name-info {
-        text-align: right;
-        flex: 1;
-        margin-inline-end: 1rem;
-    }
-
-        .cust-name-info h3 {
-            font-size: 1.4rem;
-            font-weight: 900;
-            color: var(--primary-navy);
-            margin: 0 0 0.5rem 0;
-        }
-
-        .cust-name-info p {
-            color: var(--text-muted);
-            font-weight: 700;
-            margin: 0;
-            font-family: monospace;
-            font-size: 1.1rem;
-        }
-
     .cust-avatar-large {
-        width: 70px;
-        height: 70px;
+        width: 65px;
+        height: 65px;
         background: #f8fafc;
-        border: 2px solid #e2e8f0;
-        border-radius: 20px;
+        border: 2px solid #f1f5f9;
+        border-radius: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2rem;
+        font-size: 1.8rem;
         color: #cbd5e1;
         flex-shrink: 0;
+    }
+
+    .cust-name-info h3 {
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0 0 4px 0;
+    }
+
+    .cust-name-info p {
+        color: var(--text-muted);
+        font-weight: 700;
+        margin: 0;
+        font-family: monospace;
+        font-size: 1rem;
     }
 
     .fin-stats {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        background: #f8fafc;
+        padding: 1.25rem;
+        border-radius: 1.25rem;
+        border: 1px solid #f1f5f9;
     }
 
-    .fin-item {
-        text-align: right;
+    .fin-item label {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 800;
+        margin-bottom: 4px;
     }
 
-        .fin-item label {
-            display: block;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 800;
-            margin-bottom: 0.25rem;
-        }
-
-        .fin-item .amount {
-            font-size: 1.4rem;
-            font-weight: 900;
-        }
-
-            .fin-item .amount span {
-                font-size: 0.8rem;
-                font-weight: 700;
-            }
+    .fin-item .amount {
+        font-size: 1.2rem;
+        font-weight: 900;
+    }
 
     .amt-green {
         color: #16a34a;
@@ -263,293 +279,142 @@
         color: #ef4444;
     }
 
-    .progress-wrapper {
-        margin-bottom: 2rem;
-    }
-
     .progress-bar-bg {
         width: 100%;
         height: 8px;
         background: #e2e8f0;
         border-radius: 10px;
         overflow: hidden;
-        margin-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
     }
 
     .progress-bar-fill {
         height: 100%;
         background: var(--primary-gold);
         border-radius: 10px;
+        transition: 1s ease;
     }
 
-    .progress-labels {
+    .card-actions-row {
         display: flex;
         justify-content: space-between;
-        font-size: 0.75rem;
-        color: #94a3b8;
-        font-weight: 700;
-    }
-
-    .credentials-box {
-        background: #f8fafc;
-        border-radius: 16px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid #f1f5f9;
-    }
-
-    .cred-title {
-        text-align: center;
-        font-size: 0.75rem;
-        font-weight: 800;
-        color: #94a3b8;
-        margin-bottom: 1rem;
-    }
-
-    .cred-row {
-        display: flex;
-        gap: 1rem;
-    }
-
-    .cred-field {
-        flex: 1;
-        text-align: center;
-    }
-
-        .cred-field label {
-            display: block;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .cred-field .cred-val {
-            background: white;
-            border: 1px solid #e2e8f0;
-            padding: 0.5rem;
-            border-radius: 8px;
-            color: var(--primary-navy);
-            font-family: monospace;
-            font-weight: 800;
-            font-size: 0.9rem;
-        }
-
-    /* أزرار البطاقات */
-    .card-actions {
-        display: flex;
-        gap: 10px;
+        align-items: center;
         margin-top: auto;
+        padding-top: 1.5rem;
+        border-top: 1px solid #f1f5f9;
     }
 
-    .btn-action-dark {
-        background: var(--primary-navy);
-        color: white;
-        border: none;
-        padding: 1rem;
-        border-radius: 16px;
-        font-weight: 800;
-        font-size: 0.95rem;
-        font-family: inherit;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        text-decoration: none;
-        transition: 0.3s;
-        flex: 1;
-    }
-
-        .btn-action-dark:hover {
-            background: var(--secondary-navy);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(26,38,52,0.2);
-            color: white;
-        }
-
-    .btn-edit-card {
-        background: rgba(184, 147, 90, 0.1);
-        color: var(--primary-gold);
-        border: 1px solid rgba(184, 147, 90, 0.2);
-        padding: 1rem;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        transition: 0.3s;
-    }
-
-        .btn-edit-card:hover {
-            background: var(--primary-gold);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-    .btn-delete-card {
-        background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
-        border: 1px solid rgba(239, 68, 68, 0.2);
-        padding: 1rem;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-        .btn-delete-card:hover {
-            background: #ef4444;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-    /* --- تنسيق عرض الجدول (List View - DataTables) --- */
+    /* --- تنسيق الجدول --- */
     .data-card {
         background: white;
         border-radius: 1.5rem;
-        padding: 2.5rem;
+        padding: 2rem;
         box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         border: 1px solid #f1f5f9;
-        display: none; /* مخفي افتراضياً */
+        display: none;
     }
 
     .table-enterprise {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 1rem;
     }
 
         .table-enterprise th {
             background-color: #f8fafc;
             color: var(--text-muted);
             font-weight: 800;
-            padding: 1.25rem 1rem;
+            padding: 1.2rem 1rem;
             border-bottom: 2px solid #e2e8f0;
             text-align: start;
-            white-space: nowrap;
         }
 
         .table-enterprise td {
-            padding: 1.25rem 1rem;
+            padding: 1.2rem 1rem;
             border-bottom: 1px solid #f1f5f9;
             color: var(--text-dark);
             font-weight: 700;
             vertical-align: middle;
         }
 
-        .table-enterprise tbody tr:hover {
-            background-color: #f8fafc;
-            transition: 0.2s;
+    /* ========================================================
+           تعديلات الموبايل (الميديا كويري)
+           ======================================================== */
+    @@media (max-width: 768px) {
+        .page-header-container {
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+            gap: 1.5rem;
+            padding: 1.25rem;
         }
 
-    .cust-info-td {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .cust-avatar {
-        width: 45px;
-        height: 45px;
-        background: rgba(26, 38, 52, 0.05);
-        color: var(--primary-navy);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        font-weight: 900;
-    }
-
-    .fin-badge {
-        padding: 0.4rem 1rem;
-        border-radius: 50px;
-        font-size: 0.9rem;
-        font-weight: 900;
-        display: inline-block;
-        font-family: monospace;
-    }
-
-    .fin-success {
-        background: rgba(34, 197, 94, 0.1);
-        color: #22c55e;
-    }
-
-    .fin-danger {
-        background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
-    }
-
-    /* أزرار الجدول */
-    .actions-cell {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .action-btn-primary {
-        color: white;
-        background: var(--primary-navy);
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 800;
-        font-size: 0.9rem;
-        transition: 0.3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-        .action-btn-primary:hover {
-            background: var(--secondary-navy);
-            color: white;
+        .header-actions {
+            flex-direction: column;
+            width: 100%;
+            gap: 1rem;
         }
 
-    .action-btn-edit {
-        color: var(--primary-gold);
-        background: rgba(184,147,90,0.1);
-        border: 1px solid rgba(184,147,90,0.2);
-        padding: 0.5rem 0.8rem;
-        border-radius: 8px;
-        transition: 0.3s;
-        text-decoration: none;
-    }
-
-        .action-btn-edit:hover {
-            background: var(--primary-gold);
-            color: white;
+        .view-toggle-wrapper {
+            width: 100%;
+            display: flex;
         }
 
-    .action-btn-delete {
-        color: #ef4444;
-        background: rgba(239,68,68,0.1);
-        border: 1px solid rgba(239,68,68,0.2);
-        padding: 0.5rem 0.8rem;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-        .action-btn-delete:hover {
-            background: #ef4444;
-            color: white;
+        .view-toggle-btn {
+            flex: 1;
         }
+
+        .btn-add {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .cust-grid-modern {
+            grid-template-columns: 1fr;
+        }
+
+        .cust-profile-main {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .cust-name-info {
+            margin: 0;
+            text-align: center;
+        }
+
+        .cust-avatar-large {
+            margin: 0 auto;
+        }
+
+        .card-actions-row {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+            .card-actions-row > div {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+            }
+
+        .btn-action-dark {
+            width: 100%;
+        }
+    }
 </style>
 
-<div>
+<div class="customers-index-page">
     @Html.AntiForgeryToken()
 
+    <!-- الهيدر الرئيسي -->
     <div class="page-header-container">
         <div class="page-header-text">
             <h2><i class="fa-solid fa-users"></i> @Localizer["إدارة شؤون العملاء"]</h2>
             <p>• @Localizer["النظام الهجين للبطاقات والجداول"]</p>
         </div>
         <div class="header-actions">
-            <!-- أزرار تبديل العرض -->
             <div class="view-toggle-wrapper">
                 <button class="view-toggle-btn active" id="btnGridView" onclick="switchView('grid')" title="@Localizer["عرض البطاقات"]">
                     <i class="fa-solid fa-border-all"></i>
@@ -558,7 +423,6 @@
                     <i class="fa-solid fa-list-ul"></i>
                 </button>
             </div>
-
             <a href="@Url.Action("Create", "Customers")" class="btn-add"><i class="fa-solid fa-user-plus"></i> @Localizer["إضافة عميل"]</a>
         </div>
     </div>
@@ -574,178 +438,150 @@
 
                 <div class="cust-card-pro">
                     <div class="cust-card-header">
-                        <!-- جعل الزر ديناميكي يعتمد على قيمة IsPortalActive -->
-                        <div class="portal-switch @(customer.IsPortalActive ? "" : "inactive")" title="@(customer.IsPortalActive? Localizer["البوابة نشطة"] : Localizer["البوابة معطلة"])">
-                            <div class="switch-icon @(customer.IsPortalActive ? "" : "inactive")"></div>
+                        <div class="portal-status @(customer.IsPortalActive ? "status-online" : "status-offline")">
+                            <i class="fa-solid @(customer.IsPortalActive ? "fa-circle-check" : "fa-circle-xmark")"></i>
                             <span>@(customer.IsPortalActive? Localizer["البوابة نشطة"] : Localizer["البوابة معطلة"])</span>
                         </div>
                         <div class="cust-code">@customer.CustomerCode</div>
                     </div>
 
-                    <div class="cust-profile-area">
+                    <div class="cust-profile-main">
+                        <div class="cust-avatar-large"><i class="fa-solid fa-user"></i></div>
                         <div class="cust-name-info">
                             <h3>@customer.Name</h3>
                             <p dir="ltr">@customer.Phone</p>
                         </div>
-                        <div class="cust-avatar-large"><i class="fa-solid fa-user"></i></div>
                     </div>
 
                     <div class="fin-stats">
                         <div class="fin-item">
                             <label>@Localizer["المتبقي"]</label>
-                            <div class="amount amt-red">@customer.TotalBalance <span>ر.ع</span></div>
+                            <div class="amount amt-red">@customer.TotalBalance.ToString("N0") <span>ر.ع</span></div>
                         </div>
                         <div class="fin-item" style="text-align: left;">
                             <label>@Localizer["إجمالي المدفوع"]</label>
-                            <div class="amount amt-green">@customer.TotalPaid <span>ر.ع</span></div>
+                            <div class="amount amt-green">@customer.TotalPaid.ToString("N0") <span>ر.ع</span></div>
                         </div>
                     </div>
 
-                    <div class="progress-wrapper">
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar-fill" style="width: @((int)payPercentage)%;"></div>
-                        </div>
-                        <div class="progress-labels">
-                            <span>@Localizer["الإجمالي:"] @totalRequired ر.ع</span>
-                            <span>@Localizer["نسبة السداد:"] @((int)payPercentage)%</span>
-                        </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: @((int)payPercentage)%;"></div>
                     </div>
 
-                    <div class="credentials-box">
-                        <div class="cred-title">@Localizer["بيانات الوصول الآمن"]</div>
-                        <div class="cred-row">
-                            <div class="cred-field">
-                                <label>@Localizer["كلمة المرور"]</label>
-                                <div class="cred-val">@customer.PortalPassword</div>
-                            </div>
-                            <div class="cred-field">
-                                <label>@Localizer["المستخدم"]</label>
-                                <div class="cred-val">@customer.PortalUsername</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-actions">
-                        <button type="button" class="btn-delete-card" onclick="confirmDelete(@customer.Id)" title="@Localizer["حذف"]">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                        <a href="@Url.Action("Edit", "Customers", new { id = customer.Id })" class="btn-edit-card" title="@Localizer["تعديل بيانات العميل"]">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </a>
-                        <a href="@Url.Action("Details", "Customers", new { id = customer.Id })" class="btn-action-dark">
+                    <div class="card-actions-row">
+                        <a href="@Url.Action("Details", "Customers", new { id = customer.Id })" class="btn-action-dark" style="background: var(--primary-navy); color: white; padding: 0.8rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 800; flex: 1; text-align: center; margin-inline-end: 10px;">
                             <i class="fa-solid fa-file-invoice"></i> @Localizer["كشف حساب"]
                         </a>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="@Url.Action("Edit", "Customers", new { id = customer.Id })" class="action-btn-pro btn-edit-pro" title="@Localizer["تعديل"]">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="action-btn-pro btn-delete-pro" onclick="confirmDelete(@customer.Id)" title="@Localizer["حذف"]">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             }
         }
         else
         {
-            <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; background: white; border-radius: 1.5rem; color: var(--text-muted);">
-                <i class="fa-solid fa-users-slash" style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary-gold);"></i>
-                <h3>@Localizer["لا يوجد عملاء مسجلين حالياً."]</h3>
+            <div style="grid-column: 1 / -1; text-align: center; padding: 5rem; background: white; border-radius: 2rem; color: var(--text-muted); border: 2px dashed #f1f5f9;">
+                <i class="fa-solid fa-users-slash" style="font-size: 4rem; margin-bottom: 1.5rem; color: #cbd5e1;"></i>
+                <h3 style="font-weight: 900; color: var(--primary-navy);">@Localizer["لا يوجد عملاء مسجلين حالياً."]</h3>
             </div>
         }
     </div>
 
-    <!-- 2. عرض الجدول (List View - DataTables) -->
+    <!-- 2. عرض الجدول (List View) -->
     <div id="customersTableView" class="data-card">
-        <table id="customersDataTable" class="table-enterprise display" style="width:100%">
-            <thead>
-                <tr>
-                    <th>@Localizer["كود العميل"]</th>
-                    <th>@Localizer["بيانات العميل"]</th>
-                    <th>@Localizer["رقم الهاتف"]</th>
-                    <th>@Localizer["إجمالي المدفوع"]</th>
-                    <th>@Localizer["الرصيد المتبقي (الديون)"]</th>
-                    <th>@Localizer["إجراءات"]</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var cust in Model)
+        <div style="overflow-x: auto; width: 100%;">
+            <table id="customersDataTable" class="table-enterprise display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>@Localizer["كود العميل"]</th>
+                        <th>@Localizer["بيانات العميل"]</th>
+                        <th>@Localizer["رقم الهاتف"]</th>
+                        <th>@Localizer["إجمالي المدفوع"]</th>
+                        <th>@Localizer["الرصيد المتبقي"]</th>
+                        <th style="text-align: center;">@Localizer["إجراءات"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
                     {
-                        <tr>
-                            <td style="font-family: monospace; font-weight: 900; color: var(--primary-gold);">@cust.CustomerCode</td>
-                            <td>
-                                <div class="cust-info-td">
-                                    <div class="cust-avatar">@(string.IsNullOrEmpty(cust.Name) ? "C" : cust.Name.Substring(0, 1))</div>
-                                    <div>
-                                        <div style="font-weight: 900; color: var(--primary-navy); font-size: 1.1rem;">@cust.Name</div>
-                                        <div style="color: var(--text-muted); font-size: 0.85rem;">@cust.Email</div>
+                        foreach (var cust in Model)
+                        {
+                            <tr>
+                                <td style="font-family: monospace; font-weight: 900; color: var(--primary-gold);">@cust.CustomerCode</td>
+                                <td>
+                                    <div class="cust-info-td">
+                                        <div class="cust-avatar">@(string.IsNullOrEmpty(cust.Name) ? "C" : cust.Name.Substring(0, 1))</div>
+                                        <div>
+                                            <div style="font-weight: 900; color: var(--primary-navy); font-size: 1.05rem;">@cust.Name</div>
+                                            <div style="color: var(--text-muted); font-size: 0.8rem;">@cust.Email</div>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td dir="ltr" style="text-align: end; font-weight: 800; color: var(--text-muted);">@cust.Phone</td>
-                            <td><span class="fin-badge fin-success">$@cust.TotalPaid</span></td>
-                            <td><span class="fin-badge fin-danger">$@cust.TotalBalance</span></td>
-                            <td>
-                                <div class="actions-cell">
-                                    <a href="@Url.Action("Details", "Customers", new { id = cust.Id })" class="action-btn-primary" title="@Localizer["كشف حساب"]">
-                                        <i class="fa-solid fa-file-invoice"></i> @Localizer["كشف"]
-                                    </a>
-                                    <a href="@Url.Action("Edit", "Customers", new { id = cust.Id })" class="action-btn-edit" title="@Localizer["تعديل"]">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                    </a>
-                                    <button type="button" class="action-btn-delete" onclick="confirmDelete(@cust.Id)" title="@Localizer["حذف"]">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+                                <td dir="ltr" style="text-align: end; font-weight: 800;">@cust.Phone</td>
+                                <td><span style="color: #16a34a; font-weight: 900;">@cust.TotalPaid.ToString("N0") <span>ر.ع</span></span></td>
+                                <td><span style="color: #ef4444; font-weight: 900;">@cust.TotalBalance.ToString("N0") <span>ر.ع</span></span></td>
+                                <td>
+                                    <div style="display: flex; gap: 8px; justify-content: center;">
+                                        <a href="@Url.Action("Details", "Customers", new { id = cust.Id })" class="action-btn-pro btn-details-pro" title="@Localizer["كشف حساب"]"><i class="fa-solid fa-file-invoice"></i></a>
+                                        <a href="@Url.Action("Edit", "Customers", new { id = cust.Id })" class="action-btn-pro btn-edit-pro" title="@Localizer["تعديل"]"><i class="fa-solid fa-pen-to-square"></i></a>
+                                        <button type="button" class="action-btn-pro btn-delete-pro" onclick="confirmDelete(@cust.Id)" title="@Localizer["حذف"]"><i class="fa-solid fa-trash-can"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
                     }
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
     <script>
-        // دالة التأكيد قبل الحذف
+        // دالة الحذف المصلحة والمحمية من تعارض النصوص
         function confirmDelete(id) {
             Swal.fire({
-                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
-                text: '@Html.Raw(Localizer["لن تتمكن من التراجع عن عملية الحذف!"])',
-                icon: 'warning',
+                title: "@Html.Raw(Localizer["هل أنت متأكد؟"])",
+                text: "@Html.Raw(Localizer["لن تتمكن من التراجع عن عملية الحذف!"])",
+                icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: 'var(--primary-navy)',
-                confirmButtonText: '@Html.Raw(Localizer["نعم، احذفه!"])',
-                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+                confirmButtonColor: "#ef4444",
+                cancelButtonColor: "var(--primary-navy)",
+                confirmButtonText: "@Html.Raw(Localizer["نعم، احذفه!"])",
+                cancelButtonText: "@Html.Raw(Localizer["إلغاء"])"
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
                         url: '@Url.Action("Delete", "Customers")/' + id,
-                        type: 'POST',
+                        type: "POST",
                         data: {
                             __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
                         },
-                        success: function (response) {
-                            if (response.success) {
+                        success: function (res) {
+                            if (res.success) {
                                 Swal.fire({
-                                    title: '@Html.Raw(Localizer["تم الحذف!"])',
-                                    text: '@Html.Raw(Localizer["تم حذف بيانات العميل بنجاح."])',
-                                    icon: 'success',
-                                    confirmButtonColor: 'var(--primary-gold)'
-                                }).then(() => {
-                                    location.reload();
-                                });
+                                    title: "@Html.Raw(Localizer["تم الحذف!"])",
+                                    text: "@Html.Raw(Localizer["تم حذف بيانات العميل بنجاح."])",
+                                    icon: "success",
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => location.reload());
                             } else {
-                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', response.message || '@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])', 'error');
+                                Swal.fire("@Html.Raw(Localizer["خطأ!"])", res.message, "error");
                             }
-                        },
-                        error: function () {
-                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["لا يمكن الاتصال بالخادم."])', 'error');
                         }
                     });
                 }
             });
         }
 
-        // دالة التبديل بين أشكال العرض
         function switchView(viewType) {
             if (viewType === 'list') {
                 $('#customersGridView').hide();
@@ -753,8 +589,6 @@
                 $('#btnListView').addClass('active');
                 $('#btnGridView').removeClass('active');
                 localStorage.setItem('preferredCustomerView', 'list');
-
-                // إعادة ضبط الجدول لتجنب مشاكل العرض عند إخفائه
                 if ($.fn.DataTable.isDataTable('#customersDataTable')) {
                     $('#customersDataTable').DataTable().columns.adjust().responsive.recalc();
                 }
@@ -768,19 +602,14 @@
         }
 
         $(document).ready(function () {
-            // تهيئة جدول DataTables
             var dir = $('html').attr('dir') === 'rtl';
-            var table = $('#customersDataTable').DataTable({
+            $('#customersDataTable').DataTable({
                 "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" },
                 "pageLength": 10,
-                "ordering": true,
                 "responsive": true,
                 "dom": '<"top"f>rt<"bottom"lp><"clear">'
             });
-
-            // قراءة التفضيل السابق للمستخدم وتطبيقه فوراً
-            var savedView = localStorage.getItem('preferredCustomerView') || 'grid';
-            switchView(savedView);
+            switchView(localStorage.getItem('preferredCustomerView') || 'grid');
         });
     </script>
 }

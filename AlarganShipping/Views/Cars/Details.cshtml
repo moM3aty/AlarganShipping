@@ -126,6 +126,18 @@
             z-index: 1;
         }
 
+        .stepper-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 25px;
+            inset-inline-start: 0;
+            height: 4px;
+            background-color: var(--primary-gold);
+            z-index: 2;
+            transition: width 0.5s ease;
+            width: var(--progress-width, 0%);
+        }
+
     .step-item {
         position: relative;
         z-index: 3;
@@ -293,6 +305,7 @@
             font-weight: 800;
             padding: 1rem;
             border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
         }
 
         .doc-table td {
@@ -313,12 +326,109 @@
         align-items: center;
         gap: 5px;
         transition: 0.3s;
+        white-space: nowrap;
     }
 
         .btn-download:hover {
             background: var(--primary-gold);
             color: white;
         }
+
+    /* ========================================================
+           تعديلات الموبايل (الميديا كويري)
+           ======================================================== */
+    @@media (max-width: 768px) {
+        .details-header {
+            flex-direction: column;
+            text-align: center;
+            padding: 1.5rem;
+            gap: 1.5rem;
+        }
+
+        .car-header-info {
+            flex-direction: column;
+        }
+
+        .car-title-large {
+            font-size: 1.6rem;
+        }
+
+        .details-header > div:last-child {
+            width: 100%;
+        }
+
+        .btn-action-light {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .tracking-card, .info-card, .tabs-container {
+            padding: 1.5rem;
+        }
+
+        .tracking-title {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        /* Stepper Adjustments for Mobile */
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-width: 3px;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-item.active .step-circle {
+            box-shadow: 0 0 0 3px white, 0 4px 10px rgba(184, 147, 90, 0.4);
+        }
+
+        .stepper-wrapper::before {
+            top: 18px;
+            height: 3px;
+        }
+
+        .stepper-wrapper::after {
+            top: 18px;
+            height: 3px;
+        }
+
+        .step-label {
+            font-size: 0.7rem;
+        }
+
+        .step-item {
+            width: 70px;
+        }
+
+        .tabs-header {
+            flex-direction: column;
+            gap: 0.5rem;
+            border-bottom: none;
+        }
+
+        .tab-btn {
+            width: 100%;
+            border-radius: 0.5rem;
+            padding: 0.8rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+            .tab-btn.active {
+                background: rgba(184, 147, 90, 0.1);
+                border-color: var(--primary-gold);
+            }
+
+                .tab-btn.active::after {
+                    display: none;
+                }
+
+        .table-responsive-wrapper {
+            overflow-x: auto;
+            width: 100%;
+        }
+    }
 </style>
 
 <div>
@@ -345,6 +455,7 @@
 
         <div style="z-index: 2; display: flex; flex-direction: column; gap: 10px;">
             <a href="@Url.Action("Index", "Cars")" class="btn-action-light"><i class="fa-solid fa-list"></i> @Localizer["قائمة السيارات"]</a>
+            <a href="@Url.Action("Create", "TrackingLogs", new { carId = Model.Id })" class="btn-action-light" style="background: #3b82f6; border-color: #3b82f6;"><i class="fa-solid fa-location-crosshairs"></i> @Localizer["إضافة تحديث تتبع"]</a>
             <a href="@Url.Action("Create", "DocumentAttachments", new { carId = Model.Id })" class="btn-action-light" style="background: rgba(255,255,255,0.2);"><i class="fa-solid fa-paperclip"></i> @Localizer["رفع مستند للسيارة"]</a>
             <a href="@Url.Action("Create", "CarInspections", new { carId = Model.Id })" class="btn-action-light" style="background: var(--primary-gold); border-color: var(--primary-gold);"><i class="fa-solid fa-clipboard-check"></i> @Localizer["إضافة تقرير فحص"]</a>
         </div>
@@ -359,21 +470,7 @@
             string lineWidth = status == 1 ? "0%" : status == 2 ? "33%" : status == 3 ? "66%" : status >= 4 ? "100%" : "0%";
         }
 
-        <div class="stepper-wrapper">
-            <style>
-                .stepper-wrapper::after {
-                    content: '';
-                    position: absolute;
-                    top: 25px;
-                    inset-inline-start: 0;
-                    height: 4px;
-                    background-color: var(--primary-gold);
-                    z-index: 2;
-                    transition: width 0.5s ease;
-                    width: @lineWidth;
-                }
-            </style>
-
+        <div class="stepper-wrapper" style="--progress-width: @lineWidth;">
             <div class="step-item @(status >= 1 ? "active" : "")">
                 <div class="step-circle"><i class="fa-solid fa-gavel"></i></div>
                 <div class="step-label">@Localizer["تم الشراء"]</div>
@@ -425,39 +522,41 @@
         <div id="inspections" class="tab-content active">
             @if (Model.CarInspections != null && Model.CarInspections.Any())
             {
-                <table class="doc-table">
-                    <thead>
-                        <tr>
-                            <th>@Localizer["مرحلة الفحص"]</th>
-                            <th>@Localizer["تاريخ الفحص"]</th>
-                            <th>@Localizer["الفاحص"]</th>
-                            <th>@Localizer["مفاتيح"]</th>
-                            <th>@Localizer["الملكية"]</th>
-                            <th>@Localizer["تشغيل"]</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var insp in Model.CarInspections.OrderByDescending(i => i.InspectionDate))
-                        {
+                <div class="table-responsive-wrapper">
+                    <table class="doc-table">
+                        <thead>
                             <tr>
-                                <td style="color: var(--primary-navy); font-weight: 900;">@Localizer[insp.InspectionStage]</td>
-                                <td>@insp.InspectionDate.ToString("dd MMM yyyy")</td>
-                                <td>@insp.InspectorName</td>
-                                <td>@(insp.HasKeys ? "✅" : "❌")</td>
-                                <td>@(insp.HasTitle ? "✅" : "❌")</td>
-                                <td>@(insp.IsRunAndDrive ? "✅" : "❌")</td>
+                                <th>@Localizer["مرحلة الفحص"]</th>
+                                <th>@Localizer["تاريخ الفحص"]</th>
+                                <th>@Localizer["الفاحص"]</th>
+                                <th>@Localizer["مفاتيح"]</th>
+                                <th>@Localizer["الملكية"]</th>
+                                <th>@Localizer["تشغيل"]</th>
                             </tr>
-                            @if (!string.IsNullOrEmpty(insp.DamageNotes))
+                        </thead>
+                        <tbody>
+                            @foreach (var insp in Model.CarInspections.OrderByDescending(i => i.InspectionDate))
                             {
                                 <tr>
-                                    <td colspan="6" style="background: #fef2f2; color: #ef4444; font-size: 0.9rem; padding: 0.5rem 1rem;">
-                                        <strong>@Localizer["ملاحظات الأضرار:"]</strong> @insp.DamageNotes
-                                    </td>
+                                    <td style="color: var(--primary-navy); font-weight: 900;">@Localizer[insp.InspectionStage]</td>
+                                    <td>@insp.InspectionDate.ToString("dd MMM yyyy")</td>
+                                    <td>@insp.InspectorName</td>
+                                    <td>@(insp.HasKeys ? "✅" : "❌")</td>
+                                    <td>@(insp.HasTitle ? "✅" : "❌")</td>
+                                    <td>@(insp.IsRunAndDrive ? "✅" : "❌")</td>
                                 </tr>
+                                @if (!string.IsNullOrEmpty(insp.DamageNotes))
+                                {
+                                    <tr>
+                                        <td colspan="6" style="background: #fef2f2; color: #ef4444; font-size: 0.9rem; padding: 0.5rem 1rem;">
+                                            <strong>@Localizer["ملاحظات الأضرار:"]</strong> @insp.DamageNotes
+                                        </td>
+                                    </tr>
+                                }
                             }
-                        }
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             }
             else
             {
@@ -472,31 +571,33 @@
         <div id="documents" class="tab-content">
             @if (Model.DocumentAttachments != null && Model.DocumentAttachments.Any())
             {
-                <table class="doc-table">
-                    <thead>
-                        <tr>
-                            <th>@Localizer["نوع المستند"]</th>
-                            <th>@Localizer["اسم الملف"]</th>
-                            <th>@Localizer["تاريخ الرفع"]</th>
-                            <th>@Localizer["إجراءات"]</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var doc in Model.DocumentAttachments.OrderByDescending(d => d.UploadDate))
-                        {
+                <div class="table-responsive-wrapper">
+                    <table class="doc-table">
+                        <thead>
                             <tr>
-                                <td style="font-weight: 900; color: var(--primary-navy);">@Localizer[doc.DocumentType]</td>
-                                <td dir="ltr" style="font-family: monospace; color: var(--text-muted);">@doc.FileName</td>
-                                <td>@doc.UploadDate.ToString("dd MMM yyyy - HH:mm")</td>
-                                <td>
-                                    <a href="@doc.FilePath" target="_blank" class="btn-download">
-                                        <i class="fa-solid fa-cloud-arrow-down"></i> @Localizer["عرض / تحميل"]
-                                    </a>
-                                </td>
+                                <th>@Localizer["نوع المستند"]</th>
+                                <th>@Localizer["اسم الملف"]</th>
+                                <th>@Localizer["تاريخ الرفع"]</th>
+                                <th>@Localizer["إجراءات"]</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var doc in Model.DocumentAttachments.OrderByDescending(d => d.UploadDate))
+                            {
+                                <tr>
+                                    <td style="font-weight: 900; color: var(--primary-navy);">@Localizer[doc.DocumentType]</td>
+                                    <td dir="ltr" style="font-family: monospace; color: var(--text-muted);">@doc.FileName</td>
+                                    <td>@doc.UploadDate.ToString("dd MMM yyyy - HH:mm")</td>
+                                    <td>
+                                        <a href="@doc.FilePath" target="_blank" class="btn-download">
+                                            <i class="fa-solid fa-cloud-arrow-down"></i> @Localizer["عرض / تحميل"]
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             }
             else
             {

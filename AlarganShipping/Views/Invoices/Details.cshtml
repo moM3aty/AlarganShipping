@@ -98,13 +98,19 @@
         font-weight: 800;
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 8px;
+    }
+
+    .table-responsive-wrapper {
+        overflow-x: auto;
+        width: 100%;
+        margin-bottom: 2.5rem;
     }
 
     .invoice-table {
         width: 100%;
         border-collapse: collapse;
-        margin-bottom: 2.5rem;
     }
 
         .invoice-table th {
@@ -114,6 +120,7 @@
             text-align: start;
             font-weight: 800;
             border: 1px solid var(--primary-navy);
+            white-space: nowrap;
         }
 
         .invoice-table td {
@@ -128,6 +135,7 @@
             font-family: monospace;
             font-size: 1.15rem;
             color: var(--primary-navy);
+            white-space: nowrap;
         }
 
     .total-section {
@@ -173,6 +181,9 @@
         font-family: inherit;
         font-size: 1.1rem;
         box-shadow: 0 4px 15px rgba(184, 147, 90, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
         .btn-print:hover {
@@ -189,12 +200,73 @@
         background: white;
         border: 1px solid #e2e8f0;
         border-radius: 0.75rem;
+        display: inline-flex;
+        align-items: center;
     }
 
         .btn-cancel:hover {
             background: #f8fafc;
             color: var(--primary-navy);
         }
+
+    /* ========================================================
+           تعديلات الموبايل (الميديا كويري للشاشة فقط)
+           ======================================================== */
+    @@media (max-width: 768px) {
+        .invoice-wrapper {
+            padding: 1.5rem;
+            border-radius: 1rem;
+        }
+
+        .invoice-header {
+            flex-direction: column;
+            text-align: center;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .company-details h1 {
+            font-size: 1.8rem;
+        }
+
+        .invoice-meta {
+            text-align: center;
+        }
+
+        .meta-title {
+            font-size: 1.5rem;
+        }
+
+        .meta-row {
+            justify-content: center;
+        }
+
+        .bill-to-section {
+            padding: 1.5rem;
+        }
+
+        .bill-to-name {
+            font-size: 1.2rem;
+        }
+
+        .total-box {
+            width: 100%;
+        }
+
+        .total-row {
+            font-size: 1.2rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .btn-print, .btn-cancel {
+            width: 100%;
+            justify-content: center;
+        }
+    }
 
     /* Print Media Query */
     @@media print {
@@ -257,58 +329,61 @@
             <div class="bill-to-title">@Localizer["فاتورة مقدمة إلى:"]</div>
             <h2 class="bill-to-name">@Model.Customer?.Name</h2>
             <div class="bill-to-car">
-                <i class="fa-solid fa-car"></i> @Localizer["بيانات السيارة:"] @Model.Car?.Make @Model.Car?.Model @Model.Car?.Year
-                <span style="color: var(--text-muted); font-family: monospace; margin-inline-start: 10px;">(VIN: @Model.Car?.VIN)</span>
+                <i class="fa-solid fa-car"></i>
+                <span>@Localizer["بيانات السيارة:"] @Model.Car?.Make @Model.Car?.Model @Model.Car?.Year</span>
+                <span style="color: var(--text-muted); font-family: monospace;">(VIN: @Model.Car?.VIN)</span>
             </div>
         </div>
 
-        <table class="invoice-table">
-            <thead>
-                <tr>
-                    <th>@Localizer["البيان / الوصف"]</th>
-                    <th class="amount-col">@Localizer["المبلغ"] ($)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.CarPrice > 0)
-                {
-                    <tr><td>@Localizer["قيمة شراء السيارة من المزاد"]</td><td class="amount-col">@Model.CarPrice</td></tr>
-                }
-                @if (Model.AuctionFees > 0)
-                {
-                    <tr><td>@Localizer["رسوم المزاد والبوابة"]</td><td class="amount-col">@Model.AuctionFees</td></tr>
-                }
-                @if (Model.LandFreight > 0)
-                {
-                    <tr><td>@Localizer["أجور النقل الداخلي (الريكفري)"]</td><td class="amount-col">@Model.LandFreight</td></tr>
-                }
-                @if (Model.SeaFreight > 0)
-                {
-                    <tr><td>@Localizer["أجور الشحن البحري"]</td><td class="amount-col">@Model.SeaFreight</td></tr>
-                }
-                @if (Model.CustomsFees > 0)
-                {
-                    <tr><td>@Localizer["رسوم التخليص الجمركي"]</td><td class="amount-col">@Model.CustomsFees</td></tr>
-                }
-                @if (Model.AdminFees > 0)
-                {
-                    <tr><td>@Localizer["الرسوم الإدارية / عمولة الشركة"]</td><td class="amount-col">@Model.AdminFees</td></tr>
-                }
-            </tbody>
-        </table>
+        <div class="table-responsive-wrapper">
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th>@Localizer["البيان / الوصف"]</th>
+                        <th class="amount-col">@Localizer["المبلغ"] ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.CarPrice > 0)
+                    {
+                        <tr><td>@Localizer["قيمة شراء السيارة من المزاد"]</td><td class="amount-col">@Model.CarPrice.ToString("N2")</td></tr>
+                    }
+                    @if (Model.AuctionFees > 0)
+                    {
+                        <tr><td>@Localizer["رسوم المزاد والبوابة"]</td><td class="amount-col">@Model.AuctionFees.ToString("N2")</td></tr>
+                    }
+                    @if (Model.LandFreight > 0)
+                    {
+                        <tr><td>@Localizer["أجور النقل الداخلي (الريكفري)"]</td><td class="amount-col">@Model.LandFreight.ToString("N2")</td></tr>
+                    }
+                    @if (Model.SeaFreight > 0)
+                    {
+                        <tr><td>@Localizer["أجور الشحن البحري"]</td><td class="amount-col">@Model.SeaFreight.ToString("N2")</td></tr>
+                    }
+                    @if (Model.CustomsFees > 0)
+                    {
+                        <tr><td>@Localizer["رسوم التخليص الجمركي"]</td><td class="amount-col">@Model.CustomsFees.ToString("N2")</td></tr>
+                    }
+                    @if (Model.AdminFees > 0)
+                    {
+                        <tr><td>@Localizer["الرسوم الإدارية / عمولة الشركة"]</td><td class="amount-col">@Model.AdminFees.ToString("N2")</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 
         <div class="total-section">
             <div class="total-box">
                 <div class="total-row">
-                    <span style="color: white; font-size: 1.2rem;">@Localizer["الإجمالي الكلي:"]</span>
-                    <span>$@Model.TotalAmount</span>
+                    <span style="color: white; font-size: 1.1rem;">@Localizer["الإجمالي الكلي:"]</span>
+                    <span>$@Model.TotalAmount.ToString("N2")</span>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="action-buttons">
-        <button onclick="window.print()" class="btn-print"><i class="fa-solid fa-print" style="margin-inline-end: 8px;"></i> @Localizer["طباعة الفاتورة"]</button>
+        <button onclick="window.print()" class="btn-print"><i class="fa-solid fa-print"></i> @Localizer["طباعة الفاتورة"]</button>
         <a href="@Url.Action("Index", "Invoices")" class="btn-cancel">@Localizer["العودة"]</a>
     </div>
 </div>

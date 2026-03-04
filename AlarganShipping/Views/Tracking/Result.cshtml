@@ -13,10 +13,10 @@
     <title>@ViewData["Title"] - ALARGAN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="~/images/logo.jpg" rel="icon" type="image/x-icon" />
 
     <style>
         :root {
-            /* الألوان المستخرجة من الشعار للاستخدام الخارجي */
             --primary-navy: #2C3E50;
             --secondary-navy: #1A252F;
             --primary-gold: #B8935A;
@@ -36,6 +36,7 @@
             margin: 0 auto;
         }
 
+        /* الهيدر العلوي */
         .status-header {
             background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--primary-navy) 100%);
             color: white;
@@ -81,6 +82,7 @@
             border: 1px solid rgba(255,255,255,0.2);
         }
 
+        /* حاوية التايم لاين */
         .timeline-wrapper {
             background: white;
             border-radius: 2rem;
@@ -96,6 +98,7 @@
             font-size: 1.8rem;
         }
 
+        /* عناصر السجل */
         .log-item {
             display: flex;
             gap: 2rem;
@@ -195,15 +198,89 @@
                 background: var(--primary-gold);
                 transform: translateY(-2px);
             }
+
+        /* ========================================================
+                   تعديلات الموبايل (الميديا كويري)
+                   ======================================================== */
+        @@media (max-width: 768px) {
+            body
+
+        {
+            padding: 1rem 0.5rem;
+        }
+
+        .status-header {
+            padding: 2rem 1.5rem;
+            border-radius: 1.5rem;
+        }
+
+        .car-info-title {
+            font-size: 1.6rem;
+        }
+
+        .car-vin {
+            font-size: 1rem;
+            padding: 0.4rem 1rem;
+        }
+
+        .timeline-wrapper {
+            padding: 2.5rem 1.25rem;
+            border-radius: 1.5rem;
+        }
+
+        .timeline-title {
+            font-size: 1.4rem;
+            margin-bottom: 2rem;
+        }
+
+        .log-item {
+            gap: 1rem;
+        }
+
+            .log-item:not(:last-child)::before {
+                inset-inline-start: 14px;
+                top: 30px;
+                bottom: -30px;
+            }
+
+        .log-dot {
+            width: 30px;
+            height: 30px;
+            font-size: 0.8rem;
+            box-shadow: 0 0 0 2px var(--primary-gold);
+        }
+
+        .log-content {
+            padding: 1rem;
+        }
+
+        .log-title {
+            font-size: 1.1rem;
+        }
+
+        .log-date, .log-loc, .log-desc {
+            font-size: 0.85rem;
+        }
+
+        .btn-back {
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+            padding: 1rem;
+        }
+
+        }
     </style>
 </head>
 <body>
     <div class="result-container">
+        <!-- قسم الهيدر -->
         <div class="status-header">
             <h1 class="car-info-title">@Model.Make @Model.Model @Model.Year</h1>
             <p class="car-vin">@Localizer["رقم الشاصي:"] @Model.VIN</p>
         </div>
 
+        <!-- قسم التايم لاين -->
         <div class="timeline-wrapper">
             <h2 class="timeline-title"><i class="fa-solid fa-route"></i> @Localizer["سجل العمليات والتحركات"]</h2>
 

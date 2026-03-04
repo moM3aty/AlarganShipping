@@ -4,6 +4,7 @@
 }
 
 <style>
+    /* --- الهيدر الرئيسي (Details Header) --- */
     .details-header {
         background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--primary-navy) 100%);
         color: white;
@@ -50,19 +51,24 @@
         gap: 0.5rem;
         margin-inline-end: 1rem;
         border: 1px solid rgba(255,255,255,0.2);
+        font-weight: 700;
+        font-size: 0.9rem;
     }
 
     .btn-outline-light {
         background: rgba(255,255,255,0.1);
         color: white;
-        padding: 0.75rem 1.5rem;
+        padding: 0.85rem 1.75rem;
         border-radius: 0.75rem;
-        font-weight: 700;
+        font-weight: 800;
         text-decoration: none;
         border: 1px solid rgba(255,255,255,0.2);
         transition: 0.3s;
         position: relative;
         z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
         .btn-outline-light:hover {
@@ -70,6 +76,7 @@
             color: var(--primary-navy);
         }
 
+    /* --- كروت المالية (Finance Cards) --- */
     .finance-grid {
         display: grid;
         grid-template-columns: 1fr;
@@ -92,18 +99,22 @@
         text-align: center;
         position: relative;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     .finance-title {
         color: var(--text-muted);
         font-size: 1rem;
         font-weight: 800;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.75rem;
     }
 
     .finance-value {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         font-weight: 900;
+        font-family: monospace;
     }
 
     .val-paid {
@@ -118,6 +129,7 @@
         color: var(--primary-navy);
     }
 
+    /* --- قسم الجداول (Section Containers) --- */
     .section-container {
         background: white;
         border-radius: 1.5rem;
@@ -131,15 +143,21 @@
         font-size: 1.5rem;
         font-weight: 900;
         color: var(--primary-navy);
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
     }
 
         .section-title i {
             color: var(--primary-gold);
         }
+
+    .table-responsive-wrapper {
+        overflow-x: auto;
+        width: 100%;
+        border-radius: 12px;
+    }
 
     .data-table {
         width: 100%;
@@ -151,74 +169,149 @@
             background-color: #f8fafc;
             color: var(--text-muted);
             font-weight: 800;
-            padding: 1rem;
+            padding: 1.25rem 1rem;
             border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
         }
 
         .data-table td {
-            padding: 1rem;
+            padding: 1.25rem 1rem;
             border-bottom: 1px solid #f1f5f9;
             color: var(--text-dark);
-            font-weight: 600;
+            font-weight: 700;
+            vertical-align: middle;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
         }
 
         .data-table tr:hover {
             background-color: #f8fafc;
         }
 
-    .btn-sm-gold {
-        color: var(--primary-gold);
+    .btn-sm-pro {
+        color: var(--primary-navy);
         font-weight: 800;
         text-decoration: none;
-        padding: 0.4rem 1rem;
-        border-radius: 8px;
-        background: rgba(184, 147, 90, 0.1);
+        padding: 0.6rem 1.2rem;
+        border-radius: 10px;
+        background: #f1f5f9;
         transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid #e2e8f0;
+        white-space: nowrap;
     }
 
-        .btn-sm-gold:hover {
-            background: var(--primary-gold);
+        .btn-sm-pro:hover {
+            background: var(--primary-navy);
             color: white;
+            border-color: var(--primary-navy);
+            transform: translateY(-2px);
         }
+
+    /* ========================================================
+           تعديلات الموبايل (الميديا كويري)
+           ======================================================== */
+    @@media (max-width: 768px) {
+        .details-header {
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            gap: 1.5rem;
+        }
+
+        .customer-name-large {
+            font-size: 1.6rem;
+        }
+
+        .customer-badge {
+            margin: 0.25rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-outline-light {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .finance-card {
+            padding: 1.5rem;
+        }
+
+        .finance-value {
+            font-size: 1.8rem;
+        }
+
+        .section-container {
+            padding: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            justify-content: center;
+        }
+
+        .data-table td, .data-table th {
+            padding: 1rem 0.75rem;
+            font-size: 0.85rem;
+        }
+    }
 </style>
 
-<div>
+<div class="customer-details-page">
+    <!-- الهيدر العلوي -->
     <div class="details-header">
-        <div>
+        <div class="header-content">
             <h1 class="customer-name-large">@Model.Name</h1>
-            <span class="customer-badge"><i class="fa-solid fa-phone"></i> <span dir="ltr">@Model.Phone</span></span>
-            <span class="customer-badge"><i class="fa-solid fa-id-card"></i> @(string.IsNullOrEmpty(Model.CivilId) ? Localizer["غير مسجل"] : Model.CivilId)</span>
+            <div style="display: flex; flex-wrap: wrap; gap: 5px; justify-content: inherit;">
+                <span class="customer-badge"><i class="fa-solid fa-phone"></i> <span dir="ltr">@Model.Phone</span></span>
+                <span class="customer-badge"><i class="fa-solid fa-id-card"></i> @(string.IsNullOrEmpty(Model.CivilId) ? Localizer["غير مسجل"] : Model.CivilId)</span>
+            </div>
         </div>
         <div>
-            <a href="@Url.Action("Index", "Customers")" class="btn-outline-light">@Localizer["العودة للعملاء"]</a>
+            <a href="@Url.Action("Index", "Customers")" class="btn-outline-light">
+                <i class="fa-solid fa-arrow-right-long"></i> @Localizer["العودة للعملاء"]
+            </a>
         </div>
     </div>
 
+    <!-- كروت الخلاصة المالية -->
     <div class="finance-grid">
-        <div class="finance-card" style="border-bottom: 4px solid var(--primary-navy);">
+        <div class="finance-card" style="border-bottom: 5px solid var(--primary-navy);">
             <h3 class="finance-title">@Localizer["إجمالي المبالغ المطلوبة"]</h3>
-            <div class="finance-value val-total">$@(Model.TotalPaid + Model.TotalBalance)</div>
+            <div class="finance-value val-total">
+                <small style="font-size: 1rem; margin-inline-end: 4px;">$</small>@((Model.TotalPaid + Model.TotalBalance).ToString("N0"))
+            </div>
         </div>
-        <div class="finance-card" style="border-bottom: 4px solid #16a34a;">
+        <div class="finance-card" style="border-bottom: 5px solid #16a34a;">
             <h3 class="finance-title">@Localizer["إجمالي المدفوع"]</h3>
-            <div class="finance-value val-paid">$@Model.TotalPaid</div>
+            <div class="finance-value val-paid">
+                <small style="font-size: 1rem; margin-inline-end: 4px;">$</small>@Model.TotalPaid.ToString("N0")
+            </div>
         </div>
-        <div class="finance-card" style="border-bottom: 4px solid #ef4444;">
+        <div class="finance-card" style="border-bottom: 5px solid #ef4444;">
             <h3 class="finance-title">@Localizer["المبالغ المتبقية (الديون)"]</h3>
-            <div class="finance-value val-debt">$@Model.TotalBalance</div>
+            <div class="finance-value val-debt">
+                <small style="font-size: 1rem; margin-inline-end: 4px;">$</small>@Model.TotalBalance.ToString("N0")
+            </div>
         </div>
     </div>
 
+    <!-- قسم السيارات -->
     <div class="section-container">
         <h2 class="section-title"><i class="fa-solid fa-car-rear"></i> @Localizer["سيارات العميل"]</h2>
-        <div style="overflow-x: auto;">
+        <div class="table-responsive-wrapper">
             <table class="data-table">
                 <thead>
                     <tr>
                         <th>@Localizer["السيارة"]</th>
                         <th>@Localizer["رقم الشاصي"] (VIN)</th>
                         <th>@Localizer["سعر الشراء"]</th>
-                        <th>@Localizer["إجراءات"]</th>
+                        <th style="text-align: center;">@Localizer["إجراءات"]</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -227,17 +320,27 @@
                         foreach (var car in Model.Cars)
                         {
                             <tr>
-                                <td>@car.Make @car.Model @car.Year</td>
-                                <td style="font-family: monospace; color: var(--text-muted);">@car.VIN</td>
-                                <td>$@car.PurchasePrice</td>
-                                <td><a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn-sm-gold">@Localizer["عرض السيارة"]</a></td>
+                                <td>
+                                    <div style="font-weight: 900; color: var(--primary-navy); white-space: nowrap;">@car.Make @car.Model</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">@car.Year</div>
+                                </td>
+                                <td style="font-family: monospace; color: var(--text-muted); font-weight: 800;">@car.VIN</td>
+                                <td style="color: #16a34a; font-weight: 900; font-family: monospace;">$@car.PurchasePrice.ToString("N0")</td>
+                                <td style="text-align: center;">
+                                    <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn-sm-pro">
+                                        <i class="fa-solid fa-eye"></i> @Localizer["عرض السيارة"]
+                                    </a>
+                                </td>
                             </tr>
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">@Localizer["لا توجد سيارات مسجلة لهذا العميل."]</td>
+                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 4rem;">
+                                <i class="fa-solid fa-car-on" style="font-size: 3rem; color: #f1f5f9; margin-bottom: 1rem; display: block;"></i>
+                                @Localizer["لا توجد سيارات مسجلة لهذا العميل."]
+                            </td>
                         </tr>
                     }
                 </tbody>

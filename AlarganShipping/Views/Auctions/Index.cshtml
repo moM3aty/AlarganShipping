@@ -105,13 +105,68 @@
         vertical-align: middle;
     }
 
+    /* ستايل أزرار الإجراءات (تعديل وحذف) بشكل عصري ومربع */
     .action-btn {
-        background: transparent;
-        border: none;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
         cursor: pointer;
-        font-size: 1.1rem;
         transition: 0.3s;
-        padding: 5px;
+        text-decoration: none;
+    }
+
+    .btn-edit {
+        color: var(--primary-gold);
+    }
+
+        .btn-edit:hover {
+            background: var(--primary-gold);
+            color: white;
+            border-color: var(--primary-gold);
+            box-shadow: 0 4px 10px rgba(184, 147, 90, 0.2);
+        }
+
+    .btn-delete {
+        color: #ef4444;
+    }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+        }
+
+    /* ========================================================
+           تعديلات الموبايل (الميديا كويري)
+           ======================================================== */
+    @@media (max-width: 768px) {
+        .page-header-container {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .btn-add {
+            width: 100%;
+            justify-content: center; /* توسيط محتوى الزر */
+        }
+
+        .data-card {
+            padding: 1.5rem; /* تقليل حواف الجدول الجانبية لتوفير مساحة */
+            border-radius: 1.2rem;
+        }
     }
 </style>
 
@@ -123,7 +178,6 @@
             <p style="color: var(--text-muted); font-weight: 600; margin-top: 5px;">• @Localizer["قائمة المزادات المعتمدة وحسابات الشراء"]</p>
         </div>
         <div class="header-actions">
-            <!-- تم ربط زر الإضافة -->
             <a href="@Url.Action("Create", "Auctions")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة مزاد جديد"]</a>
         </div>
     </div>
@@ -153,9 +207,15 @@
                             <td style="font-family: monospace; font-weight: 900; color: var(--primary-navy);">@(string.IsNullOrEmpty(auc.BuyerNumber) ? "-" : auc.BuyerNumber)</td>
                             <td style="color: #16a34a; font-weight: 900;">$@auc.DefaultAuctionFee</td>
                             <td>
-                                <!-- ربط زر التعديل وحذف -->
-                                <a href="@Url.Action("Edit", "Auctions", new { id = auc.Id })" class="action-btn" style="color: var(--primary-gold); margin-inline-end: 15px;" title="@Localizer["تعديل"]"><i class="fa-solid fa-pen-to-square"></i></a>
-                                <button type="button" onclick="confirmDelete(@auc.Id)" class="action-btn" style="color: #ef4444;" title="@Localizer["حذف"]"><i class="fa-solid fa-trash"></i></button>
+                                <!-- أزرار التعديل والحذف بالشكل الجديد المتناسق -->
+                                <div style="display:flex; gap: 8px;">
+                                    <a href="@Url.Action("Edit", "Auctions", new { id = auc.Id })" class="action-btn btn-edit" title="@Localizer["تعديل"]">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <button type="button" onclick="confirmDelete(@auc.Id)" class="action-btn btn-delete" title="@Localizer["حذف"]">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -171,38 +231,39 @@
         // دالة الحذف
         function confirmDelete(id) {
             Swal.fire({
-                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
-                text: '@Html.Raw(Localizer["لن تتمكن من التراجع عن عملية الحذف!"])',
+                title: "@Html.Raw(Localizer["هل أنت متأكد؟"])",
+                text: "@Html.Raw(Localizer["لن تتمكن من التراجع عن عملية الحذف!"])",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: 'var(--primary-navy)',
-                confirmButtonText: '@Html.Raw(Localizer["نعم، احذفه!"])',
-                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+                confirmButtonText: "@Html.Raw(Localizer["نعم، احذفه!"])",
+                cancelButtonText: "@Html.Raw(Localizer["إلغاء"])"
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '@Url.Action("Delete", "Auctions")/' + id,
+                        url: '@Url.Action("Delete", "Auctions")', // إصلاح الرابط
                         type: 'POST',
                         data: {
+                            id: id, // تمرير الـ ID ضمن البيانات
                             __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
                         },
                         success: function (response) {
                             if (response.success) {
                                 Swal.fire({
-                                    title: '@Html.Raw(Localizer["تم الحذف!"])',
-                                    text: '@Html.Raw(Localizer["تم حذف المزاد بنجاح."])',
+                                    title: "@Html.Raw(Localizer["تم الحذف!"])",
+                                    text: "@Html.Raw(Localizer["تم حذف المزاد بنجاح."])",
                                     icon: 'success',
                                     confirmButtonColor: 'var(--primary-gold)'
                                 }).then(() => {
                                     location.reload();
                                 });
                             } else {
-                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', response.message || '@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])', 'error');
+                                Swal.fire("@Html.Raw(Localizer["خطأ!"])", response.message || "@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])", 'error');
                             }
                         },
                         error: function () {
-                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["لا يمكن الاتصال بالخادم."])', 'error');
+                            Swal.fire("@Html.Raw(Localizer["خطأ!"])", "@Html.Raw(Localizer["لا يمكن الاتصال بالخادم."])", 'error');
                         }
                     });
                 }

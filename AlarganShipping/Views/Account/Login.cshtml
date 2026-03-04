@@ -8,15 +8,18 @@
     /* شاشة الدخول تغطي التخطيط الأساسي لتكون شاشة كاملة */
     .login-page-wrapper {
         display: flex;
-        min-height: 100vh;
+        height: 100vh; /* تم التغيير من min-height إلى height لتفعيل التمرير الداخلي */
         width: 100%;
         position: fixed;
         top: 0;
         right: 0;
         left: 0;
+        bottom: 0;
         background-color: var(--bg-body);
         z-index: 9999;
         margin: 0;
+        overflow-y: auto; /* السماح بالتمرير العمودي */
+        -webkit-overflow-scrolling: touch; /* تنعيم التمرير على أجهزة آبل والموبايل */
     }
 
     /* --- القسم الأيمن: العلامة التجارية --- */
@@ -95,6 +98,7 @@
         align-items: center;
         justify-content: center;
         padding: 2rem;
+        min-height: 100%;
     }
 
     @@media (min-width: 992px) {
@@ -211,6 +215,47 @@
         font-weight: 700;
         cursor: pointer;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    /* ========================================================
+           تعديلات الموبايل (الميديا كويري) لحل مشكلة التمرير نهائياً
+           ======================================================== */
+    @@media (max-width: 768px) {
+        .login-page-wrapper {
+            display: block; /* إلغاء الـ Flexbox هنا يحل مشكلة قص الشاشة من الأعلى */
+        }
+
+        .premium-form-section {
+            display: block;
+            padding: 1rem;
+            padding-top: 6rem; /* ترك مساحة علوية لزر تغيير اللغة */
+            padding-bottom: 3rem; /* ترك مساحة سفلية للراحة أثناء التمرير */
+        }
+
+        .form-card {
+            margin: 0 auto; /* توسيط البطاقة أفقياً */
+            padding: 2.5rem 1.5rem;
+            border-radius: 1.5rem;
+        }
+
+        .mobile-logo img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header {
+            margin-bottom: 1.5rem;
+        }
+
+            .form-header h2 {
+                font-size: 1.4rem;
+            }
+
+        .login-lang-switch {
+            top: 15px;
+            inset-inline-end: 15px;
+        }
     }
 </style>
 

@@ -4,12 +4,12 @@
 }
 
 <style>
-    /* ... (احتفظ بنفس ستايلاتك السابقة هنا، سأركز على الكود الأساسي للفورم) ... */
     .form-page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 2rem;
+        gap: 10px;
     }
 
     .form-page-title {
@@ -31,6 +31,7 @@
         font-weight: 700;
         text-decoration: none;
         transition: 0.3s;
+        flex-shrink: 0;
     }
 
         .btn-back:hover {
@@ -147,6 +148,7 @@
 
         .input-group-dynamic .select2-container {
             flex: 1;
+            width: auto !important; /* لضمان التجاوب */
         }
 
     .btn-quick-add {
@@ -193,6 +195,7 @@
         font-family: inherit;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 10px;
     }
 
@@ -215,6 +218,41 @@
         cursor: pointer;
         text-decoration: none;
         padding: 0.85rem 1rem;
+        display: inline-flex;
+        justify-content: center;
+    }
+
+    /* ========================================================
+           تعديلات الموبايل (الميديا كويري)
+           ======================================================== */
+    @@media (max-width: 768px) {
+        .premium-form-card {
+            padding: 1.5rem; /* تقليل الحواف الجانبية */
+            border-radius: 1.2rem;
+        }
+
+        .form-page-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-page-title {
+            font-size: 1.2rem; /* تصغير العنوان ليناسب الشاشة */
+        }
+
+        .btn-back {
+            padding: 0.5rem 1rem;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse; /* زر الإلغاء أسفل زر الحفظ */
+            align-items: stretch;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .btn-submit, .btn-cancel {
+            width: 100%; /* جعل الأزرار بعرض الشاشة */
+        }
     }
 </style>
 
@@ -223,7 +261,7 @@
 
 <div>
     <div class="form-page-header">
-        <h2 class="form-page-title">@Localizer["إدارة بيانات المركبة - جديدة"] <i class="fa-solid fa-car-side" style="color: var(--primary-gold); background: rgba(184, 147, 90, 0.1); padding: 8px; border-radius: 8px; font-size:1.2rem;"></i></h2>
+        <h2 class="form-page-title">@Localizer["إدارة بيانات المركبة - جديدة"] <i class="fa-solid fa-car-side" style="color: var(--primary-gold); background: rgba(184, 147, 90, 0.1); padding: 8px; border-radius: 8px; font-size:1.1rem;"></i></h2>
         <a href="javascript:history.back()" class="btn-back"><i class="fa-solid fa-xmark"></i></a>
     </div>
 
@@ -386,10 +424,6 @@
                     <i class="fa-solid fa-save"></i> @Localizer["حفظ بيانات المركبة"]
                 </button>
                 <a href="javascript:history.back()" class="btn-cancel">@Localizer["إلغاء"]</a>
-
-                <div class="form-hint">
-                    <i class="fa-solid fa-circle-info"></i> @Localizer["ملاحظة: سيتم تحديث حقل 'آخر تحديث' تلقائياً عند حفظ التغييرات لضمان دقة التتبع."]
-                </div>
             </div>
         </form>
     </div>

@@ -8,7 +8,6 @@
     var htmlDir = isRtl ? "rtl" : "ltr";
 
     // --- الحل الجذري لمشكلة صلاحيات الأدمن ---
-    // جلب الإيميل الصحيح من الجلسة (Claims) للبحث عنه في قاعدة البيانات
     var userEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
 
     var currentUser = !string.IsNullOrEmpty(userEmail)
@@ -29,6 +28,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
     <link href="~/images/logo.jpg" rel="icon" type="image/x-icon" />
+
     <style>
         :root {
             --primary-navy: #2C3E50;
@@ -82,7 +82,7 @@
             border-inline-end: 1px solid #e2e8f0;
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            flex-shrink: 0; /* يمنع الشريط الجانبي من الانضغاط وتشويه التصميم */
+            flex-shrink: 0;
         }
 
         .sidebar-header {
@@ -112,12 +112,13 @@
                 object-fit: cover;
             }
 
-        .header-left{
+        /* اصلاح وتنسيق الهيدر العلوي بشكل دقيق */
+        .header-left, .header-right {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             gap: 15px;
         }
+
         .brand-name {
             font-size: 1.3rem;
             font-weight: 900;
@@ -310,7 +311,7 @@
             cursor: pointer;
             transition: 0.3s;
             font-size: 1.2rem;
-            text-decoration:none;
+            text-decoration: none;
         }
 
             .notification-bell:hover {
@@ -402,6 +403,9 @@
                     text-decoration: underline;
                 }
 
+        /* ========================================================
+                   Global Premium Table Styles (DataTables)
+                   ======================================================== */
         .data-card {
             background: transparent !important;
             border-radius: 0 !important;
@@ -452,7 +456,6 @@
                 vertical-align: middle !important;
             }
 
-                /* Rounded corners for the floating rows */
                 .table-enterprise td:first-child {
                     border-inline-start: 1px solid #f8fafc !important;
                     border-start-start-radius: 1.25rem !important;
@@ -465,7 +468,6 @@
                     border-end-end-radius: 1.25rem !important;
                 }
 
-            /* Highlight border on hover */
             .table-enterprise tbody tr:hover td {
                 border-top-color: rgba(184, 147, 90, 0.3) !important;
                 border-bottom-color: rgba(184, 147, 90, 0.3) !important;
@@ -548,7 +550,10 @@
                     color: white !important;
                     border-color: var(--primary-navy) !important;
                 }
-        /* --- Responsive Settings --- */
+
+        /* ========================================================
+                   تعديلات الموبايل (الميديا كويري) لضمان تجاوب الشاشة بالكامل
+                   ======================================================== */
         @@media (max-width: 1024px) {
             .sidebar {
                 position: fixed;
@@ -557,6 +562,7 @@
                 height: 100vh;
                 z-index: 1000;
                 transition: transform 0.4s ease;
+                box-shadow: 0 0 50px rgba(0,0,0,0.1);
             }
 
             html[dir="rtl"] .sidebar {
@@ -574,20 +580,45 @@
                 }
 
             .mobile-toggle-btn {
-                display: block;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
+            .top-header {
+                padding: 0 1rem;
+                height: 70px;
+            }
+
+            .header-left, .header-right {
+                gap: 8px;
+            }
+            /* إخفاء النصوص من الأزرار العلوية لتوفير المساحة */
             .date-box, .btn-logout span, .lang-btn span {
                 display: none;
             }
+            /* تحويل أزرار اللغة والخروج إلى أيقونات دائرية متناسقة مع الجرس */
+            .btn-logout, .lang-btn, .mobile-toggle-btn {
+                width: 42px;
+                height: 42px;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+            }
+
+                .btn-logout i, .lang-btn i {
+                    margin: 0;
+                }
 
             .page-body {
-                padding: 1rem 1.5rem;
+                padding: 1rem 1rem 2rem 1rem;
             }
 
             .system-footer {
                 flex-direction: column;
-                gap: 0.5rem;
+                gap: 0.8rem;
                 text-align: center;
             }
         }
