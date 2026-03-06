@@ -481,6 +481,49 @@
                     border-inline-end-color: rgba(184, 147, 90, 0.3) !important;
                 }
 
+        /* --- Fix Select2 Dropdown Styling Globally (حل مشكلة النقاط والتداخل) --- */
+        .select2-container--open {
+            z-index: 9999999 !important;
+        }
+
+        .select2-results__options {
+            list-style: none !important; /* إخفاء النقاط السوداء (Bullets) */
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .select2-results__option {
+            list-style-type: none !important;
+            padding: 10px 15px !important;
+            font-weight: 700 !important;
+            color: var(--primary-navy) !important;
+            font-family: 'Cairo', sans-serif !important;
+        }
+
+        .select2-results__option--highlighted {
+            background-color: var(--primary-gold) !important;
+            color: white !important;
+        }
+
+        .select2-search__field {
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+            outline: none !important;
+            font-family: 'Cairo', sans-serif !important;
+        }
+
+            .select2-search__field:focus {
+                border-color: var(--primary-gold) !important;
+            }
+
+        .select2-dropdown {
+            border: 2px solid #e2e8f0 !important;
+            border-radius: 0.75rem !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+            overflow: hidden !important;
+        }
+
         /* Modern DataTables Controls */
         .dataTables_wrapper .dataTables_filter {
             margin-bottom: 1.5rem;
@@ -736,7 +779,31 @@
     }
     else
     {
-        @RenderBody()
+
+        <header class="public-navbar">
+            <a href="@Url.Action("Index", "Tracking")" class="public-logo">
+                <img src="~/images/logo.jpg" alt="Logo" onerror="this.src='https://via.placeholder.com/50?text=Logo'" />
+                ALARGAN
+            </a>
+
+            <nav class="public-nav-links">
+                <a href="@Url.Action("Index", "Tracking")"><i class="fa-solid fa-magnifying-glass-location"></i> @Localizer["تتبع شحنتك"]</a>
+                <a href="@Url.Action("Index", "Calculator")"><i class="fa-solid fa-calculator"></i> @Localizer["حاسبة التكاليف"]</a>
+                <a href="@Url.Action("Index", "Services")"><i class="fa-solid fa-briefcase"></i> @Localizer["خدماتنا"]</a>
+                <a href="@Url.Action("Index", "Contact")"><i class="fa-solid fa-headset"></i> @Localizer["فروعنا واتصل بنا"]</a>
+                <a href="@Url.Action("Login", "Account")" class="btn-portal-login"><i class="fa-solid fa-user-lock"></i> @Localizer["بوابة الدخول"]</a>
+            </nav>
+        </header>
+
+        <main style="min-height: calc(100vh - 200px);">
+            @RenderBody()
+        </main>
+
+        <footer class="public-footer">
+            <div style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color: var(--primary-gold);">ALARGAN AUTO SHIPPING</div>
+            <p>@Localizer["شريكك الموثوق في الخدمات اللوجستية واستيراد السيارات"]</p>
+            <div style="margin-top: 2rem; font-size: 0.9rem; color: #94a3b8;">&copy; @DateTime.Now.Year Alargan Shipping. @Localizer["جميع الحقوق محفوظة"]</div>
+        </footer>
     }
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

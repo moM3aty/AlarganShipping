@@ -89,6 +89,7 @@ namespace AlarganShipping.Controllers
                     var existingCustomer = await _context.Customers.FindAsync(id);
                     if (existingCustomer != null)
                     {
+                        // تحديث البيانات الأساسية فقط لتجنب تصفير الرصيد
                         existingCustomer.Name = customer.Name;
                         existingCustomer.Phone = customer.Phone;
                         existingCustomer.Email = customer.Email;
@@ -97,22 +98,55 @@ namespace AlarganShipping.Controllers
 
                         // تحديث بيانات البوابة
                         existingCustomer.PortalUsername = customer.PortalUsername;
-                        existingCustomer.PortalPassword = customer.PortalPassword;
+                        if (!string.IsNullOrEmpty(customer.PortalPassword))
+                        {
+                            existingCustomer.PortalPassword = customer.PortalPassword;
+                        }
                         existingCustomer.IsPortalActive = customer.IsPortalActive;
 
                         _context.Update(existingCustomer);
                         await _context.SaveChangesAsync();
                         return Json(new { success = true });
                     }
+                    else
+                    {
+                        return Json(new { success = false, errors = new[] { "العميل غير موجود." } });
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_context.Customers.Any(e => e.Id == customer.Id))
-                        return Json(new { success = false, errors = new[] { "العميل غير موجود." } });
+                    if (!CustomerExists(customer.Id)) return Json(new { success = false, errors = new[] { "العميل غير موجود." } });
                     else throw;
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { success = false, errors = new[] { "خطأ في قاعدة البيانات." } });
                 }
             }
             return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+        }
+
+        // ==========================================
+        // إضافة عميل سريع من شاشة السيارات (AJAX)
+        // ==========================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateQuick(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return Json(new { success = false });
+
+            var customer = new Customer
+            {
+                Name = name,
+                Phone = "-", // بيانات افتراضية مؤقتة
+                CustomerCode = "CUST-" + new Random().Next(1000, 9999),
+                PortalUsername = "user" + new Random().Next(100, 999),
+                PortalPassword = new Random().Next(100000, 999999).ToString(),
+                IsPortalActive = true
+            };
+            _context.Add(customer);
+            await _context.SaveChangesAsync();
+            return Json(new { success = true, id = customer.Id, name = customer.Name });
         }
 
         [HttpPost]
@@ -148,6 +182,11 @@ namespace AlarganShipping.Controllers
 
             if (customer == null) return NotFound();
             return View(customer);
+        }
+
+        private bool CustomerExists(int id)
+        {
+            return _context.Customers.Any(e => e.Id == id);
         }
     }
 }

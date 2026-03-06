@@ -42,7 +42,12 @@ namespace AlarganShipping.Models
         public int StatusId { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
+        [Display(Name = "سعر الشراء (التكلفة الفعلية)")]
         public decimal PurchasePrice { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        [Display(Name = "سعر البيع (شامل الربح)")]
+        public decimal? SellingPrice { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? EstimatedProfit { get; set; }

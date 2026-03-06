@@ -1,10 +1,18 @@
 ﻿@model AlarganShipping.Models.Car
 @{
     ViewData["Title"] = Localizer["نتائج التتبع"];
-    Layout = null; // صفحة التتبع العامة بدون الـ Layout الخاص بالموظفين
+    Layout = null;
     var isRtl = System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
     var htmlDir = isRtl ? "rtl" : "ltr";
+
+    // حساب مرحلة شريط التقدم (4 مراحل رئيسية حسب صورتك)
+    int step = 1;
+    if (Model.StatusId >= 7) step = 4; // تم التوصيل
+    else if (Model.StatusId >= 5) step = 3; // تم الشحن
+    else if (Model.StatusId >= 3) step = 2; // جاري المعالجة
+    else step = 1; // تم الطلب
 }
+
 <!DOCTYPE html>
 <html lang="@System.Globalization.CultureInfo.CurrentCulture.Name" dir="@htmlDir">
 <head>
@@ -13,308 +21,604 @@
     <title>@ViewData["Title"] - ALARGAN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="~/images/logo.jpg" rel="icon" type="image/x-icon" />
 
     <style>
         :root {
-            --primary-navy: #2C3E50;
-            --secondary-navy: #1A252F;
-            --primary-gold: #B8935A;
-            --secondary-gold: #967443;
-            --bg-body: #f4f7f9;
+            --primary-navy: #1e293b;
+            --primary-gold: #b45309;
+            --bg-color: #f4f7f9;
         }
 
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: var(--bg-body);
+            background-color: var(--bg-color);
             margin: 0;
             padding: 2rem 1rem;
+            color: var(--primary-navy);
         }
 
-        .result-container {
+        .tracking-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* --- 1. الترويسة العلوية --- */
+        .top-logo-area {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+            .top-logo-area img {
+                width: 70px;
+                border-radius: 50%;
+                margin-bottom: 0.5rem;
+                border: 2px solid var(--primary-gold);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+
+            .top-logo-area h2 {
+                font-size: 1.4rem;
+                font-weight: 900;
+                margin: 0;
+                color: var(--primary-navy);
+            }
+
+            .top-logo-area p {
+                color: #64748b;
+                font-size: 0.85rem;
+                margin: 0;
+            }
+
+        /* --- 2. شريط البحث العلوي (كما في الصورة) --- */
+        .search-bar-top {
+            background: white;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            border: 1px solid #e2e8f0;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+            .search-bar-top input {
+                border: none;
+                outline: none;
+                font-family: monospace;
+                font-size: 1rem;
+                font-weight: 800;
+                color: var(--primary-navy);
+                flex: 1;
+                text-align: center;
+                background: transparent;
+            }
+
+        .search-action-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+            .search-action-btn:hover {
+                color: var(--primary-gold);
+            }
+
+        /* --- 3. شريط التقدم (Stepper) --- */
+        .stepper-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+            .stepper-card h3 {
+                font-size: 1.2rem;
+                font-weight: 900;
+                margin-top: 0;
+                margin-bottom: 2rem;
+                color: var(--primary-navy);
+            }
+
+        .stepper-wrapper {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
             max-width: 900px;
             margin: 0 auto;
         }
 
-        /* الهيدر العلوي */
-        .status-header {
-            background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--primary-navy) 100%);
-            color: white;
-            padding: 3rem;
-            border-radius: 2rem;
-            margin-bottom: 2.5rem;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(44, 62, 80, 0.15);
-            position: relative;
-            overflow: hidden;
-        }
-
-            .status-header::before {
-                content: '\f1b9';
-                font-family: "Font Awesome 6 Free";
-                font-weight: 900;
-                position: absolute;
-                font-size: 15rem;
-                color: rgba(184, 147, 90, 0.1);
-                top: -20px;
-                inset-inline-end: -20px;
-            }
-
-        .car-info-title {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--primary-gold);
-            margin: 0 0 0.5rem 0;
-            position: relative;
-            z-index: 2;
-        }
-
-        .car-vin {
-            font-weight: 800;
-            font-family: monospace;
-            font-size: 1.2rem;
-            background: rgba(255,255,255,0.1);
-            padding: 0.5rem 1.5rem;
-            border-radius: 50px;
-            display: inline-block;
-            position: relative;
-            z-index: 2;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        /* حاوية التايم لاين */
-        .timeline-wrapper {
-            background: white;
-            border-radius: 2rem;
-            padding: 4rem 3rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
-        }
-
-        .timeline-title {
-            font-weight: 900;
-            margin-bottom: 3rem;
-            text-align: center;
-            color: var(--primary-navy);
-            font-size: 1.8rem;
-        }
-
-        /* عناصر السجل */
-        .log-item {
-            display: flex;
-            gap: 2rem;
-            margin-bottom: 2.5rem;
-            position: relative;
-        }
-
-            .log-item:not(:last-child)::before {
+            .stepper-wrapper::before {
                 content: '';
                 position: absolute;
-                top: 40px;
-                inset-inline-start: 19px;
-                bottom: -35px;
-                width: 2px;
+                top: 25px;
+                left: 10%;
+                right: 10%;
+                height: 4px;
                 background: #e2e8f0;
+                z-index: 1;
             }
 
-        .log-dot {
-            width: 40px;
-            height: 40px;
+            .stepper-wrapper::after {
+                content: '';
+                position: absolute;
+                top: 25px;
+                height: 4px;
+                background: var(--primary-gold);
+                z-index: 2;
+                transition: 1s;
+                left: @(isRtl ? "auto" : "10%");
+                right: @(isRtl ? "10%" : "auto");
+                width: @(step == 1 ? "0%" : step == 2 ? "33%" : step == 3 ? "66%" : "80%");
+            }
+
+        .step-item {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 120px;
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 3px solid #e2e8f0;
             border-radius: 50%;
-            background: var(--primary-gold);
-            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            z-index: 2;
-            border: 4px solid white;
-            box-shadow: 0 0 0 3px var(--primary-gold);
-            font-size: 1rem;
-        }
-
-        .log-content {
-            flex: 1;
-            text-align: start;
-            background: #f8fafc;
-            padding: 1.5rem;
-            border-radius: 1rem;
-            border: 1px solid #f1f5f9;
+            font-size: 1.2rem;
+            color: #94a3b8;
             transition: 0.3s;
         }
 
-            .log-content:hover {
-                border-color: var(--primary-gold);
-                box-shadow: 0 5px 15px rgba(184, 147, 90, 0.1);
-            }
-
-        .log-title {
-            font-size: 1.25rem;
+        .step-label {
+            margin-top: 0.8rem;
             font-weight: 900;
+            font-size: 0.95rem;
             color: var(--primary-navy);
-            margin-bottom: 0.25rem;
         }
 
-        .log-date {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .step-sublabel {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 700;
+            margin-top: 0.2rem;
         }
 
-        .log-loc {
-            color: var(--primary-gold);
-            font-weight: 900;
-            font-size: 1rem;
-            margin-top: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .log-desc {
-            margin-top: 1rem;
-            color: #475569;
-            font-size: 1rem;
-            font-weight: 600;
-            line-height: 1.6;
-        }
-
-        .btn-back {
-            display: block;
-            width: fit-content;
-            margin: 3rem auto 0;
+        .step-item.active .step-icon {
             background: var(--primary-navy);
+            border-color: var(--primary-navy);
             color: white;
-            padding: 1rem 3rem;
-            border-radius: 1rem;
-            text-decoration: none;
-            font-weight: 800;
-            transition: 0.3s;
         }
 
-            .btn-back:hover {
-                background: var(--primary-gold);
-                transform: translateY(-2px);
-            }
-
-        /* ========================================================
-                   تعديلات الموبايل (الميديا كويري)
-                   ======================================================== */
-        @@media (max-width: 768px) {
-            body
-
-        {
-            padding: 1rem 0.5rem;
+        /* --- 4. تفاصيل السيارة والبطاقة المزدوجة --- */
+        .main-details-wrapper {
+            display: flex;
+            gap: 2rem;
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            border: 1px solid #e2e8f0;
         }
 
-        .status-header {
-            padding: 2rem 1.5rem;
-            border-radius: 1.5rem;
-        }
-
-        .car-info-title {
-            font-size: 1.6rem;
-        }
-
-        .car-vin {
-            font-size: 1rem;
-            padding: 0.4rem 1rem;
-        }
-
-        .timeline-wrapper {
-            padding: 2.5rem 1.25rem;
-            border-radius: 1.5rem;
-        }
-
-        .timeline-title {
-            font-size: 1.4rem;
-            margin-bottom: 2rem;
-        }
-
-        .log-item {
+        /* القسم الأيسر: الصور والتبويبات */
+        .car-image-section {
+            width: 45%;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
             gap: 1rem;
         }
 
-            .log-item:not(:last-child)::before {
-                inset-inline-start: 14px;
-                top: 30px;
-                bottom: -30px;
+        .image-tabs {
+            display: flex;
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 4px;
+        }
+
+        .img-tab {
+            flex: 1;
+            text-align: center;
+            padding: 0.6rem;
+            font-weight: 800;
+            color: #64748b;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+
+            .img-tab.active {
+                background: white;
+                color: var(--primary-navy);
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             }
 
-        .log-dot {
+        .slider-container {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            height: 350px;
+            background: #f8fafc;
+        }
+
+        .slider-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.8);
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--primary-navy);
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+
+            .slider-btn:hover {
+                background: white;
+                color: var(--primary-gold);
+            }
+
+            .slider-btn.left {
+                left: 10px;
+            }
+
+            .slider-btn.right {
+                right: 10px;
+            }
+
+        /* القسم الأيمن: البيانات والتواريخ */
+        .car-data-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .car-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .car-title {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--primary-navy);
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .shipping-link-btn {
+            width: 45px;
+            height: 45px;
+            background: rgba(184, 147, 90, 0.1);
+            color: var(--primary-gold);
+            border: 1px solid rgba(184, 147, 90, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: 0.3s;
+            flex-shrink: 0;
+        }
+
+            .shipping-link-btn:hover {
+                background: var(--primary-gold);
+                color: white;
+                transform: translateY(-2px);
+            }
+
+        .tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 2rem;
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 800;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 1rem;
+        }
+
+            .tags-row span {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+        /* شبكة المربعات الـ 7 (مطابقة للصورة تماماً) */
+        .info-boxes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .box-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #fdfdfd;
+        }
+
+        .box-item-icon {
             width: 30px;
             height: 30px;
-            font-size: 0.8rem;
-            box-shadow: 0 0 0 2px var(--primary-gold);
+            background: rgba(184,147,90,0.1);
+            color: var(--primary-gold);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
         }
 
-        .log-content {
-            padding: 1rem;
+        .box-item-label {
+            margin: 0;
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 800;
         }
 
-        .log-title {
-            font-size: 1.1rem;
+        .box-item-value {
+            margin: 0;
+            font-size: 0.9rem;
+            font-weight: 900;
+            color: var(--primary-navy);
+            font-family: monospace;
         }
 
-        .log-date, .log-loc, .log-desc {
-            font-size: 0.85rem;
+        /* المربع الأول يأخذ مساحة كعمود واحد حسب الصورة */
+        .box-auction {
+            grid-column: 1 / 2;
         }
 
-        .btn-back {
-            width: 100%;
-            text-align: center;
-            box-sizing: border-box;
-            padding: 1rem;
+        @@media (max-width: 992px) {
+            .main-details-wrapper {
+                flex-direction: column;
+            }
+
+            .car-image-section {
+                width: 100%;
+            }
+
+            .info-boxes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
+        @@media (max-width: 576px) {
+            .info-boxes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stepper-wrapper::before, .stepper-wrapper::after {
+                left: 5%;
+                right: 5%;
+            }
+
+            .step-item {
+                width: 70px;
+            }
+
+            .step-label {
+                font-size: 0.75rem;
+                text-align: center;
+            }
+
+            .step-sublabel {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="result-container">
-        <!-- قسم الهيدر -->
-        <div class="status-header">
-            <h1 class="car-info-title">@Model.Make @Model.Model @Model.Year</h1>
-            <p class="car-vin">@Localizer["رقم الشاصي:"] @Model.VIN</p>
+    <div class="tracking-container">
+
+        <!-- 1. الشعار والعنوان -->
+        <div class="top-logo-area">
+            <img src="~/images/logo.png" alt="Logo" onerror="this.onerror=null; this.style.display='none'" />
+            <h2>@Localizer["تتبع المركبة"]</h2>
+            <p>@Localizer["راقب تقدم شحنتك من خلال التحديثات الفورية ومعلومات التتبع المفصلة"]</p>
         </div>
 
-        <!-- قسم التايم لاين -->
-        <div class="timeline-wrapper">
-            <h2 class="timeline-title"><i class="fa-solid fa-route"></i> @Localizer["سجل العمليات والتحركات"]</h2>
+        <!-- 2. شريط البحث المدمج -->
+        <div class="search-bar-top">
+            <a href="@Url.Action("Index", "Tracking")" class="search-action-btn" title="@Localizer["إغلاق"]"><i class="fa-regular fa-circle-xmark"></i></a>
+            <input type="text" value="@Model.VIN" readonly dir="ltr" />
+            <a href="@Url.Action("Index", "Tracking")" class="search-action-btn" title="@Localizer["بحث جديد"]"><i class="fa-solid fa-magnifying-glass"></i></a>
+        </div>
 
-            @if (Model.TrackingLogs != null && Model.TrackingLogs.Any())
-            {
-                foreach (var log in Model.TrackingLogs.OrderByDescending(l => l.UpdateDate))
-                {
-                    <div class="log-item">
-                        <div class="log-dot"><i class="fa-solid fa-check"></i></div>
-                        <div class="log-content">
-                            <div class="log-title">@log.Title</div>
-                            <div class="log-date"><i class="fa-regular fa-clock"></i> @log.UpdateDate.ToString("dd MMMM yyyy - hh:mm tt")</div>
-                            @if (!string.IsNullOrEmpty(log.Location))
-                            {
-                                <div class="log-loc"><i class="fa-solid fa-location-dot"></i> @log.Location</div>
-                            }
-                            @if (!string.IsNullOrEmpty(log.Description))
-                            {
-                                <p class="log-desc">@log.Description</p>
-                            }
-                        </div>
-                    </div>
-                }
-            }
-            else
-            {
-                <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 1.5rem;">
-                    <i class="fa-solid fa-satellite-dish" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
-                    <p style="color: var(--text-muted); font-weight: 800; font-size: 1.1rem; margin: 0;">@Localizer["لا توجد تحديثات مسجلة لهذه السيارة حالياً."]</p>
+        <!-- 3. شريط التقدم (Stepper) -->
+        <div class="stepper-card">
+            <h3>@Localizer["تقدم الشحنة"]</h3>
+            <p style="color: #94a3b8; font-size: 0.85rem; margin-top: -1.5rem; margin-bottom: 2rem;">@Localizer["تتبع رحلة مركبتك من خلال التحديثات الفورية"]</p>
+
+            <div class="stepper-wrapper">
+                <div class="step-item @(step >= 1 ? "active" : "")">
+                    <div class="step-icon"><i class="fa-solid fa-box"></i></div>
+                    <div class="step-label">@Localizer["تم الطلب"]</div>
+                    <div class="step-sublabel">@Localizer["تم إنشاء الطلب"]</div>
                 </div>
-            }
-
-            <a href="@Url.Action("Index", "Tracking")" class="btn-back">@Localizer["بحث جديد"]</a>
+                <div class="step-item @(step >= 2 ? "active" : "")">
+                    <div class="step-icon"><i class="fa-regular fa-clock"></i></div>
+                    <div class="step-label">@Localizer["جاري المعالجة"]</div>
+                    <div class="step-sublabel">@Localizer["قيد التحضير"]</div>
+                </div>
+                <div class="step-item @(step >= 3 ? "active" : "")">
+                    <div class="step-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                    <div class="step-label">@Localizer["تم الشحن"]</div>
+                    <div class="step-sublabel">@Localizer["في الطريق"]</div>
+                </div>
+                <div class="step-item @(step >= 4 ? "active" : "")">
+                    <div class="step-icon"><i class="fa-regular fa-circle-check"></i></div>
+                    <div class="step-label">@Localizer["تم التوصيل"]</div>
+                    <div class="step-sublabel">@Localizer["وصل"]</div>
+                </div>
+            </div>
         </div>
+
+        <!-- 4. التفاصيل والصور -->
+        <div class="main-details-wrapper">
+            <!-- الجانب الأيسر: الصور -->
+            <div class="car-image-section">
+                <div class="image-tabs">
+                    <div class="img-tab active" onclick="switchImageTab(this)">Destination</div>
+                    <div class="img-tab" onclick="switchImageTab(this)">Warehouse</div>
+                </div>
+                <div class="slider-container">
+                    <button class="slider-btn left" onclick="nextImage()"><i class="fa-solid fa-angle-left"></i></button>
+
+                    @if (!string.IsNullOrEmpty(Model.MainImageUrl))
+                    {
+                        <img src="@Model.MainImageUrl" alt="Car Image" class="slider-img" id="mainCarDisplayImg" />
+                    }
+                    else
+                    {
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 5rem; color: #cbd5e1;">
+                            <i class="fa-solid fa-car-side"></i>
+                        </div>
+                    }
+
+                    <button class="slider-btn right" onclick="nextImage()"><i class="fa-solid fa-angle-right"></i></button>
+                </div>
+            </div>
+
+            <!-- الجانب الأيمن: البيانات والتواريخ -->
+            <div class="car-data-section">
+                <div class="car-header-row">
+                    <h1 class="car-title">@Model.Year @Model.Make @Model.Model @Model.Color</h1>
+
+                    @if (Model.Shipment != null && !string.IsNullOrEmpty(Model.Shipment.ContainerNumber))
+                    {
+                        string trackingUrl = $"https://www.searates.com/container/tracking/?number={Model.Shipment.ContainerNumber}";
+                        <a href="@trackingUrl" target="_blank" class="shipping-link-btn" title="@Localizer["تتبع السفينة"]">
+                            <i class="fa-solid fa-ship"></i>
+                        </a>
+                    }
+                </div>
+
+                <div class="tags-row" dir="ltr" style="justify-content: @(isRtl ? "flex-end" : "flex-start");">
+                    <span><span style="color:#94a3b8;"># VIN:</span> <span style="color:var(--primary-navy);">@Model.VIN</span></span>
+                    <span style="margin: 0 10px; color:#e2e8f0;">|</span>
+                    <span><i class="fa-solid fa-cube" style="color:#94a3b8;"></i> <span style="color:#94a3b8;">Lot:</span> <span style="color:var(--primary-navy);">@(string.IsNullOrEmpty(Model.LotNumber) ? "-" : Model.LotNumber)</span></span>
+
+                    @if (Model.Shipment != null && !string.IsNullOrEmpty(Model.Shipment.ContainerNumber))
+                    {
+                        <span style="margin: 0 10px; color:#e2e8f0;">|</span>
+                        <span><i class="fa-solid fa-box-open" style="color:#94a3b8;"></i> <span style="color:#94a3b8;">CN:</span> <span style="color:var(--primary-navy);">@Model.Shipment.ContainerNumber</span></span>
+                    }
+                </div>
+
+                <!-- شبكة التواريخ المتطابقة تماماً مع الصورة المرفقة -->
+                <div class="info-boxes-grid">
+
+                    <!-- الصف الأول -->
+                    <div class="box-item box-auction">
+                        <div class="box-item-icon"><i class="fa-solid fa-building-columns"></i></div>
+                        <p class="box-item-label">@Localizer["مدينة المزاد"]</p>
+                        <h4 class="box-item-value">@(Model.Auction?.Location ?? "غير محدد")</h4>
+                    </div>
+                    <!-- مربعات فارغة وهمية للحفاظ على التصميم (كما في الصورة) -->
+                    <div style="grid-column: 2 / 4;"></div>
+
+                    <!-- الصف الثاني -->
+                    <div class="box-item">
+                        <div class="box-item-icon"><i class="fa-regular fa-calendar"></i></div>
+                        <p class="box-item-label">@Localizer["تم الشراء"]</p>
+                        <h4 class="box-item-value">@(Model.AddDate?.ToString("dd/MM/yyyy") ?? "-")</h4>
+                    </div>
+                    <div class="box-item">
+                        <div class="box-item-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                        <p class="box-item-label">@Localizer["الاستلام"]</p>
+                        @{
+                            // الاستلام غالبا بعد الشراء بأيام
+                            string receiveDate = Model.StatusId >= 2 && Model.AddDate.HasValue ? Model.AddDate.Value.AddDays(2).ToString("dd/MM/yyyy") : "-";
+                        }
+                        <h4 class="box-item-value">@receiveDate</h4>
+                    </div>
+                    <div class="box-item">
+                        <div class="box-item-icon"><i class="fa-regular fa-circle-check"></i></div>
+                        <p class="box-item-label">@Localizer["التوصيل"]</p>
+                        @{
+                            string deliveryDate = Model.StatusId >= 7 && Model.Shipment?.ExpectedTimeOfArrival != null ? Model.Shipment.ExpectedTimeOfArrival.Value.ToString("dd/MM/yyyy") : "-";
+                        }
+                        <h4 class="box-item-value">@deliveryDate</h4>
+                    </div>
+
+                    <!-- الصف الثالث -->
+                    <div class="box-item">
+                        <div class="box-item-icon"><i class="fa-regular fa-calendar-check"></i></div>
+                        <p class="box-item-label">@Localizer["تاريخ الوصول"] (ETA)</p>
+                        <h4 class="box-item-value">@(Model.Shipment?.ExpectedTimeOfArrival?.ToString("dd/MM/yyyy") ?? "-")</h4>
+                    </div>
+                    <div class="box-item">
+                        <div class="box-item-icon"><i class="fa-solid fa-warehouse"></i></div>
+                        <p class="box-item-label">@Localizer["تاريخ التحميل"]</p>
+                        @{
+                            string loadingDate = Model.Shipment?.ExpectedTimeOfDeparture != null ? Model.Shipment.ExpectedTimeOfDeparture.Value.AddDays(-4).ToString("dd/MM/yyyy") : "-";
+                        }
+                        <h4 class="box-item-value">@loadingDate</h4>
+                    </div>
+                    <div class="box-item">
+                        <div class="box-item-icon"><i class="fa-solid fa-ship"></i></div>
+                        <p class="box-item-label">@Localizer["تاريخ المغادرة"] (ETD)</p>
+                        <h4 class="box-item-value">@(Model.Shipment?.ExpectedTimeOfDeparture?.ToString("dd/MM/yyyy") ?? "-")</h4>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
     </div>
+
+    <script>
+        // سكربت بسيط لتبديل حالة الأزرار الخاصة بالصور
+        function switchImageTab(element) {
+            document.querySelectorAll('.img-tab').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            // هنا يمكنك إضافة كود برمجي مستقبلاً لتغيير مسار الصورة (src)
+            // إذا كان لديك مسار مخصص لصور المستودع (Warehouse) وصور الوصول (Destination)
+        }
+
+        function nextImage() {
+            // يمكن ربطها لاحقاً بمصفوفة من الصور في حال توفرت لديك أكثر من صورة للسيارة
+            console.log('Next/Prev Image clicked');
+        }
+    </script>
 </body>
 </html>

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\MOHAMED ABO-ELM3ATY\\Downloads\\AlarganShipping\\AlarganShipping\\AlarganShipping.csproj": {}
+    "C:\\Users\\MOHAMED ABO-ELM3ATY\\Downloads\\Projects\\AlarganShipping\\AlarganShipping\\AlarganShipping.csproj": {}
   },
   "projects": {
-    "C:\\Users\\MOHAMED ABO-ELM3ATY\\Downloads\\AlarganShipping\\AlarganShipping\\AlarganShipping.csproj": {
+    "C:\\Users\\MOHAMED ABO-ELM3ATY\\Downloads\\Projects\\AlarganShipping\\AlarganShipping\\AlarganShipping.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\MOHAMED ABO-ELM3ATY\\Downloads\\AlarganShipping\\AlarganShipping\\AlarganShipping.csproj",
+        "projectUniqueName": "C:\\Users\\MOHAMED ABO-ELM3ATY\\Downloads\\Projects\\AlarganShipping\\AlarganShipping\\AlarganShipping.csproj",
         "projectName": "AlarganShipping",
-        "projectPath": "C:\\Users\\MOHAMED ABO-ELM3ATY\\Downloads\\AlarganShipping\\AlarganShipping\\AlarganShipping.csproj",
+        "projectPath": "C:\\Users\\MOHAMED ABO-ELM3ATY\\Downloads\\Projects\\AlarganShipping\\AlarganShipping\\AlarganShipping.csproj",
         "packagesPath": "C:\\Users\\MOHAMED ABO-ELM3ATY\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\MOHAMED ABO-ELM3ATY\\Downloads\\AlarganShipping\\AlarganShipping\\obj\\",
+        "outputPath": "C:\\Users\\MOHAMED ABO-ELM3ATY\\Downloads\\Projects\\AlarganShipping\\AlarganShipping\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

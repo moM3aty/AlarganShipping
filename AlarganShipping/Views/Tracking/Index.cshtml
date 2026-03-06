@@ -13,268 +13,225 @@
     <title>@ViewData["Title"] - ALARGAN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="~/images/logo.jpg" rel="icon" type="image/x-icon" />
 
     <style>
         :root {
-            --primary-navy: #2C3E50;
-            --secondary-navy: #1A252F;
-            --primary-gold: #B8935A;
-            --secondary-gold: #967443;
-            --bg-body: #f4f7f9;
+            --primary-navy: #1e293b;
+            --primary-gold: #b45309;
         }
 
         body {
             font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, var(--bg-body) 0%, #e2e8f0 100%);
+            background-color: #f4f7f9;
             min-height: 100vh;
             margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .track-portal-container {
-            display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem 1rem;
+        }
+
+        .tracking-header {
             text-align: center;
-            width: 100%;
-            max-width: 800px;
-        }
-
-        .track-logo-box {
-            width: 140px;
-            height: 140px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             margin-bottom: 2rem;
-            box-shadow: 0 15px 35px rgba(184, 147, 90, 0.2);
-            border: 4px solid var(--primary-gold);
-            padding: 15px;
-            overflow: hidden;
-            transition: 0.3s;
         }
 
-            .track-logo-box img {
-                max-width: 100%;
-                height: auto;
-                border-radius: 50%;
-                object-fit: cover;
-            }
+        .logo-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 3px solid white;
+            margin-bottom: 1.5rem;
+        }
 
-        .track-portal-header h2 {
-            font-size: 2.5rem;
+        .tracking-header h1 {
+            font-size: 2.2rem;
             font-weight: 900;
             color: var(--primary-navy);
             margin: 0 0 0.5rem 0;
-            transition: 0.3s;
         }
 
-        .track-portal-header p {
+        .tracking-header p {
             color: #64748b;
-            font-weight: 800;
-            letter-spacing: 2px;
-            margin: 0 0 3rem 0;
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0;
         }
 
         .search-card {
             background: white;
             width: 100%;
+            max-width: 800px;
             padding: 3rem;
-            border-radius: 2rem;
-            box-shadow: 0 20px 50px rgba(44, 62, 80, 0.08);
-            border: 1px solid #f1f5f9;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            text-align: center;
         }
 
         .search-input-wrapper {
-            position: relative;
             display: flex;
             align-items: center;
-            background: #f8fafc;
-            border-radius: 1.5rem;
+            border: 2px solid var(--primary-gold);
+            border-radius: 12px;
             padding: 0.5rem;
-            border: 2px solid transparent;
+            background: white;
             transition: 0.3s;
-            gap: 10px;
+            margin-bottom: 1.5rem;
         }
 
             .search-input-wrapper:focus-within {
-                border-color: var(--primary-gold);
-                background: white;
-                box-shadow: 0 0 0 5px rgba(184, 147, 90, 0.1);
+                box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.2);
             }
 
             .search-input-wrapper input {
                 flex: 1;
                 border: none;
-                background: transparent;
-                padding: 1.25rem 1rem;
+                padding: 1rem;
                 font-size: 1.1rem;
                 font-family: inherit;
                 outline: none;
-                text-align: center;
                 color: var(--primary-navy);
-                font-weight: 800;
-                text-transform: uppercase;
-                width: 100%;
+                font-weight: 700;
             }
 
                 .search-input-wrapper input::placeholder {
                     color: #94a3b8;
                     font-weight: 600;
-                    text-transform: none;
-                    font-size: 0.95rem;
                 }
 
-        .btn-track-now {
-            background: linear-gradient(to right, var(--primary-gold), var(--secondary-gold));
+        .search-icon-left {
+            padding: 0 1rem;
+            color: var(--primary-gold);
+            font-size: 1.2rem;
+        }
+
+        .btn-track {
+            background: var(--primary-navy);
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 1.25rem;
-            font-weight: 900;
+            padding: 1rem 2.5rem;
+            border-radius: 10px;
+            font-weight: 800;
             font-size: 1.1rem;
             cursor: pointer;
             transition: 0.3s;
             font-family: inherit;
-            box-shadow: 0 5px 15px rgba(184, 147, 90, 0.4);
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 10px;
-            white-space: nowrap;
         }
 
-            .btn-track-now:hover {
+            .btn-track:hover {
+                background: var(--primary-gold);
                 transform: translateY(-2px);
-                box-shadow: 0 8px 25px rgba(184, 147, 90, 0.5);
+                box-shadow: 0 5px 15px rgba(184, 147, 90, 0.3);
             }
 
-        .track-hint {
-            margin-top: 2rem;
+        .hint-text {
             color: #64748b;
-            font-size: 0.95rem;
-            font-weight: 700;
+            font-size: 0.9rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
         }
 
-        .error-message {
+        .error-msg {
             color: #ef4444;
             background: #fef2f2;
             padding: 1rem;
-            border-radius: 1rem;
-            margin-bottom: 2rem;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        /* ========================================================
-                   تعديلات الموبايل (الميديا كويري)
-                   ======================================================== */
-        @@media (max-width: 768px) {
-            .track-logo-box
-
-        {
-            width: 100px;
-            height: 100px;
-            padding: 10px;
+            border-radius: 10px;
             margin-bottom: 1.5rem;
+            font-weight: 700;
         }
 
-        .track-portal-header h2 {
-            font-size: 1.8rem;
+        /* زر العودة للصفحة الرئيسية */
+        .btn-home {
+            margin-top: 2rem;
+            color: var(--primary-navy);
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(44, 62, 80, 0.05);
         }
 
-        .track-portal-header p {
-            font-size: 0.85rem;
-            margin-bottom: 2rem;
-        }
-
-        .search-card {
-            padding: 1.5rem;
-            border-radius: 1.5rem;
-        }
-
-        .search-input-wrapper {
-            flex-direction: column;
-            background: transparent;
-            padding: 0;
-            gap: 15px;
-        }
-
-            .search-input-wrapper input {
-                background: #f8fafc;
-                border-radius: 1.25rem;
-                border: 2px solid #e2e8f0;
-                padding: 1rem;
-                font-size: 1rem;
+            .btn-home:hover {
+                background: var(--primary-navy);
+                color: white;
             }
 
-        .btn-track-now {
-            width: 100%;
-            padding: 1.2rem;
-            border-radius: 1.25rem;
-            font-size: 1.1rem;
-        }
+        @@media (max-width: 768px) {
+            .search-card {
+                padding: 1.5rem;
+                width: 90%;
+            }
 
-        .track-hint {
-            font-size: 0.8rem;
-            line-height: 1.5;
-        }
+            .search-input-wrapper {
+                flex-direction: column;
+                border: none;
+                padding: 0;
+                background: transparent;
+            }
 
+                .search-input-wrapper input {
+                    width: 100%;
+                    border: 2px solid var(--primary-gold);
+                    border-radius: 12px;
+                    margin-bottom: 1rem;
+                    text-align: center;
+                }
+
+            .search-icon-left {
+                display: none;
+            }
+
+            .btn-track {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="track-portal-container">
-        <!-- شعار الشركة -->
-        <div class="track-logo-box">
-            <img src="~/images/logo.jpg" alt="Alargan Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-ship\' style=\'font-size: 3rem; color: var(--primary-navy);\'></i>'" />
-        </div>
+    <div class="tracking-header">
+        <img src="~/images/logo.png" alt="Alargan Logo" class="logo-img" onerror="this.onerror=null; this.style.display='none'" />
+        <h1>@Localizer["بوابة تتبع الشحنات"]</h1>
+        <p>@Localizer["نظام الإدارة اللوجستية التقني"]</p>
+    </div>
 
-        <!-- نصوص الترحيب -->
-        <div class="track-portal-header">
-            <h2>@Localizer["بوابة تتبع الشحنات"]</h2>
-            <p>@Localizer["نظام الإدارة اللوجستية التقني"]</p>
-        </div>
+    <div class="search-card">
+        @if (!string.IsNullOrEmpty(ViewBag.Error))
+        {
+            <div class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> @ViewBag.Error</div>
+        }
 
-        <!-- بطاقة البحث -->
-        <div class="search-card">
-            @if (!string.IsNullOrEmpty(ViewBag.Error))
-            {
-                <div class="error-message">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    <span>@ViewBag.Error</span>
-                </div>
-            }
-
-            <form asp-controller="Tracking" asp-action="Search" method="post">
-                <div class="search-input-wrapper">
-                    <input type="text" name="vin" placeholder="@Localizer["أدخل رقم الشاصي (VIN) المكون من 17 رمزاً..."]" required dir="ltr" />
-                    <button type="submit" class="btn-track-now">
-                        <i class="fa-solid fa-magnifying-glass-location"></i>
-                        <span>@Localizer["تتبع الآن"]</span>
-                    </button>
-                </div>
-            </form>
-
-            <div class="track-hint">
-                <i class="fa-solid fa-shield-halved" style="color: var(--primary-gold);"></i>
-                <span>@Localizer["تتبع حالة سيارتك لحظة بلحظة من المزاد وحتى باب منزلك"]</span>
+        <form asp-controller="Tracking" asp-action="Search" method="post">
+            <div class="search-input-wrapper">
+                <button type="submit" class="btn-track">
+                    <i class="fa-solid fa-magnifying-glass-location"></i> @Localizer["تتبع الآن"]
+                </button>
+                <input type="text" name="vin" placeholder="@Localizer["VIN أو رقم LOT أدخل رقم..."]" required dir="ltr" style="text-align: right;" />
+                <div class="search-icon-left"><i class="fa-solid fa-magnifying-glass"></i></div>
             </div>
+        </form>
+
+        <div class="hint-text">
+            <i class="fa-solid fa-shield-halved" style="color: var(--primary-gold);"></i>
+            @Localizer["تتبع حالة سيارتك لحظة بلحظة من المزاد وحتى باب منزلك"]
         </div>
     </div>
+
+    <a href="@Url.Action("Login", "Account")" class="btn-home">
+        <i class="fa-solid fa-arrow-right-to-bracket"></i> @Localizer["تسجيل الدخول للنظام"]
+    </a>
 </body>
 </html>

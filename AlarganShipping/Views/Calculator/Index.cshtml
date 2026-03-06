@@ -446,25 +446,21 @@
                 </div>
 
                 <div class="input-group full" id="auctionGroup">
-                    <label class="input-label">@Localizer["حدد المزاد / موقع السيارة (لتحديد الرسوم)"]</label>
-                    <div class="location-box">
+                    <label class="input-label">@Localizer["حدد المزاد (لإظهاره في عرض السعر)"]</label>
+                    <select id="calcAuctionName" class="calc-input select2-search">
                         @if (ViewBag.Auctions != null)
                         {
-                            bool isFirst = true;
                             foreach (var auction in ViewBag.Auctions)
                             {
-                                <label class="loc-item @(isFirst ? "selected" : "")">
-                                    <div style="flex: 1;">
-                                        <input type="radio" name="auctionFee" value="@auction.DefaultAuctionFee" data-name="@auction.Name" @(isFirst ? "checked" : "") style="margin-inline-end: 10px;" onchange="updateAuctionSelection(this)">
-                                        <span class="loc-name">@auction.Name</span><br>
-                                        <small style="color: #94a3b8; margin-inline-start: 25px;">@auction.Location</small>
-                                    </div>
-                                    <div class="loc-price">$@auction.DefaultAuctionFee</div>
-                                </label>
-                                isFirst = false;
+                                <option value="@auction.Name">@auction.Name</option>
                             }
                         }
-                    </div>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">@Localizer["رسوم المزاد المتوقعة USD (حسب جدول أسعار المزاد)"]</label>
+                    <input type="number" class="calc-input calc-input-ltr" id="auctionFeeInput" value="500" />
                 </div>
 
                 <div class="input-group">
@@ -638,7 +634,8 @@
 
         function calculateTotal() {
             var carPrice = currentMode === 'export' ? (parseFloat($('#carPrice').val()) || 0) : 0;
-            var auctionFee = currentMode === 'export' ? (parseFloat($('input[name="auctionFee"]:checked').val()) || 0) : 0;
+            // تم تغيير قراءة رسوم المزاد من الراديو بوكس إلى الإدخال اليدوي
+            var auctionFee = currentMode === 'export' ? (parseFloat($('#auctionFeeInput').val()) || 0) : 0;
             var towingFee = parseFloat($('#towingFee').val()) || 0;
             var seaFreightFee = parseFloat($('#seaFreightFee').val()) || 0;
             var commission = parseFloat($('#customCommission').val()) || 0;
@@ -677,7 +674,7 @@
                 $('#printAuctionInfo').text('');
             } else {
                 $('#printRowCar, #printRowAuction').show();
-                let selectedAuctionName = $('input[name="auctionFee"]:checked').attr('data-name');
+                let selectedAuctionName = $('#calcAuctionName').val();
                 $('#printAuctionInfo').text('(مزاد ' + selectedAuctionName + ')');
             }
 
@@ -693,8 +690,7 @@
         }
 
         $(document).ready(function() {
-            $('.calc-input').on('input', calculateTotal);
-            $('input[name="auctionFee"]').on('change', calculateTotal);
+            $('.calc-input').on('input change', calculateTotal); // استخدام change أيضاً لعمل Select
             calculateTotal();
         });
     </script>

@@ -188,10 +188,24 @@
                     <label asp-for="Title" class="form-label">@Localizer["عنوان التحديث"]</label>
                     <select asp-for="Title" class="form-control">
                         <option value="تم الشراء من المزاد">@Localizer["تم الشراء من المزاد"]</option>
+                        <option value="تم دفع قيمة السيارة">@Localizer["تم دفع قيمة السيارة"]</option>
+                        <option value="السيارة قيد النقل الداخلي">@Localizer["السيارة قيد النقل الداخلي"]</option>
                         <option value="السيارة في المستودع">@Localizer["السيارة في المستودع"]</option>
                         <option value="تم التحميل في الحاوية">@Localizer["تم التحميل في الحاوية"]</option>
                         <option value="أبحرت السفينة">@Localizer["أبحرت السفينة"]</option>
                         <option value="وصلت إلى الميناء الوجهة">@Localizer["وصلت إلى الميناء الوجهة"]</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ProgressPercentage" class="form-label">@Localizer["مرحلة التحديث (لتحريك شريط التقدم)"]</label>
+                    <select asp-for="ProgressPercentage" class="form-control">
+                        <option value="10">@Localizer["المرحلة 1: الشراء"]</option>
+                        <option value="16">@Localizer["المرحلة 2: الدفع"]</option>
+                        <option value="33">@Localizer["المرحلة 3: النقل الداخلي"]</option>
+                        <option value="50">@Localizer["المرحلة 4: وصول المستودع"]</option>
+                        <option value="66">@Localizer["المرحلة 5: التحميل في الحاوية"]</option>
+                        <option value="83">@Localizer["المرحلة 6: الإقلاع"]</option>
+                        <option value="100">@Localizer["المرحلة 7: الوصول"]</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -208,7 +222,7 @@
                     <input asp-for="Location" class="form-control" placeholder="New Jersey, Salalah Port..." />
                 </div>
                 <div class="form-group form-group-full">
-                    <label asp-for="Description" class="form-label">@Localizer["تفاصيل إضافية للعميل "]</label>
+                    <label asp-for="Description" class="form-label">@Localizer["تفاصيل إضافية للعميل (اختياري)"]</label>
                     <textarea asp-for="Description" class="form-control" rows="3" placeholder="@Localizer["أضف أي تفاصيل تطمئن العميل..."]"></textarea>
                 </div>
             </div>

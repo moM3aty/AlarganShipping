@@ -8,7 +8,7 @@
     /* شاشة الدخول تغطي التخطيط الأساسي لتكون شاشة كاملة */
     .login-page-wrapper {
         display: flex;
-        height: 100vh; /* تم التغيير من min-height إلى height لتفعيل التمرير الداخلي */
+        height: 100vh;
         width: 100%;
         position: fixed;
         top: 0;
@@ -18,8 +18,8 @@
         background-color: var(--bg-body);
         z-index: 9999;
         margin: 0;
-        overflow-y: auto; /* السماح بالتمرير العمودي */
-        -webkit-overflow-scrolling: touch; /* تنعيم التمرير على أجهزة آبل والموبايل */
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     /* --- القسم الأيمن: العلامة التجارية --- */
@@ -150,7 +150,7 @@
 
     .input-group {
         margin-bottom: 1.5rem;
-        text-align: start; /* لدعم RTL/LTR تلقائياً */
+        text-align: start;
     }
 
     .input-label {
@@ -198,42 +198,52 @@
             box-shadow: 0 15px 25px rgba(184, 147, 90, 0.35);
         }
 
-    /* أداة تغيير اللغة في شاشة تسجيل الدخول */
-    .login-lang-switch {
+    /* أداة تغيير اللغة وزر التتبع في شاشة تسجيل الدخول */
+    .top-floating-actions {
         position: absolute;
         top: 20px;
-        inset-inline-end: 20px; /* لتدعم الاتجاهين */
+        inset-inline-end: 20px;
         z-index: 10000;
+        display: flex;
+        gap: 10px;
     }
 
-    .login-lang-btn {
+    .top-action-btn {
         background: white;
         border: 1px solid #e2e8f0;
         color: var(--primary-navy);
         padding: 8px 15px;
         border-radius: 8px;
-        font-weight: 700;
+        font-weight: 800;
         cursor: pointer;
+        text-decoration: none;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: 0.3s;
     }
 
-    /* ========================================================
-           تعديلات الموبايل (الميديا كويري) لحل مشكلة التمرير نهائياً
-           ======================================================== */
+        .top-action-btn:hover {
+            background: var(--primary-gold);
+            color: white;
+            border-color: var(--primary-gold);
+        }
+
     @@media (max-width: 768px) {
         .login-page-wrapper {
-            display: block; /* إلغاء الـ Flexbox هنا يحل مشكلة قص الشاشة من الأعلى */
+            display: block;
         }
 
         .premium-form-section {
             display: block;
             padding: 1rem;
-            padding-top: 6rem; /* ترك مساحة علوية لزر تغيير اللغة */
-            padding-bottom: 3rem; /* ترك مساحة سفلية للراحة أثناء التمرير */
+            padding-top: 6rem;
+            padding-bottom: 3rem;
         }
 
         .form-card {
-            margin: 0 auto; /* توسيط البطاقة أفقياً */
+            margin: 0 auto;
             padding: 2.5rem 1.5rem;
             border-radius: 1.5rem;
         }
@@ -252,23 +262,29 @@
                 font-size: 1.4rem;
             }
 
-        .login-lang-switch {
+        .top-floating-actions {
             top: 15px;
             inset-inline-end: 15px;
         }
     }
 </style>
 
-<!-- زر تغيير اللغة الخاص بصفحة الدخول -->
-<div class="login-lang-switch">
+<!-- الأزرار العلوية العائمة (تتبع الشحنة + تغيير اللغة) -->
+<div class="top-floating-actions">
+    <!-- زر العودة لصفحة التتبع -->
+    <a href="@Url.Action("Index", "Tracking")" class="top-action-btn">
+        <i class="fa-solid fa-truck-fast"></i> @Localizer["تتبع شحنتك"]
+    </a>
+
+    <!-- زر تغيير اللغة -->
     <form asp-controller="Home" asp-action="SetLanguage" method="post" asp-route-returnUrl="@Context.Request.Path">
         @if (System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar"))
         {
-            <button type="submit" name="culture" value="en-US" class="login-lang-btn">English</button>
+            <button type="submit" name="culture" value="en-US" class="top-action-btn">English</button>
         }
         else
         {
-            <button type="submit" name="culture" value="ar" class="login-lang-btn">العربية</button>
+            <button type="submit" name="culture" value="ar" class="top-action-btn">العربية</button>
         }
     </form>
 </div>
@@ -277,7 +293,7 @@
     <div class="premium-brand-section">
         <div class="brand-content" style="text-align: center; z-index: 10;">
             <div class="logo-circle">
-                <img src="~/images/logo.jpg" alt="Alargan Logo" onerror="this.style.display='none'" />
+                <img src="~/images/logo.png" alt="Alargan Logo" onerror="this.onerror=null; this.style.display='none'" />
             </div>
             <h1 class="brand-title">ALARGAN</h1>
             <div class="brand-badge">AUTO SHIPPING</div>
@@ -288,7 +304,7 @@
     <div class="premium-form-section">
         <div class="form-card">
             <div class="mobile-logo">
-                <img src="~/images/logo.jpg" alt="Alargan Logo" onerror="this.style.display='none'" />
+                <img src="~/images/logo.png" alt="Alargan Logo" onerror="this.onerror=null; this.style.display='none'" />
                 <h1 style="color: var(--primary-navy); font-weight: 900; margin:0;">ALARGAN</h1>
                 <p style="color: var(--primary-gold); font-weight: 700; font-size: 0.9rem;">AUTO SHIPPING</p>
             </div>

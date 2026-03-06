@@ -52,6 +52,26 @@ namespace AlarganShipping.Controllers
             return View(auction);
         }
 
+        // ==========================================
+        // إضافة مزاد سريع من شاشة السيارات (AJAX)
+        // ==========================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateQuick(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return Json(new { success = false });
+
+            var auction = new Auction
+            {
+                Name = name,
+                Location = "غير محدد"
+                // تم إزالة DefaultAuctionFee بناءً على الملاحظة
+            };
+            _context.Add(auction);
+            await _context.SaveChangesAsync();
+            return Json(new { success = true, id = auction.Id, name = auction.Name });
+        }
+
         // حفظ التعديلات (POST - AJAX)
         [HttpPost]
         [ValidateAntiForgeryToken]

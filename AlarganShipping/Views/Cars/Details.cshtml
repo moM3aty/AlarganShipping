@@ -251,18 +251,25 @@
         gap: 1rem;
         border-bottom: 2px solid #f1f5f9;
         margin-bottom: 2rem;
+        overflow-x: auto;
+        scrollbar-width: none;
     }
+
+        .tabs-header::-webkit-scrollbar {
+            display: none;
+        }
 
     .tab-btn {
         background: transparent;
         border: none;
-        padding: 1rem 2rem;
-        font-size: 1.1rem;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
         font-weight: 900;
         color: var(--text-muted);
         cursor: pointer;
         position: relative;
         transition: 0.3s;
+        white-space: nowrap;
     }
 
         .tab-btn:hover {
@@ -467,25 +474,43 @@
 
         @{
             int status = Model.StatusId;
-            string lineWidth = status == 1 ? "0%" : status == 2 ? "33%" : status == 3 ? "66%" : status >= 4 ? "100%" : "0%";
+            string lineWidth = status == 1 ? "0%" :
+            status == 2 ? "16.6%" :
+            status == 3 ? "33.3%" :
+            status == 4 ? "50%" :
+            status == 5 ? "66.6%" :
+            status == 6 ? "83.3%" :
+            status >= 7 ? "100%" : "0%";
         }
 
         <div class="stepper-wrapper" style="--progress-width: @lineWidth;">
             <div class="step-item @(status >= 1 ? "active" : "")">
                 <div class="step-circle"><i class="fa-solid fa-gavel"></i></div>
-                <div class="step-label">@Localizer["تم الشراء"]</div>
+                <div class="step-label">@Localizer["الشراء"]</div>
             </div>
             <div class="step-item @(status >= 2 ? "active" : "")">
-                <div class="step-circle"><i class="fa-solid fa-warehouse"></i></div>
-                <div class="step-label">@Localizer["في المستودع"]</div>
+                <div class="step-circle"><i class="fa-solid fa-money-bill-wave"></i></div>
+                <div class="step-label">@Localizer["الدفع"]</div>
             </div>
             <div class="step-item @(status >= 3 ? "active" : "")">
-                <div class="step-circle"><i class="fa-solid fa-ship"></i></div>
-                <div class="step-label">@Localizer["أبحرت"]</div>
+                <div class="step-circle"><i class="fa-solid fa-truck-pickup"></i></div>
+                <div class="step-label">@Localizer["النقل"]</div>
             </div>
             <div class="step-item @(status >= 4 ? "active" : "")">
+                <div class="step-circle"><i class="fa-solid fa-warehouse"></i></div>
+                <div class="step-label">@Localizer["المستودع"]</div>
+            </div>
+            <div class="step-item @(status >= 5 ? "active" : "")">
+                <div class="step-circle"><i class="fa-solid fa-box-open"></i></div>
+                <div class="step-label">@Localizer["التحميل"]</div>
+            </div>
+            <div class="step-item @(status >= 6 ? "active" : "")">
+                <div class="step-circle"><i class="fa-solid fa-ship"></i></div>
+                <div class="step-label">@Localizer["الإقلاع"]</div>
+            </div>
+            <div class="step-item @(status >= 7 ? "active" : "")">
                 <div class="step-circle"><i class="fa-solid fa-anchor"></i></div>
-                <div class="step-label">@Localizer["وصلت الميناء"]</div>
+                <div class="step-label">@Localizer["الوصول"]</div>
             </div>
         </div>
     </div>
@@ -505,7 +530,13 @@
             <h3 class="info-card-title"><i class="fa-solid fa-user-tie"></i> @Localizer["معلومات المالك والشراء"]</h3>
             <div class="info-row"><span class="info-label">@Localizer["اسم العميل"]</span><span class="info-value">@(Model.Customer?.Name ?? Localizer["غير محدد"].Value)</span></div>
             <div class="info-row"><span class="info-label">@Localizer["رقم الهاتف"]</span><span class="info-value" dir="ltr">@(Model.Customer?.Phone ?? "-")</span></div>
-            <div class="info-row"><span class="info-label">@Localizer["سعر الشراء"]</span><span class="info-value" style="color: #16a34a;">$@Model.PurchasePrice</span></div>
+            <div class="info-row"><span class="info-label">@Localizer["سعر الشراء"]</span><span class="info-value" style="color: #ef4444; font-family: monospace;">$@Model.PurchasePrice.ToString("N2")</span></div>
+
+            @if (Model.SellingPrice.HasValue)
+            {
+                <div class="info-row"><span class="info-label">@Localizer["سعر البيع"]</span><span class="info-value" style="color: #16a34a; font-family: monospace;">$@Model.SellingPrice.Value.ToString("N2")</span></div>
+            }
+
             <div class="info-row"><span class="info-label">@Localizer["المزاد"]</span><span class="info-value">@(Model.Auction?.Name ?? Localizer["خارجي"].Value)</span></div>
             <div class="info-row"><span class="info-label">@Localizer["الموقع الحالي"]</span><span class="info-value">@(Model.CurrentLocation ?? "-")</span></div>
         </div>
@@ -514,12 +545,50 @@
     <!-- قسم التقارير والمستندات (Tabs) -->
     <div class="tabs-container">
         <div class="tabs-header">
-            <button class="tab-btn active" onclick="openTab('inspections')"><i class="fa-solid fa-clipboard-list"></i> @Localizer["تقارير الفحص"] (@(Model.CarInspections?.Count ?? 0))</button>
+            <button class="tab-btn active" onclick="openTab('tracking-logs')"><i class="fa-solid fa-history"></i> @Localizer["سجل التتبع"] (@(Model.TrackingLogs?.Count ?? 0))</button>
+            <button class="tab-btn" onclick="openTab('inspections')"><i class="fa-solid fa-clipboard-list"></i> @Localizer["تقارير الفحص"] (@(Model.CarInspections?.Count ?? 0))</button>
             <button class="tab-btn" onclick="openTab('documents')"><i class="fa-solid fa-folder-open"></i> @Localizer["المستندات والملفات"] (@(Model.DocumentAttachments?.Count ?? 0))</button>
         </div>
 
+        <!-- تبويب سجل التتبع (الجديد) -->
+        <div id="tracking-logs" class="tab-content active">
+            @if (Model.TrackingLogs != null && Model.TrackingLogs.Any())
+            {
+                <div class="table-responsive-wrapper">
+                    <table class="doc-table">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["عنوان التحديث"]</th>
+                                <th>@Localizer["التاريخ"]</th>
+                                <th>@Localizer["الموقع"]</th>
+                                <th>@Localizer["الوصف"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in Model.TrackingLogs.OrderByDescending(l => l.UpdateDate))
+                            {
+                                <tr>
+                                    <td style="color: var(--primary-navy); font-weight: 900;">@log.Title</td>
+                                    <td>@log.UpdateDate.ToString("dd MMM yyyy - HH:mm")</td>
+                                    <td><i class="fa-solid fa-location-dot" style="color: var(--primary-gold);"></i> @log.Location</td>
+                                    <td style="font-size: 0.9rem; color: var(--text-muted);">@log.Description</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-satellite-dish" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p>@Localizer["لا توجد تحديثات تتبع مسجلة لهذه السيارة."]</p>
+                </div>
+            }
+        </div>
+
         <!-- تبويب تقارير الفحص -->
-        <div id="inspections" class="tab-content active">
+        <div id="inspections" class="tab-content">
             @if (Model.CarInspections != null && Model.CarInspections.Any())
             {
                 <div class="table-responsive-wrapper">

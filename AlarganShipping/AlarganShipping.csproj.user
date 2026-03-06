@@ -6,7 +6,7 @@
     <Controller_SelectedScaffolderCategoryPath>root/Common/MVC/Controller</Controller_SelectedScaffolderCategoryPath>
     <View_SelectedScaffolderID>RazorViewEmptyScaffolder</View_SelectedScaffolderID>
     <View_SelectedScaffolderCategoryPath>root/Common/MVC/View</View_SelectedScaffolderCategoryPath>
-    <NameOfLastUsedPublishProfile>C:\Users\MOHAMED ABO-ELM3ATY\Downloads\AlarganShipping\AlarganShipping\Properties\PublishProfiles\site57253-WebDeploy.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>C:\Users\MOHAMED ABO-ELM3ATY\Downloads\Projects\AlarganShipping\AlarganShipping\Properties\PublishProfiles\site57253-WebDeploy.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\SharedResource.en-US.resx">

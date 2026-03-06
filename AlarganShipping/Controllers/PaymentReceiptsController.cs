@@ -37,7 +37,8 @@ namespace AlarganShipping.Controllers
         public async Task<IActionResult> Create(PaymentReceipt receipt)
         {
             ModelState.Remove("Customer");
-            ModelState.Remove("ReceiptNumber"); // حل مشكلة The ReceiptNumber field is required
+            ModelState.Remove("ReceiptNumber"); // حل مشكلة إجبارية رقم السند
+            ModelState.Remove("ReferenceNumber"); // حل مشكلة إجبارية رقم المرجع (رقم الشيك)
 
             if (ModelState.IsValid)
             {
@@ -90,7 +91,8 @@ namespace AlarganShipping.Controllers
             if (id != receipt.Id) return Json(new { success = false, errors = new[] { "خطأ في المعرف." } });
 
             ModelState.Remove("Customer");
-            ModelState.Remove("ReceiptNumber"); // تجاوز التحقق لأننا سنأخذه من قاعدة البيانات
+            ModelState.Remove("ReceiptNumber"); // تجاوز التحقق
+            ModelState.Remove("ReferenceNumber"); // تجاوز التحقق
 
             if (ModelState.IsValid)
             {

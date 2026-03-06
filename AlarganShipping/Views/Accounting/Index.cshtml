@@ -27,7 +27,6 @@
         margin-top: 5px;
     }
 
-    /* تبويبات المحاسبة المطورة */
     .accounting-tabs {
         display: flex;
         gap: 10px;
@@ -37,13 +36,12 @@
         box-shadow: 0 4px 15px rgba(0,0,0,0.02);
         overflow-x: auto;
         border: 1px solid #e2e8f0;
-        scrollbar-width: none; /* لإخفاء شريط التمرير في Firefox */
+        scrollbar-width: none;
     }
 
         .accounting-tabs::-webkit-scrollbar {
             display: none;
         }
-    /* لإخفاء شريط التمرير في Chrome/Safari */
 
     .acc-tab {
         padding: 0.75rem 1.5rem;
@@ -73,7 +71,6 @@
             box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
         }
 
-    /* شبكة الكروت */
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
@@ -179,51 +176,93 @@
         gap: 10px;
     }
 
-    /* ========================================================
-           تعديلات الموبايل (الميديا كويري)
-           ======================================================== */
+    /* تنسيقات قسم التصدير والتقارير */
+    .report-container {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        margin-top: 2rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    }
+
+    .export-btns {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-export {
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.3s;
+        color: white;
+    }
+
+    .btn-excel {
+        background: #10b981;
+    }
+
+        .btn-excel:hover {
+            background: #059669;
+        }
+
+    .btn-pdf {
+        background: #ef4444;
+    }
+
+        .btn-pdf:hover {
+            background: #dc2626;
+        }
+
+    .table-enterprise {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: start;
+        margin-top: 1rem;
+    }
+
+        .table-enterprise th {
+            padding: 1rem;
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 800;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .table-enterprise td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
     @@media (max-width: 768px) {
-        .page-header
+        .page-header {
+            text-align: center;
+            justify-content: center;
+        }
 
-    {
-        text-align: center;
-        justify-content: center;
-    }
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
 
-    .page-title {
-        font-size: 1.5rem;
-    }
+        .fin-data-grid {
+            grid-template-columns: 1fr;
+        }
 
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .fin-card {
-        padding: 1.5rem;
-    }
-
-    .fin-data-grid {
-        grid-template-columns: 1fr;
-    }
-    /* تحويل المبالغ لعمود واحد في الموبايل */
-
-    .fin-value {
-        font-size: 1.2rem;
-    }
-
-    .chart-container {
-        padding: 1.25rem;
-    }
-
-    .chart-title {
-        font-size: 1.1rem;
-    }
-
+        .report-container {
+            padding: 1.5rem;
+        }
     }
 </style>
 
 <div class="accounting-dashboard-page">
-    <!-- الهيدر -->
     <div class="page-header">
         <div>
             <h2 class="page-title">@Localizer["المحاسبة والتقارير المالية"]</h2>
@@ -231,17 +270,13 @@
         </div>
     </div>
 
-    <!-- شريط التبويبات -->
     <div class="accounting-tabs">
         <a href="@Url.Action("Index", "Accounting")" class="acc-tab active"><i class="fa-solid fa-chart-pie"></i> @Localizer["نظرة عامة"]</a>
-        <a href="@Url.Action("Index", "Cars")" class="acc-tab"><i class="fa-solid fa-cart-shopping"></i> @Localizer["المشتريات (السيارات)"]</a>
         <a href="@Url.Action("Index", "Invoices")" class="acc-tab"><i class="fa-solid fa-tags"></i> @Localizer["المبيعات (فواتير العملاء)"]</a>
-        <a href="@Url.Action("Index", "DispatchOrders")" class="acc-tab"><i class="fa-solid fa-truck-fast"></i> @Localizer["مصاريف النقل الداخلي"]</a>
         <a href="@Url.Action("Index", "PaymentReceipts")" class="acc-tab"><i class="fa-solid fa-arrow-down-to-line"></i> @Localizer["سندات القبض"]</a>
     </div>
 
     <div class="stats-grid">
-        <!-- بطاقة المبيعات (العملاء) -->
         <div class="fin-card">
             <div class="fin-card-header">
                 <h3 class="fin-card-title">@Localizer["المبيعات والإيرادات"]</h3>
@@ -250,15 +285,15 @@
             <div class="fin-data-grid">
                 <div class="fin-data-box">
                     <span class="fin-label">@Localizer["إجمالي المبيعات"]</span>
-                    <span class="fin-value" dir="ltr">OMR @(((decimal)ViewBag.TotalSales).ToString("N2"))</span>
+                    <span class="fin-value" dir="ltr">$@(((decimal)ViewBag.TotalSales).ToString("N2"))</span>
                 </div>
                 <div class="fin-data-box">
                     <span class="fin-label">@Localizer["المستلم (سندات قبض)"]</span>
-                    <span class="fin-value green" dir="ltr">OMR @(((decimal)ViewBag.TotalPaid).ToString("N2"))</span>
+                    <span class="fin-value green" dir="ltr">$@(((decimal)ViewBag.TotalPaid).ToString("N2"))</span>
                 </div>
                 <div class="fin-data-box">
                     <span class="fin-label">@Localizer["المتأخرات (ذمم)"]</span>
-                    <span class="fin-value red" dir="ltr">OMR @(((decimal)ViewBag.PendingCollections).ToString("N2"))</span>
+                    <span class="fin-value red" dir="ltr">$@(((decimal)ViewBag.PendingCollections).ToString("N2"))</span>
                 </div>
                 <div class="fin-data-box">
                     <span class="fin-label">@Localizer["عدد الفواتير"]</span>
@@ -267,7 +302,6 @@
             </div>
         </div>
 
-        <!-- بطاقة المشتريات (مزادات وشحن) -->
         <div class="fin-card">
             <div class="fin-card-header">
                 <h3 class="fin-card-title">@Localizer["المشتريات والتكاليف"]</h3>
@@ -276,15 +310,15 @@
             <div class="fin-data-grid">
                 <div class="fin-data-box">
                     <span class="fin-label">@Localizer["إجمالي قيمة الشراء"]</span>
-                    <span class="fin-value" dir="ltr">$ @(((decimal)ViewBag.TotalPurchases).ToString("N2"))</span>
+                    <span class="fin-value" dir="ltr">$@(((decimal)ViewBag.TotalPurchases).ToString("N2"))</span>
                 </div>
                 <div class="fin-data-box">
                     <span class="fin-label">@Localizer["تكاليف النقل (Towing)"]</span>
-                    <span class="fin-value" dir="ltr" style="color: #f59e0b;">$ @(((decimal)ViewBag.TotalExpenses).ToString("N2"))</span>
+                    <span class="fin-value" dir="ltr" style="color: #f59e0b;">$@(((decimal)ViewBag.TotalExpenses).ToString("N2"))</span>
                 </div>
                 <div class="fin-data-box">
                     <span class="fin-label">@Localizer["إجمالي التكاليف"]</span>
-                    <span class="fin-value red" dir="ltr">$ @(((decimal)(ViewBag.TotalPurchases + ViewBag.TotalExpenses)).ToString("N2"))</span>
+                    <span class="fin-value red" dir="ltr">$@(((decimal)(ViewBag.TotalPurchases + ViewBag.TotalExpenses)).ToString("N2"))</span>
                 </div>
                 <div class="fin-data-box">
                     <span class="fin-label">@Localizer["سيارات مشتراة"]</span>
@@ -301,12 +335,95 @@
             <canvas id="financeChart" height="120"></canvas>
         </div>
     </div>
+
+    <!-- جدول التقارير المحاسبية والتصدير -->
+    <div class="report-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <h3 class="chart-title" style="margin: 0;"><i class="fa-solid fa-file-invoice" style="color: var(--primary-gold);"></i> @Localizer["التقرير المالي الشهري التفصيلي"]</h3>
+            <div class="export-btns">
+                <button onclick="exportToExcel()" class="btn-export btn-excel"><i class="fa-solid fa-file-excel"></i> @Localizer["تصدير Excel"]</button>
+                <button onclick="exportToPDF()" class="btn-export btn-pdf"><i class="fa-solid fa-file-pdf"></i> @Localizer["تصدير PDF"]</button>
+            </div>
+        </div>
+        <div style="overflow-x: auto;" id="pdfContentArea">
+            <h2 style="display: none; text-align: center; color: #1e293b;" id="pdfReportTitle">تقرير التدفقات النقدية - @ViewBag.CurrentYear</h2>
+            <table id="accountingReportTable" class="table-enterprise">
+                <thead>
+                    <tr>
+                        <th>@Localizer["الشهر"]</th>
+                        <th>@Localizer["إجمالي المبيعات (الإيرادات)"]</th>
+                        <th>@Localizer["إجمالي المشتريات (المصروفات)"]</th>
+                        <th>@Localizer["صافي التدفق النقدي"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        decimal grandSales = 0;
+                        decimal grandPurchases = 0;
+                    }
+                    @for (int i = 0; i < 12; i++)
+                    {
+                        decimal mSales = ((decimal[])ViewBag.MonthlySales)[i];
+                        decimal mPurchases = ((decimal[])ViewBag.MonthlyPurchases)[i];
+                        decimal mNet = mSales - mPurchases;
+                        grandSales += mSales;
+                        grandPurchases += mPurchases;
+
+                        string monthName = new DateTime(2024, i + 1, 1).ToString("MMMM", new System.Globalization.CultureInfo("ar-OM"));
+                        <tr>
+                            <td style="font-weight: 900; color: var(--primary-navy);">@monthName</td>
+                            <td style="color: #16a34a; font-family: monospace; font-size: 1.1rem;">$@mSales.ToString("N2")</td>
+                            <td style="color: #ef4444; font-family: monospace; font-size: 1.1rem;">$@mPurchases.ToString("N2")</td>
+                            <td style="font-family: monospace; font-weight: 900; font-size: 1.1rem; color: @(mNet >= 0 ? "#16a34a" : "#ef4444")">
+                                $@mNet.ToString("N2")
+                            </td>
+                        </tr>
+                    }
+                    <tr style="background: rgba(184, 147, 90, 0.1);">
+                        <td style="font-weight: 900; color: var(--primary-navy); font-size: 1.1rem;">@Localizer["الإجمالي السنوي"]</td>
+                        <td style="color: #16a34a; font-family: monospace; font-size: 1.2rem; font-weight: 900;">$@grandSales.ToString("N2")</td>
+                        <td style="color: #ef4444; font-family: monospace; font-size: 1.2rem; font-weight: 900;">$@grandPurchases.ToString("N2")</td>
+                        <td style="font-family: monospace; font-weight: 900; font-size: 1.2rem; color: @((grandSales - grandPurchases) >= 0 ? "#16a34a" : "#ef4444")">
+                            $@((grandSales - grandPurchases).ToString("N2"))
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- مكتبات التصدير -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <script>
-        // استقبال البيانات الديناميكية من السيرفر
+        // --- دوال التصدير ---
+        function exportToExcel() {
+            var table = document.getElementById("accountingReportTable");
+            var wb = XLSX.utils.table_to_book(table, {sheet: "التقرير المالي"});
+            XLSX.writeFile(wb, "Accounting_Report_@ViewBag.CurrentYear.xlsx");
+        }
+
+        function exportToPDF() {
+            $('#pdfReportTitle').show(); // إظهار العنوان المخصص للـ PDF فقط
+            var element = document.getElementById('pdfContentArea');
+            var opt = {
+              margin:       10,
+              filename:     'Accounting_Report_@ViewBag.CurrentYear.pdf',
+              image:        { type: 'jpeg', quality: 0.98 },
+              html2canvas:  { scale: 2, useCORS: true },
+              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save().then(function(){
+                $('#pdfReportTitle').hide(); // إخفاء العنوان بعد الطباعة
+            });
+        }
+
+        // --- تهيئة الرسم البياني ---
         const salesData = @Html.Raw(Json.Serialize(ViewBag.MonthlySales));
         const purchasesData = @Html.Raw(Json.Serialize(ViewBag.MonthlyPurchases));
 
@@ -328,43 +445,25 @@
                 labels: monthLabels,
                 datasets: [
                     {
-                        label: '@Html.Raw(Localizer["المبيعات (إيرادات الفواتير OMR)"])',
+                        label: '@Html.Raw(Localizer["إيرادات الفواتير"])',
                         data: salesData,
                         borderColor: navyColor,
                         backgroundColor: navyColor + '10',
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 4,
-                        fill: true
+                        tension: 0.4, borderWidth: 3, pointRadius: 4, fill: true
                     },
                     {
-                        label: '@Html.Raw(Localizer["المشتريات (تكلفة السيارات USD)"])',
+                        label: '@Html.Raw(Localizer["المصروفات والمشتريات"])',
                         data: purchasesData,
                         borderColor: goldColor,
                         backgroundColor: goldColor + '10',
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 4,
-                        fill: true
+                        tension: 0.4, borderWidth: 3, pointRadius: 4, fill: true
                     }
                 ]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false, // لضمان التحكم في الارتفاع يدوياً عبر الـ CSS
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            usePointStyle: true,
-                            font: { family: 'Cairo', weight: 'bold', size: 12 }
-                        }
-                    }
-                },
-                scales: {
-                    y: { beginAtZero: true, ticks: { font: { family: 'monospace', weight: 'bold' } } },
-                    x: { ticks: { font: { family: 'Cairo', weight: 'bold' } } }
-                },
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'top', labels: { usePointStyle: true, font: { family: 'Cairo', weight: 'bold' } } } },
+                scales: { y: { beginAtZero: true, ticks: { font: { family: 'monospace', weight: 'bold' } } }, x: { ticks: { font: { family: 'Cairo', weight: 'bold' } } } },
                 interaction: { mode: 'index', intersect: false }
             }
         });
