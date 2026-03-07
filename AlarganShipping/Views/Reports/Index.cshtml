@@ -1,0 +1,339 @@
+﻿@{
+    ViewData["Title"] = Localizer["التقارير المتقدمة"];
+}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+    }
+
+    .page-title {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .reports-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 2rem;
+        background: white;
+        padding: 0.5rem;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+        overflow-x: auto;
+    }
+
+    .report-tab {
+        flex: 1;
+        text-align: center;
+        padding: 1rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        cursor: pointer;
+        border-radius: 0.75rem;
+        transition: 0.3s;
+        white-space: nowrap;
+    }
+
+        .report-tab.active {
+            background: var(--primary-navy);
+            color: white;
+            box-shadow: 0 4px 15px rgba(26, 37, 47, 0.2);
+        }
+
+    .filter-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        align-items: end;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-weight: 800;
+        color: var(--primary-navy);
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        padding: 0.8rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        font-family: inherit;
+        font-weight: 700;
+        outline: none;
+    }
+
+    .btn-search {
+        background: var(--primary-gold);
+        color: white;
+        border: none;
+        padding: 0.9rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-search:hover {
+            background: var(--secondary-gold);
+        }
+
+    .results-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+        display: none;
+    }
+
+    .export-row {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-export {
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 0.5rem;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: white;
+        transition: 0.3s;
+    }
+
+    .btn-excel {
+        background: #10b981;
+    }
+
+        .btn-excel:hover {
+            background: #059669;
+        }
+
+    .btn-pdf {
+        background: #ef4444;
+    }
+
+        .btn-pdf:hover {
+            background: #dc2626;
+        }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: start;
+    }
+
+    th {
+        background: #f8fafc;
+        padding: 1rem;
+        color: var(--text-muted);
+        border-bottom: 2px solid #e2e8f0;
+        font-weight: 800;
+    }
+
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid #f1f5f9;
+        font-weight: 700;
+    }
+
+    .money {
+        font-family: monospace;
+        font-size: 1.1rem;
+    }
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<div class="page-header">
+    <h2 class="page-title"><i class="fa-solid fa-chart-pie" style="color: var(--primary-gold);"></i> @Localizer["التقارير المتقدمة"]</h2>
+</div>
+
+<div class="reports-tabs">
+    <div class="report-tab active" onclick="switchReport('sales')"><i class="fa-solid fa-file-invoice-dollar"></i> تقرير المبيعات</div>
+    <div class="report-tab" onclick="switchReport('customer')"><i class="fa-solid fa-user-tie"></i> كشف حساب عميل</div>
+    <div class="report-tab" onclick="switchReport('purchases')"><i class="fa-solid fa-car"></i> تقرير المشتريات</div>
+</div>
+
+<!-- 1. فلاتر المبيعات -->
+<div class="filter-card" id="filter-sales">
+    <div class="filter-grid">
+        <div class="form-group"><label class="form-label">من تاريخ</label><input type="date" id="salesStart" class="form-control" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")" /></div>
+        <div class="form-group"><label class="form-label">إلى تاريخ</label><input type="date" id="salesEnd" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" /></div>
+        <button class="btn-search" onclick="loadSalesReport()"><i class="fa-solid fa-magnifying-glass"></i> عرض التقرير</button>
+    </div>
+</div>
+
+<!-- 2. فلاتر كشف العميل -->
+<div class="filter-card" id="filter-customer" style="display:none;">
+    <div class="filter-grid">
+        <div class="form-group">
+            <label class="form-label">اختر العميل</label>
+            <select id="custSelect" class="form-control select2" asp-items="ViewBag.Customers"><option value="">-- اختر --</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">من تاريخ</label><input type="date" id="custStart" class="form-control" value="@DateTime.Now.AddMonths(-3).ToString("yyyy-MM-dd")" /></div>
+        <div class="form-group"><label class="form-label">إلى تاريخ</label><input type="date" id="custEnd" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" /></div>
+        <button class="btn-search" onclick="loadCustomerReport()"><i class="fa-solid fa-magnifying-glass"></i> استخراج الكشف</button>
+    </div>
+</div>
+
+<!-- 3. فلاتر المشتريات -->
+<div class="filter-card" id="filter-purchases" style="display:none;">
+    <div class="filter-grid">
+        <div class="form-group">
+            <label class="form-label">الماركة (اختياري)</label>
+            <select id="carMakeSelect" class="form-control select2" asp-items="ViewBag.CarShapes"><option value="">-- الكل --</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">من تاريخ</label><input type="date" id="purStart" class="form-control" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")" /></div>
+        <div class="form-group"><label class="form-label">إلى تاريخ</label><input type="date" id="purEnd" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" /></div>
+        <button class="btn-search" onclick="loadPurchasesReport()"><i class="fa-solid fa-magnifying-glass"></i> عرض التقرير</button>
+    </div>
+</div>
+
+<!-- منطقة عرض النتائج -->
+<div class="results-card" id="resultsArea">
+    <div class="export-row">
+        <button class="btn-export btn-excel" onclick="exportData('excel')"><i class="fa-solid fa-file-excel"></i> تصدير Excel</button>
+        <button class="btn-export btn-pdf" onclick="exportData('pdf')"><i class="fa-solid fa-file-pdf"></i> تصدير PDF</button>
+    </div>
+
+    <div id="printArea">
+        <h3 id="reportTitle" style="text-align: center; color: var(--primary-navy); margin-bottom: 1.5rem;"></h3>
+        <!-- سيتم حقن الجدول هنا عبر JS -->
+        <div id="tableContainer"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({ dir: $('html').attr('dir'), width: '100%' });
+        });
+
+        var currentReportName = "Report";
+
+        function switchReport(type) {
+            $('.report-tab').removeClass('active');
+            $(event.target).addClass('active');
+            $('.filter-card').hide();
+            $('#filter-' + type).fadeIn();
+            $('#resultsArea').hide();
+        }
+
+        // تحميل المبيعات
+        function loadSalesReport() {
+            let start = $('#salesStart').val(); let end = $('#salesEnd').val();
+            $.post('@Url.Action("GetSalesReport", "Reports")', { startDate: start, endDate: end }, function(data) {
+                currentReportName = "Sales_Report";
+                $('#reportTitle').text(`تقرير المبيعات والفواتير (${start} إلى ${end})`);
+
+                let html = `<table id="dataTable"><thead><tr><th>التاريخ</th><th>رقم الفاتورة</th><th>العميل</th><th>السيارة</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th></tr></thead><tbody>`;
+                let totalS = 0;
+                data.forEach(r => {
+                    totalS += r.total;
+                    html += `<tr><td>${r.date}</td><td class="money">${r.invoiceNo}</td><td>${r.customer}</td><td>${r.car}</td><td class="money" style="color:#b45309">$${r.total.toLocaleString()}</td><td class="money" style="color:#16a34a">$${r.paid.toLocaleString()}</td><td class="money" style="color:#ef4444">$${r.remain.toLocaleString()}</td></tr>`;
+                });
+                html += `<tr style="background:#f8fafc"><td colspan="4"><strong>المجموع الكلي</strong></td><td class="money" style="font-weight:900;color:#1e293b">$${totalS.toLocaleString()}</td><td></td><td></td></tr></tbody></table>`;
+                $('#tableContainer').html(html);
+                $('#resultsArea').fadeIn();
+            });
+        }
+
+        // تحميل كشف العميل
+        function loadCustomerReport() {
+            let custId = $('#custSelect').val(); let start = $('#custStart').val(); let end = $('#custEnd').val();
+            if(!custId) { alert("اختر عميل أولاً"); return; }
+
+            $.post('@Url.Action("GetCustomerStatement", "Reports")', { customerId: custId, startDate: start, endDate: end }, function(res) {
+                currentReportName = "Customer_Statement";
+                $('#reportTitle').html(`كشف حساب العميل: ${$('#custSelect option:selected').text()} <br><small>(${start} إلى ${end}) | الرصيد الحالي: $${res.currentBalance.toLocaleString()}</small>`);
+
+                let html = `<table id="dataTable"><thead><tr><th>التاريخ</th><th>النوع</th><th>البيان</th><th>مدين (عليه $)</th><th>دائن (له $)</th></tr></thead><tbody>`;
+                let tDebit = 0; let tCredit = 0;
+                res.statement.forEach(r => {
+                    tDebit += r.debit; tCredit += r.credit;
+                    html += `<tr><td>${r.date}</td><td>${r.type}</td><td>${r.desc}</td><td class="money" style="color:#ef4444">${r.debit > 0 ? r.debit.toLocaleString() : '-'}</td><td class="money" style="color:#16a34a">${r.credit > 0 ? r.credit.toLocaleString() : '-'}</td></tr>`;
+                });
+                html += `<tr style="background:#f8fafc"><td colspan="3"><strong>المجموع</strong></td><td class="money" style="font-weight:900;color:#ef4444">$${tDebit.toLocaleString()}</td><td class="money" style="font-weight:900;color:#16a34a">$${tCredit.toLocaleString()}</td></tr></tbody></table>`;
+                $('#tableContainer').html(html);
+                $('#resultsArea').fadeIn();
+            });
+        }
+
+        // تحميل المشتريات
+        function loadPurchasesReport() {
+            let make = $('#carMakeSelect').val(); let start = $('#purStart').val(); let end = $('#purEnd').val();
+            $.post('@Url.Action("GetPurchasesReport", "Reports")', { make: make, startDate: start, endDate: end }, function(data) {
+                currentReportName = "Purchases_Report";
+                $('#reportTitle').text(`تقرير مشتريات السيارات (${start} إلى ${end})`);
+
+                let html = `<table id="dataTable"><thead><tr><th>تاريخ الشراء</th><th>السيارة</th><th>رقم الشاصي (VIN)</th><th>المزاد</th><th>سعر الشراء</th></tr></thead><tbody>`;
+                let totalP = 0;
+                data.forEach(r => {
+                    totalP += r.price;
+                    html += `<tr><td>${r.date}</td><td><strong>${r.carInfo}</strong></td><td class="money">${r.vin}</td><td>${r.auction}</td><td class="money" style="color:#ef4444">$${r.price.toLocaleString()}</td></tr>`;
+                });
+                html += `<tr style="background:#f8fafc"><td colspan="4"><strong>إجمالي تكلفة الشراء</strong></td><td class="money" style="font-weight:900;color:#1e293b">$${totalP.toLocaleString()}</td></tr></tbody></table>`;
+                $('#tableContainer').html(html);
+                $('#resultsArea').fadeIn();
+            });
+        }
+
+        // التصدير
+        function exportData(format) {
+            if(format === 'excel') {
+                var wb = XLSX.utils.table_to_book(document.getElementById("dataTable"), {sheet: "Report"});
+                XLSX.writeFile(wb, currentReportName + '.xlsx');
+            } else if (format === 'pdf') {
+                var element = document.getElementById('printArea');
+                html2pdf().set({
+                    margin: 10, filename: currentReportName + '.pdf',
+                    html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+                }).from(element).save();
+            }
+        }
+    </script>
+}

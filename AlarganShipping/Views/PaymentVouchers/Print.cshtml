@@ -1,0 +1,298 @@
+﻿@model AlarganShipping.Models.PaymentVoucher
+@{
+    ViewData["Title"] = Localizer["طباعة سند صرف"];
+    Layout = null; // إزالة التخطيط العام لضمان طباعة نظيفة لصفحة واحدة
+}
+<!DOCTYPE html>
+<html lang="@System.Globalization.CultureInfo.CurrentCulture.Name" dir="@(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "rtl" : "ltr")">
+<head>
+    <meta charset="utf-8" />
+    <title>@Localizer["سند صرف رقم"] @Model.VoucherNumber</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-navy: #1e293b;
+            --primary-gold: #b45309;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #e2e8f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .voucher-container {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        /* رأس السند والشعار */
+        .voucher-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid var(--primary-gold);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header-logo img {
+            max-height: 80px;
+            width: auto;
+        }
+
+        .header-title {
+            text-align: start;
+        }
+
+            .header-title h1 {
+                margin: 0;
+                font-size: 2rem;
+                color: var(--primary-navy);
+                font-weight: 900;
+            }
+
+            .header-title h2 {
+                margin: 5px 0 0 0;
+                color: var(--primary-gold);
+                font-weight: 900;
+                font-size: 1.5rem;
+                letter-spacing: 1px;
+            }
+
+        /* معلومات السند الأساسية */
+        .top-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--primary-navy);
+        }
+
+            .top-info div {
+                background: #f8fafc;
+                padding: 10px 20px;
+                border-radius: 8px;
+                border: 1px solid #e2e8f0;
+            }
+
+        /* تفاصيل الصرف الرئيسية */
+        .voucher-details {
+            margin-bottom: 40px;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            border-bottom: 1px dashed #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .detail-label {
+            width: 180px;
+            font-weight: 800;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            font-weight: 900;
+            color: var(--primary-navy);
+            flex: 1;
+        }
+
+        .amount-box {
+            background: rgba(184, 147, 90, 0.05);
+            color: var(--primary-navy);
+            padding: 5px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(184, 147, 90, 0.3);
+            font-family: monospace;
+            font-size: 1.5rem;
+        }
+
+        /* منطقة التوقيعات */
+        .signatures-area {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 60px;
+            padding-top: 20px;
+        }
+
+        .signature-box {
+            text-align: center;
+            width: 200px;
+        }
+
+        .signature-line {
+            border-bottom: 2px solid var(--primary-navy);
+            margin-bottom: 10px;
+            height: 50px;
+        }
+
+        .signature-title {
+            font-weight: 800;
+            color: var(--primary-navy);
+        }
+
+        /* أزرار التحكم للطباعة */
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-print {
+            background: var(--primary-gold);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-family: inherit;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+            .btn-print:hover {
+                background: var(--primary-navy);
+            }
+
+        .btn-back {
+            background: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-family: inherit;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-inline-start: 10px;
+        }
+
+        /* ==================================
+                   إعدادات الطباعة لضمان صفحة واحدة A4
+                   ================================== */
+        @@media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .voucher-container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+                border: none;
+            }
+
+            .controls {
+                display: none;
+            }
+
+            html, body {
+                height: 99%;
+                page-break-after: avoid;
+                page-break-before: avoid;
+            }
+
+            .amount-box {
+                background-color: rgba(184, 147, 90, 0.05) !important;
+                border-color: rgba(184, 147, 90, 0.3) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div style="width: 100%; max-width: 800px;">
+        <div class="controls">
+            <button class="btn-print" onclick="window.print()">🖨️ @Localizer["طباعة السند"]</button>
+            <button class="btn-back" onclick="history.back()">@Localizer["العودة للسجل"]</button>
+        </div>
+
+        <div class="voucher-container">
+            <div class="voucher-header">
+                <div class="header-logo">
+                    <img src="/images/logo.png" alt="Logo" onerror="this.style.display='none'; this.parentElement.innerHTML+='<div style=\'font-size:3rem;\'>🛳️</div>';" />
+                    <div style="font-size: 1.2rem; font-weight: 900; color: var(--primary-navy); margin-top: 5px;">ALARGAN SHIPPING</div>
+                </div>
+                <div class="header-title">
+                    <h1>@Localizer["سند صرف"]</h1>
+                    <h2>@Localizer["Payment Voucher"]</h2>
+                </div>
+            </div>
+
+            <div class="top-info">
+                <div>@Localizer["رقم السند:"] <span dir="ltr" style="color: var(--primary-gold); font-family: monospace;">@Model.VoucherNumber</span></div>
+                <div>@Localizer["التاريخ:"] <span>@Model.VoucherDate.ToString("yyyy/MM/dd")</span></div>
+            </div>
+
+            <div class="voucher-details">
+                <div class="detail-row">
+                    <div class="detail-label">@Localizer["يصرف للسيد / الجهة:"]</div>
+                    <div class="detail-value">@Model.BeneficiaryName</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">@Localizer["مبلغاً وقدره:"]</div>
+                    <div class="detail-value amount-box">@Model.Amount.ToString("N2") $</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">@Localizer["وذلك عن (البيان):"]</div>
+                    <div class="detail-value" style="color: #64748b;">@Model.Description</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">@Localizer["تصنيف المصروف:"]</div>
+                    <div class="detail-value">@Model.Category</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">@Localizer["طريقة الدفع:"]</div>
+                    <div class="detail-value">@Model.PaymentMethod @(!string.IsNullOrEmpty(Model.ReferenceNumber) ? " (" + Localizer["رقم المرجع:"] + " " + Model.ReferenceNumber + ")" : "")</div>
+                </div>
+
+                @if (Model.Customer != null)
+                {
+                    <div class="detail-row" style="background: rgba(184, 147, 90, 0.05); padding: 10px; border-radius: 8px;">
+                        <div class="detail-label" style="color: var(--primary-gold);">@Localizer["مرتبط بالعميل:"]</div>
+                        <div class="detail-value" style="color: var(--primary-gold);">@Model.Customer.Name (@Localizer["تم خصم المبلغ من رصيده المدفوع"])</div>
+                    </div>
+                }
+            </div>
+
+            <div class="signatures-area">
+                <div class="signature-box">
+                    <div class="signature-line"></div>
+                    <div class="signature-title">@Localizer["المحاسب / أعد السند"]</div>
+                </div>
+                <div class="signature-box">
+                    <div class="signature-line"></div>
+                    <div class="signature-title">@Localizer["توقيع المستلم"]</div>
+                </div>
+                <div class="signature-box">
+                    <div class="signature-line"></div>
+                    <div class="signature-title">@Localizer["المدير المالي / الاعتماد"]</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

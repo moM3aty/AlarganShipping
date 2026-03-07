@@ -1,238 +1,227 @@
 ﻿@model AlarganShipping.Models.Invoice
 @{
     ViewData["Title"] = Localizer["طباعة الفاتورة"];
-    Layout = null; // إلغاء التخطيط لضمان طباعة نظيفة
+    Layout = null;
 }
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8" />
-    <title>فاتورة رقم @Model.InvoiceNumber</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <title>فاتورة @Model.InvoiceNumber</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- استدعاء مكتبات التصدير -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        :root {
-            --primary-navy: #1e293b;
-            --primary-gold: #b45309;
-        }
-
         body {
             font-family: 'Cairo', sans-serif;
             background: #e2e8f0;
-            margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .invoice-container {
+        .invoice-box {
             background: white;
             width: 100%;
-            max-width: 800px; /* حجم مناسب لورقة A4 */
-            padding: 40px;
+            max-width: 800px;
+            padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 20px;
         }
 
-        /* رأس الفاتورة والشعار بالمنتصف */
-        .invoice-header {
+        .header {
             text-align: center;
-            border-bottom: 3px solid var(--primary-gold);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-
-        .invoice-logo {
-            font-size: 3rem;
-            color: var(--primary-navy);
-            margin-bottom: 10px;
-            /* استبدل هذه بمسار اللوجو الفعلي */
-            /* content: url('/images/logo.png'); */
-        }
-
-        .invoice-header h1 {
-            margin: 0;
-            font-size: 2.2rem;
-            color: var(--primary-navy);
-            font-weight: 900;
-        }
-
-        .invoice-header p {
-            margin: 5px 0 0 0;
-            color: #64748b;
-            font-weight: 600;
-            font-size: 1.1rem;
-            letter-spacing: 2px;
-        }
-
-        /* معلومات الفاتورة والعميل */
-        .info-section {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .info-block h3 {
-            margin: 0 0 10px 0;
-            font-size: 1.2rem;
-            color: var(--primary-navy);
-        }
-
-        .info-block p {
-            margin: 5px 0;
-            color: #334155;
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .info-block span {
-            color: var(--primary-gold);
-            font-weight: 800;
-            font-family: monospace;
-            font-size: 1.1rem;
-        }
-
-        /* جدول التفاصيل */
-        .invoice-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-        }
-
-            .invoice-table th {
-                background: var(--primary-navy);
-                color: white;
-                padding: 12px;
-                text-align: right;
-                font-size: 1.1rem;
-            }
-
-            .invoice-table td {
-                padding: 12px;
-                border-bottom: 1px solid #e2e8f0;
-                font-size: 1.1rem;
-                font-weight: 600;
-                color: #1e293b;
-            }
-
-                .invoice-table td.amount {
-                    text-align: left;
-                    font-family: monospace;
-                    font-weight: 800;
-                }
-
-        /* ملخص المجاميع */
-        .summary-box {
-            width: 350px;
-            margin-right: auto; /* يدفعه لليسار في RTL */
-            border: 2px solid var(--primary-navy);
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 15px;
-            border-bottom: 1px solid #e2e8f0;
-            font-weight: 800;
-        }
-
-            .summary-row.total {
-                background: var(--primary-navy);
-                color: white;
-                border-bottom: none;
-                font-size: 1.3rem;
-            }
-
-            .summary-row.paid {
-                color: #16a34a;
-            }
-
-            .summary-row.remain {
-                color: #ef4444;
-                background: #fef2f2;
-                font-size: 1.2rem;
-            }
-
-        /* التذييل والحساب البنكي */
-        .invoice-footer {
-            text-align: center;
-            border-top: 1px solid #cbd5e1;
-            padding-top: 20px;
-            color: #64748b;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .bank-info {
-            background: rgba(184, 147, 90, 0.1);
-            border: 1px dashed var(--primary-gold);
-            padding: 15px;
-            border-radius: 8px;
-            display: inline-block;
-            text-align: right;
-            margin-bottom: 15px;
-            color: var(--primary-navy);
-        }
-
-        /* زر الطباعة */
-        .no-print {
-            text-align: center;
+            border-bottom: 3px solid #b45309;
+            padding-bottom: 15px;
             margin-bottom: 20px;
         }
 
-        .btn-print {
-            background: var(--primary-gold);
-            color: white;
-            border: none;
-            padding: 10px 25px;
+            .header img {
+                height: 80px;
+                margin-bottom: 10px;
+            }
+
+            .header h1 {
+                margin: 0;
+                color: #1e293b;
+                font-size: 2rem;
+                font-weight: 900;
+            }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            background: #f8fafc;
+            padding: 15px;
             border-radius: 8px;
-            font-weight: 800;
-            font-family: inherit;
-            font-size: 1.1rem;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+            .info-row p {
+                margin: 5px 0;
+                font-weight: 700;
+                color: #334155;
+            }
+
+            .info-row span {
+                color: #b45309;
+                font-family: monospace;
+                font-size: 1.1rem;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th {
+            background: #1e293b;
+            color: white;
+            padding: 10px;
+            text-align: right;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 700;
+        }
+
+            td.amount {
+                text-align: left;
+                font-family: monospace;
+                font-size: 1.1rem;
+            }
+
+        .totals {
+            width: 350px;
+            margin-right: auto;
+            border: 2px solid #1e293b;
+            border-radius: 8px;
+        }
+
+            .totals div {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px;
+                border-bottom: 1px solid #e2e8f0;
+                font-weight: 700;
+            }
+
+            .totals .final {
+                background: #1e293b;
+                color: white;
+                font-size: 1.2rem;
+            }
+
+            .totals .remain {
+                background: #fef2f2;
+                color: #ef4444;
+                font-size: 1.2rem;
+            }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .bank-info {
+            display: inline-block;
+            background: rgba(184, 147, 90, 0.1);
+            border: 1px dashed #b45309;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: right;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-action {
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
+            font-family: inherit;
+            font-weight: 900;
+            font-size: 1rem;
             transition: 0.3s;
         }
 
+        .btn-print {
+            background: #b45309;
+        }
+
             .btn-print:hover {
-                background: var(--primary-navy);
+                background: #92400e;
             }
 
-        /* إعدادات الطباعة لصفحة واحدة */
+        .btn-excel {
+            background: #10b981;
+        }
+
+            .btn-excel:hover {
+                background: #059669;
+            }
+
+        .btn-pdf {
+            background: #ef4444;
+        }
+
+            .btn-pdf:hover {
+                background: #dc2626;
+            }
+
+        .btn-back {
+            background: #1e293b;
+        }
+
+            .btn-back:hover {
+                background: #0f172a;
+            }
+
         @@media print {
             body {
                 background: white;
                 padding: 0;
             }
 
-            .invoice-container {
+            .invoice-box {
                 box-shadow: none;
                 padding: 0;
                 max-width: 100%;
+                border: none;
+                margin: 0;
             }
 
-            .no-print {
+            .controls {
                 display: none;
             }
-            /* مقياس تصغير لضمان صفحة واحدة */
+
             html, body {
                 height: 99%;
                 page-break-after: avoid;
-                page-break-before: avoid;
             }
 
-            .invoice-container {
+            .invoice-box {
                 transform: scale(0.95);
                 transform-origin: top center;
             }
-            /* الاحتفاظ بالألوان */
-            .invoice-table th, .summary-row.total {
-                background-color: var(--primary-navy) !important;
+
+            th, .final {
+                background-color: #1e293b !important;
                 color: white !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -243,122 +232,109 @@
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-
-            .summary-row.remain {
-                background-color: #fef2f2 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
         }
     </style>
 </head>
 <body>
-    <div style="width: 100%; max-width: 800px;">
-        <div class="no-print">
-            <button class="btn-print" onclick="window.print()">🖨️ طباعة الفاتورة</button>
-            <button class="btn-print" style="background: var(--primary-navy); margin-inline-start: 10px;" onclick="history.back()">العودة</button>
+    <div class="controls">
+        <button class="btn-action btn-back" onclick="history.back()">العودة</button>
+        <button class="btn-action btn-print" onclick="window.print()">طباعة (طابعة)</button>
+        <button class="btn-action btn-pdf" onclick="downloadPDF()">تحميل PDF</button>
+        <button class="btn-action btn-excel" onclick="downloadExcel()">تصدير Excel</button>
+    </div>
+
+    <div class="invoice-box" id="invoiceContent">
+        <div class="header">
+            <img src="/images/logo.png" alt="Logo" onerror="this.onerror=null; this.style.display='none'" />
+            <h1>ALARGAN AUTO SHIPPING</h1>
+            <p style="color:#64748b; font-weight:800; font-size:1.1rem; margin:0;">فاتورة ضريبية - Tax Invoice</p>
         </div>
 
-        <div class="invoice-container">
-            <!-- الترويسة والشعار في المنتصف -->
-            <div class="invoice-header">
-                <div class="invoice-logo">🛳️</div>
-                <h1>ALARGAN</h1>
-                <p>AUTO SHIPPING</p>
-                <div style="font-size: 0.9rem; color: #94a3b8; margin-top: 5px;">سلطنة عمان - المركز الرئيسي</div>
+        <div class="info-row">
+            <div>
+                <p>فاتورة مقدمة إلى: <span style="font-size: 1.3rem;">@(Model.Customer?.Name)</span></p>
+                <p>السيارة: @(Model.Car?.Make) @(Model.Car?.VehicleType) @(Model.Car?.Year)</p>
+                <p>رقم الشاصي: <span dir="ltr">@(Model.Car?.VIN)</span></p>
             </div>
-
-            <!-- معلومات الفاتورة -->
-            <div class="info-section">
-                <div class="info-block">
-                    <h3>فاتورة مقدمة إلى:</h3>
-                    <p style="font-size: 1.4rem; color: var(--primary-gold);">@(Model.Customer?.Name ?? "عميل نقدي")</p>
-                    <p>بيانات السيارة: @(Model.Car?.Make) @(Model.Car?.Model) @(Model.Car?.Year)</p>
-                    <p>رقم الشاصي: <span dir="ltr">@(Model.Car?.VIN ?? "-")</span></p>
-                </div>
-                <div class="info-block" style="text-align: left;">
-                    <p>رقم الفاتورة: <span dir="ltr">@Model.InvoiceNumber</span></p>
-                    <p>تاريخ الإصدار: <span>@Model.IssueDate.ToString("yyyy/MM/dd")</span></p>
-                    @if (Model.IsShippingOnly)
-                    {
-                        <p style="margin-top: 15px; color: #ef4444; font-weight: 900; background: #fef2f2; padding: 5px 10px; border-radius: 5px; display: inline-block;">(فاتورة شحن وجمارك فقط)</p>
-                    }
-                </div>
+            <div style="text-align: left;">
+                <p>رقم الفاتورة: <span dir="ltr">@Model.InvoiceNumber</span></p>
+                <p>تاريخ الإصدار: <span>@Model.IssueDate.ToString("yyyy/MM/dd")</span></p>
+                @if (Model.IsShippingOnly)
+                {
+                    <p style="color:#ef4444; background:#fef2f2; padding:5px; border-radius:5px; display:inline-block;">(فاتورة شحن وجمارك فقط)</p>
+                }
             </div>
+        </div>
 
-            <!-- جدول البنود -->
-            <table class="invoice-table">
-                <thead>
-                    <tr>
-                        <th>البيان / الوصف</th>
-                        <th style="text-align: left;">المبلغ ($)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (!Model.IsShippingOnly)
-                    {
-                        <tr>
-                            <td>قيمة شراء السيارة من المزاد</td>
-                            <td class="amount">$@Model.CarPrice.ToString("N2")</td>
-                        </tr>
-                        <tr>
-                            <td>رسوم المزاد والبوابة</td>
-                            <td class="amount">$@Model.AuctionFees.ToString("N2")</td>
-                        </tr>
-                    }
-                    <tr>
-                        <td>أجور النقل الداخلي (الريكفري)</td>
-                        <td class="amount">$@Model.InlandTowing.ToString("N2")</td>
-                    </tr>
-                    <tr>
-                        <td>أجور الشحن البحري</td>
-                        <td class="amount">$@Model.SeaFreight.ToString("N2")</td>
-                    </tr>
-                    <tr>
-                        <td>رسوم التخليص الجمركي والضرائب</td>
-                        <td class="amount">$@Model.CustomsAndTaxes.ToString("N2")</td>
-                    </tr>
-                    @if (Model.StorageFees > 0)
-                    {
-                        <tr>
-                            <td style="color: #ef4444;">غرامات تأخير / أرضيات مستودع</td>
-                            <td class="amount" style="color: #ef4444;">$@Model.StorageFees.ToString("N2")</td>
-                        </tr>
-                    }
-                    <tr>
-                        <td>الرسوم الإدارية / عمولة الشركة</td>
-                        <td class="amount">$@Model.CompanyCommission.ToString("N2")</td>
-                    </tr>
-                </tbody>
-            </table>
+        <table id="exportTable">
+            <thead>
+                <tr>
+                    <th>البيان / الوصف</th>
+                    <th style="text-align: left;">المبلغ ($)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.IsShippingOnly)
+                {
+                    <tr><td>قيمة شراء السيارة</td><td class="amount">@Model.CarPrice.ToString("N2")</td></tr>
+                    <tr><td>رسوم المزاد</td><td class="amount">@Model.AuctionFees.ToString("N2")</td></tr>
+                }
+                <tr><td>النقل الداخلي (Towing)</td><td class="amount">@Model.InlandTowing.ToString("N2")</td></tr>
+                <tr><td>الشحن البحري</td><td class="amount">@Model.SeaFreight.ToString("N2")</td></tr>
+                <tr><td>التخليص الجمركي</td><td class="amount">@Model.CustomsAndTaxes.ToString("N2")</td></tr>
 
-            <!-- ملخص الحساب -->
-            <div class="summary-box">
-                <div class="summary-row total">
-                    <span>الإجمالي الكلي</span>
-                    <span style="font-family: monospace;">$@Model.TotalAmount.ToString("N2")</span>
-                </div>
-                <div class="summary-row paid">
-                    <span>المبلغ المدفوع مقدماً</span>
-                    <span style="font-family: monospace;">-$@Model.AmountPaid.ToString("N2")</span>
-                </div>
-                <div class="summary-row remain">
-                    <span>المتبقي عند الاستلام</span>
-                    <span style="font-family: monospace;">$@Model.RemainingAmount.ToString("N2")</span>
-                </div>
-            </div>
+                @if (Model.StorageFees > 0)
+                {
+                    <tr><td style="color:#ef4444;">غرامات تأخير / أرضيات</td><td class="amount" style="color:#ef4444;">@Model.StorageFees.ToString("N2")</td></tr>
+                }
+                <tr><td>الرسوم الإدارية</td><td class="amount">@Model.CompanyCommission.ToString("N2")</td></tr>
+            </tbody>
+        </table>
 
-            <!-- التذييل والحساب البنكي -->
-            <div class="invoice-footer">
-                <div class="bank-info">
-                    <div style="font-weight: 900; margin-bottom: 5px; color: var(--primary-gold);">تفاصيل الحساب البنكي للتحويل:</div>
-                    <div>اسم البنك: بنك مسقط (Bank Muscat)</div>
-                    <div>اسم الحساب: شركة الأرجان للشحن</div>
-                    <div style="font-family: monospace; font-size: 1.1rem; margin-top: 5px; font-weight: 900;">0000 0000 0000 0000</div>
-                </div>
-                <p>شكراً لتعاملكم مع شركة الأرجان للشحن. نتمنى لكم يوماً سعيداً.</p>
+        <div class="totals">
+            <div class="final"><span>الإجمالي الكلي</span><span>$@Model.TotalAmount.ToString("N2")</span></div>
+            <div style="color:#16a34a;"><span>المدفوع مقدماً</span><span>-$@Model.AmountPaid.ToString("N2")</span></div>
+            <div class="remain"><span>المتبقي عند الاستلام</span><span>$@Model.RemainingAmount.ToString("N2")</span></div>
+        </div>
+
+        <div class="footer">
+            <div class="bank-info">
+                <div style="color:#b45309; font-weight:900;">تفاصيل الحساب البنكي:</div>
+                <div>بنك مسقط (Bank Muscat)</div>
+                <div>الاسم: Alargan Shipping</div>
+                <div style="font-family:monospace; font-size:1.2rem; font-weight:900;">0000 0000 0000 0000</div>
             </div>
         </div>
     </div>
+
+    <script>
+        function downloadPDF() {
+            var element = document.getElementById('invoiceContent');
+            var opt = {
+                margin:       10,
+                filename:     'Invoice_@Model.InvoiceNumber .pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function downloadExcel() {
+            var table = document.getElementById("exportTable");
+            var wb = XLSX.utils.table_to_book(table, {sheet: "الفاتورة"});
+
+            // إضافة المجاميع يدوياً لملف الإكسل
+            var ws = wb.Sheets["الفاتورة"];
+            XLSX.utils.sheet_add_aoa(ws, [
+                ["", ""],
+                ["الإجمالي الكلي", "@Model.TotalAmount.ToString("N2")"],
+                ["المدفوع مقدماً", "-@Model.AmountPaid.ToString("N2")"],
+                ["المتبقي", "@Model.RemainingAmount.ToString("N2")"]
+            ], {origin: -1});
+
+            XLSX.writeFile(wb, 'Invoice_@Model.InvoiceNumber .xlsx');
+        }
+    </script>
 </body>
 </html>

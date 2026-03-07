@@ -4,6 +4,7 @@
 }
 
 <style>
+    /* التنسيقات كما هي... */
     .form-page-header {
         display: flex;
         justify-content: space-between;
@@ -90,7 +91,6 @@
             box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
 
-    /* Select2 Styling */
     .select2-container--default .select2-selection--single {
         background-color: #f8fafc;
         border: 2px solid #e2e8f0;
@@ -101,7 +101,7 @@
         transition: 0.3s;
     }
 
-        .select2-container--default .select2-selection--single:focus, .select2-container--focus .select2-selection--single {
+        .select2-container--default .select2-selection--single:focus {
             border-color: var(--primary-gold);
             background-color: #ffffff;
             box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
@@ -124,7 +124,6 @@
         right: auto;
     }
 
-    /* File Upload Styling */
     .file-upload-wrapper {
         border: 2px dashed #cbd5e1;
         border-radius: 1rem;
@@ -136,7 +135,7 @@
         position: relative;
     }
 
-        .file-upload-wrapper:hover, .file-upload-wrapper.dragover {
+        .file-upload-wrapper:hover {
             border-color: var(--primary-gold);
             background: rgba(184, 147, 90, 0.05);
         }
@@ -221,7 +220,7 @@
 
 <div>
     <div class="form-page-header">
-        <h2 class="form-page-title"><i class="fa-solid fa-file-arrow-up" style="color: var(--primary-gold); margin-inline-end: 10px;"></i> @Localizer["أرشفة ورفع ملف"]</h2>
+        <h2 class="form-page-title"><i class="fa-solid fa-file-arrow-up" style="color: var(--primary-gold); margin-inline-end: 10px;"></i> @Localizer["أرشفة ورفع ملف / إيصال"]</h2>
         <a href="javascript:history.back()" class="btn-back">@Localizer["رجوع"]</a>
     </div>
 
@@ -239,13 +238,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="DocumentType" class="form-label">@Localizer["نوع المستند"]</label>
+                    <label asp-for="DocumentType" class="form-label">@Localizer["نوع المستند / الإيصال"]</label>
                     <select asp-for="DocumentType" class="form-control" required>
+                        <!-- التعديل هنا: إضافة الأنواع المطلوبة -->
+                        <option value="AuctionInvoice">@Localizer["فاتورة المزاد (Auction Invoice)"]</option>
+                        <option value="BankTransfer">@Localizer["صورة تحويل بنكي / إيصال دفع"]</option>
                         <option value="CarImage">@Localizer["صورة للسيارة (Car Image)"]</option>
                         <option value="Title">@Localizer["ملكية السيارة (Title)"]</option>
                         <option value="BillOfLading">@Localizer["بوليصة شحن (B/L)"]</option>
                         <option value="CustomerID">@Localizer["صورة هوية / جواز سفر العميل"]</option>
                         <option value="CustomsDoc">@Localizer["مستند جمركي / ضريبي"]</option>
+                        <option value="Other">@Localizer["أخرى (Other)"]</option>
                     </select>
                 </div>
 
@@ -280,7 +283,6 @@
             var dir = $('html').attr('dir');
             $('.select2-search').select2({ dir: dir, width: '100%' });
 
-            // File input display name logic
             $('#fileInput').on('change', function() {
                 var fileName = $(this).val().split('\\').pop();
                 if(fileName) {
@@ -293,7 +295,6 @@
                 }
             });
 
-            // AJAX Submission with FormData for File Uploads
             $('#documentForm').on('submit', function(e) {
                 e.preventDefault();
                 var form = this;
@@ -306,27 +307,14 @@
                 var formData = new FormData(form);
 
                 $.ajax({
-                    url: $(form).attr('action'),
-                    type: $(form).attr('method'),
-                    data: formData,
-                    processData: false, // أساسي لرفع الملفات عبر AJAX
-                    contentType: false, // أساسي لرفع الملفات عبر AJAX
+                    url: $(form).attr('action'), type: $(form).attr('method'), data: formData,
+                    processData: false, contentType: false,
                     success: function () {
                         Swal.fire({
-                            title: '@Localizer["تم الرفع بنجاح!"]',
-                            icon: 'success',
-                            confirmButtonColor: 'var(--primary-gold)',
-                            confirmButtonText: '@Localizer["موافق"]'
+                            title: '@Localizer["تم الرفع بنجاح!"]', icon: 'success', confirmButtonColor: 'var(--primary-gold)', confirmButtonText: '@Localizer["موافق"]'
                         }).then((result) => {
-                            if ($('#CarId').val()) {
-                                window.location.href = '@Url.Action("Details", "Cars")/' + $('#CarId').val();
-                            } else {
-                                form.reset();
-                                $('#fileNameDisplay').hide();
-                                $('.upload-text, .upload-hint').show();
-                                $('.select2-search').val(null).trigger('change');
-                                btn.html(originalText).prop('disabled', false);
-                            }
+                            if ($('#CarId').val()) { window.location.href = '@Url.Action("Details", "Cars")/' + $('#CarId').val(); }
+                            else { form.reset(); $('#fileNameDisplay').hide(); $('.upload-text, .upload-hint').show(); $('.select2-search').val(null).trigger('change'); btn.html(originalText).prop('disabled', false); }
                         });
                     },
                     error: function () {

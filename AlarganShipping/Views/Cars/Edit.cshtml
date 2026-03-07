@@ -4,57 +4,109 @@
 }
 
 <style>
-    .form-page-header {
+    /* --- الهيدر الفاخر --- */
+    .details-header {
+        background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--primary-navy) 100%);
+        color: white;
+        padding: 3rem;
+        border-radius: 1.5rem;
+        margin-bottom: 2.5rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(26, 37, 47, 0.15);
+        position: relative;
+        overflow: hidden;
     }
 
-    .form-page-title {
-        font-size: 1.5rem;
-        font-weight: 900;
-        color: var(--primary-navy);
-        margin: 0;
+        .details-header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            inset-inline-end: -50px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(184, 147, 90, 0.2) 0%, transparent 70%);
+        }
+
+    .header-content {
+        position: relative;
+        z-index: 2;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 1.5rem;
     }
 
-    .btn-back {
-        background-color: white;
-        border: 1px solid #e2e8f0;
-        color: var(--text-muted);
-        padding: 0.6rem 1.2rem;
+    .car-main-img-preview {
+        width: 90px;
+        height: 90px;
+        border-radius: 1.2rem;
+        object-fit: cover;
+        border: 3px solid var(--primary-gold);
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: var(--primary-navy);
+    }
+
+    .header-title-large {
+        font-size: 2.2rem;
+        font-weight: 900;
+        margin: 0 0 0.5rem 0;
+        color: white;
+    }
+
+    .header-subtitle {
+        background-color: rgba(255,255,255,0.1);
+        padding: 0.3rem 1rem;
+        border-radius: 0.5rem;
+        font-family: monospace;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        border: 1px solid rgba(255,255,255,0.2);
+        display: inline-block;
+        color: var(--primary-gold);
+    }
+
+    .btn-action-light {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        padding: 0.8rem 1.5rem;
         border-radius: 0.75rem;
-        font-weight: 700;
+        font-weight: 800;
         text-decoration: none;
         transition: 0.3s;
-        flex-shrink: 0;
+        border: 1px solid rgba(255,255,255,0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        position: relative;
+        z-index: 2;
     }
 
-        .btn-back:hover {
-            background-color: #f8fafc;
+        .btn-action-light:hover {
+            background: white;
             color: var(--primary-navy);
         }
 
+    /* --- بطاقة النموذج (Form Card) --- */
     .premium-form-card {
         background-color: #ffffff;
         border-radius: 1.5rem;
         box-shadow: 0 10px 30px rgba(44, 62, 80, 0.03);
         border: 1px solid #f1f5f9;
-        padding: 3rem;
-        position: relative;
-        overflow: hidden;
+        padding: 2.5rem;
     }
 
-    /* الأقسام الداخلية */
     .section-divider {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 900;
         color: var(--primary-navy);
         margin: 2rem 0 1.5rem 0;
-        padding-bottom: 0.5rem;
+        padding-bottom: 0.8rem;
         border-bottom: 2px solid #f1f5f9;
         display: flex;
         align-items: center;
@@ -96,65 +148,23 @@
     }
 
     .form-control {
-        padding: 0.85rem 1rem;
+        padding: 0.9rem 1.2rem;
         border: 2px solid #e2e8f0;
         border-radius: 0.75rem;
         font-family: inherit;
         font-size: 0.95rem;
-        color: var(--primary-navy);
         font-weight: 700;
-        background-color: white;
+        color: var(--primary-navy);
         transition: 0.3s;
         outline: none;
+        background: #f8fafc;
     }
 
         .form-control:focus {
             border-color: var(--primary-gold);
+            background: white;
             box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
-
-    .input-vin {
-        border-color: #fca5a5;
-        background-color: #fef2f2;
-    }
-
-        .input-vin:focus {
-            border-color: #ef4444;
-            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
-        }
-
-    .select2-container--default .select2-selection--single {
-        background-color: white;
-        border: 2px solid #e2e8f0;
-        border-radius: 0.75rem;
-        height: 45px;
-        display: flex;
-        align-items: center;
-        transition: 0.3s;
-    }
-
-        .select2-container--default .select2-selection--single:focus, .select2-container--focus .select2-selection--single {
-            border-color: var(--primary-gold);
-            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: var(--primary-navy);
-            font-weight: 700;
-            padding-left: 1rem;
-            padding-right: 1rem;
-            font-size: 0.95rem;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 43px;
-            right: 10px;
-        }
-
-    html[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
-        left: 10px;
-        right: auto;
-    }
 
     .input-group-dynamic {
         display: flex;
@@ -164,15 +174,14 @@
 
         .input-group-dynamic .select2-container {
             flex: 1;
-            width: auto !important;
         }
 
     .btn-quick-add {
         background: rgba(184, 147, 90, 0.1);
         color: var(--primary-gold);
         border: 1px solid rgba(184, 147, 90, 0.2);
-        width: 45px;
-        height: 45px;
+        width: 46px;
+        height: 46px;
         border-radius: 0.75rem;
         display: flex;
         align-items: center;
@@ -185,16 +194,62 @@
         .btn-quick-add:hover {
             background: var(--primary-gold);
             color: white;
-            box-shadow: 0 4px 10px rgba(184, 147, 90, 0.2);
         }
 
+    /* تعديل الصورة المتقدم */
+    .image-edit-box {
+        background: #f8fafc;
+        border: 2px dashed #cbd5e1;
+        padding: 1.5rem;
+        border-radius: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        grid-column: 1 / -1;
+        gap: 2rem;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+
+        .image-edit-box:hover {
+            border-color: var(--primary-gold);
+            background: rgba(184, 147, 90, 0.05);
+        }
+
+        .image-edit-box input[type="file"] {
+            display: none;
+        }
+
+    .img-upload-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .img-upload-info i {
+            font-size: 2.5rem;
+            color: var(--primary-gold);
+        }
+
+    .img-upload-text h4 {
+        margin: 0 0 5px 0;
+        color: var(--primary-navy);
+        font-weight: 900;
+    }
+
+    .img-upload-text p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
     .form-actions {
-        margin-top: 3rem;
-        padding-top: 1.5rem;
+        margin-top: 4rem;
+        padding-top: 2rem;
         border-top: 1px solid #f1f5f9;
         display: flex;
-        justify-content: flex-start;
-        gap: 1rem;
+        justify-content: space-between;
         align-items: center;
     }
 
@@ -202,137 +257,111 @@
         background: var(--primary-navy);
         color: white;
         border: none;
-        padding: 0.85rem 2.5rem;
-        border-radius: 0.75rem;
-        font-weight: 800;
-        font-size: 1rem;
+        padding: 1.2rem 3rem;
+        border-radius: 1rem;
+        font-weight: 900;
+        font-size: 1.1rem;
         cursor: pointer;
         transition: 0.3s;
-        font-family: inherit;
+        box-shadow: 0 10px 20px rgba(26, 37, 47, 0.2);
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        box-shadow: 0 4px 15px rgba(26, 37, 47, 0.2);
-        justify-content: center;
     }
 
         .btn-submit:hover {
-            background: var(--secondary-navy);
-            transform: translateY(-2px);
+            background: var(--primary-gold);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(184, 147, 90, 0.3);
         }
-
-    .btn-cancel {
-        background: transparent;
-        color: var(--text-dark);
-        border: none;
-        font-weight: 800;
-        cursor: pointer;
-        text-decoration: none;
-        padding: 0.85rem 1rem;
-        display: inline-flex;
-        justify-content: center;
-    }
 
     .btn-delete {
         background: transparent;
         color: #ef4444;
         border: 1px solid #ef4444;
-        padding: 0.85rem 1.5rem;
-        border-radius: 0.75rem;
-        font-weight: 800;
+        padding: 1rem 2rem;
+        border-radius: 1rem;
+        font-weight: 900;
         cursor: pointer;
         transition: 0.3s;
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        margin-inline-end: auto;
-        text-decoration: none;
-        justify-content: center;
     }
 
         .btn-delete:hover {
             background: #ef4444;
             color: white;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.2);
         }
 
-    .image-upload-wrapper {
-        grid-column: 1 / -1;
+    /* Select2 Customization */
+    .select2-container--default .select2-selection--single {
+        background-color: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        height: 46px;
         display: flex;
         align-items: center;
-        gap: 1.5rem;
-        background: #f8fafc;
-        padding: 1.5rem;
-        border-radius: 1rem;
-        border: 1px dashed #cbd5e1;
+        transition: 0.3s;
+    }
+
+        .select2-container--default .select2-selection--single:focus, .select2-container--focus .select2-selection--single {
+            border-color: var(--primary-gold);
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--primary-navy);
+            font-weight: 700;
+            padding: 0 1rem;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 44px;
+            right: 10px;
+        }
+
+    html[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
+        left: 10px;
+        right: auto;
     }
 
     @@media (max-width: 768px) {
-        .form-page-header {
+        .details-header {
             flex-direction: column;
-            align-items: stretch;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
             text-align: center;
+            padding: 2rem 1.5rem;
+            gap: 1.5rem;
         }
 
-        .form-page-title {
-            font-size: 1.2rem;
-            justify-content: center;
+        .header-content {
+            flex-direction: column;
         }
 
-        .btn-back {
+        .btn-action-light {
             width: 100%;
-            text-align: center;
             justify-content: center;
-            display: flex;
         }
 
         .premium-form-card {
             padding: 1.5rem;
-            border-radius: 1.2rem;
         }
 
-        .image-upload-wrapper {
+        .image-edit-box {
             flex-direction: column;
             text-align: center;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
             gap: 1rem;
         }
 
-            .image-upload-wrapper img {
-                width: 80px !important;
-                height: 80px !important;
-            }
-
-        .form-actions {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 0.5rem;
-            margin-top: 2rem;
+        .btn-submit, .btn-delete {
+            width: 100%;
             justify-content: center;
-        }
-
-        .btn-submit {
-            order: 1;
-            width: 100%;
-            margin: 0;
-        }
-
-        .btn-cancel {
-            order: 2;
-            width: 100%;
-            margin: 0;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            margin-top: 0.5rem;
-        }
-
-        .btn-delete {
-            order: 3;
-            width: 100%;
-            margin: 0;
-            margin-top: 1rem;
         }
     }
 </style>
@@ -340,12 +369,29 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
 
-<div>
-    <div class="form-page-header">
-        <h2 class="form-page-title">@Localizer["تعديل بيانات المركبة"] <i class="fa-solid fa-pen-to-square" style="color: var(--primary-gold); background: rgba(184, 147, 90, 0.1); padding: 8px; border-radius: 8px; font-size:1.1rem;"></i></h2>
-        <a href="@Url.Action("Index", "Cars")" class="btn-back"><i class="fa-solid fa-arrow-right-long"></i> @Localizer["العودة للقائمة"]</a>
+<div class="cars-edit-page">
+    <!-- الهيدر الفاخر -->
+    <div class="details-header">
+        <div class="header-content">
+            @if (!string.IsNullOrEmpty(Model.MainImageUrl))
+            {
+                <img src="@Model.MainImageUrl" class="car-main-img-preview" alt="Car Image" />
+            }
+            else
+            {
+                <div class="car-main-img-preview"><i class="fa-solid fa-car"></i></div>
+            }
+            <div>
+                <h1 class="header-title-large">@Localizer["تعديل:"] @Model.Make @Model.Model</h1>
+                <div class="header-subtitle">VIN: @Model.VIN</div>
+            </div>
+        </div>
+        <a href="@Url.Action("Index", "Cars")" class="btn-action-light">
+            <i class="fa-solid fa-list-ul"></i> @Localizer["قائمة السيارات"]
+        </a>
     </div>
 
+    <!-- بطاقة النموذج -->
     <div class="premium-form-card">
         <form asp-action="Edit" method="post" id="carEditForm" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
@@ -353,29 +399,25 @@
             <input type="hidden" asp-for="MainImageUrl" />
             <input type="hidden" asp-for="AddDate" />
 
-            <div class="form-grid-4">
-                <div class="form-group image-upload-wrapper">
-                    @if (!string.IsNullOrEmpty(Model.MainImageUrl))
-                    {
-                        <img src="@Model.MainImageUrl" alt="Car" style="width: 100px; height: 100px; border-radius: 1rem; object-fit: cover; border: 2px solid var(--primary-gold);" />
-                    }
-                    else
-                    {
-                        <div style="width: 100px; height: 100px; border-radius: 1rem; background: #e2e8f0; display:flex; align-items:center; justify-content:center; font-size: 2rem; color: #94a3b8;"><i class="fa-solid fa-car"></i></div>
-                    }
-                    <div style="flex: 1; width: 100%;">
-                        <label class="form-label" style="color: var(--primary-navy);">@Localizer["تغيير صورة السيارة الرئيسية (اختياري)"]</label>
-                        <input type="file" name="mainImage" class="form-control" accept="image/*" style="padding: 0.5rem; background: white;" />
+            <!-- صندوق تغيير الصورة -->
+            <div class="image-edit-box" onclick="document.getElementById('mainImageUpload').click()">
+                <div class="img-upload-info">
+                    <i class="fa-solid fa-image"></i>
+                    <div class="img-upload-text">
+                        <h4>@Localizer["تغيير صورة السيارة الرئيسية"]</h4>
+                        <p id="mainImgNameText">@Localizer["اضغط هنا لاختيار صورة جديدة (سيتم استبدال الصورة الحالية)"]</p>
                     </div>
                 </div>
+                <div style="background: white; padding: 0.5rem 1rem; border-radius: 0.8rem; border: 1px solid #e2e8f0; font-weight: 800; color: var(--primary-navy);">@Localizer["استعراض..."]</div>
+                <input type="file" id="mainImageUpload" name="mainImage" accept="image/*" onchange="showEditFileName(this)" />
             </div>
 
-            <!-- القسم الأساسي -->
-            <div class="section-divider"><i class="fa-solid fa-circle-info" style="color:var(--primary-gold);"></i> البيانات الأساسية</div>
+            <!-- 1. البيانات الأساسية -->
+            <div class="section-divider"><i class="fa-solid fa-car" style="color:var(--primary-gold);"></i> @Localizer["البيانات الأساسية"]</div>
             <div class="form-grid-4">
                 <div class="form-group">
-                    <label asp-for="VIN" class="form-label">@Localizer["رقم الشاصي"] *</label>
-                    <input asp-for="VIN" class="form-control input-vin" dir="ltr" required />
+                    <label asp-for="VIN" class="form-label">@Localizer["رقم الشاصي (VIN)"] *</label>
+                    <input asp-for="VIN" class="form-control" dir="ltr" style="font-family: monospace; font-size: 1.1rem; color: var(--primary-gold);" required />
                 </div>
                 <div class="form-group">
                     <label asp-for="Year" class="form-label">@Localizer["سنة الصنع"] *</label>
@@ -387,9 +429,10 @@
                         <select asp-for="Make" class="form-control select2-search" required>
                             <option value="">@Localizer["اختر الماركة..."]</option>
                             <option value="Toyota">Toyota</option>
-                            <option value="BMW">BMW</option>
                             <option value="Lexus">Lexus</option>
+                            <option value="Chevrolet">Chevrolet</option>
                             <option value="Mercedes">Mercedes</option>
+                            <option value="BMW">BMW</option>
                             <option value="Ford">Ford</option>
                             @if (!string.IsNullOrEmpty(Model.Make) && Model.Make != "Toyota" && Model.Make != "BMW" && Model.Make != "Lexus" && Model.Make != "Mercedes" && Model.Make != "Ford")
                             {
@@ -421,15 +464,19 @@
                     <label asp-for="Color" class="form-label">@Localizer["اللون"] *</label>
                     <input asp-for="Color" class="form-control" required />
                 </div>
+                <div class="form-group">
+                    <label asp-for="LotNumber" class="form-label">@Localizer["رقم اللوت (Lot)"]</label>
+                    <input asp-for="LotNumber" class="form-control" dir="ltr" />
+                </div>
             </div>
 
-            <!-- قسم الأسعار والمشتريات -->
-            <div class="section-divider"><i class="fa-solid fa-money-bill-wave" style="color:var(--primary-gold);"></i> بيانات الشراء والتسعير</div>
+            <!-- 2. الشراء والتسعير -->
+            <div class="section-divider"><i class="fa-solid fa-money-bill-wave" style="color:var(--primary-gold);"></i> @Localizer["بيانات الشراء والتسعير"]</div>
             <div class="form-grid-4">
                 <div class="form-group">
                     <label asp-for="CustomerId" class="form-label">@Localizer["العميل (مطلوب)"] *</label>
                     <div class="input-group-dynamic">
-                        <select asp-for="CustomerId" class="form-control select2-search input-customer" asp-items="ViewBag.CustomerId" required></select>
+                        <select asp-for="CustomerId" class="form-control select2-search" asp-items="ViewBag.CustomerId" required></select>
                         <button type="button" class="btn-quick-add" onclick="quickAddCustomer()"><i class="fa-solid fa-user-plus"></i></button>
                     </div>
                 </div>
@@ -442,16 +489,16 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="PurchasePrice" class="form-label" style="color: #ef4444;">@Localizer["سعر الشراء (التكلفة الفعلية) $"] *</label>
-                    <input asp-for="PurchasePrice" class="form-control" type="number" step="0.01" style="font-family:monospace; font-size: 1.1rem;" required />
+                    <input asp-for="PurchasePrice" class="form-control" type="number" step="0.01" style="font-family:monospace; font-size: 1.1rem; border-color: #fca5a5;" required />
                 </div>
                 <div class="form-group">
                     <label asp-for="SellingPrice" class="form-label" style="color: #16a34a;">@Localizer["سعر البيع (شامل الربح) $"]</label>
-                    <input asp-for="SellingPrice" class="form-control" type="number" step="0.01" style="font-family:monospace; font-size: 1.1rem;" />
+                    <input asp-for="SellingPrice" class="form-control" type="number" step="0.01" style="font-family:monospace; font-size: 1.1rem; border-color: #86efac;" />
                 </div>
             </div>
 
-            <!-- قسم التتبع والضرائب -->
-            <div class="section-divider"><i class="fa-solid fa-map-location-dot" style="color:var(--primary-gold);"></i> التتبع والضرائب</div>
+            <!-- 3. التتبع والضرائب -->
+            <div class="section-divider"><i class="fa-solid fa-map-location-dot" style="color:var(--primary-gold);"></i> @Localizer["التتبع والضرائب"]</div>
             <div class="form-grid-4">
                 <div class="form-group">
                     <label asp-for="StatusId" class="form-label">@Localizer["حالة المركبة (7 مراحل)"] *</label>
@@ -472,7 +519,7 @@
                 <div class="form-group">
                     <label asp-for="TaxType" class="form-label">@Localizer["نوع الضريبة"]</label>
                     <div class="input-group-dynamic">
-                        <select asp-for="TaxType" class="form-control select2-search" asp-items="ViewBag.TaxTypes">
+                        <select asp-for="TaxType" class="form-control select2-search" id="TaxTypeSelect" asp-items="ViewBag.TaxTypes">
                             <option value="">@Localizer["اختر النوع..."]</option>
                             <option value="شامل الضريبة">@Localizer["شامل الضريبة"]</option>
                             @if (!string.IsNullOrEmpty(Model.TaxType) && !(ViewBag.TaxTypes as SelectList).Any(t => t.Text == Model.TaxType) && Model.TaxType != "شامل الضريبة")
@@ -480,12 +527,12 @@
                                 <option value="@Model.TaxType" selected>@Model.TaxType</option>
                             }
                         </select>
-                        <button type="button" class="btn-quick-add" onclick="quickAddOption('TaxType', '@Html.Raw(Localizer["إضافة نوع ضريبة جديد"])')"><i class="fa-solid fa-plus"></i></button>
+                        <button type="button" class="btn-quick-add" onclick="quickAddOption('TaxTypeSelect', '@Html.Raw(Localizer["إضافة نوع ضريبة جديد"])')"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </div>
                 <div class="form-group">
                     <label asp-for="TaxAmount" class="form-label">@Localizer["مبلغ الضريبة / النسبة"]</label>
-                    <input asp-for="TaxAmount" type="number" step="0.01" class="form-control" id="TaxAmountInput" placeholder="0" />
+                    <input asp-for="TaxAmount" type="number" step="0.01" class="form-control" id="TaxAmountInput" />
                 </div>
                 <div class="form-group">
                     <label asp-for="TaxMethod" class="form-label">@Localizer["طريقة الضريبة"]</label>
@@ -502,12 +549,12 @@
                 </div>
             </div>
 
-            <!-- قسم التفاصيل الفنية -->
-            <div class="section-divider"><i class="fa-solid fa-gears" style="color:var(--primary-gold);"></i> تفاصيل إضافية</div>
+            <!-- 4. قسم التفاصيل الفنية -->
+            <div class="section-divider"><i class="fa-solid fa-gears" style="color:var(--primary-gold);"></i> @Localizer["تفاصيل إضافية"]</div>
             <div class="form-grid-4">
                 <div class="form-group">
                     <label asp-for="InternalCode" class="form-label">@Localizer["الكود الداخلي"]</label>
-                    <input asp-for="InternalCode" class="form-control" dir="ltr" placeholder="AUTO-2024-..." />
+                    <input asp-for="InternalCode" class="form-control" dir="ltr" />
                 </div>
                 <div class="form-group">
                     <label asp-for="PlateNo" class="form-label">@Localizer["رقم اللوحة"]</label>
@@ -538,7 +585,6 @@
                 <button type="submit" class="btn-submit" id="btnSubmit">
                     <i class="fa-solid fa-save"></i> @Localizer["تحديث البيانات"]
                 </button>
-                <a href="@Url.Action("Index", "Cars")" class="btn-cancel">@Localizer["إلغاء"]</a>
             </div>
         </form>
     </div>
@@ -550,6 +596,14 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
 
     <script>
+        function showEditFileName(input) {
+            var fileName = input.value.split('\\').pop();
+            if(fileName) {
+                $('#mainImgNameText').text("✔ " + fileName).css('color', '#16a34a');
+            }
+        }
+
+        // إضافة سريعة للخيار
         function quickAddOption(selectId, titleText) {
             Swal.fire({
                 title: titleText,
@@ -567,33 +621,26 @@
                 if (result.isConfirmed) {
                     var newOption = new Option(result.value, result.value, true, true);
                     $('#' + selectId).append(newOption).trigger('change');
-                    Swal.fire({ title: '@Html.Raw(Localizer["تمت الإضافة!"])', icon: 'success', timer: 1500, showConfirmButton: false });
                 }
             });
         }
 
+        // إضافة عميل سريع
         function quickAddCustomer() {
             Swal.fire({
                 title: '@Html.Raw(Localizer["إضافة عميل سريع"])',
                 input: 'text',
-                inputPlaceholder: '@Html.Raw(Localizer["أدخل اسم العميل..."])',
+                inputPlaceholder: '@Html.Raw(Localizer["اسم العميل أو الشركة..."])',
                 showCancelButton: true,
                 confirmButtonText: '@Html.Raw(Localizer["إضافة"])',
                 cancelButtonText: '@Html.Raw(Localizer["إلغاء"])',
                 confirmButtonColor: 'var(--primary-gold)',
-                cancelButtonColor: 'var(--primary-navy)',
-                inputValidator: (value) => {
-                    if (!value) return '@Html.Raw(Localizer["لا يمكن ترك الحقل فارغاً!"])';
-                }
+                cancelButtonColor: 'var(--primary-navy)'
             }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post('@Url.Action("CreateQuick", "Customers")', {
-                        name: result.value,
-                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                    }, function(res) {
+                if (result.isConfirmed && result.value) {
+                    $.post('@Url.Action("CreateQuick", "Customers")', { name: result.value, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
                         if (res.success) {
-                            var newOption = new Option(res.name, res.id, true, true);
-                            $('#CustomerId').append(newOption).trigger('change');
+                            $('#CustomerId').append(new Option(res.name, res.id, true, true)).trigger('change');
                             Swal.fire({ title: '@Html.Raw(Localizer["تمت الإضافة!"])', icon: 'success', timer: 1500, showConfirmButton: false });
                         }
                     });
@@ -601,28 +648,22 @@
             });
         }
 
+        // إضافة مزاد سريع
         function quickAddAuction() {
             Swal.fire({
-                title: '@Html.Raw(Localizer["إضافة معرض سريع"])',
+                title: '@Html.Raw(Localizer["إضافة معرض جديد"])',
                 input: 'text',
-                inputPlaceholder: '@Html.Raw(Localizer["أدخل اسم المعرض..."])',
+                inputPlaceholder: '@Html.Raw(Localizer["اسم المعرض أو المزاد..."])',
                 showCancelButton: true,
                 confirmButtonText: '@Html.Raw(Localizer["إضافة"])',
                 cancelButtonText: '@Html.Raw(Localizer["إلغاء"])',
                 confirmButtonColor: 'var(--primary-gold)',
-                cancelButtonColor: 'var(--primary-navy)',
-                inputValidator: (value) => {
-                    if (!value) return '@Html.Raw(Localizer["لا يمكن ترك الحقل فارغاً!"])';
-                }
+                cancelButtonColor: 'var(--primary-navy)'
             }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post('@Url.Action("CreateQuick", "Auctions")', {
-                        name: result.value,
-                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                    }, function(res) {
+                if (result.isConfirmed && result.value) {
+                    $.post('@Url.Action("CreateQuick", "Auctions")', { name: result.value, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
                         if (res.success) {
-                            var newOption = new Option(res.name, res.id, true, true);
-                            $('#AuctionId').append(newOption).trigger('change');
+                            $('#AuctionId').append(new Option(res.name, res.id, true, true)).trigger('change');
                             Swal.fire({ title: '@Html.Raw(Localizer["تمت الإضافة!"])', icon: 'success', timer: 1500, showConfirmButton: false });
                         }
                     });
@@ -645,25 +686,13 @@
                     $.ajax({
                         url: '@Url.Action("Delete", "Cars")/' + id,
                         type: 'POST',
-                        data: {
-                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                        },
+                        data: { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
                         success: function (response) {
                             if (response.success) {
-                                Swal.fire({
-                                    title: '@Html.Raw(Localizer["تم الحذف!"])',
-                                    text: '@Html.Raw(Localizer["تم حذف بيانات السيارة بنجاح."])',
-                                    icon: 'success',
-                                    confirmButtonColor: 'var(--primary-gold)'
-                                }).then(() => {
-                                    window.location.href = '@Url.Action("Index", "Cars")';
-                                });
+                                window.location.href = '@Url.Action("Index", "Cars")';
                             } else {
                                 Swal.fire('@Html.Raw(Localizer["خطأ!"])', response.message || '@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])', 'error');
                             }
-                        },
-                        error: function () {
-                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["لا يمكن الاتصال بالخادم."])', 'error');
                         }
                     });
                 }
@@ -674,17 +703,16 @@
             var dir = $('html').attr('dir');
             $('.select2-search').select2({ dir: dir, width: '100%' });
 
-            // كود تصفير الضريبة وإلغاء التعديل عند اختيار "شامل الضريبة"
             function handleTaxType() {
-                if ($('#TaxType').val() === 'شامل الضريبة') {
+                if ($('#TaxTypeSelect').val() === 'شامل الضريبة') {
                     $('#TaxAmountInput').val('0').prop('readonly', true).css({ 'background-color': '#e2e8f0', 'cursor': 'not-allowed' });
                 } else {
-                    $('#TaxAmountInput').prop('readonly', false).css({ 'background-color': '#ffffff', 'cursor': 'text' });
+                    $('#TaxAmountInput').prop('readonly', false).css({ 'background-color': '#f8fafc', 'cursor': 'text' });
                 }
             }
 
-            $('#TaxType').on('change', handleTaxType);
-            handleTaxType(); // تطبيق عند التحميل
+            $('#TaxTypeSelect').on('change', handleTaxType);
+            handleTaxType();
 
             $('#carEditForm').on('submit', function(e) {
                 e.preventDefault();
@@ -703,18 +731,13 @@
                     success: function (response) {
                         if (response.success) {
                             Swal.fire({
-                                title: '@Html.Raw(Localizer["تم التحديث بنجاح!"])', icon: 'success', confirmButtonColor: 'var(--primary-gold)',
-                                confirmButtonText: '@Html.Raw(Localizer["العودة للقائمة"])'
+                                title: '@Html.Raw(Localizer["تم التحديث بنجاح!"])', icon: 'success', confirmButtonColor: 'var(--primary-gold)'
                             }).then(() => { window.location.href = '@Url.Action("Index", "Cars")'; });
                         } else {
                             var errorMsg = response.errors ? response.errors.join('\n') : '@Html.Raw(Localizer["تأكد من البيانات المدخلة"])';
                             Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: errorMsg, icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
                             btn.html(originalText).prop('disabled', false);
                         }
-                    },
-                    error: function () {
-                        Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: '@Html.Raw(Localizer["حدث خطأ أثناء الحفظ."])', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
-                        btn.html(originalText).prop('disabled', false);
                     }
                 });
             });

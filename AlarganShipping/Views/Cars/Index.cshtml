@@ -368,7 +368,7 @@
         }
 
         .table-enterprise tbody tr:hover {
-            background: #f8fafc;
+            background-color: #f8fafc;
             transition: 0.2s;
         }
 
@@ -433,59 +433,56 @@
            تعديلات الموبايل (الميديا كويري)
            ======================================================== */
     @@media (max-width: 768px) {
-        .page-header-container
+        .page-header-container {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
 
-    {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1.5rem;
-        padding: 1.5rem;
-    }
+        .header-actions {
+            flex-direction: column;
+            width: 100%;
+            gap: 1rem;
+        }
 
-    .header-actions {
-        flex-direction: column;
-        width: 100%;
-        gap: 1rem;
-    }
+        .view-toggle-wrapper {
+            width: 100%;
+            display: flex;
+        }
 
-    .view-toggle-wrapper {
-        width: 100%;
-        display: flex;
-    }
+        .view-toggle-btn {
+            flex: 1;
+        }
 
-    .view-toggle-btn {
-        flex: 1;
-    }
+        .btn-add {
+            width: 100%;
+            justify-content: center;
+        }
 
-    .btn-add {
-        width: 100%;
-        justify-content: center;
-    }
+        .cars-grid-modern {
+            grid-template-columns: 1fr;
+        }
 
-    .cars-grid-modern {
-        grid-template-columns: 1fr;
-    }
+        .fin-summary-grid {
+            grid-template-columns: 1fr;
+        }
 
-    .fin-summary-grid {
-        grid-template-columns: 1fr;
-    }
+        .car-details-area {
+            padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+        }
 
-    .car-details-area {
-        padding: 2.5rem 1.5rem 1.5rem 1.5rem;
-    }
+        .data-card {
+            padding: 1.5rem;
+        }
 
-    .data-card {
-        padding: 1.5rem;
-    }
-
-    .car-action-floating {
-        width: 50px;
-        height: 50px;
-        font-size: 1.2rem;
-        bottom: -20px;
-        inset-inline-end: 1.5rem;
-    }
-
+        .car-action-floating {
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+            bottom: -20px;
+            inset-inline-end: 1.5rem;
+        }
     }
 </style>
 
@@ -510,10 +507,9 @@
         {
             foreach (var car in Model)
             {
-                // عرض الصورة المرفوعة، وإذا لم تكن موجودة نعرض صورة افتراضية
                 string bgImage = !string.IsNullOrEmpty(car.MainImageUrl) ? car.MainImageUrl : "https://images.unsplash.com/photo-1502877338535-349c6722c608?auto=format&fit=crop&w=800&q=80";
 
-                string statusLabel = car.StatusId == 1 ? "تم الشراء" : car.StatusId == 3 ? "الشحن البحري" : car.StatusId >= 4 ? "وصلت عمان" : "في الطريق";
+                string statusLabel = car.StatusId == 1 ? "الشراء" : car.StatusId == 3 ? "النقل الداخلي" : car.StatusId >= 7 ? "الوصول" : "المستودع";
 
                 <div class="car-card-pro">
                     <div class="car-image-area" style="background-image: url('@bgImage');">
@@ -528,17 +524,18 @@
                         <div class="car-owner-pro">@Localizer["العميل:"] <strong>@(car.Customer?.Name?.ToUpper() ?? Localizer["غير محدد"].Value)</strong></div>
 
                         @{
-                            int status = car.StatusId; string fillWidth = status == 1 ? "25%" : status == 2 ? "50%" : status == 3 ? "75%" : status >= 4 ? "100%" : "0%";
+                            int status = car.StatusId;
+                            string fillWidth = status == 1 ? "0%" : status == 2 ? "16.6%" : status == 3 ? "33.3%" : status == 4 ? "50%" : status == 5 ? "66.6%" : status == 6 ? "83.3%" : "100%";
                         }
                         <div class="stepper-container">
                             <div class="stepper-header"><span><i class="fa-solid fa-route"></i> @Localizer["مسار الشحن"]</span><span class="percentage">@fillWidth</span></div>
                             <div class="stepper-track-wrapper">
                                 <div class="stepper-line-bg"></div>
                                 <div class="stepper-line-fill" style="width: @fillWidth; @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "right: 0; left: auto;" : "left: 0; right: auto;")"></div>
-                                <div class="step-node @(status >= 1 ? "active" : "")" title="@Localizer["تم الشراء"]"><i class="fa-solid fa-gavel"></i></div>
-                                <div class="step-node @(status >= 2 ? "active" : "")" title="@Localizer["المستودع"]"><i class="fa-solid fa-warehouse"></i></div>
-                                <div class="step-node @(status >= 3 ? "active" : "")" title="@Localizer["الشحن البحري"]"><i class="fa-solid fa-ship"></i></div>
-                                <div class="step-node @(status >= 4 ? "active" : "")" title="@Localizer["الوصول"]"><i class="fa-solid fa-anchor"></i></div>
+                                <div class="step-node @(status >= 1 ? "active" : "")" title="@Localizer["الشراء"]"><i class="fa-solid fa-gavel"></i></div>
+                                <div class="step-node @(status >= 3 ? "active" : "")" title="@Localizer["النقل الداخلي"]"><i class="fa-solid fa-truck-pickup"></i></div>
+                                <div class="step-node @(status >= 5 ? "active" : "")" title="@Localizer["التحميل"]"><i class="fa-solid fa-box-open"></i></div>
+                                <div class="step-node @(status >= 7 ? "active" : "")" title="@Localizer["الوصول"]"><i class="fa-solid fa-anchor"></i></div>
                             </div>
                         </div>
 
@@ -546,9 +543,9 @@
 
                         <div class="fin-summary-grid">
                             <div class="fin-box"><label>@Localizer["المعرض / المزاد"]</label><div class="value">@(car.Auction?.Name ?? "-")</div></div>
-                            <div class="fin-box"><label>@Localizer["الموقع الحالي"]</label><div class="value">@Localizer["مستودع أمريكا"]</div></div>
+                            <div class="fin-box"><label>@Localizer["الموقع الحالي"]</label><div class="value">@(car.CurrentLocation ?? "-")</div></div>
                             <div class="fin-box"><label>@Localizer["سنة الصنع - اللون"]</label><div class="value">@car.Year - @(string.IsNullOrEmpty(car.Color) ? "-" : car.Color)</div></div>
-                            <div class="fin-box"><label>@Localizer["نوع المركبة"]</label><div class="value">@car.VehicleShape</div></div>
+                            <div class="fin-box"><label>@Localizer["نوع المركبة"]</label><div class="value">@(car.VehicleType ?? "-")</div></div>
                         </div>
                     </div>
                 </div>
@@ -600,17 +597,15 @@
                             <td><i class="fa-solid fa-user-tie" style="color: #cbd5e1; margin-inline-end: 5px;"></i> @(car.Customer?.Name ?? "-")</td>
                             <td>
                                 <div style="font-weight: 800; color: var(--primary-navy);">@(car.Auction?.Name ?? "-")</div>
-                                <div class="badge-sub"><i class="fa-solid fa-location-dot"></i> @Localizer["مستودع أمريكا"]</div>
+                                <div class="badge-sub"><i class="fa-solid fa-location-dot"></i> @(car.CurrentLocation ?? "-")</div>
                             </td>
                             <td>
                                 @{
-                                    string badgeClass = car.StatusId == 1 ? "status-1" : car.StatusId >= 4 ? "status-4" : "";
-                                    string statusText = car.StatusId == 1 ? "تم الشراء" : car.StatusId == 3 ? "الشحن البحري" : car.StatusId >= 4 ? "واصلة الميناء" : "قيد الشحن";
+                                    string statusText = car.StatusId == 1 ? "الشراء" : car.StatusId == 3 ? "النقل الداخلي" : car.StatusId >= 7 ? "الوصول" : "المستودع";
                                 }
                                 <span style="background: rgba(184, 147, 90, 0.1); color: var(--primary-gold); padding: 5px 12px; border-radius: 8px; font-weight: 800; border: 1px solid rgba(184, 147, 90, 0.2);">@Localizer[statusText]</span>
                             </td>
                             <td>
-                                <!-- تمت إضافة زر التعديل هنا بجانب زر التفاصيل -->
                                 <div style="display:flex; gap: 8px;">
                                     <a href="@Url.Action("Edit", "Cars", new { id = car.Id })" class="action-btn" style="color: var(--primary-gold); border-color: var(--primary-gold); background: rgba(184,147,90,0.05);"><i class="fa-solid fa-pen-to-square"></i> @Localizer["تعديل"]</a>
                                     <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="action-btn"><i class="fa-regular fa-eye"></i> @Localizer["التفاصيل"]</a>

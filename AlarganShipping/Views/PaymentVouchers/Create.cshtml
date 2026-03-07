@@ -1,0 +1,281 @@
+﻿@model AlarganShipping.Models.PaymentVoucher
+@{
+    ViewData["Title"] = Localizer["إصدار سند صرف جديد"];
+}
+
+<style>
+    .form-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .form-page-title {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+    }
+
+    .btn-back {
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        color: var(--text-muted);
+        padding: 0.6rem 1.2rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn-back:hover {
+            background-color: #f8fafc;
+            color: var(--primary-navy);
+        }
+
+    .premium-form-card {
+        background-color: #ffffff;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 30px rgba(44, 62, 80, 0.03);
+        border: 1px solid #f1f5f9;
+        padding: 2.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .premium-form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary-navy), var(--primary-gold));
+        }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-weight: 800;
+        color: var(--primary-navy);
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        padding: 0.85rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        transition: 0.3s;
+        outline: none;
+        background: #f8fafc;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-gold);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
+        }
+
+    .money-input {
+        font-family: monospace;
+        font-size: 1.5rem;
+        color: var(--primary-navy);
+        text-align: left;
+        font-weight: 900;
+        border-color: rgba(184, 147, 90, 0.3);
+        background: rgba(184, 147, 90, 0.05);
+    }
+
+        .money-input:focus {
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.2);
+        }
+
+    .select2-container--default .select2-selection--single {
+        background-color: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        transition: 0.3s;
+    }
+
+        .select2-container--default .select2-selection--single:focus {
+            border-color: var(--primary-gold);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            font-weight: 700;
+            color: var(--primary-navy);
+            padding: 0 1rem;
+        }
+
+    .form-actions {
+        margin-top: 2.5rem;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 1.5rem;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-submit {
+        background: var(--primary-navy);
+        color: white;
+        border: none;
+        padding: 1rem 3rem;
+        border-radius: 0.75rem;
+        font-weight: 900;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .btn-submit:hover {
+            background: var(--primary-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(184, 147, 90, 0.3);
+        }
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
+<div class="form-page-header">
+    <h2 class="form-page-title"><i class="fa-solid fa-money-bill-transfer" style="color: var(--primary-gold); margin-inline-end: 8px;"></i> @Localizer["إصدار سند صرف (مشتريات / مصروفات)"]</h2>
+    <a href="@Url.Action("Index", "PaymentVouchers")" class="btn-back"><i class="fa-solid fa-arrow-right-long"></i> @Localizer["سجل الصرف"]</a>
+</div>
+
+<div class="premium-form-card">
+    <form asp-action="Create" method="post" id="voucherForm">
+        @Html.AntiForgeryToken()
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label asp-for="Amount" class="form-label">@Localizer["المبلغ المصروف (USD / OMR)"] *</label>
+                <input asp-for="Amount" type="number" step="0.01" class="form-control money-input" placeholder="0.00" required />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="VoucherDate" class="form-label">@Localizer["تاريخ السند"] *</label>
+                <input asp-for="VoucherDate" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="BeneficiaryName" class="form-label">@Localizer["يصرف للسيد / الجهة المستفيدة"] *</label>
+                <input asp-for="BeneficiaryName" class="form-control" placeholder="@Localizer["مثال: مزاد كوبارت، شركة الشحن، اسم العميل..."]" required />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Category" class="form-label">@Localizer["تصنيف المصروف"]</label>
+                <select asp-for="Category" class="form-control select2">
+                    <option value="مشتريات سيارات (مزاد)">@Localizer["مشتريات سيارات (مزاد)"]</option>
+                    <option value="أجور نقل وشحن">@Localizer["أجور نقل وشحن"]</option>
+                    <option value="تخليص جمركي">@Localizer["تخليص جمركي وضرائب"]</option>
+                    <option value="إرجاع أموال لعميل">@Localizer["إرجاع أموال لعميل (Refund)"]</option>
+                    <option value="مصروفات تشغيلية (مكتب)">@Localizer["مصروفات تشغيلية (مكتب)"]</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="customerLinkGroup" style="display:none;">
+                <label asp-for="CustomerId" class="form-label">@Localizer["العميل المرتبط (لخصم المبلغ من رصيده)"]</label>
+                <select asp-for="CustomerId" class="form-control select2" asp-items="ViewBag.CustomerId">
+                    <option value="">-- @Localizer["بدون ارتباط بعميل"] --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PaymentMethod" class="form-label">@Localizer["طريقة الدفع"]</label>
+                <select asp-for="PaymentMethod" class="form-control select2">
+                    <option value="تحويل بنكي">@Localizer["تحويل بنكي (Bank Transfer)"]</option>
+                    <option value="نقداً (Cash)">@Localizer["نقداً (Cash)"]</option>
+                    <option value="بطاقة ائتمانية">@Localizer["بطاقة ائتمانية"]</option>
+                    <option value="شيك">@Localizer["شيك (Cheque)"]</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ReferenceNumber" class="form-label">@Localizer["رقم المرجع / الحوالة (اختياري)"]</label>
+                <input asp-for="ReferenceNumber" class="form-control" dir="ltr" placeholder="REF-..." />
+            </div>
+
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <label asp-for="Description" class="form-label">@Localizer["وذلك عن (البيان)"] *</label>
+                <textarea asp-for="Description" class="form-control" rows="2" placeholder="@Localizer["تفاصيل سبب الصرف..."]" required></textarea>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit" id="btnSubmit">
+                <i class="fa-solid fa-check"></i> @Localizer["حفظ وإصدار السند"]
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({ dir: $('html').attr('dir'), width: '100%' });
+
+            // إظهار حقل العميل فقط إذا كان نوع المصروف إرجاع
+            $('#Category').on('change', function() {
+                if($(this).val() === 'إرجاع أموال لعميل') {
+                    $('#customerLinkGroup').slideDown();
+                } else {
+                    $('#customerLinkGroup').slideUp();
+                    $('#CustomerId').val('').trigger('change');
+                }
+            });
+
+            $('#voucherForm').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
+
+                var btn = $('#btnSubmit');
+                var originalText = btn.html();
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i>').prop('disabled', true);
+
+                $.ajax({
+                    url: form.attr('action'), type: form.attr('method'), data: form.serialize(),
+                    success: function(res) {
+                        if (res.success) {
+                            Swal.fire({ title: 'تم الإصدار!', icon: 'success', confirmButtonColor: 'var(--primary-gold)' })
+                            .then(() => window.location.href = '@Url.Action("Index", "PaymentVouchers")');
+                        } else {
+                            var errorMsg = res.errors ? res.errors.join('\n') : 'تأكد من البيانات';
+                            Swal.fire('خطأ!', errorMsg, 'error');
+                            btn.html(originalText).prop('disabled', false);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -206,11 +206,15 @@
             text-align: right;
         }
 
-        .pdf-table th {
-            background-color: #f8fafc;
-            color: var(--primary-navy);
-            font-weight: 900;
-        }
+    html[dir="ltr"] .pdf-table td, html[dir="ltr"] .pdf-table th {
+        text-align: left;
+    }
+
+    .pdf-table th {
+        background-color: #f8fafc;
+        color: var(--primary-navy);
+        font-weight: 900;
+    }
 </style>
 
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
@@ -282,7 +286,7 @@
 
             <div class="danger-zone">
                 <h4 style="color: #ef4444; margin-bottom: 0.5rem;">@Localizer["تصفير البيانات"]</h4>
-                <p style="font-size: 0.85rem; color: #991b1b; margin-bottom: 1.5rem; font-weight: 600;">@Localizer["حذف جميع العمليات والبدء من جديد (لا يمكن التراجع)"]</p>
+                <p style="font-size: 0.85rem; color: #991b1b; margin-bottom: 1.5rem; font-weight: 600;">@Localizer["حذف جميع البيانات والبدء من جديد (لا يمكن التراجع)"]</p>
                 <button type="button" class="btn-danger" onclick="confirmWipe()">
                     <i class="fa-solid fa-triangle-exclamation" style="margin-inline-end: 8px;"></i> @Localizer["تصفير النظام بالكامل"]
                 </button>
@@ -291,52 +295,52 @@
     </div>
 </div>
 
-<!-- قالب التقرير للـ PDF (مخفي) -->
-<div id="pdfReportTemplate" dir="rtl" style="font-family: 'Cairo', sans-serif; padding: 20px;">
+<!-- قالب التقرير للـ PDF (مخفي ومترجم بالكامل) -->
+<div id="pdfReportTemplate" dir="@(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "rtl" : "ltr")" style="font-family: 'Cairo', sans-serif; padding: 20px;">
     <div class="pdf-header">
         <h1 style="color: #1a252f; margin: 0; font-size: 28px;">ALARGAN AUTO SHIPPING</h1>
-        <p style="color: #b8935a; font-weight: bold; letter-spacing: 2px; font-size: 18px; margin: 5px 0;">نظام الإدارة اللوجستية - تقرير حالة النظام</p>
-        <p style="font-size: 14px; color: #64748b;">تاريخ التقرير: @DateTime.Now.ToString("yyyy-MM-dd HH:mm")</p>
+        <p style="color: #b8935a; font-weight: bold; letter-spacing: 2px; font-size: 18px; margin: 5px 0;">@Localizer["نظام الإدارة اللوجستية - تقرير حالة النظام"]</p>
+        <p style="font-size: 14px; color: #64748b;">@Localizer["تاريخ التقرير:"] @DateTime.Now.ToString("yyyy-MM-dd HH:mm")</p>
     </div>
 
-    <h3 style="color: #1a252f; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-top: 20px;">أولاً: الإحصائيات الحالية</h3>
+    <h3 style="color: #1a252f; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-top: 20px;">@Localizer["أولاً: الإحصائيات الحالية"]</h3>
     <table class="pdf-table">
         <tr>
-            <th style="width: 30%;">إجمالي العملاء</th>
+            <th style="width: 30%;">@Localizer["إجمالي العملاء"]</th>
             <td style="width: 20%;">@ViewBag.TotalCustomers</td>
-            <th style="width: 30%;">إجمالي السيارات</th>
+            <th style="width: 30%;">@Localizer["إجمالي السيارات"]</th>
             <td style="width: 20%;">@ViewBag.TotalCars</td>
         </tr>
         <tr>
-            <th>عدد الفواتير</th>
+            <th>@Localizer["عدد الفواتير"]</th>
             <td>@ViewBag.TotalInvoices</td>
-            <th>إجمالي الديون (OMR)</th>
+            <th>@Localizer["إجمالي الديون (OMR)"]</th>
             <td style="color: #ef4444; font-weight: bold;">@ViewBag.TotalBalance.ToString("N2")</td>
         </tr>
     </table>
 
-    <h3 style="color: #1a252f; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-top: 30px;">ثانياً: القواعد المالية المطبقة</h3>
+    <h3 style="color: #1a252f; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-top: 30px;">@Localizer["ثانياً: القواعد المالية المطبقة"]</h3>
     <table class="pdf-table">
         <tr>
-            <th>سعر صرف الدولار المعتمد</th>
+            <th>@Localizer["سعر صرف الدولار المعتمد"]</th>
             <td dir="ltr" style="text-align: left;">@Model.UsdExchangeRate OMR/USD</td>
         </tr>
         <tr>
-            <th>نسبة الجمارك المطبقة</th>
+            <th>@Localizer["نسبة الجمارك المطبقة"]</th>
             <td dir="ltr" style="text-align: left;">@Model.CustomsPercentage %</td>
         </tr>
         <tr>
-            <th>عمولة الشركة الثابتة</th>
+            <th>@Localizer["عمولة الشركة الثابتة"]</th>
             <td dir="ltr" style="text-align: left;">@Model.DefaultCommission OMR</td>
         </tr>
         <tr>
-            <th>رقم تواصل الاستفسارات</th>
+            <th>@Localizer["رقم تواصل الاستفسارات"]</th>
             <td dir="ltr" style="text-align: left;">@Model.InquiryPhoneNumber</td>
         </tr>
     </table>
 
     <div style="margin-top: 60px; text-align: center; color: #94a3b8; font-size: 12px; border-top: 1px solid #eee; padding-top: 20px;">
-        تقرير آلي مستخرج من منصة الأرجان للشحن - سلطنة عمان.
+        @Localizer["تقرير آلي مستخرج من منصة الأرجان للشحن - سلطنة عمان."]
     </div>
 </div>
 
@@ -368,7 +372,7 @@
                 e.preventDefault();
                 var btn = $('#btnSave');
                 var originalHtml = btn.html();
-                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Localizer["جاري الحفظ..."]').prop('disabled', true);
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Html.Raw(Localizer["جاري الحفظ..."])').prop('disabled', true);
 
                 $.ajax({
                     url: $(this).attr('action'),
@@ -396,12 +400,12 @@
         function confirmWipe() {
             Swal.fire({
                 title: "@Html.Raw(Localizer["هل أنت متأكد؟"])",
-                text: "@Html.Raw(Localizer["سيتم مسح كافة البيانات والعمليات نهائياً! لا يمكن التراجع عن هذه الخطوة."])",
+                text: "@Html.Raw(Localizer["حذف جميع البيانات والبدء من جديد (لا يمكن التراجع)"])",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: 'var(--primary-navy)',
-                confirmButtonText: "@Html.Raw(Localizer["نعم، امسح الكل"])"
+                confirmButtonText: "@Html.Raw(Localizer["نعم، امسح كل شيء"])"
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.post('@Url.Action("WipeData", "Settings")', {

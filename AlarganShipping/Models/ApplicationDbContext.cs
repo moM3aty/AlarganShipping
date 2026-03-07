@@ -17,6 +17,7 @@ namespace AlarganShipping.Models
         public DbSet<Location> Locations { get; set; }
         public DbSet<Auction> Auctions { get; set; }
         public DbSet<Transporter> Transporters { get; set; }
+        public DbSet<PaymentVoucher> PaymentVouchers { get; set; }
         public DbSet<DispatchOrder> DispatchOrders { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Expense> Expenses { get; set; }

@@ -2040,4 +2040,42 @@
   <data name="تعديل سند قبض" xml:space="preserve">
     <value>Amendment to receipt</value>
   </data>
+  <data name="التقارير" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <!-- التقارير -->
+  <data name="تقرير المبيعات" xml:space="preserve"><value>Sales Report</value></data>
+  <data name="كشف حساب عميل" xml:space="preserve"><value>Customer Statement</value></data>
+  <data name="تقرير المشتريات" xml:space="preserve"><value>Purchases Report</value></data>
+  <data name="من تاريخ" xml:space="preserve"><value>From Date</value></data>
+  <data name="إلى تاريخ" xml:space="preserve"><value>To Date</value></data>
+  <data name="عرض التقرير" xml:space="preserve"><value>View Report</value></data>
+  <data name="اختر العميل" xml:space="preserve"><value>Select Customer</value></data>
+  <data name="استخراج الكشف" xml:space="preserve"><value>Generate Statement</value></data>
+  <data name="الماركة (اختياري)" xml:space="preserve"><value>Make (Optional)</value></data>
+  <data name="تصدير Excel" xml:space="preserve"><value>Export Excel</value></data>
+  <data name="تصدير PDF" xml:space="preserve"><value>Export PDF</value></data>
+  <data name="تقرير المبيعات والفواتير" xml:space="preserve"><value>Sales &amp; Invoices Report</value></data>
+  <data name="التاريخ" xml:space="preserve"><value>Date</value></data>
+  <data name="المجموع الكلي" xml:space="preserve"><value>Grand Total</value></data>
+  <data name="النوع" xml:space="preserve"><value>Type</value></data>
+  <data name="البيان" xml:space="preserve"><value>Description</value></data>
+  <data name="مدين (عليه $)" xml:space="preserve"><value>Debit (Owes $)</value></data>
+  <data name="دائن (له $)" xml:space="preserve"><value>Credit (Owned $)</value></data>
+  <data name="تاريخ الشراء" xml:space="preserve"><value>Purchase Date</value></data>
+  <data name="إجمالي تكلفة الشراء" xml:space="preserve"><value>Total Purchase Cost</value></data>
+
+  <!-- سندات الصرف (مصروفات) -->
+  <data name="سند صرف رقم" xml:space="preserve"><value>Payment Voucher No</value></data>
+  <data name="سند صرف" xml:space="preserve"><value>Payment Voucher</value></data>
+  <data name="Payment Voucher" xml:space="preserve"><value>Payment Voucher</value></data>
+  <data name="يصرف للسيد / الجهة:" xml:space="preserve"><value>Paid to Mr./Entity:</value></data>
+  <data name="مبلغاً وقدره:" xml:space="preserve"><value>Amount:</value></data>
+  <data name="تصنيف المصروف:" xml:space="preserve"><value>Expense Category:</value></data>
+  <data name="مرتبط بالعميل:" xml:space="preserve"><value>Linked to Customer:</value></data>
+  <data name="المحاسب / أعد السند" xml:space="preserve"><value>Accountant / Prepared By</value></data>
+  <data name="توقيع المستلم" xml:space="preserve"><value>Recipient Signature</value></data>
+  <data name="المدير المالي / الاعتماد" xml:space="preserve"><value>Finance Manager / Approval</value></data>
+  <data name="العودة للسجل" xml:space="preserve"><value>Back to Log</value></data>
+  <data name="طباعة السند" xml:space="preserve"><value>Print Voucher</value></data>
 </root>
