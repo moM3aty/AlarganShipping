@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<AlarganShipping.Models.PaymentReceipt>
 @{
-    ViewData["Title"] = Localizer["سندات القبض"];
+    ViewData["Title"] = Localizer["سجل المقبوضات (المدفوعات)"];
 }
 
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
@@ -36,7 +36,7 @@
         }
 
     .btn-add {
-        background: linear-gradient(to right, var(--primary-navy), var(--secondary-navy));
+        background: linear-gradient(135deg, var(--primary-navy), var(--secondary-navy));
         color: #ffffff;
         font-weight: 800;
         padding: 0.85rem 1.75rem;
@@ -53,7 +53,7 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(44, 62, 80, 0.4);
             color: white;
-            background: linear-gradient(to right, var(--primary-gold), var(--secondary-gold));
+            background: linear-gradient(135deg, var(--primary-gold), var(--secondary-gold));
         }
 
     /* --- بطاقة البيانات والجدول --- */
@@ -107,7 +107,7 @@
 
     .rec-amount {
         font-family: monospace;
-        font-size: 1.15rem;
+        font-size: 1.1rem;
         font-weight: 900;
         color: #16a34a;
         background: rgba(22, 163, 74, 0.05);
@@ -115,6 +115,13 @@
         border-radius: 8px;
         border: 1px solid rgba(22, 163, 74, 0.1);
         white-space: nowrap;
+    }
+
+    .rec-discount {
+        font-family: monospace;
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: var(--primary-gold);
     }
 
     .method-badge {
@@ -140,15 +147,16 @@
     .actions-wrapper {
         display: flex;
         gap: 8px;
+        justify-content: center;
     }
 
     .action-btn-pro {
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 12px;
+        border-radius: 10px;
         transition: 0.3s;
         text-decoration: none;
         border: 1px solid #e2e8f0;
@@ -156,6 +164,17 @@
         cursor: pointer;
         font-size: 1.1rem;
     }
+
+    .btn-print-pro {
+        color: var(--primary-navy);
+    }
+
+        .btn-print-pro:hover {
+            background: var(--primary-navy);
+            color: white;
+            border-color: var(--primary-navy);
+            transform: scale(1.1);
+        }
 
     .btn-edit-pro {
         color: var(--primary-gold);
@@ -180,33 +199,32 @@
         }
 
     /* ========================================================
-           تعديلات الموبايل (الميديا كويري)
-           ======================================================== */
+               تعديلات الموبايل (الميديا كويري)
+               ======================================================== */
     @@media (max-width: 768px) {
-        .page-header {
-            flex-direction: column;
-            align-items: stretch;
-            text-align: center;
-            padding: 1.5rem;
-        }
+        .page-header
 
-        .page-title {
-            justify-content: center;
-        }
+    {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        padding: 1.5rem;
+    }
 
-        .btn-add {
-            width: 100%;
-            justify-content: center;
-        }
+    .page-title {
+        justify-content: center;
+    }
 
-        .data-card {
-            padding: 1rem;
-            border-radius: 1.2rem;
-        }
+    .btn-add {
+        width: 100%;
+        justify-content: center;
+    }
 
-        .actions-wrapper {
-            justify-content: center;
-        }
+    .data-card {
+        padding: 1rem;
+        border-radius: 1.2rem;
+    }
+
     }
 </style>
 
@@ -229,7 +247,7 @@
                         <th>@Localizer["تاريخ الدفع"]</th>
                         <th>@Localizer["العميل المُسدد"]</th>
                         <th>@Localizer["طريقة الدفع"]</th>
-                        <th>@Localizer["المبلغ"]</th>
+                        <th>@Localizer["المبلغ المخصوم (الإجمالي)"]</th>
                         <th style="text-align: center;">@Localizer["إجراءات"]</th>
                     </tr>
                 </thead>
@@ -239,12 +257,18 @@
                         foreach (var rec in Model)
                         {
                             <tr>
-                                <td><span class="rec-number">@rec.ReceiptNumber</span></td>
+                                <td>
+                                    <span class="rec-number">@rec.ReceiptNumber</span>
+                                    @if (!string.IsNullOrEmpty(rec.AttachmentPath))
+                                    {
+                                        <a href="@rec.AttachmentPath" target="_blank" style="margin-inline-start: 8px; color: var(--primary-navy);" title="عرض المرفق"><i class="fa-solid fa-paperclip"></i></a>
+                                    }
+                                </td>
                                 <td style="color: var(--text-muted); font-weight: 800; white-space: nowrap;">
                                     @rec.PaymentDate.ToString("dd MMM yyyy - hh:mm tt")
                                 </td>
                                 <td>
-                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 900; color: var(--primary-navy);">
                                         <i class="fa-solid fa-user-check" style="color: #cbd5e1;"></i>
                                         <span style="white-space: nowrap;">@(rec.Customer?.Name ?? "-")</span>
                                     </div>
@@ -254,9 +278,20 @@
                                         <i class="fa-solid fa-money-bill-transfer"></i> @Localizer[rec.PaymentMethod]
                                     </span>
                                 </td>
-                                <td><span class="rec-amount">$@rec.Amount.ToString("N2")</span></td>
+                                <td>
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <span class="rec-amount">@rec.TotalDeducted.ToString("N3") OMR</span>
+                                        @if (rec.Discount > 0)
+                                        {
+                                            <span class="rec-discount"><i class="fa-solid fa-tag"></i> يشتمل خصم: @rec.Discount.ToString("N3")</span>
+                                        }
+                                    </div>
+                                </td>
                                 <td>
                                     <div class="actions-wrapper">
+                                        <a href="@Url.Action("Print", "PaymentReceipts", new { id = rec.Id })" class="action-btn-pro btn-print-pro" title="@Localizer["طباعة السند"]">
+                                            <i class="fa-solid fa-print"></i>
+                                        </a>
                                         <a href="@Url.Action("Edit", "PaymentReceipts", new { id = rec.Id })" class="action-btn-pro btn-edit-pro" title="@Localizer["تعديل السند"]">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </a>
@@ -277,11 +312,10 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
     <script>
-        // دالة الحذف المصلحة والآمنة
         function confirmDelete(id) {
             Swal.fire({
                 title: "@Html.Raw(Localizer["هل أنت متأكد؟"])",
-                text: "@Html.Raw(Localizer["عند حذف السند، سيتم التراجع عن خصم المبلغ من مديونية العميل."])",
+                text: "@Html.Raw(Localizer["عند حذف السند، سيتم التراجع عن خصم المبلغ من مديونية العميل (بما فيها الخصم المسجل)."])",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#ef4444",

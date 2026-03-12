@@ -92,5 +92,9 @@ namespace AlarganShipping.Models
         [NotMapped]
         [Display(Name = "المبلغ المتبقي")]
         public decimal RemainingAmount => TotalAmount - AmountPaid;
+
+        // الحقل الجديد لحل المشكلة
+        [Display(Name = "ملاحظات الإلغاء أو التعديل")]
+        public string? Notes { get; set; }
     }
 }

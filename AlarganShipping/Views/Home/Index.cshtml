@@ -6,9 +6,7 @@
 @{
     ViewData["Title"] = Localizer["لوحة التحكم الشاملة"];
 
-    // ==========================================
     // حساب الإحصائيات الديناميكية من قاعدة البيانات
-    // ==========================================
     var totalCars = Context.Cars.Count();
     var activeShipments = Context.Shipments.Count(s => s.Status != "Arrived" && s.Status != "Cleared");
 
@@ -390,7 +388,7 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // المتغيرات الديناميكية من السيرفر - تم إصلاح التنسيق لتجنب مشكلة الفواصل العشرية في اللغات العربية (Syntax Error)
+        // المتغيرات الديناميكية من السيرفر - تجنب مشكلة الفواصل العشرية
         const jsTotalSales = @Html.Raw(totalSales.ToString(System.Globalization.CultureInfo.InvariantCulture));
         const jsTotalPaid = @Html.Raw(totalPaid.ToString(System.Globalization.CultureInfo.InvariantCulture));
         const jsPending = @Html.Raw(pendingAmounts.ToString(System.Globalization.CultureInfo.InvariantCulture));

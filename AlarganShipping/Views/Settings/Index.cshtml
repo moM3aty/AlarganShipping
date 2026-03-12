@@ -81,6 +81,7 @@
         font-weight: 800;
         color: var(--primary-navy);
         transition: 0.3s;
+        font-family: inherit;
     }
 
         .form-control:focus {
@@ -90,10 +91,31 @@
             box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
 
+    /* --- حقل اختيار اللون --- */
+    .color-picker-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 0.5rem 1rem;
+    }
+
+        .color-picker-wrapper input[type="color"] {
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+            background: transparent;
+        }
+
     /* --- منطقة الصيانة --- */
     .maintenance-options {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 1.5rem;
     }
 
@@ -115,6 +137,10 @@
         width: 100%;
         cursor: pointer;
         transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
     }
 
         .btn-danger:hover {
@@ -144,9 +170,6 @@
             background: #f8fafc;
         }
 
-    /* ========================================================
-           تعديلات الموبايل (الميديا كويري)
-           ======================================================== */
     @@media (max-width: 768px) {
         .page-header {
             flex-direction: column;
@@ -155,7 +178,7 @@
         }
 
         .page-title {
-            font-size: 1.5rem;
+            justify-content: center;
         }
 
         .btn-save-settings {
@@ -165,12 +188,10 @@
 
         .settings-grid {
             grid-template-columns: 1fr;
-            gap: 1.25rem;
         }
 
         .settings-card {
             padding: 1.5rem;
-            border-radius: 1.25rem;
         }
 
         .maintenance-options {
@@ -226,7 +247,7 @@
         <div class="page-header">
             <div>
                 <h2 class="page-title">@Localizer["إعدادات النظام والقواعد"]</h2>
-                <div style="color: var(--text-muted); font-weight: 600; margin-top: 5px;">@Localizer["إدارة الثوابت المالية لشركة الأرجان"]</div>
+                <div style="color: var(--text-muted); font-weight: 600; margin-top: 5px;">@Localizer["إدارة الثوابت المالية ونماذج الطباعة"]</div>
             </div>
             <button type="submit" class="btn-save-settings" id="btnSave">
                 <i class="fa-solid fa-floppy-disk"></i> @Localizer["حفظ الإعدادات"]
@@ -234,19 +255,19 @@
         </div>
 
         <div class="settings-grid">
-            <!-- كرت أسعار الصرف -->
+            <!-- كرت أسعار الصرف والتواصل -->
             <div class="settings-card">
                 <div class="settings-card-header">
-                    <h3 class="settings-card-title">@Localizer["أسعار الصرف (Exchange Rates)"]</h3>
+                    <h3 class="settings-card-title">@Localizer["إعدادات التواصل والصرف"]</h3>
                     <div style="color: #16a34a; font-size: 1.5rem;"><i class="fa-solid fa-coins"></i></div>
                 </div>
                 <div style="margin-bottom: 1.5rem;">
                     <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["سعر الدولار مقابل الريال (OMR/USD)"]</label>
-                    <input asp-for="UsdExchangeRate" type="number" step="0.001" class="form-control" dir="ltr" />
+                    <input asp-for="UsdExchangeRate" type="number" step="0.001" class="form-control" dir="ltr" style="font-family: monospace;" />
                 </div>
                 <div>
-                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["رقم الواتساب للاستفسارات"]</label>
-                    <input asp-for="InquiryPhoneNumber" type="text" class="form-control" dir="ltr" placeholder="968xxxxxxx" />
+                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["رقم الواتساب للاستفسارات (مع كود الدولة)"]</label>
+                    <input asp-for="InquiryPhoneNumber" type="text" class="form-control" dir="ltr" placeholder="968xxxxxxx" style="font-family: monospace;" />
                 </div>
             </div>
 
@@ -257,12 +278,56 @@
                     <div style="color: var(--primary-navy); font-size: 1.5rem;"><i class="fa-solid fa-percent"></i></div>
                 </div>
                 <div style="margin-bottom: 1.5rem;">
-                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["نسبة الجمارك (%)"]</label>
-                    <input asp-for="CustomsPercentage" type="number" step="0.1" class="form-control" dir="ltr" />
+                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["نسبة الجمارك العمانية (%)"]</label>
+                    <input asp-for="CustomsPercentage" type="number" step="0.1" class="form-control" dir="ltr" style="font-family: monospace;" />
                 </div>
                 <div>
-                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["عمولة الشركة الافتراضية (OMR)"]</label>
-                    <input asp-for="DefaultCommission" type="number" class="form-control" dir="ltr" />
+                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["عمولة الشركة الافتراضية (OMR/USD)"]</label>
+                    <input asp-for="DefaultCommission" type="number" class="form-control" dir="ltr" style="font-family: monospace;" />
+                </div>
+            </div>
+
+            <!-- كرت إعدادات الفواتير (الجديد) -->
+            <div class="settings-card" style="grid-column: 1 / -1;">
+                <div class="settings-card-header">
+                    <h3 class="settings-card-title">@Localizer["إعدادات الطباعة ونماذج الفواتير"]</h3>
+                    <div style="color: var(--primary-gold); font-size: 1.5rem;"><i class="fa-solid fa-file-invoice"></i></div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["نموذج الفاتورة المفضل"]</label>
+                        <select asp-for="InvoiceTemplate" class="form-control">
+                            <option value="Modern">@Localizer["نموذج عصري (Modern)"]</option>
+                            <option value="Classic">@Localizer["نموذج كلاسيكي (Classic)"]</option>
+                            <option value="Simple">@Localizer["نموذج مبسط (Simple)"]</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["اللون الرئيسي للفواتير"]</label>
+                        <div class="color-picker-wrapper">
+                            <input asp-for="InvoiceHeaderColor" type="color" id="colorPicker" />
+                            <span id="colorHexDisplay" style="font-family: monospace; font-weight: bold; color: var(--primary-navy);">@Model.InvoiceHeaderColor</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["الرقم الضريبي (VAT No)"]</label>
+                        <input asp-for="VatNumber" type="text" class="form-control" dir="ltr" style="font-family: monospace;" />
+                    </div>
+
+                    <div>
+                        <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["رقم السجل التجاري (CR No)"]</label>
+                        <input asp-for="CrNumber" type="text" class="form-control" dir="ltr" style="font-family: monospace;" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["ملاحظات وشروط الفاتورة (Footer)"]</label>
+                    <textarea asp-for="InvoiceFooterText" class="form-control" rows="3" placeholder="@Localizer["البضاعة المباعة لا ترد ولا تستبدل..."]"></textarea>
                 </div>
             </div>
         </div>
@@ -278,7 +343,7 @@
         <div class="maintenance-options">
             <div class="danger-zone" style="background: #f8fafc; border-color: #e2e8f0;">
                 <h4 style="margin-bottom: 0.5rem; color: var(--primary-navy);">@Localizer["تقرير حالة النظام"]</h4>
-                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem; font-weight: 600;">@Localizer["توليد ملف PDF رسمي يحتوي على كافة الإحصائيات والقواعد الحالية"]</p>
+                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem; font-weight: 600;">@Localizer["توليد ملف PDF رسمي يحتوي على كافة الإحصائيات"]</p>
                 <button type="button" class="btn-pdf" onclick="generatePDF()">
                     <i class="fa-solid fa-file-pdf" style="color: #ef4444; font-size: 1.2rem;"></i> @Localizer["تصدير تقرير PDF"]
                 </button>
@@ -286,24 +351,24 @@
 
             <div class="danger-zone">
                 <h4 style="color: #ef4444; margin-bottom: 0.5rem;">@Localizer["تصفير البيانات"]</h4>
-                <p style="font-size: 0.85rem; color: #991b1b; margin-bottom: 1.5rem; font-weight: 600;">@Localizer["حذف جميع البيانات والبدء من جديد (لا يمكن التراجع)"]</p>
+                <p style="font-size: 0.85rem; color: #991b1b; margin-bottom: 1.5rem; font-weight: 600;">@Localizer["حذف جميع البيانات (سيارات، عملاء، فواتير) والبدء من جديد"]</p>
                 <button type="button" class="btn-danger" onclick="confirmWipe()">
-                    <i class="fa-solid fa-triangle-exclamation" style="margin-inline-end: 8px;"></i> @Localizer["تصفير النظام بالكامل"]
+                    <i class="fa-solid fa-triangle-exclamation"></i> @Localizer["تصفير النظام بالكامل"]
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- قالب التقرير للـ PDF (مخفي ومترجم بالكامل) -->
+<!-- قالب التقرير للـ PDF -->
 <div id="pdfReportTemplate" dir="@(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "rtl" : "ltr")" style="font-family: 'Cairo', sans-serif; padding: 20px;">
     <div class="pdf-header">
-        <h1 style="color: #1a252f; margin: 0; font-size: 28px;">ALARGAN AUTO SHIPPING</h1>
-        <p style="color: #b8935a; font-weight: bold; letter-spacing: 2px; font-size: 18px; margin: 5px 0;">@Localizer["نظام الإدارة اللوجستية - تقرير حالة النظام"]</p>
+        <h1 style="color: #1e293b; margin: 0; font-size: 28px;">ALARGAN AUTO SHIPPING</h1>
+        <p style="color: #b45309; font-weight: bold; letter-spacing: 2px; font-size: 18px; margin: 5px 0;">@Localizer["نظام الإدارة اللوجستية - تقرير حالة النظام"]</p>
         <p style="font-size: 14px; color: #64748b;">@Localizer["تاريخ التقرير:"] @DateTime.Now.ToString("yyyy-MM-dd HH:mm")</p>
     </div>
 
-    <h3 style="color: #1a252f; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-top: 20px;">@Localizer["أولاً: الإحصائيات الحالية"]</h3>
+    <h3 style="color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-top: 20px;">@Localizer["أولاً: الإحصائيات الحالية"]</h3>
     <table class="pdf-table">
         <tr>
             <th style="width: 30%;">@Localizer["إجمالي العملاء"]</th>
@@ -314,12 +379,12 @@
         <tr>
             <th>@Localizer["عدد الفواتير"]</th>
             <td>@ViewBag.TotalInvoices</td>
-            <th>@Localizer["إجمالي الديون (OMR)"]</th>
+            <th>@Localizer["إجمالي الديون"]</th>
             <td style="color: #ef4444; font-weight: bold;">@ViewBag.TotalBalance.ToString("N2")</td>
         </tr>
     </table>
 
-    <h3 style="color: #1a252f; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-top: 30px;">@Localizer["ثانياً: القواعد المالية المطبقة"]</h3>
+    <h3 style="color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-top: 30px;">@Localizer["ثانياً: القواعد المالية المطبقة"]</h3>
     <table class="pdf-table">
         <tr>
             <th>@Localizer["سعر صرف الدولار المعتمد"]</th>
@@ -331,17 +396,13 @@
         </tr>
         <tr>
             <th>@Localizer["عمولة الشركة الثابتة"]</th>
-            <td dir="ltr" style="text-align: left;">@Model.DefaultCommission OMR</td>
+            <td dir="ltr" style="text-align: left;">@Model.DefaultCommission</td>
         </tr>
         <tr>
             <th>@Localizer["رقم تواصل الاستفسارات"]</th>
             <td dir="ltr" style="text-align: left;">@Model.InquiryPhoneNumber</td>
         </tr>
     </table>
-
-    <div style="margin-top: 60px; text-align: center; color: #94a3b8; font-size: 12px; border-top: 1px solid #eee; padding-top: 20px;">
-        @Localizer["تقرير آلي مستخرج من منصة الأرجان للشحن - سلطنة عمان."]
-    </div>
 </div>
 
 @section Scripts {
@@ -368,6 +429,11 @@
         }
 
         $(document).ready(function() {
+            // تحديث نص اللون عند تغييره
+            $('#colorPicker').on('input', function() {
+                $('#colorHexDisplay').text($(this).val().toUpperCase());
+            });
+
             $('#settingsForm').on('submit', function(e) {
                 e.preventDefault();
                 var btn = $('#btnSave');
@@ -382,7 +448,7 @@
                         if(res.success) {
                             Swal.fire({
                                 title: "@Html.Raw(Localizer["تم الحفظ!"])",
-                                text: "@Html.Raw(Localizer["تم تحديث القواعد المالية بنجاح."])",
+                                text: "@Html.Raw(Localizer["تم تحديث الإعدادات ونماذج الفواتير بنجاح."])",
                                 icon: 'success',
                                 confirmButtonColor: 'var(--primary-gold)'
                             });
@@ -412,7 +478,7 @@
                         __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
                     }, function(res) {
                         if(res.success) {
-                            Swal.fire({ title: "@Html.Raw(Localizer["تم التصفير!"])", icon: 'success' }).then(() => location.reload());
+                            Swal.fire({ title: "@Html.Raw(Localizer["تم التصفير!"])", icon: 'success', confirmButtonColor: 'var(--primary-gold)' }).then(() => location.reload());
                         }
                     });
                 }

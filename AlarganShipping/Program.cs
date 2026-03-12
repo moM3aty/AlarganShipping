@@ -7,15 +7,18 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1. إعداد الترجمة
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 builder.Services.AddControllersWithViews()
     .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
     .AddDataAnnotationsLocalization();
 
+// 2. إعداد قاعدة البيانات
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// 3. إعداد المصادقة (تسجيل الدخول)
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -26,6 +29,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 var app = builder.Build();
 
+// 4. إعداد اللغات المدعومة (العربية والإنجليزية)
 var supportedCultures = new[]
 {
     new CultureInfo("ar"),
@@ -39,6 +43,7 @@ app.UseRequestLocalization(new RequestLocalizationOptions
     SupportedUICultures = supportedCultures
 });
 
+// 5. إعدادات بيئة العمل
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -46,27 +51,25 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles(); // للسماح بقراءة ملفات wwwroot
 
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+// 6. التوجيه الافتراضي
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
+// 7. تهيئة قاعدة البيانات بالبيانات الأولية عند تشغيل النظام
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-
-   
-
         AlarganShipping.Data.DbInitializer.Initialize(context);
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("✅ تمت تهيئة قاعدة البيانات بنجاح!");

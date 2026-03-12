@@ -5,7 +5,7 @@
     var isRtl = System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
     var htmlDir = isRtl ? "rtl" : "ltr";
 
-    // حساب مرحلة شريط التقدم (4 مراحل رئيسية حسب صورتك)
+    // حساب مرحلة شريط التقدم (4 مراحل رئيسية حسب التعديلات)
     int step = 1;
     if (Model.StatusId >= 7) step = 4; // تم التوصيل
     else if (Model.StatusId >= 5) step = 3; // تم الشحن
@@ -53,6 +53,7 @@
 
             .top-logo-area img {
                 width: 70px;
+                height: 70px;
                 border-radius: 50%;
                 margin-bottom: 0.5rem;
                 border: 2px solid var(--primary-gold);
@@ -72,7 +73,7 @@
                 margin: 0;
             }
 
-        /* --- 2. شريط البحث العلوي (كما في الصورة) --- */
+        /* --- 2. شريط البحث العلوي --- */
         .search-bar-top {
             background: white;
             border-radius: 12px;
@@ -106,6 +107,9 @@
             font-size: 1.2rem;
             cursor: pointer;
             transition: 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
         }
 
             .search-action-btn:hover {
@@ -203,6 +207,7 @@
             background: var(--primary-navy);
             border-color: var(--primary-navy);
             color: white;
+            box-shadow: 0 0 0 4px white, 0 4px 10px rgba(30, 41, 59, 0.3);
         }
 
         /* --- 4. تفاصيل السيارة والبطاقة المزدوجة --- */
@@ -358,7 +363,7 @@
                 gap: 5px;
             }
 
-        /* شبكة المربعات الـ 7 (مطابقة للصورة تماماً) */
+        /* شبكة المربعات الـ 7 */
         .info-boxes-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -402,47 +407,94 @@
             font-family: monospace;
         }
 
-        /* المربع الأول يأخذ مساحة كعمود واحد حسب الصورة */
         .box-auction {
             grid-column: 1 / 2;
         }
 
+        /* --- 5. سجل التحركات والمرفقات --- */
+        .logs-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            border: 1px solid #e2e8f0;
+            margin-top: 1.5rem;
+        }
+
+            .logs-section h3 {
+                font-size: 1.3rem;
+                font-weight: 900;
+                color: var(--primary-navy);
+                margin-top: 0;
+                margin-bottom: 1.5rem;
+                border-bottom: 2px solid #f1f5f9;
+                padding-bottom: 10px;
+            }
+
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .log-table th {
+                text-align: start;
+                padding: 1rem;
+                background: #f8fafc;
+                color: var(--text-muted);
+                font-weight: 800;
+                font-size: 0.9rem;
+                border-bottom: 2px solid #e2e8f0;
+            }
+
+            .log-table td {
+                padding: 1rem;
+                border-bottom: 1px solid #f1f5f9;
+                font-weight: 700;
+                color: var(--primary-navy);
+            }
+
         @@media (max-width: 992px) {
-            .main-details-wrapper {
-                flex-direction: column;
-            }
+            .main-details-wrapper
 
-            .car-image-section {
-                width: 100%;
-            }
+        {
+            flex-direction: column;
+        }
 
-            .info-boxes-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .car-image-section {
+            width: 100%;
+        }
+
+        .info-boxes-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
         }
 
         @@media (max-width: 576px) {
-            .info-boxes-grid {
-                grid-template-columns: 1fr;
-            }
+            .info-boxes-grid
 
-            .stepper-wrapper::before, .stepper-wrapper::after {
-                left: 5%;
-                right: 5%;
-            }
+        {
+            grid-template-columns: 1fr;
+        }
 
-            .step-item {
-                width: 70px;
-            }
+        .stepper-wrapper::before, .stepper-wrapper::after {
+            left: 5%;
+            right: 5%;
+        }
 
-            .step-label {
-                font-size: 0.75rem;
-                text-align: center;
-            }
+        .step-item {
+            width: 70px;
+        }
 
-            .step-sublabel {
-                display: none;
-            }
+        .step-label {
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+        .step-sublabel {
+            display: none;
+        }
+
         }
     </style>
 </head>
@@ -451,9 +503,9 @@
 
         <!-- 1. الشعار والعنوان -->
         <div class="top-logo-area">
-            <img src="~/images/logo.png" alt="Logo" onerror="this.onerror=null; this.style.display='none'" />
+            <img src="~/images/logo.jpg" alt="Logo" onerror="this.onerror=null; this.style.display='none'" />
             <h2>@Localizer["تتبع المركبة"]</h2>
-            <p>@Localizer["راقب تقدم شحنتك من خلال التحديثات الفورية ومعلومات التتبع المفصلة"]</p>
+            <p>@Localizer["راقب تقدم شحنتك من خلال التحديثات الفورية"]</p>
         </div>
 
         <!-- 2. شريط البحث المدمج -->
@@ -544,7 +596,7 @@
                     }
                 </div>
 
-                <!-- شبكة التواريخ المتطابقة تماماً مع الصورة المرفقة -->
+                <!-- شبكة التواريخ (مربعات) -->
                 <div class="info-boxes-grid">
 
                     <!-- الصف الأول -->
@@ -553,7 +605,7 @@
                         <p class="box-item-label">@Localizer["مدينة المزاد"]</p>
                         <h4 class="box-item-value">@(Model.Auction?.Location ?? "غير محدد")</h4>
                     </div>
-                    <!-- مربعات فارغة وهمية للحفاظ على التصميم (كما في الصورة) -->
+                    <!-- مربعات فارغة وهمية للحفاظ على التصميم -->
                     <div style="grid-column: 2 / 4;"></div>
 
                     <!-- الصف الثاني -->
@@ -604,19 +656,46 @@
             </div>
         </div>
 
+        <!-- 5. سجل التحركات المفصل -->
+        @if (Model.TrackingLogs != null && Model.TrackingLogs.Any())
+        {
+            <div class="logs-section">
+                <h3><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary-gold);"></i> @Localizer["سجل التحركات"]</h3>
+                <div style="overflow-x: auto;">
+                    <table class="log-table">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["التاريخ"]</th>
+                                <th>@Localizer["الموقع"]</th>
+                                <th>@Localizer["الحالة والتفاصيل"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in Model.TrackingLogs.OrderByDescending(l => l.UpdateDate))
+                            {
+                                <tr>
+                                    <td style="white-space: nowrap;">@log.UpdateDate.ToString("dd MMM yyyy - hh:mm tt")</td>
+                                    <td><i class="fa-solid fa-location-dot" style="color: var(--text-muted); margin-inline-end: 5px;"></i> @log.Location</td>
+                                    <td>
+                                        <strong style="display: block; color: var(--primary-gold);">@Localizer[log.Title]</strong>
+                                        <span style="font-size: 0.9rem; color: var(--text-muted);">@log.Description</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
     </div>
 
     <script>
-        // سكربت بسيط لتبديل حالة الأزرار الخاصة بالصور
         function switchImageTab(element) {
             document.querySelectorAll('.img-tab').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
-            // هنا يمكنك إضافة كود برمجي مستقبلاً لتغيير مسار الصورة (src)
-            // إذا كان لديك مسار مخصص لصور المستودع (Warehouse) وصور الوصول (Destination)
         }
 
         function nextImage() {
-            // يمكن ربطها لاحقاً بمصفوفة من الصور في حال توفرت لديك أكثر من صورة للسيارة
             console.log('Next/Prev Image clicked');
         }
     </script>

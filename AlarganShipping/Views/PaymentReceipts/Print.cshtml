@@ -1,0 +1,367 @@
+﻿@model AlarganShipping.Models.PaymentReceipt
+@{
+    ViewData["Title"] = Localizer["طباعة سند القبض"];
+    Layout = null; // لضمان الطباعة على صفحة بيضاء A4
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>سند قبض - @Model.ReceiptNumber</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #e2e8f0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+        }
+
+        .receipt-wrapper {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 8rem;
+            color: rgba(184, 147, 90, 0.05);
+            font-weight: 900;
+            white-space: nowrap;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid #1e293b;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-area img {
+            height: 80px;
+        }
+
+        .logo-area h1 {
+            margin: 5px 0 0 0;
+            color: #1e293b;
+            font-size: 1.6rem;
+            font-weight: 900;
+        }
+
+        .logo-area p {
+            margin: 0;
+            color: #b45309;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .title-area {
+            text-align: left;
+        }
+
+            .title-area h2 {
+                margin: 0;
+                font-size: 2.2rem;
+                color: #1e293b;
+                font-weight: 900;
+            }
+
+            .title-area .rcpt-no {
+                font-family: monospace;
+                font-size: 1.2rem;
+                color: #ef4444;
+                font-weight: bold;
+            }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-box {
+            border: 2px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+            .info-box span.label {
+                display: block;
+                color: #64748b;
+                font-size: 0.9rem;
+                font-weight: 800;
+                margin-bottom: 5px;
+            }
+
+            .info-box span.value {
+                display: block;
+                color: #1e293b;
+                font-size: 1.2rem;
+                font-weight: 900;
+            }
+
+        .amount-highlight {
+            background: rgba(22, 163, 74, 0.1);
+            border: 2px dashed #16a34a;
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+            .amount-highlight .lbl {
+                color: #16a34a;
+                font-weight: 800;
+                font-size: 1.1rem;
+                display: block;
+            }
+
+            .amount-highlight .val {
+                color: #16a34a;
+                font-weight: 900;
+                font-size: 3rem;
+                font-family: monospace;
+                margin: 10px 0;
+            }
+
+            .amount-highlight .discount {
+                color: #b45309;
+                font-size: 1rem;
+                font-weight: 700;
+            }
+
+        .notes-section {
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            min-height: 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+            .notes-section .label {
+                font-weight: 800;
+                color: #64748b;
+                margin-bottom: 10px;
+                display: block;
+                border-bottom: 1px solid #e2e8f0;
+                padding-bottom: 5px;
+            }
+
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sig-box {
+            text-align: center;
+            width: 200px;
+        }
+
+        .sig-line {
+            border-bottom: 2px solid #1e293b;
+            margin-bottom: 10px;
+            height: 40px;
+        }
+
+        .sig-title {
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn-action {
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 900;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+
+        .btn-print {
+            background: #b45309;
+        }
+
+            .btn-print:hover {
+                background: #92400e;
+            }
+
+        .btn-pdf {
+            background: #ef4444;
+        }
+
+            .btn-pdf:hover {
+                background: #dc2626;
+            }
+
+        .btn-back {
+            background: #1e293b;
+        }
+
+            .btn-back:hover {
+                background: #0f172a;
+            }
+
+        @@media print {
+            body
+
+        {
+            background: white;
+            padding: 0;
+        }
+
+        .controls {
+            display: none;
+        }
+
+        .receipt-wrapper {
+            box-shadow: none;
+            padding: 0;
+            max-width: 100%;
+            border: none;
+            margin: 0;
+        }
+
+        .amount-highlight {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        html, body {
+            height: 99%;
+            page-break-after: avoid;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button class="btn-action btn-back" onclick="history.back()">العودة</button>
+        <button class="btn-action btn-print" onclick="window.print()">طباعة السند</button>
+        <button class="btn-action btn-pdf" onclick="downloadPDF()">تحميل PDF</button>
+    </div>
+
+    <div class="receipt-wrapper" id="receiptContent">
+        <div class="watermark">PAID - مدفوع</div>
+
+        <div class="header">
+            <div class="logo-area">
+                <img src="/images/logo.png" alt="Logo" onerror="this.onerror=null; this.style.display='none'" />
+                <h1>شركة الأرجان للشحن</h1>
+                <p>ALARGAN AUTO SHIPPING</p>
+            </div>
+            <div class="title-area">
+                <h2>سند قبض</h2>
+                <h2>RECEIPT VOUCHER</h2>
+                <div class="rcpt-no">No: @Model.ReceiptNumber</div>
+            </div>
+        </div>
+
+        <div class="details-grid">
+            <div class="info-box">
+                <span class="label">استلمنا من السيد / الشركة (Received From):</span>
+                <span class="value">@(Model.Customer?.Name ?? "-")</span>
+            </div>
+            <div class="info-box">
+                <span class="label">التاريخ (Date):</span>
+                <span class="value">@Model.PaymentDate.ToString("dd MMM yyyy")</span>
+            </div>
+            <div class="info-box">
+                <span class="label">طريقة الدفع (Payment Method):</span>
+                <span class="value">@Model.PaymentMethod @(string.IsNullOrEmpty(Model.ReferenceNumber) ? "" : " - " + Model.ReferenceNumber)</span>
+            </div>
+            <div class="info-box">
+                <span class="label">كود العميل (Customer Code):</span>
+                <span class="value" style="font-family: monospace;">@(Model.Customer?.CustomerCode ?? "-")</span>
+            </div>
+        </div>
+
+        <div class="amount-highlight">
+            <span class="lbl">المبلغ المقبوض (Amount Received)</span>
+            <div class="val">@Model.Amount.ToString("N3") OMR</div>
+            @if (Model.Discount > 0)
+            {
+                <div class="discount">يتضمن هذا السند خصم إضافي مسموح به قدره: @Model.Discount.ToString("N3") OMR</div>
+                <div style="color: #64748b; font-size: 0.9rem; font-weight: bold; margin-top: 5px;">إجمالي المخصوم من المديونية: @Model.TotalDeducted.ToString("N3") OMR</div>
+            }
+        </div>
+
+        <div class="notes-section">
+            <span class="label">وذلك عن / ملاحظات (Description / Notes):</span>
+            <!-- استخدام Html.Raw ضروري لأن الملاحظات تأتي من Rich Text Editor وتحتوي على HTML tags -->
+            <div style="color: #1e293b; font-weight: 600; line-height: 1.6; margin-top: 10px;">
+                @(string.IsNullOrEmpty(Model.Notes) ? "دفعة من الحساب." : Html.Raw(Model.Notes))
+            </div>
+        </div>
+
+        <div class="signatures">
+            <div class="sig-box">
+                <div class="sig-line"></div>
+                <div class="sig-title">توقيع المستلم<br />Receiver Signature</div>
+            </div>
+            <div class="sig-box">
+                <div class="sig-line"></div>
+                <div class="sig-title">توقيع العميل / الدافع<br />Customer Signature</div>
+            </div>
+            <div class="sig-box">
+                <div class="sig-line"></div>
+                <div class="sig-title">الختم المعتمد<br />Company Stamp</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadPDF() {
+            var element = document.getElementById('receiptContent');
+            var opt = {
+                margin:       10,
+                filename:     'Receipt_@Model.ReceiptNumber .pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>

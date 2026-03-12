@@ -14,9 +14,6 @@ namespace AlarganShipping.Controllers
             _context = context;
         }
 
-        // ==========================================
-        // عرض قائمة الفواتير
-        // ==========================================
         public async Task<IActionResult> Index()
         {
             var invoices = await _context.Invoices
@@ -27,15 +24,11 @@ namespace AlarganShipping.Controllers
             return View(invoices);
         }
 
-        // ==========================================
-        // شاشة إضافة فاتورة جديدة (GET)
-        // ==========================================
-        public IActionResult Create()
+        public IActionResult Create(int? carId, int? customerId)
         {
-            ViewBag.CustomerId = new SelectList(_context.Customers, "Id", "Name");
-            ViewBag.CarId = new SelectList(_context.Cars, "Id", "VIN");
+            ViewBag.CustomerId = new SelectList(_context.Customers, "Id", "Name", customerId);
+            ViewBag.CarId = new SelectList(_context.Cars, "Id", "VIN", carId);
 
-            // توليد رقم الفاتورة مسبقاً لتجنب خطأ Validation وتسهيل العمل
             var invoice = new Invoice
             {
                 InvoiceNumber = "INV-" + DateTime.Now.ToString("yyMM") + "-" + new Random().Next(1000, 9999),
@@ -45,45 +38,41 @@ namespace AlarganShipping.Controllers
             return View(invoice);
         }
 
-        // ==========================================
-        // حفظ الفاتورة الجديدة (POST - AJAX)
-        // ==========================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Invoice invoice)
         {
-            // إزالة الحقول المرتبطة لمنع أخطاء التحقق
-            ModelState.Remove("Customer");
-            ModelState.Remove("Car");
-            ModelState.Remove("InvoiceNumber");
+            ModelState.Remove("Customer"); ModelState.Remove("Car"); ModelState.Remove("InvoiceNumber");
 
             if (ModelState.IsValid)
             {
-                // إذا لم يتم تمرير رقم الفاتورة لسبب ما، قم بتوليده
                 if (string.IsNullOrEmpty(invoice.InvoiceNumber) || invoice.InvoiceNumber == "INV-AUTO")
                 {
                     invoice.InvoiceNumber = "INV-" + DateTime.Now.ToString("yyMM") + "-" + new Random().Next(1000, 9999);
                 }
 
-                // حساب الإجمالي: إذا كانت شحن فقط، يتم تجاهل سعر السيارة والمزاد
                 decimal carCost = invoice.IsShippingOnly ? 0 : (invoice.CarPrice + invoice.AuctionFees);
 
-                invoice.TotalAmount = carCost +
-                                      invoice.InlandTowing +
-                                      invoice.SeaFreight +
-                                      invoice.CustomsAndTaxes +
-                                      invoice.CompanyCommission +
-                                      invoice.StorageFees;
+                invoice.TotalAmount = carCost + invoice.InlandTowing + invoice.SeaFreight +
+                                      invoice.CustomsAndTaxes + invoice.CompanyCommission + invoice.StorageFees;
 
                 _context.Add(invoice);
 
-                // تحديث مديونية العميل
+                // 💡 أتمتة: تحديث حساب العميل وإرسال إشعار فاتورة
                 var customer = await _context.Customers.FindAsync(invoice.CustomerId);
                 if (customer != null)
                 {
                     customer.TotalBalance += invoice.TotalAmount;
-                    customer.TotalPaid += invoice.AmountPaid; // إضافة ما دفعه مقدماً من الفاتورة
+                    customer.TotalPaid += invoice.AmountPaid; // في حالة دفع مقدم
                     _context.Update(customer);
+
+                    _context.Notifications.Add(new Notification
+                    {
+                        CustomerId = customer.Id,
+                        Title = "فاتورة جديدة",
+                        Message = $"تم إصدار فاتورة جديدة برقم {invoice.InvoiceNumber} بقيمة {invoice.TotalAmount.ToString("N2")}$. يرجى المراجعة والسداد.",
+                        Type = "InvoiceAlert"
+                    });
                 }
 
                 await _context.SaveChangesAsync();
@@ -93,9 +82,6 @@ namespace AlarganShipping.Controllers
             return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
 
-        // ==========================================
-        // شاشة تعديل الفاتورة (GET)
-        // ==========================================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -109,51 +95,37 @@ namespace AlarganShipping.Controllers
             return View(invoice);
         }
 
-        // ==========================================
-        // حفظ التعديلات على الفاتورة (POST - AJAX)
-        // ==========================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Invoice invoice)
         {
             if (id != invoice.Id) return Json(new { success = false, errors = new[] { "خطأ في المعرف." } });
 
-            ModelState.Remove("Customer");
-            ModelState.Remove("Car");
-            ModelState.Remove("InvoiceNumber");
+            ModelState.Remove("Customer"); ModelState.Remove("Car"); ModelState.Remove("InvoiceNumber");
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    // جلب الفاتورة القديمة لمعرفة الفروقات المالية
                     var oldInvoice = await _context.Invoices.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
                     if (oldInvoice == null) return Json(new { success = false, errors = new[] { "الفاتورة غير موجودة." } });
 
-                    // الحفاظ على الرقم وتاريخ الإصدار الأصلي
                     invoice.InvoiceNumber = oldInvoice.InvoiceNumber;
                     invoice.IssueDate = oldInvoice.IssueDate;
 
-                    // إعادة حساب الإجمالي
                     decimal carCost = invoice.IsShippingOnly ? 0 : (invoice.CarPrice + invoice.AuctionFees);
-                    invoice.TotalAmount = carCost +
-                                          invoice.InlandTowing +
-                                          invoice.SeaFreight +
-                                          invoice.CustomsAndTaxes +
-                                          invoice.CompanyCommission +
-                                          invoice.StorageFees;
+                    invoice.TotalAmount = carCost + invoice.InlandTowing + invoice.SeaFreight +
+                                          invoice.CustomsAndTaxes + invoice.CompanyCommission + invoice.StorageFees;
 
-                    // معالجة تغيير العميل أو تغيير المبالغ
+                    // 💡 أتمتة: تعديل الفروقات المحاسبية بذكاء
                     if (oldInvoice.CustomerId != invoice.CustomerId)
                     {
-                        // تم تغيير العميل: إزالة المديونية من القديم وإضافتها للجديد
                         var oldCustomer = await _context.Customers.FindAsync(oldInvoice.CustomerId);
                         if (oldCustomer != null)
                         {
                             oldCustomer.TotalBalance -= oldInvoice.TotalAmount;
                             oldCustomer.TotalPaid -= oldInvoice.AmountPaid;
                             if (oldCustomer.TotalBalance < 0) oldCustomer.TotalBalance = 0;
-                            if (oldCustomer.TotalPaid < 0) oldCustomer.TotalPaid = 0;
                             _context.Update(oldCustomer);
                         }
 
@@ -167,7 +139,6 @@ namespace AlarganShipping.Controllers
                     }
                     else
                     {
-                        // نفس العميل: إضافة الفارق فقط
                         var customer = await _context.Customers.FindAsync(invoice.CustomerId);
                         if (customer != null)
                         {
@@ -176,9 +147,7 @@ namespace AlarganShipping.Controllers
 
                             customer.TotalBalance += diffBalance;
                             customer.TotalPaid += diffPaid;
-
                             if (customer.TotalBalance < 0) customer.TotalBalance = 0;
-                            if (customer.TotalPaid < 0) customer.TotalPaid = 0;
                             _context.Update(customer);
                         }
                     }
@@ -186,11 +155,6 @@ namespace AlarganShipping.Controllers
                     _context.Update(invoice);
                     await _context.SaveChangesAsync();
                     return Json(new { success = true });
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Invoices.Any(e => e.Id == invoice.Id)) return Json(new { success = false, errors = new[] { "الفاتورة غير موجودة." } });
-                    else throw;
                 }
                 catch (Exception ex)
                 {
@@ -200,9 +164,6 @@ namespace AlarganShipping.Controllers
             return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
 
-        // ==========================================
-        // حذف الفاتورة (POST - AJAX)
-        // ==========================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
@@ -212,14 +173,12 @@ namespace AlarganShipping.Controllers
 
             try
             {
-                // إرجاع مديونية العميل لما كانت عليه قبل الفاتورة
                 var customer = await _context.Customers.FindAsync(invoice.CustomerId);
                 if (customer != null)
                 {
                     customer.TotalBalance -= invoice.TotalAmount;
                     customer.TotalPaid -= invoice.AmountPaid;
                     if (customer.TotalBalance < 0) customer.TotalBalance = 0;
-                    if (customer.TotalPaid < 0) customer.TotalPaid = 0;
                     _context.Update(customer);
                 }
 
@@ -233,21 +192,34 @@ namespace AlarganShipping.Controllers
             }
         }
 
-        // ==========================================
-        // عرض الفاتورة للطباعة (GET)
-        // ==========================================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
-
-            var invoice = await _context.Invoices
-                .Include(i => i.Customer)
-                .Include(i => i.Car)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
+            var invoice = await _context.Invoices.Include(i => i.Customer).Include(i => i.Car).FirstOrDefaultAsync(m => m.Id == id);
             if (invoice == null) return NotFound();
-
             return View(invoice);
+        }
+
+        public async Task<IActionResult> DetailsByCar(int carId)
+        {
+            var invoice = await _context.Invoices.Include(i => i.Customer).Include(i => i.Car).FirstOrDefaultAsync(i => i.CarId == carId);
+            if (invoice == null)
+            {
+                TempData["Message"] = "لم يتم إصدار فاتورة مبيعات لهذه السيارة بعد. يرجى إصدارها أولاً.";
+                return RedirectToAction("Create", new { carId = carId });
+            }
+            return View("DetailsByCar", invoice);
+        }
+
+        public async Task<IActionResult> EditByCar(int carId)
+        {
+            var invoice = await _context.Invoices.FirstOrDefaultAsync(i => i.CarId == carId);
+            if (invoice == null)
+            {
+                TempData["Message"] = "لم يتم إصدار فاتورة مبيعات لهذه السيارة لتعديلها.";
+                return RedirectToAction("Index", "Cars");
+            }
+            return RedirectToAction("Edit", new { id = invoice.Id });
         }
     }
 }

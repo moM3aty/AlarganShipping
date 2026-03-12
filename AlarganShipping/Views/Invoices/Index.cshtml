@@ -103,21 +103,26 @@
     }
 
     @@media (max-width: 768px) {
-        .page-header {
-            flex-direction: column;
-            text-align: center;
-        }
+        .page-header
 
-        .btn-add {
-            width: 100%;
-            justify-content: center;
-        }
+    {
+        flex-direction: column;
+        text-align: center;
+    }
 
-        .data-card {
-            padding: 1rem;
-        }
+    .btn-add {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .data-card {
+        padding: 1rem;
+    }
+
     }
 </style>
+
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
 
 <div class="page-header">
     <h2 class="page-title"><i class="fa-solid fa-file-invoice-dollar" style="color: var(--primary-gold);"></i> @Localizer["إدارة الفواتير"]</h2>
@@ -145,7 +150,6 @@
                         @if (inv.IsShippingOnly)
                         {
                             <br />
-                    
                             <span class="badge-shipping-only">شحن فقط</span>
                         }
                     </td>

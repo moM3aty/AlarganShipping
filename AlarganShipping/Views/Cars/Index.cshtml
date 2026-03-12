@@ -3,7 +3,10 @@
     ViewData["Title"] = Localizer["إدارة السيارات والمخزون"];
 }
 
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
 <style>
+    /* --- الهيدر وأدوات التحكم --- */
     .page-header-container {
         display: flex;
         justify-content: space-between;
@@ -90,6 +93,135 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
+    /* --- قائمة الإجراءات المنسدلة (Dropdown Menu) --- */
+    .action-dropdown {
+        position: relative;
+        display: inline-block;
+        text-align: start;
+    }
+
+    .action-dropdown-btn {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.3s;
+        font-family: inherit;
+        box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
+    }
+
+        .action-dropdown-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+        }
+
+    .action-dropdown-menu {
+        position: absolute;
+        background: white;
+        min-width: 260px;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        border: 1px solid #e2e8f0;
+        z-index: 99999 !important;
+        display: none;
+        flex-direction: column;
+        padding: 0.5rem 0;
+        max-height: 350px;
+        overflow-y: auto;
+    }
+
+        .action-dropdown-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .action-dropdown-menu::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .action-dropdown-menu::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .action-dropdown-menu.show {
+            display: flex;
+            animation: dropFade 0.2s ease-out forwards;
+        }
+
+    @@keyframes dropFade {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .action-dropdown-item {
+        padding: 0.75rem 1.25rem;
+        color: var(--primary-navy);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.2s;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: start;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+        .action-dropdown-item i {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .action-dropdown-item:hover {
+            background: #f8fafc;
+            color: var(--primary-gold);
+        }
+
+            .action-dropdown-item:hover i {
+                color: var(--primary-gold);
+            }
+
+        .action-dropdown-item.danger-action:hover {
+            color: #ef4444;
+            background: #fef2f2;
+        }
+
+            .action-dropdown-item.danger-action:hover i {
+                color: #ef4444;
+            }
+
+    .dropdown-divider {
+        height: 1px;
+        background: #e2e8f0;
+        margin: 0.5rem 0;
+    }
+
+    /* --- البطاقات المتقدمة (Grid View) --- */
     .cars-grid-modern {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
@@ -149,33 +281,8 @@
         border: 1px solid #e2e8f0;
     }
 
-    .car-action-floating {
-        position: absolute;
-        bottom: -25px;
-        inset-inline-end: 2rem;
-        width: 60px;
-        height: 60px;
-        background: var(--primary-gold);
-        border-radius: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.5rem;
-        box-shadow: 0 10px 20px rgba(184, 147, 90, 0.3);
-        z-index: 2;
-        text-decoration: none;
-        transition: 0.3s;
-    }
-
-        .car-action-floating:hover {
-            background: var(--primary-navy);
-            transform: scale(1.05);
-            color: white;
-        }
-
     .car-details-area {
-        padding: 3.5rem 2rem 2rem 2rem;
+        padding: 2.5rem 2rem 2rem 2rem;
         text-align: center;
         display: flex;
         flex-direction: column;
@@ -333,6 +440,7 @@
             color: var(--primary-navy);
         }
 
+    /* --- الجدول المتقدم (List View) --- */
     .data-card {
         background: white;
         border-radius: 1.5rem;
@@ -341,6 +449,7 @@
         border: 1px solid #f1f5f9;
         display: none;
         overflow-x: auto;
+        min-height: 400px;
     }
 
     .table-enterprise {
@@ -360,7 +469,7 @@
         }
 
         .table-enterprise td {
-            padding: 1.25rem 1rem;
+            padding: 1rem;
             border-bottom: 1px solid #f1f5f9;
             color: var(--text-dark);
             font-weight: 700;
@@ -408,81 +517,52 @@
         margin-top: 4px;
     }
 
-    .action-btn {
-        color: var(--primary-navy);
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 800;
-        font-size: 0.9rem;
-        transition: 0.3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
+    @@media (max-width: 768px) {
+        .page-header-container
+
+    {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.5rem;
+        padding: 1.5rem;
     }
 
-        .action-btn:hover {
-            background: var(--primary-navy);
-            color: white;
-            border-color: var(--primary-navy);
-        }
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+    }
 
-    /* ========================================================
-           تعديلات الموبايل (الميديا كويري)
-           ======================================================== */
-    @@media (max-width: 768px) {
-        .page-header-container {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 1.5rem;
-            padding: 1.5rem;
-        }
+    .view-toggle-wrapper {
+        width: 100%;
+        display: flex;
+    }
 
-        .header-actions {
-            flex-direction: column;
-            width: 100%;
-            gap: 1rem;
-        }
+    .view-toggle-btn {
+        flex: 1;
+    }
 
-        .view-toggle-wrapper {
-            width: 100%;
-            display: flex;
-        }
+    .btn-add {
+        width: 100%;
+        justify-content: center;
+    }
 
-        .view-toggle-btn {
-            flex: 1;
-        }
+    .cars-grid-modern {
+        grid-template-columns: 1fr;
+    }
 
-        .btn-add {
-            width: 100%;
-            justify-content: center;
-        }
+    .fin-summary-grid {
+        grid-template-columns: 1fr;
+    }
 
-        .cars-grid-modern {
-            grid-template-columns: 1fr;
-        }
+    .car-details-area {
+        padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+    }
 
-        .fin-summary-grid {
-            grid-template-columns: 1fr;
-        }
+    .data-card {
+        padding: 1.5rem;
+    }
 
-        .car-details-area {
-            padding: 2.5rem 1.5rem 1.5rem 1.5rem;
-        }
-
-        .data-card {
-            padding: 1.5rem;
-        }
-
-        .car-action-floating {
-            width: 50px;
-            height: 50px;
-            font-size: 1.2rem;
-            bottom: -20px;
-            inset-inline-end: 1.5rem;
-        }
     }
 </style>
 
@@ -501,23 +581,52 @@
         </div>
     </div>
 
-    <!-- البطاقات المتقدمة -->
+    <!-- البطاقات المتقدمة (Grid View) -->
     <div id="carsGridView" class="cars-grid-modern">
         @if (Model != null && Model.Any())
         {
             foreach (var car in Model)
             {
                 string bgImage = !string.IsNullOrEmpty(car.MainImageUrl) ? car.MainImageUrl : "https://images.unsplash.com/photo-1502877338535-349c6722c608?auto=format&fit=crop&w=800&q=80";
-
                 string statusLabel = car.StatusId == 1 ? "الشراء" : car.StatusId == 3 ? "النقل الداخلي" : car.StatusId >= 7 ? "الوصول" : "المستودع";
 
                 <div class="car-card-pro">
                     <div class="car-image-area" style="background-image: url('@bgImage');">
                         <div class="car-badge-code">@car.InternalCode</div>
-                        <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="car-action-floating">
-                            <i class="fa-solid @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "fa-arrow-left" : "fa-arrow-right")"></i>
-                        </a>
+
+                        <div class="action-dropdown" style="position: absolute; top: 1.5rem; inset-inline-end: 1.5rem; z-index: 3;">
+                            <button type="button" class="action-dropdown-btn" style="padding: 0.5rem 0.8rem; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); border-radius: 12px; box-shadow: none;" onclick="toggleDropdown(event, 'grid-@car.Id')">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                            <div class="action-dropdown-menu" id="dropdown-grid-@car.Id" style="top: 100%; inset-inline-end: 0;">
+                                <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="action-dropdown-item"><i class="fa-regular fa-file-lines"></i> @Localizer["تفاصيل السيارة"]</a>
+                                <a href="@Url.Action("Edit", "Cars", new { id = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-pen-to-square"></i> @Localizer["تعديل البيانات"]</a>
+                                <div class="dropdown-divider"></div>
+
+                                <a href="@Url.Action("DetailsByCar", "Invoices", new { carId = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-file-invoice"></i> @Localizer["تفاصيل عملية البيع"]</a>
+                                <button type="button" onclick="duplicateSale(@car.Id)" class="action-dropdown-item"><i class="fa-solid fa-copy"></i> @Localizer["نسخ (Duplicate)"]</button>
+                                <a href="@Url.Action("Index", "PaymentReceipts")" class="action-dropdown-item"><i class="fa-solid fa-money-bill-wave"></i> @Localizer["عرض المدفوعات"]</a>
+                                <a href="@Url.Action("Create", "PaymentReceipts")" class="action-dropdown-item"><i class="fa-solid fa-dollar-sign"></i> @Localizer["إضافة دفعة"]</a>
+                                <a href="@Url.Action("Index", "PaymentVouchers")" class="action-dropdown-item"><i class="fa-solid fa-money-check"></i> @Localizer["عرض المصروفات"]</a>
+                                <a href="@Url.Action("Create", "PaymentVouchers")" class="action-dropdown-item"><i class="fa-solid fa-hand-holding-dollar"></i> @Localizer["إضافة مصروفات"]</a>
+                                <a href="@Url.Action("PackingList", "Cars", new { id = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-box"></i> @Localizer["قائمة التعبئة"]</a>
+                                <a href="@Url.Action("Create", "DispatchOrders", new { carId = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-truck"></i> @Localizer["أمر نقل داخلي"]</a>
+                                <a href="@Url.Action("EditByCar", "Invoices", new { carId = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-pen"></i> @Localizer["تحرير الفاتورة"]</a>
+                                <button type="button" onclick="emailSale(@car.Id)" class="action-dropdown-item"><i class="fa-solid fa-envelope"></i> @Localizer["إرسال الفاتورة"]</button>
+                                <button type="button" onclick="returnSale(@car.Id)" class="action-dropdown-item"><i class="fa-solid fa-rotate-left"></i> @Localizer["إرجاع بيع"]</button>
+
+                                <div class="dropdown-divider"></div>
+
+                                <a href="@Url.Action("Create", "TrackingLogs", new { carId = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-location-crosshairs"></i> @Localizer["إضافة تتبع"]</a>
+                                <a href="@Url.Action("Create", "DocumentAttachments", new { carId = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-paperclip"></i> @Localizer["رفع مستند"]</a>
+                                <a href="@Url.Action("Create", "CarInspections", new { carId = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-clipboard-check"></i> @Localizer["تقرير فحص"]</a>
+
+                                <div class="dropdown-divider"></div>
+                                <button type="button" onclick="confirmDelete(@car.Id)" class="action-dropdown-item danger-action"><i class="fa-solid fa-trash-can"></i> @Localizer["حذف السيارة"]</button>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="car-details-area">
                         <div class="status-pill"><i class="fa-solid fa-circle-dot"></i> @Localizer[statusLabel]</div>
                         <h3 class="car-title-pro">@car.Make @car.Model</h3>
@@ -528,12 +637,12 @@
                             string fillWidth = status == 1 ? "0%" : status == 2 ? "16.6%" : status == 3 ? "33.3%" : status == 4 ? "50%" : status == 5 ? "66.6%" : status == 6 ? "83.3%" : "100%";
                         }
                         <div class="stepper-container">
-                            <div class="stepper-header"><span><i class="fa-solid fa-route"></i> @Localizer["مسار الشحن"]</span><span class="percentage">@fillWidth</span></div>
+                            <div class="stepper-header"><span><i class="fa-solid fa-route"></i> @Localizer["المسار"]</span><span class="percentage">@fillWidth</span></div>
                             <div class="stepper-track-wrapper">
                                 <div class="stepper-line-bg"></div>
                                 <div class="stepper-line-fill" style="width: @fillWidth; @(System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? "right: 0; left: auto;" : "left: 0; right: auto;")"></div>
                                 <div class="step-node @(status >= 1 ? "active" : "")" title="@Localizer["الشراء"]"><i class="fa-solid fa-gavel"></i></div>
-                                <div class="step-node @(status >= 3 ? "active" : "")" title="@Localizer["النقل الداخلي"]"><i class="fa-solid fa-truck-pickup"></i></div>
+                                <div class="step-node @(status >= 3 ? "active" : "")" title="@Localizer["النقل"]"><i class="fa-solid fa-truck-pickup"></i></div>
                                 <div class="step-node @(status >= 5 ? "active" : "")" title="@Localizer["التحميل"]"><i class="fa-solid fa-box-open"></i></div>
                                 <div class="step-node @(status >= 7 ? "active" : "")" title="@Localizer["الوصول"]"><i class="fa-solid fa-anchor"></i></div>
                             </div>
@@ -544,8 +653,8 @@
                         <div class="fin-summary-grid">
                             <div class="fin-box"><label>@Localizer["المعرض / المزاد"]</label><div class="value">@(car.Auction?.Name ?? "-")</div></div>
                             <div class="fin-box"><label>@Localizer["الموقع الحالي"]</label><div class="value">@(car.CurrentLocation ?? "-")</div></div>
-                            <div class="fin-box"><label>@Localizer["سنة الصنع - اللون"]</label><div class="value">@car.Year - @(string.IsNullOrEmpty(car.Color) ? "-" : car.Color)</div></div>
-                            <div class="fin-box"><label>@Localizer["نوع المركبة"]</label><div class="value">@(car.VehicleType ?? "-")</div></div>
+                            <div class="fin-box"><label>@Localizer["السنة - اللون"]</label><div class="value">@car.Year - @(string.IsNullOrEmpty(car.Color) ? "-" : car.Color)</div></div>
+                            <div class="fin-box"><label>@Localizer["النوع"]</label><div class="value">@(car.VehicleType ?? "-")</div></div>
                         </div>
                     </div>
                 </div>
@@ -553,7 +662,7 @@
         }
     </div>
 
-    <!-- الجدول المتقدم -->
+    <!-- الجدول المتقدم (List View) -->
     <div id="carsTableView" class="data-card">
         <table id="carsDataTable" class="table-enterprise display" style="width:100%">
             <thead>
@@ -563,7 +672,7 @@
                     <th>@Localizer["العميل"]</th>
                     <th>@Localizer["المعرض والموقع"]</th>
                     <th>@Localizer["الحالة"]</th>
-                    <th>@Localizer["إجراءات"]</th>
+                    <th style="text-align: center;">@Localizer["إجراءات"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -605,10 +714,36 @@
                                 }
                                 <span style="background: rgba(184, 147, 90, 0.1); color: var(--primary-gold); padding: 5px 12px; border-radius: 8px; font-weight: 800; border: 1px solid rgba(184, 147, 90, 0.2);">@Localizer[statusText]</span>
                             </td>
-                            <td>
-                                <div style="display:flex; gap: 8px;">
-                                    <a href="@Url.Action("Edit", "Cars", new { id = car.Id })" class="action-btn" style="color: var(--primary-gold); border-color: var(--primary-gold); background: rgba(184,147,90,0.05);"><i class="fa-solid fa-pen-to-square"></i> @Localizer["تعديل"]</a>
-                                    <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="action-btn"><i class="fa-regular fa-eye"></i> @Localizer["التفاصيل"]</a>
+                            <td style="text-align: center;">
+                                <div class="action-dropdown">
+                                    <button type="button" class="action-dropdown-btn" onclick="toggleDropdown(event, '@car.Id')">
+                                        @Localizer["الإجراءات"] <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem;"></i>
+                                    </button>
+                                    <div class="action-dropdown-menu" id="dropdown-@car.Id">
+                                        <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="action-dropdown-item"><i class="fa-regular fa-file-lines"></i> @Localizer["تفاصيل السيارة"]</a>
+                                        <a href="@Url.Action("Edit", "Cars", new { id = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-pen-to-square"></i> @Localizer["تعديل البيانات"]</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a href="@Url.Action("DetailsByCar", "Invoices", new { carId = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-file-invoice"></i> @Localizer["تفاصيل عملية البيع"]</a>
+                                        <button type="button" onclick="duplicateSale(@car.Id)" class="action-dropdown-item"><i class="fa-solid fa-copy"></i> @Localizer["نسخ"]</button>
+                                        <a href="@Url.Action("Index", "PaymentReceipts")" class="action-dropdown-item"><i class="fa-solid fa-money-bill-wave"></i> @Localizer["عرض المدفوعات"]</a>
+                                        <a href="@Url.Action("Create", "PaymentReceipts")" class="action-dropdown-item"><i class="fa-solid fa-dollar-sign"></i> @Localizer["إضافة دفعة"]</a>
+                                        <a href="@Url.Action("Index", "PaymentVouchers")" class="action-dropdown-item"><i class="fa-solid fa-money-check"></i> @Localizer["عرض المصروفات"]</a>
+                                        <a href="@Url.Action("Create", "PaymentVouchers")" class="action-dropdown-item"><i class="fa-solid fa-hand-holding-dollar"></i> @Localizer["إضافة مصروفات"]</a>
+                                        <a href="@Url.Action("PackingList", "Cars", new { id = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-box"></i> @Localizer["قائمة التعبئة"]</a>
+                                        <a href="@Url.Action("Create", "DispatchOrders", new { carId = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-truck"></i> @Localizer["أمر نقل داخلي"]</a>
+                                        <a href="@Url.Action("EditByCar", "Invoices", new { carId = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-pen"></i> @Localizer["تحرير الفاتورة"]</a>
+                                        <button type="button" onclick="emailSale(@car.Id)" class="action-dropdown-item"><i class="fa-solid fa-envelope"></i> @Localizer["إرسال الفاتورة"]</button>
+                                        <button type="button" onclick="returnSale(@car.Id)" class="action-dropdown-item"><i class="fa-solid fa-rotate-left"></i> @Localizer["إرجاع بيع"]</button>
+
+                                        <div class="dropdown-divider"></div>
+
+                                        <a href="@Url.Action("Create", "TrackingLogs", new { carId = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-location-crosshairs"></i> @Localizer["إضافة تتبع"]</a>
+                                        <a href="@Url.Action("Create", "DocumentAttachments", new { carId = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-paperclip"></i> @Localizer["رفع مستند"]</a>
+                                        <a href="@Url.Action("Create", "CarInspections", new { carId = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-clipboard-check"></i> @Localizer["تقرير فحص"]</a>
+
+                                        <div class="dropdown-divider"></div>
+                                        <button type="button" onclick="confirmDelete(@car.Id)" class="action-dropdown-item danger-action"><i class="fa-solid fa-trash-can"></i> @Localizer["حذف السيارة"]</button>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -621,6 +756,45 @@
 
 @section Scripts {
     <script>
+        function toggleDropdown(event, id) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            var targetMenu = $('#dropdown-' + id);
+            var isGridMenu = id.toString().indexOf('grid') !== -1;
+            var isShowing = targetMenu.hasClass('show');
+
+            $('.action-dropdown-menu').removeClass('show');
+
+            if (!isShowing) {
+                targetMenu.addClass('show');
+
+                if (!isGridMenu) {
+                    var btn = event.currentTarget;
+                    var rect = btn.getBoundingClientRect();
+                    var isRtl = $('html').attr('dir') === 'rtl';
+
+                    targetMenu.appendTo('body');
+                    targetMenu.css({
+                        'position': 'fixed',
+                        'top': (rect.bottom + 5) + 'px',
+                        'left': isRtl ? (rect.left + 'px') : (rect.right - targetMenu.outerWidth() + 'px'),
+                        'z-index': 999999
+                    });
+                }
+            }
+        }
+
+        $(document).on('click', function (e) {
+            if (!$(e.target).closest('.action-dropdown').length && !$(e.target).closest('.action-dropdown-menu').length) {
+                $('.action-dropdown-menu').removeClass('show');
+            }
+        });
+
+        $('.data-card, window').on('scroll', function() {
+            $('.action-dropdown-menu').removeClass('show');
+        });
+
         function switchView(viewType) {
             if (viewType === 'list') {
                 $('#carsGridView').hide(); $('#carsTableView').fadeIn(300);
@@ -633,9 +807,88 @@
                 localStorage.setItem('preferredCarView', 'grid');
             }
         }
+
+        function duplicateSale(id) {
+            Swal.fire({ title: '@Html.Raw(Localizer["جاري النسخ..."])', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            $.post('@Url.Action("DuplicateSale", "Cars")/' + id, { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
+                if(res.success) Swal.fire('@Html.Raw(Localizer["نجاح"])', res.message, 'success').then(() => location.reload());
+                else Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+            });
+        }
+
+        function emailSale(id) {
+            Swal.fire({
+                title: '@Html.Raw(Localizer["إرسال الفاتورة"])',
+                input: 'email',
+                inputPlaceholder: '@Html.Raw(Localizer["البريد الإلكتروني..."])',
+                showCancelButton: true,
+                confirmButtonText: '@Html.Raw(Localizer["إرسال"])',
+                confirmButtonColor: 'var(--primary-navy)'
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    Swal.fire({ title: '@Html.Raw(Localizer["جاري الإرسال..."])', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                    $.post('@Url.Action("EmailSale", "Cars")', { id: id, email: result.value, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
+                        if(res.success) Swal.fire('@Html.Raw(Localizer["نجاح"])', res.message, 'success');
+                        else Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+                    });
+                }
+            });
+        }
+
+        function returnSale(id) {
+            Swal.fire({
+                title: '@Html.Raw(Localizer["مرتجع بيع"])',
+                text: '@Html.Raw(Localizer["هل أنت متأكد من عمل إرجاع وتصفير الفاتورة؟"])',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '@Html.Raw(Localizer["تأكيد الإرجاع"])',
+                confirmButtonColor: '#ef4444'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: '@Html.Raw(Localizer["جاري التنفيذ..."])', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                    $.post('@Url.Action("ReturnSale", "Cars")/' + id, { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
+                        if(res.success) Swal.fire('@Html.Raw(Localizer["نجاح"])', '@Html.Raw(Localizer["تم تسجيل المرتجع بنجاح."])', 'success').then(() => location.reload());
+                        else Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+                    });
+                }
+            });
+        }
+
+        function confirmDelete(id) {
+            Swal.fire({
+                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
+                text: '@Html.Raw(Localizer["لن تتمكن من التراجع عن عملية الحذف!"])',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: 'var(--primary-navy)',
+                confirmButtonText: '@Html.Raw(Localizer["نعم، احذفها!"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Cars")/' + id,
+                        type: 'POST',
+                        data: { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({ title: '@Html.Raw(Localizer["تم الحذف!"])', icon: 'success', timer: 1500, showConfirmButton: false }).then(() => location.reload());
+                            } else {
+                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message || '@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])', 'error');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
         $(document).ready(function () {
             var dir = $('html').attr('dir') === 'rtl';
-            $('#carsDataTable').DataTable({ "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" }, "pageLength": 10, "responsive": true });
+            $('#carsDataTable').DataTable({
+                "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" },
+                "pageLength": 10,
+                "responsive": true
+            });
             switchView(localStorage.getItem('preferredCarView') || 'grid');
         });
     </script>

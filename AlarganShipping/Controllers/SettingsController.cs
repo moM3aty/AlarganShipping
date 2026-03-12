@@ -38,7 +38,7 @@ namespace AlarganShipping.Controllers
         {
             try
             {
-                var json = JsonSerializer.Serialize(model);
+                var json = JsonSerializer.Serialize(model, new JsonSerializerOptions { WriteIndented = true });
                 System.IO.File.WriteAllText(_settingsFilePath, json);
                 return Json(new { success = true });
             }
@@ -78,6 +78,8 @@ namespace AlarganShipping.Controllers
             return new SettingsViewModel();
         }
     }
+
+    // تم إضافة الحقول الجديدة الخاصة بنماذج الفواتير هنا
     public class SettingsViewModel
     {
         public decimal UsdExchangeRate { get; set; } = 0.385m;
@@ -86,5 +88,12 @@ namespace AlarganShipping.Controllers
         public decimal VatPercentage { get; set; } = 5;
         public decimal DefaultCommission { get; set; } = 150;
         public string InquiryPhoneNumber { get; set; } = "96890000000";
+
+        // إعدادات الفواتير والطباعة (Invoice Settings)
+        public string InvoiceTemplate { get; set; } = "Modern"; // Classic, Modern, Simple
+        public string InvoiceHeaderColor { get; set; } = "#1e293b"; // لون الترويسة الافتراضي (كحلي)
+        public string VatNumber { get; set; } = "00016800820";
+        public string CrNumber { get; set; } = "0001425763";
+        public string InvoiceFooterText { get; set; } = "البضاعة المباعة لا ترد ولا تستبدل إلا حسب الشروط والأحكام. شكراً لثقتكم بنا.";
     }
 }

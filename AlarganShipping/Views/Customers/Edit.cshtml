@@ -55,9 +55,12 @@
     }
 
     @@media (min-width: 768px) {
-        .form-grid-2 {
-            grid-template-columns: repeat(2, 1fr);
-        }
+        .form-grid-2
+
+    {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     }
 
     .form-group {
@@ -155,6 +158,37 @@
             accent-color: var(--primary-gold);
             cursor: pointer;
         }
+
+    @@media (max-width: 768px) {
+        .form-page-header
+
+    {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .form-page-title {
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .premium-form-card {
+        padding: 1.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .btn-submit, .btn-cancel {
+        text-align: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    }
 </style>
 
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
@@ -169,7 +203,7 @@
         <form asp-action="Edit" method="post" id="customerEditForm">
             @Html.AntiForgeryToken()
 
-            <!-- الحقول المخفية للحفاظ على البيانات الأساسية والمالية -->
+            <!-- الحقول المخفية للحفاظ على البيانات الأساسية والمالية من الضياع عند الحفظ -->
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="CustomerCode" />
             <input type="hidden" asp-for="TotalPaid" />

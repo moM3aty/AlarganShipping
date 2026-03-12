@@ -1,372 +1,393 @@
 ﻿@{
-    ViewData["Title"] = Localizer["حاسبة تكاليف الشحن الذكية"];
+    ViewData["Title"] = Localizer["حاسبة التكاليف"];
     var isRtl = System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
 }
 
 <style>
-    .calc-container {
-        max-width: 1000px;
+    .calc-wrapper {
+        max-width: 900px;
         margin: 0 auto;
         padding: 2rem 0;
     }
 
-    .calc-header {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-
-        .calc-header h1 {
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: var(--primary-navy);
-            margin-bottom: 0.5rem;
-        }
-
-        .calc-header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-    .calc-grid {
-        display: grid;
-        grid-template-columns: 1.5fr 1fr;
-        gap: 2rem;
-        align-items: flex-start;
-    }
-
-    .calc-card {
-        background: white;
-        border-radius: 1.5rem;
-        padding: 2.5rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-        border: 1px solid #f1f5f9;
-    }
-
-    .mode-switch {
-        display: flex;
-        background: #f1f5f9;
-        border-radius: 1rem;
-        padding: 0.5rem;
-        margin-bottom: 2rem;
-    }
-
-    .mode-btn {
-        flex: 1;
-        text-align: center;
-        padding: 0.8rem;
-        font-weight: 800;
-        border-radius: 0.75rem;
-        cursor: pointer;
-        transition: 0.3s;
-        color: var(--text-muted);
-    }
-
-        .mode-btn.active {
-            background: white;
-            color: var(--primary-navy);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-    .input-group {
+    .page-header-text h2 {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--primary-navy);
         margin-bottom: 1.5rem;
+        text-align: center;
     }
 
-    .input-label {
-        display: block;
+    /* --- تنسيقات جدول الإكسل المطور --- */
+    .excel-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        border: 2px solid var(--primary-navy);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+        .excel-table th, .excel-table td {
+            border: 1px solid #cbd5e1;
+            padding: 10px 15px;
+            font-size: 1.05rem;
+            vertical-align: middle;
+        }
+
+        .excel-table input {
+            width: 100%;
+            border: 1px solid transparent;
+            background: rgba(184, 147, 90, 0.05);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 1.05rem;
+            font-weight: 900;
+            font-family: monospace;
+            color: var(--primary-navy);
+            outline: none;
+            text-align: left;
+            transition: 0.3s;
+        }
+
+            .excel-table input:focus {
+                border-color: var(--primary-gold);
+                background: white;
+            }
+
+        .excel-table select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-weight: bold;
+            outline: none;
+            background: #f8fafc;
+        }
+
+    /* ألوان الأقسام حسب الهوية */
+    .header-auction {
+        background-color: #d8b4e2; /* بنفسجي فاتح حسب الصورة */
+        color: #1e293b;
+        text-align: center;
+        font-size: 1.4rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .header-shipping {
+        background-color: #e2e8f0;
+        color: #1e293b;
+        text-align: center;
+        font-size: 1.4rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .row-label {
         font-weight: 800;
         color: var(--primary-navy);
-        margin-bottom: 0.5rem;
-        font-size: 0.95rem;
     }
 
-    .calc-input {
-        width: 100%;
-        padding: 1rem 1.25rem;
-        border: 2px solid #e2e8f0;
-        border-radius: 0.75rem;
-        font-size: 1.1rem;
+    .row-yellow {
+        background-color: #fef9c3;
+    }
+
+    .row-green {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+
+    .row-blue-total {
+        background-color: #dbeafe;
+        color: #1e3a8a;
+    }
+
+    .readonly-val {
+        text-align: left;
+        font-family: monospace;
         font-weight: 900;
-        transition: 0.3s;
-        outline: none;
-        background: #f8fafc;
+        font-size: 1.15rem;
+        color: var(--primary-navy);
     }
 
-        .calc-input:focus {
-            border-color: var(--primary-gold);
-            background: white;
+    .currency-symbol {
+        font-weight: 900;
+        color: #64748b;
+        margin-right: 5px;
+    }
+
+    .radio-group {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        background: #f1f5f9;
+        padding: 8px 12px;
+        border-radius: 8px;
+    }
+
+        .radio-group label {
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
         }
 
-    .calc-input-ltr {
-        text-align: end;
-        font-family: monospace;
-    }
-
-    .calc-input[readonly] {
-        background-color: #e2e8f0;
-        cursor: not-allowed;
-        color: var(--primary-gold);
-    }
-
-    .fee-details-text {
-        display: block;
-        margin-top: 5px;
-        font-size: 0.8rem;
-        color: #16a34a;
-        font-weight: 700;
-    }
-
-    /* Summary Card */
-    .summary-card {
-        background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%);
-        color: white;
-        border-radius: 1.5rem;
-        padding: 2.5rem;
-        box-shadow: 0 15px 40px rgba(26, 42, 58, 0.2);
-        position: sticky;
-        top: 100px;
-    }
-
-    .summary-title {
-        font-size: 1.5rem;
-        font-weight: 900;
-        margin: 0 0 2rem 0;
-        color: var(--primary-gold);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .summary-row {
+    .settings-bar {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        margin-bottom: 1.5rem;
         display: flex;
         justify-content: space-between;
-        margin-bottom: 1rem;
-        font-weight: 700;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-
-        .summary-row:last-of-type {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-
-    .summary-val {
-        font-family: monospace;
-        font-size: 1.2rem;
-    }
-
-    .grand-total-box {
-        background: rgba(255,255,255,0.1);
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        margin-top: 2rem;
-        text-align: center;
-    }
-
-    .grand-total-label {
-        display: block;
-        font-size: 1rem;
-        font-weight: 800;
-        color: #cbd5e1;
-        margin-bottom: 0.5rem;
-    }
-
-    .grand-total-val {
-        font-size: 2.5rem;
-        font-weight: 900;
-        color: var(--primary-gold);
-        font-family: monospace;
+        align-items: center;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.02);
     }
 
     .btn-print {
-        width: 100%;
         background: var(--primary-gold);
         color: white;
         border: none;
-        padding: 1rem;
-        border-radius: 0.75rem;
+        padding: 10px 25px;
+        border-radius: 10px;
         font-weight: 900;
-        font-size: 1.1rem;
-        margin-top: 1.5rem;
         cursor: pointer;
         transition: 0.3s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
     }
 
         .btn-print:hover {
             background: var(--secondary-gold);
+            transform: translateY(-2px);
         }
 
-    @@media (max-width: 992px) {
-        .calc-grid {
-            grid-template-columns: 1fr;
-        }
+    @@edia print {
+        .settings-bar, .page-header-text, .sidebar, .topbar
 
-        .summary-card {
-            position: relative;
-            top: 0;
-        }
+    {
+        display: none !important;
+    }
+
+    .calc-wrapper {
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    .excel-table {
+        border: 1px solid #000;
+        box-shadow: none;
+    }
+
     }
 </style>
 
-<div class="calc-container">
-    <div class="calc-header">
-        <h1><i class="fa-solid fa-calculator" style="color: var(--primary-gold); margin-inline-end: 10px;"></i> @Localizer["حاسبة تكاليف الشحن الذكية"]</h1>
-        <p>@Localizer["احسب التكاليف المتوقعة مباشرة بناءً على بيانات المزادات والموانئ في النظام"]</p>
+<div class="calc-wrapper" dir="ltr">
+
+    <div class="page-header-text" dir="rtl">
+        <h2><i class="fa-solid fa-calculator" style="color: var(--primary-gold);"></i> @Localizer["حاسبة التكاليف المتقدمة"]</h2>
     </div>
 
-    <div class="calc-grid">
-        <!-- قسم الإدخال -->
-        <div class="calc-card">
-            <div class="mode-switch">
-                <div class="mode-btn active" id="modeExport" onclick="setMode('export')">@Localizer["شراء سيارة (Export)"]</div>
-                <div class="mode-btn" id="modeImport" onclick="setMode('import')">@Localizer["شحن فقط (Import)"]</div>
-            </div>
-
-            <div class="input-group" id="carPriceGroup">
-                <label class="input-label">@Localizer["سعر شراء السيارة المتوقع (USD)"]</label>
-                <input type="number" class="calc-input calc-input-ltr" id="carPrice" placeholder="مثال: 1500" value="0" />
-            </div>
-
-            <!-- حقل رسوم المزاد المحسوب تلقائياً -->
-            <div class="input-group" id="auctionFeeGroup">
-                <label class="input-label">@Localizer["رسوم المزاد الإجمالية (تُحسب تلقائياً) USD"]</label>
-                <input type="number" class="calc-input calc-input-ltr" id="auctionFeeInput" value="0" readonly />
-                <span class="fee-details-text" id="auctionFeeDetails"></span>
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">@Localizer["تكلفة النقل الداخلي (Towing) USD"]</label>
-                <input type="number" class="calc-input calc-input-ltr" id="towingFee" value="350" />
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">@Localizer["تكلفة الشحن البحري (Ocean Freight) USD"]</label>
-                <input type="number" class="calc-input calc-input-ltr" id="oceanFreightFee" value="1200" />
-            </div>
-
-            <hr style="border: none; border-top: 2px dashed #e2e8f0; margin: 2rem 0;" />
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="input-group">
-                    <label class="input-label">@Localizer["الجمارك (%)"]</label>
-                    <input type="number" class="calc-input calc-input-ltr" id="customsPercent" value="5" step="0.1" />
-                </div>
-                <div class="input-group">
-                    <label class="input-label">@Localizer["عمولة الشركة ($)"]</label>
-                    <input type="number" class="calc-input calc-input-ltr" id="companyComm" value="150" />
-                </div>
-            </div>
-
-            <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 700; margin-top: 1rem;">
-                <i class="fa-solid fa-circle-info"></i> @Localizer["ملاحظات هامة: التكاليف المعروضة قابلة للتعديل وتتغير النتائج فوراً. الجمارك والضرائب تحسب تلقائياً كنسبة من (سعر السيارة + أجور الشحن)."]
-            </p>
+    <!-- إعدادات سعر الصرف -->
+    <div class="settings-bar" dir="rtl">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <label style="font-weight: 800; color: var(--primary-navy);">سعر صرف الدولار (OMR): </label>
+            <input type="number" id="exchangeRate" value="0.386" step="0.001" style="width: 100px; padding: 8px; border: 2px solid var(--primary-gold); border-radius: 8px; font-weight: 900; text-align: center; outline: none;" />
         </div>
-
-        <!-- قسم الملخص -->
-        <div class="summary-card">
-            <h3 class="summary-title"><i class="fa-solid fa-receipt"></i> @Localizer["ملخص التسعيرة"]</h3>
-
-            <div class="summary-row" id="sumRowCar">
-                <span>@Localizer["سعر السيارة"]</span>
-                <span class="summary-val" id="sumCarPrice">$0.00</span>
-            </div>
-            <div class="summary-row" id="sumRowAuction">
-                <span>@Localizer["رسوم المزاد"]</span>
-                <span class="summary-val" id="sumAuctionFee">$0.00</span>
-            </div>
-            <div class="summary-row">
-                <span>@Localizer["النقل الداخلي والشحن"]</span>
-                <span class="summary-val" id="sumShipping">$0.00</span>
-            </div>
-            <div class="summary-row">
-                <span>@Localizer["الجمارك والضرائب"]</span>
-                <span class="summary-val" id="sumCustoms">$0.00</span>
-            </div>
-            <div class="summary-row">
-                <span>@Localizer["عمولة الشركة"]</span>
-                <span class="summary-val" id="sumComm">$0.00</span>
-            </div>
-
-            <div class="grand-total-box">
-                <span class="grand-total-label">@Localizer["الإجمالي المتوقع"]</span>
-                <div class="grand-total-val" id="grandTotalUSD">$0.00</div>
-            </div>
-
-            <button class="btn-print" onclick="window.print()">
-                <i class="fa-solid fa-print"></i> @Localizer["طباعة عرض السعر للعميل"]
-            </button>
-        </div>
+        <button class="btn-print" onclick="window.print()"><i class="fa-solid fa-print"></i> @Localizer["طباعة الحسبة"]</button>
     </div>
+
+    <table class="excel-table">
+        <!-- قسم المزاد - Auction -->
+        <thead>
+            <tr>
+                <th colspan="3" class="header-auction">Auction Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="row-label" style="width: 40%;">SALE PRICE</td>
+                <td style="width: 5%; text-align: center;" class="currency-symbol">$</td>
+                <td><input type="number" id="salePrice" value="1500.00" step="1" /></td>
+            </tr>
+            <tr class="row-yellow">
+                <td class="row-label">BUYER FEE</td>
+                <td class="currency-symbol" style="text-align: center;">$</td>
+                <td><input type="number" id="buyerFee" value="315.00" step="1" /></td>
+            </tr>
+            <tr class="row-yellow">
+                <td class="row-label">ENVIRONMENTAL FEE</td>
+                <td class="currency-symbol" style="text-align: center;">$</td>
+                <td><input type="number" id="envFee" value="15.00" step="1" /></td>
+            </tr>
+            <tr class="row-yellow">
+                <td class="row-label">VIRTUAL BID FEE</td>
+                <td class="currency-symbol" style="text-align: center;">$</td>
+                <td><input type="number" id="virtualFee" value="95.00" step="1" /></td>
+            </tr>
+            <tr class="row-yellow">
+                <td class="row-label">GATE FEE</td>
+                <td class="currency-symbol" style="text-align: center;">$</td>
+                <td><input type="number" id="gateFee" value="95.00" step="1" /></td>
+            </tr>
+            <tr class="row-yellow">
+                <td class="row-label">TITLE PICKUP FEE</td>
+                <td class="currency-symbol" style="text-align: center;">$</td>
+                <td><input type="number" id="titleFee" value="40.00" step="1" /></td>
+            </tr>
+            <tr class="row-green">
+                <td class="row-label">TOTAL IN AUCTION</td>
+                <td class="currency-symbol" style="text-align: center; color: #166534;">$</td>
+                <td class="readonly-val" id="totalAuctionUsd">2,060.00</td>
+            </tr>
+            <tr class="row-blue-total">
+                <td class="row-label">TOTAL (OMR)</td>
+                <td colspan="2" style="text-align: right;" dir="rtl">
+                    <span class="readonly-val" id="totalAuctionOmr" style="font-size: 1.4rem; color: #1e3a8a;">795.160</span> <span style="font-weight: 900;">ر.ع.</span>
+                </td>
+            </tr>
+
+            <!-- قسم الشحن - Shipping -->
+            <tr>
+                <th colspan="3" class="header-shipping">Shipping & Logistics</th>
+            </tr>
+            <tr>
+                <td class="row-label">Payment Service</td>
+                <td colspan="2" style="text-align: right;" dir="rtl">
+                    <input type="number" id="paymentService" value="15.000" step="0.001" style="width: 120px; text-align: left;" /> <span style="font-weight: bold;">ر.ع.</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="row-label" style="color: #dc2626;">TAX / VAT</td>
+                <td colspan="2" style="text-align: right;" dir="rtl">
+                    <input type="number" id="taxOmr" value="54.760" step="0.001" style="width: 120px; text-align: left; color: #dc2626;" /> <span style="font-weight: bold;">ر.ع.</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="row-label" style="color: #dc2626;">Customs</td>
+                <td colspan="2" style="text-align: right;" dir="rtl">
+                    <input type="number" id="customsOmr" value="0.000" step="0.001" style="width: 120px; text-align: left; color: #dc2626;" /> <span style="font-weight: bold;">ر.ع.</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="row-label">Shipping COST</td>
+                <td colspan="2" style="text-align: right;" dir="rtl">
+                    <input type="number" id="shippingCostOmr" value="609.000" step="0.001" style="width: 120px; text-align: left;" /> <span style="font-weight: bold;">ر.ع.</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="row-label">Office Commission</td>
+                <td colspan="2" style="text-align: right;" dir="rtl">
+                    <input type="number" id="officeCommOmr" value="50.000" step="0.001" style="width: 120px; text-align: left;" /> <span style="font-weight: bold;">ر.ع.</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="row-label">Vehicle Type (SUV/Big)</td>
+                <td colspan="2">
+                    <div class="radio-group">
+                        <label><input type="radio" name="carType" value="0" checked onchange="calculateAll()" /> Small</label>
+                        <label><input type="radio" name="carType" value="50" onchange="calculateAll()" /> Mid (+$50)</label>
+                        <label><input type="radio" name="carType" value="100" onchange="calculateAll()" /> Big (+$100)</label>
+                    </div>
+                </td>
+            </tr>
+            <tr class="row-blue-total" style="background-color: #cbd5e1;">
+                <td class="row-label">TOTAL SHIPPING</td>
+                <td colspan="2" style="text-align: right;" dir="rtl">
+                    <span class="readonly-val" id="totalShippingOmr">728.760</span> <span style="font-weight: 900;">ر.ع.</span>
+                </td>
+            </tr>
+
+            <!-- الإجمالي النهائي - Grand Total -->
+            <tr style="background-color: var(--primary-navy); color: white;">
+                <td style="font-size: 1.4rem; font-weight: 900; padding: 20px 15px;">GRAND TOTAL (OMR)</td>
+                <td colspan="2" style="text-align: right; font-size: 2rem; font-weight: 900; padding: 20px 15px;" dir="rtl">
+                    <span id="grandTotalOmr" style="color: var(--primary-gold);">1,523.920</span> <span style="font-size: 1.2rem;">ر.ع.</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <!-- استدعاء ملف حساب المزاد الذي أنشأناه -->
-    <script src="~/js/auctionCalculator.js"></script>
-
     <script>
-        var currentMode = 'export';
+        // دالة حساب عمولة المزاد بناءً على الجدول المرفق سابقاً
+        function getBuyerFee(salePrice) {
+            if (salePrice <= 0) return 0;
+            if (salePrice <= 49.99) return 25.00;
+            if (salePrice <= 99.99) return 45.00;
+            if (salePrice <= 199.99) return 80.00;
+            if (salePrice <= 299.99) return 130.00;
+            if (salePrice <= 349.99) return 132.50;
+            if (salePrice <= 399.99) return 135.00;
+            if (salePrice <= 449.99) return 170.00;
+            if (salePrice <= 499.99) return 180.00;
+            if (salePrice <= 549.99) return 200.00;
+            if (salePrice <= 599.99) return 205.00;
+            if (salePrice <= 699.99) return 235.00;
+            if (salePrice <= 799.99) return 260.00;
+            if (salePrice <= 899.99) return 280.00;
+            if (salePrice <= 999.99) return 305.00;
+            if (salePrice <= 1199.99) return 355.00;
+            if (salePrice <= 1299.99) return 380.00;
+            if (salePrice <= 1399.99) return 400.00;
+            if (salePrice <= 1499.99) return 410.00;
+            if (salePrice <= 1599.99) return 425.00; // قيمة تقديرية بناءً على تسلسل الجدول
 
-        function setMode(mode) {
-            currentMode = mode;
-            if(mode === 'export') {
-                $('#modeExport').addClass('active');
-                $('#modeImport').removeClass('active');
-                $('#carPriceGroup, #auctionFeeGroup, #sumRowCar, #sumRowAuction').show();
-            } else {
-                $('#modeImport').addClass('active');
-                $('#modeExport').removeClass('active');
-                $('#carPriceGroup, #auctionFeeGroup, #sumRowCar, #sumRowAuction').hide();
-                $('#carPrice, #auctionFeeInput').val(0); // تصفير القيم عند إخفائها
-            }
-            calculateTotal();
+            // للحساب فوق 1600 (عمولة متغيرة)
+            return 450.00 + ((salePrice - 1600) * 0.03);
         }
 
-        function calculateTotal() {
-            var carPrice = currentMode === 'export' ? (parseFloat($('#carPrice').val()) || 0) : 0;
+        function calculateAll() {
+            // 1. سعر الصرف
+            let rate = parseFloat(document.getElementById('exchangeRate').value) || 0.386;
 
-            // --- الربط مع ملف auctionCalculator.js ---
-            if (currentMode === 'export' && carPrice > 0) {
-                var auctionFees = calculateTotalAuctionFees(carPrice);
-                $('#auctionFeeInput').val(auctionFees.totalFees);
-                $('#auctionFeeDetails').text(`(رسوم المشتري: $${auctionFees.buyerFee} + رسوم ثابتة: $${auctionFees.fixedFees})`);
-            } else {
-                $('#auctionFeeInput').val(0);
-                $('#auctionFeeDetails').text('');
+            // 2. المزاد
+            let salePrice = parseFloat(document.getElementById('salePrice').value) || 0;
+
+            // تحديث عمولة المشتري آلياً إذا كان الإدخال من حقل سعر البيع
+            if (document.activeElement.id === 'salePrice') {
+                document.getElementById('buyerFee').value = getBuyerFee(salePrice).toFixed(2);
             }
 
-            var auctionFee = parseFloat($('#auctionFeeInput').val()) || 0;
-            var towingFee = parseFloat($('#towingFee').val()) || 0;
-            var oceanFreightFee = parseFloat($('#oceanFreightFee').val()) || 0;
-            var customsPercent = parseFloat($('#customsPercent').val()) || 0;
-            var companyComm = parseFloat($('#companyComm').val()) || 0;
+            let buyerFee = parseFloat(document.getElementById('buyerFee').value) || 0;
+            let envFee = parseFloat(document.getElementById('envFee').value) || 0;
+            let virtualFee = parseFloat(document.getElementById('virtualFee').value) || 0;
+            let gateFee = parseFloat(document.getElementById('gateFee').value) || 0;
+            let titleFee = parseFloat(document.getElementById('titleFee').value) || 0;
 
-            // الجمارك تحسب على (قيمة السيارة + الشحن البحري)
-            var customsAmount = (carPrice + oceanFreightFee) * (customsPercent / 100);
+            let totalAuctionUsd = salePrice + buyerFee + envFee + virtualFee + gateFee + titleFee;
+            document.getElementById('totalAuctionUsd').innerText = totalAuctionUsd.toFixed(2);
 
-            var totalShipping = towingFee + oceanFreightFee;
-            var grandTotal = carPrice + auctionFee + totalShipping + customsAmount + companyComm;
+            let totalAuctionOmr = totalAuctionUsd * rate;
+            document.getElementById('totalAuctionOmr').innerText = totalAuctionOmr.toFixed(3);
 
-            // تحديث العرض
-            $('#sumCarPrice').text('$' + carPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#sumAuctionFee').text('$' + auctionFee.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#sumShipping').text('$' + totalShipping.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#sumCustoms').text('$' + customsAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#sumComm').text('$' + companyComm.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+            // 3. الشحن
+            let paymentService = parseFloat(document.getElementById('paymentService').value) || 0;
+            let taxOmr = parseFloat(document.getElementById('taxOmr').value) || 0;
+            let customsOmr = parseFloat(document.getElementById('customsOmr').value) || 0;
+            let shippingCostOmr = parseFloat(document.getElementById('shippingCostOmr').value) || 0;
+            let officeCommOmr = parseFloat(document.getElementById('officeCommOmr').value) || 0;
 
-            $('#grandTotalUSD').text('$' + grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+            let carTypeSurchargeUsd = parseFloat(document.querySelector('input[name="carType"]:checked').value);
+            let carTypeSurchargeOmr = carTypeSurchargeUsd * rate;
+
+            let totalShippingOmr = paymentService + taxOmr + customsOmr + shippingCostOmr + officeCommOmr + carTypeSurchargeOmr;
+            document.getElementById('totalShippingOmr').innerText = totalShippingOmr.toFixed(3);
+
+            // 4. الإجمالي النهائي
+            let grandTotal = totalAuctionOmr + totalShippingOmr;
+            document.getElementById('grandTotalOmr').innerText = grandTotal.toFixed(3);
         }
 
-        $(document).ready(function() {
-            // الاستماع لأي تغيير في الحقول لتحديث الحسابات فوراً
-            $('.calc-input').on('input change', calculateTotal);
-            calculateTotal(); // حساب مبدئي عند تحميل الصفحة
+        // مراقبة الحقول للتحديث اللحظي
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', calculateAll);
         });
+
+        document.addEventListener('DOMContentLoaded', calculateAll);
     </script>
 }

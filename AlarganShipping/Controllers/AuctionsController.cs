@@ -59,17 +59,25 @@ namespace AlarganShipping.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateQuick(string name)
         {
-            if (string.IsNullOrWhiteSpace(name)) return Json(new { success = false });
+            if (string.IsNullOrWhiteSpace(name)) return Json(new { success = false, message = "الاسم مطلوب" });
 
-            var auction = new Auction
+            try
             {
-                Name = name,
-                Location = "غير محدد"
-                // تم إزالة DefaultAuctionFee بناءً على الملاحظة
-            };
-            _context.Add(auction);
-            await _context.SaveChangesAsync();
-            return Json(new { success = true, id = auction.Id, name = auction.Name });
+                var auction = new Auction
+                {
+                    Name = name,
+                    Location = "غير محدد"
+                };
+
+                _context.Add(auction);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, id = auction.Id, name = auction.Name });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.InnerException?.Message ?? ex.Message });
+            }
         }
 
         // حفظ التعديلات (POST - AJAX)

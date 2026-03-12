@@ -125,7 +125,20 @@ namespace AlarganShipping.Controllers
             }
             return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
+        public async Task<IActionResult> PrintStatement(int? id)
+        {
+            if (id == null) return NotFound();
 
+            var customer = await _context.Customers
+                .Include(c => c.Cars).ThenInclude(car => car.Auction)
+                .Include(c => c.Invoices)
+                .Include(c => c.PaymentReceipts)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (customer == null) return NotFound();
+
+            return View(customer);
+        }
         // ==========================================
         // إضافة عميل سريع من شاشة السيارات (AJAX)
         // ==========================================
@@ -133,20 +146,33 @@ namespace AlarganShipping.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateQuick(string name)
         {
-            if (string.IsNullOrWhiteSpace(name)) return Json(new { success = false });
+            if (string.IsNullOrWhiteSpace(name)) return Json(new { success = false, message = "الاسم مطلوب" });
 
-            var customer = new Customer
+            try
             {
-                Name = name,
-                Phone = "-", // بيانات افتراضية مؤقتة
-                CustomerCode = "CUST-" + new Random().Next(1000, 9999),
-                PortalUsername = "user" + new Random().Next(100, 999),
-                PortalPassword = new Random().Next(100000, 999999).ToString(),
-                IsPortalActive = true
-            };
-            _context.Add(customer);
-            await _context.SaveChangesAsync();
-            return Json(new { success = true, id = customer.Id, name = customer.Name });
+                var customer = new Customer
+                {
+                    Name = name,
+                    Phone = "-", // بيانات افتراضية مؤقتة
+                    Email = "info@alargan.com", // بريد افتراضي لمنع مشاكل الـ Validation
+                    Address = "غير محدد", // <--- حل المشكلة بتمرير قيمة افتراضية للعنوان
+                    CivilId = "-", // إضافة قيمة للرقم المدني لتجنب أي أخطاء مشابهة
+                    CustomerCode = "CUST-" + new Random().Next(1000, 9999),
+                    PortalUsername = "user" + new Random().Next(100, 999),
+                    PortalPassword = new Random().Next(100000, 999999).ToString(),
+                    IsPortalActive = true
+                };
+
+                _context.Add(customer);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, id = customer.Id, name = customer.Name });
+            }
+            catch (Exception ex)
+            {
+                // إرجاع رسالة الخطأ الدقيقة لتظهر في السكريبت
+                return Json(new { success = false, message = ex.InnerException?.Message ?? ex.Message });
+            }
         }
 
         [HttpPost]

@@ -13,6 +13,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
+        :root {
+            --primary-navy: #1e293b;
+            --primary-gold: #b45309;
+        }
+
         body {
             font-family: 'Cairo', sans-serif;
             background: #e2e8f0;
@@ -27,28 +32,28 @@
             background: white;
             width: 100%;
             max-width: 800px;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             margin-top: 20px;
         }
 
         .header {
             text-align: center;
-            border-bottom: 3px solid #b45309;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            border-bottom: 3px solid var(--primary-gold);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
         }
 
             .header img {
-                height: 80px;
+                height: 90px;
                 margin-bottom: 10px;
             }
 
             .header h1 {
                 margin: 0;
-                color: #1e293b;
-                font-size: 2rem;
+                color: var(--primary-navy);
+                font-size: 2.2rem;
                 font-weight: 900;
             }
 
@@ -56,20 +61,20 @@
             display: flex;
             justify-content: space-between;
             background: #f8fafc;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
             border: 1px solid #e2e8f0;
         }
 
             .info-row p {
-                margin: 5px 0;
+                margin: 8px 0;
                 font-weight: 700;
                 color: #334155;
             }
 
             .info-row span {
-                color: #b45309;
+                color: var(--primary-gold);
                 font-family: monospace;
                 font-size: 1.1rem;
             }
@@ -77,95 +82,105 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         th {
-            background: #1e293b;
+            background: var(--primary-navy);
             color: white;
-            padding: 10px;
+            padding: 15px 10px;
             text-align: right;
+            font-size: 1.1rem;
         }
 
         td {
-            padding: 10px;
+            padding: 15px 10px;
             border-bottom: 1px solid #e2e8f0;
             font-weight: 700;
+            font-size: 1.05rem;
         }
 
             td.amount {
                 text-align: left;
                 font-family: monospace;
-                font-size: 1.1rem;
+                font-size: 1.2rem;
+                color: var(--primary-navy);
             }
 
         .totals {
-            width: 350px;
+            width: 380px;
             margin-right: auto;
-            border: 2px solid #1e293b;
-            border-radius: 8px;
+            border: 2px solid var(--primary-navy);
+            border-radius: 12px;
+            overflow: hidden;
         }
 
             .totals div {
                 display: flex;
                 justify-content: space-between;
-                padding: 10px;
+                padding: 15px;
                 border-bottom: 1px solid #e2e8f0;
-                font-weight: 700;
+                font-weight: 800;
+                font-size: 1.1rem;
             }
 
             .totals .final {
-                background: #1e293b;
+                background: var(--primary-navy);
                 color: white;
-                font-size: 1.2rem;
+                font-size: 1.4rem;
+                font-weight: 900;
             }
 
             .totals .remain {
                 background: #fef2f2;
                 color: #ef4444;
-                font-size: 1.2rem;
+                font-size: 1.3rem;
+                font-weight: 900;
             }
 
         .footer {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 40px;
             padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 2px dashed #e2e8f0;
         }
 
         .bank-info {
             display: inline-block;
-            background: rgba(184, 147, 90, 0.1);
-            border: 1px dashed #b45309;
-            padding: 15px;
-            border-radius: 8px;
+            background: rgba(184, 147, 90, 0.05);
+            border: 2px dashed var(--primary-gold);
+            padding: 20px;
+            border-radius: 12px;
             text-align: right;
+            font-size: 1.1rem;
         }
 
         .controls {
             display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
         .btn-action {
             color: white;
-            padding: 10px 20px;
+            padding: 12px 25px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-family: inherit;
             font-weight: 900;
-            font-size: 1rem;
+            font-size: 1.1rem;
             transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         .btn-print {
-            background: #b45309;
+            background: var(--primary-gold);
         }
 
             .btn-print:hover {
                 background: #92400e;
+                transform: translateY(-2px);
             }
 
         .btn-excel {
@@ -174,6 +189,7 @@
 
             .btn-excel:hover {
                 background: #059669;
+                transform: translateY(-2px);
             }
 
         .btn-pdf {
@@ -182,56 +198,56 @@
 
             .btn-pdf:hover {
                 background: #dc2626;
+                transform: translateY(-2px);
             }
 
         .btn-back {
-            background: #1e293b;
+            background: var(--primary-navy);
         }
 
             .btn-back:hover {
                 background: #0f172a;
+                transform: translateY(-2px);
             }
 
         @@media print {
-            body {
-                background: white;
-                padding: 0;
-            }
+            body
 
-            .invoice-box {
-                box-shadow: none;
-                padding: 0;
-                max-width: 100%;
-                border: none;
-                margin: 0;
-            }
+        {
+            background: white;
+            padding: 0;
+        }
 
-            .controls {
-                display: none;
-            }
+        .invoice-box {
+            box-shadow: none;
+            padding: 0;
+            max-width: 100%;
+            border: none;
+            margin: 0;
+        }
 
-            html, body {
-                height: 99%;
-                page-break-after: avoid;
-            }
+        .controls {
+            display: none;
+        }
 
-            .invoice-box {
-                transform: scale(0.95);
-                transform-origin: top center;
-            }
+        html, body {
+            height: 99%;
+            page-break-after: avoid;
+        }
 
-            th, .final {
-                background-color: #1e293b !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
+        th, .final {
+            background-color: var(--primary-navy) !important;
+            color: white !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
 
-            .bank-info {
-                background-color: rgba(184, 147, 90, 0.1) !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
+        .bank-info {
+            background-color: rgba(184, 147, 90, 0.05) !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
         }
     </style>
 </head>
@@ -247,21 +263,21 @@
         <div class="header">
             <img src="/images/logo.png" alt="Logo" onerror="this.onerror=null; this.style.display='none'" />
             <h1>ALARGAN AUTO SHIPPING</h1>
-            <p style="color:#64748b; font-weight:800; font-size:1.1rem; margin:0;">فاتورة ضريبية - Tax Invoice</p>
+            <p style="color:#64748b; font-weight:900; font-size:1.3rem; margin:5px 0 0 0;">فاتورة ضريبية - Tax Invoice</p>
         </div>
 
         <div class="info-row">
             <div>
-                <p>فاتورة مقدمة إلى: <span style="font-size: 1.3rem;">@(Model.Customer?.Name)</span></p>
+                <p>فاتورة مقدمة إلى: <span style="font-size: 1.4rem; color: var(--primary-navy);">@(Model.Customer?.Name)</span></p>
                 <p>السيارة: @(Model.Car?.Make) @(Model.Car?.VehicleType) @(Model.Car?.Year)</p>
-                <p>رقم الشاصي: <span dir="ltr">@(Model.Car?.VIN)</span></p>
+                <p>رقم الشاصي: <span dir="ltr" style="color: var(--primary-navy);">@(Model.Car?.VIN)</span></p>
             </div>
             <div style="text-align: left;">
                 <p>رقم الفاتورة: <span dir="ltr">@Model.InvoiceNumber</span></p>
                 <p>تاريخ الإصدار: <span>@Model.IssueDate.ToString("yyyy/MM/dd")</span></p>
                 @if (Model.IsShippingOnly)
                 {
-                    <p style="color:#ef4444; background:#fef2f2; padding:5px; border-radius:5px; display:inline-block;">(فاتورة شحن وجمارك فقط)</p>
+                    <p style="color:#ef4444; background:#fef2f2; padding:5px 10px; border-radius:8px; display:inline-block; margin-top: 10px; font-weight: 900;">(فاتورة شحن وجمارك فقط)</p>
                 }
             </div>
         </div>
@@ -292,17 +308,17 @@
         </table>
 
         <div class="totals">
-            <div class="final"><span>الإجمالي الكلي</span><span>$@Model.TotalAmount.ToString("N2")</span></div>
-            <div style="color:#16a34a;"><span>المدفوع مقدماً</span><span>-$@Model.AmountPaid.ToString("N2")</span></div>
-            <div class="remain"><span>المتبقي عند الاستلام</span><span>$@Model.RemainingAmount.ToString("N2")</span></div>
+            <div class="final"><span>الإجمالي الكلي</span><span dir="ltr">$@Model.TotalAmount.ToString("N2")</span></div>
+            <div style="color:#16a34a;"><span>المدفوع مقدماً</span><span dir="ltr">-$@Model.AmountPaid.ToString("N2")</span></div>
+            <div class="remain"><span>المتبقي عند الاستلام</span><span dir="ltr">$@Model.RemainingAmount.ToString("N2")</span></div>
         </div>
 
         <div class="footer">
             <div class="bank-info">
-                <div style="color:#b45309; font-weight:900;">تفاصيل الحساب البنكي:</div>
+                <div style="color:var(--primary-gold); font-weight:900; margin-bottom: 10px;">تفاصيل الحساب البنكي:</div>
                 <div>بنك مسقط (Bank Muscat)</div>
                 <div>الاسم: Alargan Shipping</div>
-                <div style="font-family:monospace; font-size:1.2rem; font-weight:900;">0000 0000 0000 0000</div>
+                <div style="font-family:monospace; font-size:1.4rem; font-weight:900; color: var(--primary-navy); margin-top: 5px;">0000 0000 0000 0000</div>
             </div>
         </div>
     </div>
@@ -324,7 +340,6 @@
             var table = document.getElementById("exportTable");
             var wb = XLSX.utils.table_to_book(table, {sheet: "الفاتورة"});
 
-            // إضافة المجاميع يدوياً لملف الإكسل
             var ws = wb.Sheets["الفاتورة"];
             XLSX.utils.sheet_add_aoa(ws, [
                 ["", ""],

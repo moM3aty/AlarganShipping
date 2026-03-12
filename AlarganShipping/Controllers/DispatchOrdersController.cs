@@ -21,14 +21,14 @@ namespace AlarganShipping.Controllers
                 .Include(d => d.Transporter)
                 .Include(d => d.OriginLocation)
                 .Include(d => d.DestinationLocation)
-                .OrderByDescending(d => d.Id) // الترتيب من الأحدث للأقدم
+                .OrderByDescending(d => d.Id)
                 .ToListAsync();
             return View(dispatchOrders);
         }
 
-        public IActionResult Create()
+        public IActionResult Create(int? carId)
         {
-            ViewBag.CarId = new SelectList(_context.Cars, "Id", "VIN");
+            ViewBag.CarId = new SelectList(_context.Cars, "Id", "VIN", carId);
             ViewBag.TransporterId = new SelectList(_context.Transporters, "Id", "Name");
             ViewBag.LocationId = new SelectList(_context.Locations, "Id", "Name");
             return View();
@@ -38,39 +38,40 @@ namespace AlarganShipping.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DispatchOrder dispatchOrder)
         {
-            ModelState.Remove("Car");
-            ModelState.Remove("Transporter");
-            ModelState.Remove("OriginLocation");
-            ModelState.Remove("DestinationLocation");
+            ModelState.Remove("Car"); ModelState.Remove("Transporter");
+            ModelState.Remove("OriginLocation"); ModelState.Remove("DestinationLocation");
 
             if (ModelState.IsValid)
             {
                 try
                 {
                     dispatchOrder.DispatchDate = DateTime.Now;
+                    if (string.IsNullOrEmpty(dispatchOrder.Status)) dispatchOrder.Status = "Assigned";
 
-                    // إعطاء حالة افتراضية لتجنب خطأ الـ Null في صفحة العرض
-                    if (string.IsNullOrEmpty(dispatchOrder.Status))
-                    {
-                        dispatchOrder.Status = "Assigned";
-                    }
+                    if (string.IsNullOrEmpty(dispatchOrder.OrderNumber))
+                        dispatchOrder.OrderNumber = "DIS-" + DateTime.Now.ToString("yyMMdd") + new Random().Next(100, 999);
 
                     _context.Add(dispatchOrder);
+
+                    // 💡 أتمتة: تحديث حالة السيارة لسحب داخلي
+                    var car = await _context.Cars.FindAsync(dispatchOrder.CarId);
+                    if (car != null)
+                    {
+                        car.StatusId = 3; // النقل الداخلي
+                        _context.TrackingLogs.Add(new TrackingLog { CarId = car.Id, Title = "أمر نقل داخلي (Dispatch)", Description = "تم تكليف السائق بسحب السيارة ونقلها.", Location = "أمريكا", ProgressPercentage = 33, UpdateDate = DateTime.Now });
+                    }
+
                     await _context.SaveChangesAsync();
                     return Json(new { success = true });
                 }
                 catch (Exception ex)
                 {
-                    // التقاط أخطاء قاعدة البيانات بدلاً من الفشل الصامت
                     return Json(new { success = false, errors = new[] { "خطأ في قاعدة البيانات: " + (ex.InnerException?.Message ?? ex.Message) } });
                 }
             }
             return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
 
-        // ==========================================
-        // شاشة التعديل (GET)
-        // ==========================================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -85,44 +86,47 @@ namespace AlarganShipping.Controllers
             return View(dispatchOrder);
         }
 
-        // ==========================================
-        // حفظ التعديلات (POST)
-        // ==========================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, DispatchOrder dispatchOrder)
         {
             if (id != dispatchOrder.Id) return Json(new { success = false, errors = new[] { "خطأ في المعرف." } });
 
-            ModelState.Remove("Car");
-            ModelState.Remove("Transporter");
-            ModelState.Remove("OriginLocation");
-            ModelState.Remove("DestinationLocation");
+            ModelState.Remove("Car"); ModelState.Remove("Transporter");
+            ModelState.Remove("OriginLocation"); ModelState.Remove("DestinationLocation");
 
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(dispatchOrder);
+
+                    // 💡 أتمتة: إذا تم التسليم (Delivered)، نقل السيارة للمستودع
+                    if (dispatchOrder.Status == "Delivered")
+                    {
+                        var car = await _context.Cars.FindAsync(dispatchOrder.CarId);
+                        var dest = await _context.Locations.FindAsync(dispatchOrder.DestinationLocationId);
+                        if (car != null && dest != null)
+                        {
+                            car.StatusId = 4; // وصول المستودع
+                            car.CurrentLocation = dest.Name;
+
+                            _context.TrackingLogs.Add(new TrackingLog { CarId = car.Id, Title = "السيارة في المستودع", Description = $"تم تسليم السيارة بنجاح في {dest.Name}.", Location = dest.Name, ProgressPercentage = 50, UpdateDate = DateTime.Now });
+                            _context.Notifications.Add(new Notification { CustomerId = car.CustomerId, Title = "وصول المستودع", Message = $"سيارتك {car.Make} وصلت بأمان لمستودع التجميع في {dest.Name}.", Type = "TrackingUpdate" });
+                        }
+                    }
+
                     await _context.SaveChangesAsync();
                     return Json(new { success = true });
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DispatchOrderExists(dispatchOrder.Id)) return Json(new { success = false, errors = new[] { "الأمر غير موجود." } });
-                    else throw;
-                }
                 catch (Exception ex)
                 {
-                    return Json(new { success = false, errors = new[] { "خطأ في قاعدة البيانات: " + (ex.InnerException?.Message ?? ex.Message) } });
+                    return Json(new { success = false, errors = new[] { "خطأ: " + ex.Message } });
                 }
             }
             return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
 
-        // ==========================================
-        // حذف أمر نقل (POST)
-        // ==========================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
@@ -140,11 +144,6 @@ namespace AlarganShipping.Controllers
             {
                 return Json(new { success = false, message = "حدث خطأ أثناء الحذف." });
             }
-        }
-
-        private bool DispatchOrderExists(int id)
-        {
-            return _context.DispatchOrders.Any(e => e.Id == id);
         }
     }
 }

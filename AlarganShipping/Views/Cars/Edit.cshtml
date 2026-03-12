@@ -4,7 +4,7 @@
 }
 
 <style>
-    /* --- الهيدر الفاخر --- */
+    /* نفس تنسيقات الـ Create لضمان الاتساق */
     .details-header {
         background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--primary-navy) 100%);
         color: white;
@@ -92,7 +92,6 @@
             color: var(--primary-navy);
         }
 
-    /* --- بطاقة النموذج (Form Card) --- */
     .premium-form-card {
         background-color: #ffffff;
         border-radius: 1.5rem;
@@ -124,15 +123,21 @@
     }
 
     @@media (min-width: 768px) {
-        .form-grid-4 {
-            grid-template-columns: repeat(2, 1fr);
-        }
+        .form-grid-4
+
+    {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     }
 
     @@media (min-width: 1200px) {
-        .form-grid-4 {
-            grid-template-columns: repeat(4, 1fr);
-        }
+        .form-grid-4
+
+    {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
     }
 
     .form-group {
@@ -196,7 +201,6 @@
             color: white;
         }
 
-    /* تعديل الصورة المتقدم */
     .image-edit-box {
         background: #f8fafc;
         border: 2px dashed #cbd5e1;
@@ -295,7 +299,6 @@
             box-shadow: 0 5px 15px rgba(239, 68, 68, 0.2);
         }
 
-    /* Select2 Customization */
     .select2-container--default .select2-selection--single {
         background-color: #f8fafc;
         border: 2px solid #e2e8f0;
@@ -306,7 +309,7 @@
         transition: 0.3s;
     }
 
-        .select2-container--default .select2-selection--single:focus, .select2-container--focus .select2-selection--single {
+        .select2-container--default .select2-selection--single:focus {
             border-color: var(--primary-gold);
             background-color: white;
             box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
@@ -329,40 +332,43 @@
     }
 
     @@media (max-width: 768px) {
-        .details-header {
-            flex-direction: column;
-            text-align: center;
-            padding: 2rem 1.5rem;
-            gap: 1.5rem;
-        }
+        .details-header
 
-        .header-content {
-            flex-direction: column;
-        }
+    {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem 1.5rem;
+        gap: 1.5rem;
+    }
 
-        .btn-action-light {
-            width: 100%;
-            justify-content: center;
-        }
+    .header-content {
+        flex-direction: column;
+    }
 
-        .premium-form-card {
-            padding: 1.5rem;
-        }
+    .btn-action-light {
+        width: 100%;
+        justify-content: center;
+    }
 
-        .image-edit-box {
-            flex-direction: column;
-            text-align: center;
-        }
+    .premium-form-card {
+        padding: 1.5rem;
+    }
 
-        .form-actions {
-            flex-direction: column-reverse;
-            gap: 1rem;
-        }
+    .image-edit-box {
+        flex-direction: column;
+        text-align: center;
+    }
 
-        .btn-submit, .btn-delete {
-            width: 100%;
-            justify-content: center;
-        }
+    .form-actions {
+        flex-direction: column-reverse;
+        gap: 1rem;
+    }
+
+    .btn-submit, .btn-delete {
+        width: 100%;
+        justify-content: center;
+    }
+
     }
 </style>
 
@@ -370,7 +376,6 @@
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
 
 <div class="cars-edit-page">
-    <!-- الهيدر الفاخر -->
     <div class="details-header">
         <div class="header-content">
             @if (!string.IsNullOrEmpty(Model.MainImageUrl))
@@ -391,7 +396,6 @@
         </a>
     </div>
 
-    <!-- بطاقة النموذج -->
     <div class="premium-form-card">
         <form asp-action="Edit" method="post" id="carEditForm" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
@@ -399,7 +403,6 @@
             <input type="hidden" asp-for="MainImageUrl" />
             <input type="hidden" asp-for="AddDate" />
 
-            <!-- صندوق تغيير الصورة -->
             <div class="image-edit-box" onclick="document.getElementById('mainImageUpload').click()">
                 <div class="img-upload-info">
                     <i class="fa-solid fa-image"></i>
@@ -603,7 +606,6 @@
             }
         }
 
-        // إضافة سريعة للخيار
         function quickAddOption(selectId, titleText) {
             Swal.fire({
                 title: titleText,
@@ -625,7 +627,6 @@
             });
         }
 
-        // إضافة عميل سريع
         function quickAddCustomer() {
             Swal.fire({
                 title: '@Html.Raw(Localizer["إضافة عميل سريع"])',
@@ -648,7 +649,6 @@
             });
         }
 
-        // إضافة مزاد سريع
         function quickAddAuction() {
             Swal.fire({
                 title: '@Html.Raw(Localizer["إضافة معرض جديد"])',
@@ -687,11 +687,12 @@
                         url: '@Url.Action("Delete", "Cars")/' + id,
                         type: 'POST',
                         data: { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
-                        success: function (response) {
-                            if (response.success) {
-                                window.location.href = '@Url.Action("Index", "Cars")';
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({ title: '@Html.Raw(Localizer["تم الحذف!"])', icon: 'success', timer: 1500, showConfirmButton: false })
+                                .then(() => window.location.href = '@Url.Action("Index", "Cars")');
                             } else {
-                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', response.message || '@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])', 'error');
+                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message || '@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])', 'error');
                             }
                         }
                     });

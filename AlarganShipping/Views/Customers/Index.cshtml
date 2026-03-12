@@ -304,14 +304,14 @@
         border-top: 1px solid #f1f5f9;
     }
 
-    /* --- تنسيق الجدول --- */
+    /* --- تنسيق الجدول (List View) --- */
     .data-card {
         background: white;
         border-radius: 1.5rem;
         padding: 2rem;
         box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         border: 1px solid #f1f5f9;
-        display: none;
+        display: none; /* مخفي افتراضياً */
     }
 
     .table-enterprise {
@@ -336,72 +336,97 @@
             vertical-align: middle;
         }
 
+    .cust-info-td {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .cust-avatar {
+        width: 40px;
+        height: 40px;
+        background: rgba(44, 62, 80, 0.05);
+        color: var(--primary-navy);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+    }
+
     /* ========================================================
-           تعديلات الموبايل (الميديا كويري)
-           ======================================================== */
+               تعديلات الموبايل (الميديا كويري)
+               ======================================================== */
     @@media (max-width: 768px) {
-        .page-header-container {
-            flex-direction: column;
-            align-items: stretch;
-            text-align: center;
-            gap: 1.5rem;
-            padding: 1.25rem;
-        }
+        .page-header-container
 
-        .header-actions {
-            flex-direction: column;
-            width: 100%;
-            gap: 1rem;
-        }
+    {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        gap: 1.5rem;
+        padding: 1.25rem;
+    }
 
-        .view-toggle-wrapper {
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+    }
+
+    .view-toggle-wrapper {
+        width: 100%;
+        display: flex;
+    }
+
+    .view-toggle-btn {
+        flex: 1;
+    }
+
+    .btn-add {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .cust-grid-modern {
+        grid-template-columns: 1fr;
+    }
+
+    .cust-profile-main {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .cust-name-info {
+        margin: 0;
+        text-align: center;
+    }
+
+    .cust-avatar-large {
+        margin: 0 auto;
+    }
+
+    .card-actions-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+        .card-actions-row > div {
             width: 100%;
             display: flex;
-        }
-
-        .view-toggle-btn {
-            flex: 1;
-        }
-
-        .btn-add {
-            width: 100%;
             justify-content: center;
+            gap: 15px;
         }
 
-        .cust-grid-modern {
-            grid-template-columns: 1fr;
-        }
+    .btn-action-dark {
+        width: 100%;
+    }
 
-        .cust-profile-main {
-            flex-direction: column;
-            text-align: center;
-            gap: 1rem;
-        }
+    .data-card {
+        padding: 1rem;
+    }
 
-        .cust-name-info {
-            margin: 0;
-            text-align: center;
-        }
-
-        .cust-avatar-large {
-            margin: 0 auto;
-        }
-
-        .card-actions-row {
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-            .card-actions-row > div {
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                gap: 15px;
-            }
-
-        .btn-action-dark {
-            width: 100%;
-        }
     }
 </style>
 
@@ -455,12 +480,12 @@
 
                     <div class="fin-stats">
                         <div class="fin-item">
-                            <label>@Localizer["المتبقي"]</label>
-                            <div class="amount amt-red">@customer.TotalBalance.ToString("N0") <span>ر.ع</span></div>
+                            <label>@Localizer["المتبقي (عليه)"]</label>
+                            <div class="amount amt-red">@customer.TotalBalance.ToString("N0") <span>$</span></div>
                         </div>
-                        <div class="fin-item" style="text-align: left;">
+                        <div class="fin-item" style="text-align: end;">
                             <label>@Localizer["إجمالي المدفوع"]</label>
-                            <div class="amount amt-green">@customer.TotalPaid.ToString("N0") <span>ر.ع</span></div>
+                            <div class="amount amt-green">@customer.TotalPaid.ToString("N0") <span>$</span></div>
                         </div>
                     </div>
 
@@ -469,7 +494,7 @@
                     </div>
 
                     <div class="card-actions-row">
-                        <a href="@Url.Action("Details", "Customers", new { id = customer.Id })" class="btn-action-dark" style="background: var(--primary-navy); color: white; padding: 0.8rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 800; flex: 1; text-align: center; margin-inline-end: 10px;">
+                        <a href="@Url.Action("Details", "Customers", new { id = customer.Id })" style="background: var(--primary-navy); color: white; padding: 0.8rem 1.5rem; border-radius: 12px; text-decoration: none; font-weight: 800; flex: 1; text-align: center; margin-inline-end: 10px;">
                             <i class="fa-solid fa-file-invoice"></i> @Localizer["كشف حساب"]
                         </a>
                         <div style="display: flex; gap: 8px;">
@@ -519,13 +544,13 @@
                                         <div class="cust-avatar">@(string.IsNullOrEmpty(cust.Name) ? "C" : cust.Name.Substring(0, 1))</div>
                                         <div>
                                             <div style="font-weight: 900; color: var(--primary-navy); font-size: 1.05rem;">@cust.Name</div>
-                                            <div style="color: var(--text-muted); font-size: 0.8rem;">@cust.Email</div>
+                                            <div style="color: var(--text-muted); font-size: 0.8rem;" dir="ltr">@cust.Email</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td dir="ltr" style="text-align: end; font-weight: 800;">@cust.Phone</td>
-                                <td><span style="color: #16a34a; font-weight: 900;">@cust.TotalPaid.ToString("N0") <span>ر.ع</span></span></td>
-                                <td><span style="color: #ef4444; font-weight: 900;">@cust.TotalBalance.ToString("N0") <span>ر.ع</span></span></td>
+                                <td><span style="color: #16a34a; font-weight: 900; font-family: monospace;">$@cust.TotalPaid.ToString("N0")</span></td>
+                                <td><span style="color: #ef4444; font-weight: 900; font-family: monospace;">$@cust.TotalBalance.ToString("N0")</span></td>
                                 <td>
                                     <div style="display: flex; gap: 8px; justify-content: center;">
                                         <a href="@Url.Action("Details", "Customers", new { id = cust.Id })" class="action-btn-pro btn-details-pro" title="@Localizer["كشف حساب"]"><i class="fa-solid fa-file-invoice"></i></a>
@@ -545,7 +570,6 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
     <script>
-        // دالة الحذف المصلحة والمحمية من تعارض النصوص
         function confirmDelete(id) {
             Swal.fire({
                 title: "@Html.Raw(Localizer["هل أنت متأكد؟"])",

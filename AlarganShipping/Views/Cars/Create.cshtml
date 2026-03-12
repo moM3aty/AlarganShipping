@@ -118,15 +118,21 @@
     }
 
     @@media (min-width: 768px) {
-        .form-grid-4 {
-            grid-template-columns: repeat(2, 1fr);
-        }
+        .form-grid-4
+
+    {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     }
 
     @@media (min-width: 1200px) {
-        .form-grid-4 {
-            grid-template-columns: repeat(4, 1fr);
-        }
+        .form-grid-4
+
+    {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
     }
 
     .form-group {
@@ -304,30 +310,33 @@
     }
 
     @@media (max-width: 768px) {
-        .details-header {
-            flex-direction: column;
-            text-align: center;
-            padding: 2rem 1.5rem;
-            gap: 1.5rem;
-        }
+        .details-header
 
-        .header-content {
-            flex-direction: column;
-        }
+    {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem 1.5rem;
+        gap: 1.5rem;
+    }
 
-        .btn-action-light {
-            width: 100%;
-            justify-content: center;
-        }
+    .header-content {
+        flex-direction: column;
+    }
 
-        .premium-form-card {
-            padding: 1.5rem;
-        }
+    .btn-action-light {
+        width: 100%;
+        justify-content: center;
+    }
 
-        .btn-submit {
-            width: 100%;
-            justify-content: center;
-        }
+    .premium-form-card {
+        padding: 1.5rem;
+    }
+
+    .btn-submit {
+        width: 100%;
+        justify-content: center;
+    }
+
     }
 </style>
 
@@ -335,7 +344,6 @@
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
 
 <div class="cars-create-page">
-    <!-- الهيدر الفاخر -->
     <div class="details-header">
         <div class="header-content">
             <div class="header-icon"><i class="fa-solid fa-car-side"></i></div>
@@ -349,7 +357,6 @@
         </a>
     </div>
 
-    <!-- بطاقة النموذج -->
     <div class="premium-form-card">
         <form asp-action="Create" method="post" id="carForm" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
@@ -469,7 +476,6 @@
             <!-- 4. المرفقات والمستندات -->
             <div class="section-divider"><i class="fa-solid fa-cloud-arrow-up" style="color:var(--primary-gold);"></i> @Localizer["المرفقات والمستندات (PDF / JPG)"]</div>
             <div class="form-grid-4">
-                <!-- صورة السيارة -->
                 <div class="file-upload-box">
                     <i class="fa-solid fa-camera"></i>
                     <label>@Localizer["صورة السيارة الرئيسية"]</label>
@@ -478,7 +484,6 @@
                     <div class="file-name" id="mainImgName"></div>
                 </div>
 
-                <!-- فاتورة المزاد -->
                 <div class="file-upload-box">
                     <i class="fa-solid fa-file-invoice-dollar"></i>
                     <label>@Localizer["فاتورة المزاد"]</label>
@@ -487,7 +492,6 @@
                     <div class="file-name" id="invoiceName"></div>
                 </div>
 
-                <!-- إيصال التحويل -->
                 <div class="file-upload-box">
                     <i class="fa-solid fa-money-bill-transfer"></i>
                     <label>@Localizer["إيصال التحويل"]</label>
@@ -496,7 +500,6 @@
                     <div class="file-name" id="transferName"></div>
                 </div>
 
-                <!-- التايتل / الملكية -->
                 <div class="file-upload-box">
                     <i class="fa-solid fa-certificate"></i>
                     <label>@Localizer["ملكية السيارة"]</label>
@@ -520,7 +523,6 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
     <script>
-        // إظهار اسم الملف بعد اختياره
         function showFileName(input, textElementId) {
             var fileName = input.value.split('\\').pop();
             if(fileName) {
@@ -530,7 +532,6 @@
             }
         }
 
-        // إضافة سريعة للخيارات المنسدلة
         function quickAddOption(selectId, titleText) {
             Swal.fire({
                 title: titleText,
@@ -552,7 +553,6 @@
             });
         }
 
-        // إضافة عميل سريع
         function quickAddCustomer() {
             Swal.fire({
                 title: '@Html.Raw(Localizer["إضافة عميل سريع"])',
@@ -565,44 +565,66 @@
                 cancelButtonColor: 'var(--primary-navy)'
             }).then((result) => {
                 if (result.isConfirmed && result.value) {
-                    $.post('@Url.Action("CreateQuick", "Customers")', { name: result.value, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
-                        if (res.success) {
-                            $('#CustomerId').append(new Option(res.name, res.id, true, true)).trigger('change');
-                            Swal.fire({ title: '@Html.Raw(Localizer["تمت الإضافة!"])', icon: 'success', timer: 1500, showConfirmButton: false });
+                    Swal.fire({ title: '@Html.Raw(Localizer["جاري الإضافة..."])', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+                    $.post('@Url.Action("CreateQuick", "Customers")', {
+                        name: result.value,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    }).done(function(res) {
+                        var isSuccess = res.success !== undefined ? res.success : res.Success;
+                        if (isSuccess) {
+                            var newId = res.id !== undefined ? res.id : res.Id;
+                            var newName = res.name !== undefined ? res.name : res.Name;
+                            $('#CustomerId').append(new Option(newName, newId, true, true)).trigger('change');
+                            Swal.fire({ title: '@Html.Raw(Localizer["تمت الإضافة بنجاح!"])', icon: 'success', timer: 1500, showConfirmButton: false });
+                        } else {
+                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message || '@Html.Raw(Localizer["لم يتم الحفظ في قاعدة البيانات."])', 'error');
                         }
+                    }).fail(function() {
+                        Swal.fire('@Html.Raw(Localizer["خطأ في السيرفر!"])', '@Html.Raw(Localizer["حدث خطأ أثناء الاتصال."])', 'error');
                     });
                 }
             });
         }
 
-        // إضافة مزاد سريع
         function quickAddAuction() {
-            Swal.fire({
-                title: '@Html.Raw(Localizer["إضافة معرض جديد"])',
-                input: 'text',
-                inputPlaceholder: '@Html.Raw(Localizer["اسم المعرض أو المزاد..."])',
-                showCancelButton: true,
-                confirmButtonText: '@Html.Raw(Localizer["إضافة"])',
-                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])',
-                confirmButtonColor: 'var(--primary-gold)',
-                cancelButtonColor: 'var(--primary-navy)'
-            }).then((result) => {
-                if (result.isConfirmed && result.value) {
-                    $.post('@Url.Action("CreateQuick", "Auctions")', { name: result.value, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
-                        if (res.success) {
-                            $('#AuctionId').append(new Option(res.name, res.id, true, true)).trigger('change');
-                            Swal.fire({ title: '@Html.Raw(Localizer["تمت الإضافة!"])', icon: 'success', timer: 1500, showConfirmButton: false });
-                        }
-                    });
-                }
-            });
-        }
+             Swal.fire({
+                 title: '@Html.Raw(Localizer["إضافة معرض جديد"])',
+                 input: 'text',
+                 inputPlaceholder: '@Html.Raw(Localizer["اسم المعرض أو المزاد..."])',
+                 showCancelButton: true,
+                 confirmButtonText: '@Html.Raw(Localizer["إضافة"])',
+                 cancelButtonText: '@Html.Raw(Localizer["إلغاء"])',
+                 confirmButtonColor: 'var(--primary-gold)',
+                 cancelButtonColor: 'var(--primary-navy)'
+             }).then((result) => {
+                 if (result.isConfirmed && result.value) {
+                     Swal.fire({ title: '@Html.Raw(Localizer["جاري الإضافة..."])', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+                     $.post('@Url.Action("CreateQuick", "Auctions")', {
+                         name: result.value,
+                         __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                     }).done(function(res) {
+                         var isSuccess = res.success !== undefined ? res.success : res.Success;
+                         if (isSuccess) {
+                             var newId = res.id !== undefined ? res.id : res.Id;
+                             var newName = res.name !== undefined ? res.name : res.Name;
+                             $('#AuctionId').append(new Option(newName, newId, true, true)).trigger('change');
+                             Swal.fire({ title: '@Html.Raw(Localizer["تمت الإضافة بنجاح!"])', icon: 'success', timer: 1500, showConfirmButton: false });
+                         } else {
+                             Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message || '@Html.Raw(Localizer["لم يتم الحفظ في قاعدة البيانات."])', 'error');
+                         }
+                     }).fail(function() {
+                         Swal.fire('@Html.Raw(Localizer["خطأ في السيرفر!"])', '@Html.Raw(Localizer["حدث خطأ أثناء الاتصال."])', 'error');
+                     });
+                 }
+             });
+         }
 
         $(document).ready(function() {
             var dir = $('html').attr('dir');
             $('.select2-search').select2({ dir: dir, width: '100%' });
 
-            // تصفير الضريبة إذا كان شامل الضريبة
             $('#TaxTypeSelect').on('change', function() {
                 if ($(this).val() === 'شامل الضريبة') {
                     $('#TaxAmountInput').val('0').prop('readonly', true).css({ 'background-color': '#e2e8f0', 'cursor': 'not-allowed' });
@@ -611,7 +633,6 @@
                 }
             });
 
-            // الإرسال مع المرفقات
             $('#carForm').on('submit', function(e) {
                 e.preventDefault();
                 var form = this;

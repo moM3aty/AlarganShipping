@@ -1,0 +1,337 @@
+﻿@model IEnumerable<AlarganShipping.Models.Car>
+@{
+    ViewData["Title"] = Localizer["معرض سيارات الشركة"];
+}
+
+<style>
+    .page-header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 5px 20px rgba(44, 62, 80, 0.03);
+        margin-bottom: 2rem;
+        border: 1px solid #f1f5f9;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-header-text h2 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-header-text p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin: 0;
+        margin-top: 5px;
+    }
+
+    .btn-add {
+        background: linear-gradient(to right, var(--primary-gold), var(--secondary-gold));
+        color: #ffffff;
+        font-weight: 800;
+        padding: 0.85rem 1.75rem;
+        border-radius: 1rem;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(184, 147, 90, 0.3);
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            color: white;
+            box-shadow: 0 6px 15px rgba(184, 147, 90, 0.4);
+        }
+
+    .showroom-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .car-card {
+        background: white;
+        border-radius: 1.5rem;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        overflow: hidden;
+        transition: 0.3s;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .car-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(184, 147, 90, 0.1);
+            border-color: var(--primary-gold);
+        }
+
+    .car-img-wrapper {
+        height: 200px;
+        background: #f8fafc;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 5rem;
+        color: #cbd5e1;
+        overflow: hidden;
+    }
+
+        .car-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .status-tag {
+        position: absolute;
+        top: 15px;
+        inset-inline-end: 15px;
+        background: var(--primary-navy);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        z-index: 2;
+    }
+
+    .car-details {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .car-title {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0 0 5px 0;
+    }
+
+    .car-vin {
+        font-family: monospace;
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        font-weight: 800;
+    }
+
+    .price-box {
+        background: rgba(184, 147, 90, 0.05);
+        border: 1px dashed rgba(184, 147, 90, 0.3);
+        padding: 10px;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .price-label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 800;
+    }
+
+    .price-val {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--primary-gold);
+        font-family: monospace;
+    }
+
+    .btn-sell {
+        background: #16a34a;
+        color: white;
+        border: none;
+        padding: 0.8rem;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+    }
+
+        .btn-sell:hover {
+            background: #15803d;
+            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+        }
+
+    /* Modal Styles */
+    .select2-container--default .select2-selection--single {
+        height: 45px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+    }
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
+<div class="page-header-container">
+    <div class="page-header-text">
+        <h2><i class="fa-solid fa-store" style="color: var(--primary-gold);"></i> @Localizer["معرض سيارات الشركة"]</h2>
+        <p>• @Localizer["إدارة مخزون السيارات المملوكة للشركة الجاهزة للبيع"]</p>
+    </div>
+    <div class="header-actions">
+        <a href="@Url.Action("Create", "Cars")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة سيارة للمخزون"]</a>
+    </div>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <div class="showroom-grid">
+        @foreach (var car in Model)
+        {
+            <div class="car-card">
+                <div class="car-img-wrapper">
+                    <span class="status-tag">@(car.CurrentLocation ?? Localizer["في الطريق"].Value)</span>
+                    @if (!string.IsNullOrEmpty(car.MainImageUrl))
+                    {
+                        <img src="@car.MainImageUrl" alt="Car" />
+                    }
+                    else
+                    {
+                        <i class="fa-solid fa-car"></i>
+                    }
+                </div>
+                <div class="car-details">
+                    <h3 class="car-title">@car.Make @car.Model @car.Year</h3>
+                    <div class="car-vin">VIN: @car.VIN</div>
+
+                    <div class="price-box">
+                        <span class="price-label">@Localizer["التكلفة (شراء):"]</span>
+                        <span class="price-val">$@car.PurchasePrice.ToString("N0")</span>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: auto;">
+                        <a href="@Url.Action("Details", "Cars", new { id = car.Id })" style="background: #f1f5f9; color: var(--primary-navy); padding: 0.8rem; border-radius: 10px; font-weight: 800; text-align: center; text-decoration: none; flex: 1; border: 1px solid #e2e8f0;">
+                            @Localizer["التفاصيل"]
+                        </a>
+                        <button type="button" class="btn-sell" style="flex: 2;" onclick="openSellModal(@car.Id, '@car.Make @car.Model @car.Year', @car.PurchasePrice)">
+                            <i class="fa-solid fa-handshake"></i> @Localizer["بيع لعميل"]
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div style="text-align: center; padding: 5rem; background: white; border-radius: 1.5rem; border: 2px dashed #e2e8f0; color: #94a3b8;">
+        <i class="fa-solid fa-car-tunnel" style="font-size: 4rem; margin-bottom: 1.5rem; color: #cbd5e1;"></i>
+        <h3 style="color: var(--primary-navy); font-weight: 900;">@Localizer["المعرض فارغ حالياً"]</h3>
+        <p style="font-size: 1.1rem;">@Localizer["قم بإضافة سيارات جديدة من شاشة إضافة سيارة واختر العميل (سيارات الشركة - المخزون)."]</p>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        // تجهيز بيانات العملاء القادمة من السيرفر كـ JSON
+        var customersList = @Html.Raw(Json.Serialize(ViewBag.RealCustomers));
+
+        function openSellModal(carId, carName, purchasePrice) {
+
+            // بناء قائمة الـ options للعملاء
+            let optionsHtml = '<option value="">-- اختر العميل --</option>';
+            customersList.forEach(c => {
+                optionsHtml += `<option value="${c.id}">${c.name}</option>`;
+            });
+
+            Swal.fire({
+                title: '@Html.Raw(Localizer["إتمام عملية البيع"])',
+                html: `
+                    <div style="text-align: right; margin-bottom: 15px;">
+                        <div style="font-weight: bold; color: var(--primary-navy); margin-bottom: 5px;">السيارة: ${carName}</div>
+                        <div style="font-size: 0.85rem; color: #ef4444; margin-bottom: 15px;">التكلفة الأصلية: $${purchasePrice}</div>
+
+                        <label style="font-weight: 800; font-size: 0.9rem; display: block; margin-bottom: 5px;">العميل المشتري *</label>
+                        <select id="swal-customer" class="swal2-input" style="width: 100%; margin: 0 0 15px 0; font-size: 1rem; padding: 10px;">
+                            ${optionsHtml}
+                        </select>
+
+                        <label style="font-weight: 800; font-size: 0.9rem; display: block; margin-bottom: 5px;">سعر البيع النهائي ($) *</label>
+                        <input id="swal-price" type="number" class="swal2-input" placeholder="أدخل سعر البيع للعميل..." style="width: 100%; margin: 0; box-sizing: border-box; text-align: left; font-family: monospace;">
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: '<i class="fa-solid fa-check"></i> @Html.Raw(Localizer["تأكيد البيع"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])',
+                confirmButtonColor: '#16a34a',
+                cancelButtonColor: 'var(--primary-navy)',
+                preConfirm: () => {
+                    const custId = document.getElementById('swal-customer').value;
+                    const price = document.getElementById('swal-price').value;
+                    if (!custId || !price) {
+                        Swal.showValidationMessage('@Html.Raw(Localizer["يرجى اختيار العميل وإدخال سعر البيع"])');
+                    }
+                    return { customerId: custId, price: price };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: '@Html.Raw(Localizer["جاري نقل الملكية..."])', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+                    $.ajax({
+                        url: '@Url.Action("SellCarToCustomer", "Showroom")',
+                        type: 'POST',
+                        data: {
+                            carId: carId,
+                            newCustomerId: result.value.customerId,
+                            sellingPrice: result.value.price,
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function(res) {
+                            if(res.success) {
+                                Swal.fire({
+                                    title: '@Html.Raw(Localizer["تم البيع بنجاح!"])',
+                                    text: '@Html.Raw(Localizer["تم نقل ملكية السيارة للعميل الجديد."])',
+                                    icon: 'success',
+                                    confirmButtonColor: 'var(--primary-gold)',
+                                    confirmButtonText: '@Html.Raw(Localizer["إصدار الفاتورة الآن"])'
+                                }).then(() => {
+                                    // توجيه لصفحة إنشاء الفاتورة مع تحديد العميل والسيارة مسبقاً (اختياري)
+                            window.location.href = '@Url.Action("Create", "Invoices")?carId=' + carId + '&customerId=' + result.value.customerId;});
+                            } else {
+                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+                            }
+                        }
+                    });
+                }
+            });
+
+            // تطبيق Select2 داخل المودال
+            $('#swal-customer').select2({
+                dropdownParent: $('.swal2-popup'),
+                dir: $('html').attr('dir')
+            });
+        }
+    </script>
+}

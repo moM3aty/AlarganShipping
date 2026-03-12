@@ -1,0 +1,474 @@
+﻿@model AlarganShipping.Models.Customer
+@{
+    ViewData["Title"] = Localizer["كشف حساب عميل"];
+    Layout = null; // لضمان طباعة نظيفة بدون هيدر النظام
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>كشف حساب - @Model.Name</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary-navy: #1e293b;
+            --primary-gold: #b45309;
+            --bg-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .report-wrapper {
+            background: white;
+            width: 100%;
+            max-width: 900px;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid var(--primary-gold);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .logo-area img {
+            height: 80px;
+        }
+
+        .logo-area h1 {
+            margin: 5px 0 0 0;
+            color: var(--primary-navy);
+            font-size: 1.6rem;
+            font-weight: 900;
+        }
+
+        .logo-area p {
+            margin: 0;
+            color: var(--primary-gold);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .title-area {
+            text-align: left;
+        }
+
+            .title-area h2 {
+                margin: 0;
+                font-size: 2.2rem;
+                color: var(--primary-navy);
+                font-weight: 900;
+            }
+
+            .title-area p {
+                margin: 5px 0 0 0;
+                font-weight: 700;
+                color: #64748b;
+            }
+
+        /* معلومات العميل */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-box {
+            border: 2px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+            .info-box span.label {
+                display: block;
+                color: #64748b;
+                font-size: 0.9rem;
+                font-weight: 800;
+                margin-bottom: 5px;
+            }
+
+            .info-box span.value {
+                display: block;
+                color: var(--primary-navy);
+                font-size: 1.2rem;
+                font-weight: 900;
+            }
+
+        /* الخلاصة المالية */
+        .financial-summary {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .fin-card {
+            flex: 1;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+            .fin-card .lbl {
+                font-size: 1rem;
+                font-weight: 800;
+                display: block;
+                margin-bottom: 10px;
+            }
+
+            .fin-card .val {
+                font-size: 1.8rem;
+                font-weight: 900;
+                font-family: monospace;
+            }
+
+        .card-total {
+            background: rgba(30, 41, 59, 0.05);
+            border-color: var(--primary-navy);
+        }
+
+            .card-total .lbl {
+                color: var(--primary-navy);
+            }
+
+            .card-total .val {
+                color: var(--primary-navy);
+            }
+
+        .card-paid {
+            background: rgba(22, 163, 74, 0.05);
+            border-color: #16a34a;
+        }
+
+            .card-paid .lbl {
+                color: #16a34a;
+            }
+
+            .card-paid .val {
+                color: #16a34a;
+            }
+
+        .card-debt {
+            background: rgba(239, 68, 68, 0.05);
+            border-color: #ef4444;
+        }
+
+            .card-debt .lbl {
+                color: #ef4444;
+            }
+
+            .card-debt .val {
+                color: #ef4444;
+            }
+
+        /* الجداول */
+        .section-title {
+            color: var(--primary-navy);
+            font-size: 1.4rem;
+            font-weight: 900;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            margin-top: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th {
+            background: var(--primary-navy);
+            color: white;
+            padding: 10px;
+            text-align: right;
+            font-size: 1rem;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--primary-navy);
+        }
+
+        .money-col {
+            font-family: monospace;
+            font-weight: 900;
+        }
+
+        /* التوقيعات */
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 60px;
+            padding-top: 20px;
+        }
+
+        .sig-box {
+            text-align: center;
+            width: 250px;
+        }
+
+        .sig-line {
+            border-bottom: 2px solid #1e293b;
+            margin-bottom: 10px;
+            height: 40px;
+        }
+
+        .sig-title {
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        /* أزرار التحكم */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn-action {
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 900;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-decoration: none;
+        }
+
+        .btn-print {
+            background: var(--primary-gold);
+        }
+
+            .btn-print:hover {
+                background: #92400e;
+            }
+
+        .btn-pdf {
+            background: #ef4444;
+        }
+
+            .btn-pdf:hover {
+                background: #dc2626;
+            }
+
+        .btn-back {
+            background: var(--primary-navy);
+        }
+
+            .btn-back:hover {
+                background: #0f172a;
+            }
+
+        @@media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .controls {
+                display: none;
+            }
+
+            .report-wrapper {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+                border: none;
+                margin: 0;
+            }
+
+            html, body {
+                height: auto;
+            }
+
+            .fin-card {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            th {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                color: white !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <a href="@Url.Action("Details", "Customers", new { id = Model.Id })" class="btn-action btn-back">العودة للعميل</a>
+        <button class="btn-action btn-print" onclick="window.print()">طباعة الكشف</button>
+        <button class="btn-action btn-pdf" onclick="downloadPDF()">تحميل PDF</button>
+    </div>
+
+    <div class="report-wrapper" id="reportContent">
+        <div class="header">
+            <div class="logo-area">
+                <img src="/images/logo.png" alt="Logo" onerror="this.onerror=null; this.style.display='none'" />
+                <h1>شركة الأرجان للشحن</h1>
+                <p>ALARGAN AUTO SHIPPING</p>
+            </div>
+            <div class="title-area">
+                <h2>كشف حساب عميل</h2>
+                <p>تاريخ المستند: @DateTime.Now.ToString("yyyy/MM/dd")</p>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-box">
+                <span class="label">اسم العميل (Customer Name):</span>
+                <span class="value">@Model.Name</span>
+            </div>
+            <div class="info-box">
+                <span class="label">كود العميل (Customer Code):</span>
+                <span class="value" style="font-family: monospace;">@Model.CustomerCode</span>
+            </div>
+            <div class="info-box">
+                <span class="label">رقم الهاتف (Phone):</span>
+                <span class="value" dir="ltr" style="text-align: right;">@Model.Phone</span>
+            </div>
+            <div class="info-box">
+                <span class="label">الرقم المدني / السجل التجاري:</span>
+                <span class="value">@(string.IsNullOrEmpty(Model.CivilId) ? "-" : Model.CivilId)</span>
+            </div>
+        </div>
+
+        <div class="section-title">الخلاصة المالية (Financial Summary)</div>
+        <div class="financial-summary">
+            <div class="fin-card card-total">
+                <span class="lbl">إجمالي قيمة المبيعات للعميل</span>
+                @{
+                    decimal totalBilled = Model.TotalBalance + Model.TotalPaid;
+                }
+                <div class="val">@totalBilled.ToString("N3") $</div>
+            </div>
+            <div class="fin-card card-paid">
+                <span class="lbl">إجمالي المبالغ المدفوعة</span>
+                <div class="val">@Model.TotalPaid.ToString("N3") $</div>
+            </div>
+            <div class="fin-card card-debt">
+                <span class="lbl">الرصيد المتبقي (المطلوب)</span>
+                <div class="val">@Model.TotalBalance.ToString("N3") $</div>
+            </div>
+        </div>
+
+        <!-- جدول المبيعات (الفواتير) -->
+        <div class="section-title">سجل المبيعات والفواتير المطلوبة (Invoices)</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>التاريخ</th>
+                    <th>رقم الفاتورة</th>
+                    <th>البيان (السيارة)</th>
+                    <th>مبلغ الفاتورة</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Invoices != null && Model.Invoices.Any())
+                {
+                    foreach (var inv in Model.Invoices.OrderBy(i => i.IssueDate))
+                    {
+                        var carInfo = Model.Cars?.FirstOrDefault(c => c.Id == inv.CarId);
+                        string desc = carInfo != null ? $"{carInfo.Make} {carInfo.Model} {carInfo.Year} (VIN: {carInfo.VIN})" : "فاتورة عامة";
+                        <tr>
+                            <td>@inv.IssueDate.ToString("yyyy/MM/dd")</td>
+                            <td class="money-col">@inv.InvoiceNumber</td>
+                            <td style="font-size: 0.85rem;">@desc</td>
+                            <td class="money-col" style="color: #b45309;">@inv.TotalAmount.ToString("N2") $</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="4" style="text-align:center; color:#64748b;">لا توجد فواتير مسجلة</td></tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- جدول الدفعات (السندات) -->
+        <div class="section-title">سجل الدفعات والمقبوضات (Payments)</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>التاريخ</th>
+                    <th>رقم السند</th>
+                    <th>طريقة الدفع</th>
+                    <th>المبلغ المدفوع</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.PaymentReceipts != null && Model.PaymentReceipts.Any())
+                {
+                    foreach (var rec in Model.PaymentReceipts.OrderBy(r => r.PaymentDate))
+                    {
+                        <tr>
+                            <td>@rec.PaymentDate.ToString("yyyy/MM/dd")</td>
+                            <td class="money-col">@rec.ReceiptNumber</td>
+                            <td>@rec.PaymentMethod @(!string.IsNullOrEmpty(rec.ReferenceNumber) ? " - " + rec.ReferenceNumber : "")</td>
+                            <td class="money-col" style="color: #16a34a;">@rec.TotalDeducted.ToString("N2") $</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="4" style="text-align:center; color:#64748b;">لا توجد دفعات مسجلة</td></tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="signatures">
+            <div class="sig-box">
+                <div class="sig-line"></div>
+                <div class="sig-title">توقيع المحاسب<br />Accountant Signature</div>
+            </div>
+            <div class="sig-box">
+                <div class="sig-line"></div>
+                <div class="sig-title">ختم الشركة<br />Company Stamp</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadPDF() {
+            var element = document.getElementById('reportContent');
+            var opt = {
+                margin:       10,
+                filename:     'Customer_Statement_@Model.CustomerCode .pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>

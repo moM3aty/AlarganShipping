@@ -9,29 +9,49 @@
     <meta charset="utf-8" />
     <title>@Localizer["سند صرف رقم"] @Model.VoucherNumber</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --primary-navy: #1e293b;
             --primary-gold: #b45309;
+            --bg-color: #e2e8f0;
         }
 
         body {
             font-family: 'Cairo', sans-serif;
-            background: #e2e8f0;
+            background: var(--bg-color);
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .voucher-container {
+        .voucher-wrapper {
             background: white;
             width: 100%;
             max-width: 800px;
             padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-top: 20px;
             position: relative;
+            overflow: hidden;
+        }
+
+        /* العلامة المائية لسند الصرف */
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 8rem;
+            color: rgba(184, 147, 90, 0.04);
+            font-weight: 900;
+            white-space: nowrap;
+            z-index: 0;
+            pointer-events: none;
         }
 
         /* رأس السند والشعار */
@@ -42,30 +62,46 @@
             border-bottom: 3px solid var(--primary-gold);
             padding-bottom: 20px;
             margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
         }
 
-        .header-logo img {
+        .logo-area img {
             max-height: 80px;
             width: auto;
         }
 
-        .header-title {
-            text-align: start;
+        .logo-area h1 {
+            margin: 5px 0 0 0;
+            color: var(--primary-navy);
+            font-size: 1.6rem;
+            font-weight: 900;
         }
 
-            .header-title h1 {
+        .logo-area p {
+            margin: 0;
+            color: var(--primary-gold);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .title-area {
+            text-align: left;
+        }
+
+            .title-area h2 {
                 margin: 0;
-                font-size: 2rem;
+                font-size: 2.2rem;
                 color: var(--primary-navy);
                 font-weight: 900;
             }
 
-            .header-title h2 {
-                margin: 5px 0 0 0;
-                color: var(--primary-gold);
-                font-weight: 900;
-                font-size: 1.5rem;
-                letter-spacing: 1px;
+            .title-area .rcpt-no {
+                font-family: monospace;
+                font-size: 1.2rem;
+                color: #ef4444;
+                font-weight: bold;
+                margin-top: 5px;
             }
 
         /* معلومات السند الأساسية */
@@ -76,6 +112,8 @@
             font-weight: 800;
             font-size: 1.1rem;
             color: var(--primary-navy);
+            position: relative;
+            z-index: 1;
         }
 
             .top-info div {
@@ -88,6 +126,8 @@
         /* تفاصيل الصرف الرئيسية */
         .voucher-details {
             margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
         }
 
         .detail-row {
@@ -103,7 +143,7 @@
         .detail-label {
             width: 180px;
             font-weight: 800;
-            color: var(--text-muted);
+            color: #64748b;
             flex-shrink: 0;
         }
 
@@ -114,13 +154,17 @@
         }
 
         .amount-box {
-            background: rgba(184, 147, 90, 0.05);
-            color: var(--primary-navy);
-            padding: 5px 15px;
+            background: rgba(239, 68, 68, 0.05);
+            color: #ef4444;
+            padding: 10px 20px;
             border-radius: 8px;
-            border: 1px solid rgba(184, 147, 90, 0.3);
+            border: 1px dashed rgba(239, 68, 68, 0.3);
             font-family: monospace;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
+            text-align: center;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            display: inline-block;
         }
 
         /* منطقة التوقيعات */
@@ -129,6 +173,8 @@
             justify-content: space-between;
             margin-top: 60px;
             padding-top: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         .signature-box {
@@ -145,63 +191,75 @@
         .signature-title {
             font-weight: 800;
             color: var(--primary-navy);
+            font-size: 1.1rem;
         }
 
-        /* أزرار التحكم للطباعة */
+        /* أزرار التحكم */
         .controls {
-            text-align: center;
+            display: flex;
+            gap: 15px;
             margin-bottom: 20px;
+        }
+
+        .btn-action {
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 900;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         .btn-print {
             background: var(--primary-gold);
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 8px;
-            font-weight: 800;
-            font-family: inherit;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: 0.3s;
         }
 
             .btn-print:hover {
-                background: var(--primary-navy);
+                background: #92400e;
+                transform: translateY(-2px);
+            }
+
+        .btn-pdf {
+            background: #ef4444;
+        }
+
+            .btn-pdf:hover {
+                background: #dc2626;
+                transform: translateY(-2px);
             }
 
         .btn-back {
             background: var(--primary-navy);
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 8px;
-            font-weight: 800;
-            font-family: inherit;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-inline-start: 10px;
         }
 
+            .btn-back:hover {
+                background: #0f172a;
+                transform: translateY(-2px);
+            }
+
         /* ==================================
-                   إعدادات الطباعة لضمان صفحة واحدة A4
-                   ================================== */
+                            إعدادات الطباعة الدقيقة
+                    ================================== */
         @@media print {
             body {
                 background: white;
                 padding: 0;
             }
 
-            .voucher-container {
+            .voucher-wrapper {
                 box-shadow: none;
                 padding: 0;
                 max-width: 100%;
                 border: none;
+                margin: 0;
             }
 
             .controls {
-                display: none;
+                display: none !important;
             }
 
             html, body {
@@ -211,8 +269,21 @@
             }
 
             .amount-box {
-                background-color: rgba(184, 147, 90, 0.05) !important;
-                border-color: rgba(184, 147, 90, 0.3) !important;
+                background-color: rgba(239, 68, 68, 0.05) !important;
+                border-color: rgba(239, 68, 68, 0.3) !important;
+                color: #ef4444 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .watermark {
+                color: rgba(184, 147, 90, 0.04) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .top-info div {
+                background-color: #f8fafc !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -222,19 +293,24 @@
 <body>
     <div style="width: 100%; max-width: 800px;">
         <div class="controls">
-            <button class="btn-print" onclick="window.print()">🖨️ @Localizer["طباعة السند"]</button>
-            <button class="btn-back" onclick="history.back()">@Localizer["العودة للسجل"]</button>
+            <button class="btn-action btn-back" onclick="history.back()">العودة للسجل</button>
+            <button class="btn-action btn-print" onclick="window.print()">طباعة السند</button>
+            <button class="btn-action btn-pdf" onclick="downloadPDF()">تحميل PDF</button>
         </div>
 
-        <div class="voucher-container">
+        <div class="voucher-wrapper" id="voucherContent">
+            <div class="watermark">CASHED - صُرف</div>
+
             <div class="voucher-header">
-                <div class="header-logo">
-                    <img src="/images/logo.png" alt="Logo" onerror="this.style.display='none'; this.parentElement.innerHTML+='<div style=\'font-size:3rem;\'>🛳️</div>';" />
-                    <div style="font-size: 1.2rem; font-weight: 900; color: var(--primary-navy); margin-top: 5px;">ALARGAN SHIPPING</div>
+                <div class="logo-area">
+                    <img src="/images/logo.png" alt="Logo" onerror="this.style.display='none';" />
+                    <h1>شركة الأرجان للشحن</h1>
+                    <p>ALARGAN AUTO SHIPPING</p>
                 </div>
-                <div class="header-title">
-                    <h1>@Localizer["سند صرف"]</h1>
-                    <h2>@Localizer["Payment Voucher"]</h2>
+                <div class="title-area">
+                    <h2>سند صرف</h2>
+                    <h2>PAYMENT VOUCHER</h2>
+                    <div class="rcpt-no">No: @Model.VoucherNumber</div>
                 </div>
             </div>
 
@@ -251,12 +327,14 @@
 
                 <div class="detail-row">
                     <div class="detail-label">@Localizer["مبلغاً وقدره:"]</div>
-                    <div class="detail-value amount-box">@Model.Amount.ToString("N2") $</div>
+                    <div class="detail-value">
+                        <div class="amount-box">@Model.Amount.ToString("N2") $</div>
+                    </div>
                 </div>
 
                 <div class="detail-row">
                     <div class="detail-label">@Localizer["وذلك عن (البيان):"]</div>
-                    <div class="detail-value" style="color: #64748b;">@Model.Description</div>
+                    <div class="detail-value" style="color: #475569; font-weight: 700;">@Model.Description</div>
                 </div>
 
                 <div class="detail-row">
@@ -271,9 +349,9 @@
 
                 @if (Model.Customer != null)
                 {
-                    <div class="detail-row" style="background: rgba(184, 147, 90, 0.05); padding: 10px; border-radius: 8px;">
+                    <div class="detail-row" style="background: rgba(184, 147, 90, 0.05); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(184, 147, 90, 0.2);">
                         <div class="detail-label" style="color: var(--primary-gold);">@Localizer["مرتبط بالعميل:"]</div>
-                        <div class="detail-value" style="color: var(--primary-gold);">@Model.Customer.Name (@Localizer["تم خصم المبلغ من رصيده المدفوع"])</div>
+                        <div class="detail-value" style="color: var(--primary-gold);">@Model.Customer.Name <span style="font-size:0.9rem; color:#64748b;">(@Localizer["تم خصم المبلغ من رصيده المدفوع"])</span></div>
                     </div>
                 }
             </div>
@@ -294,5 +372,20 @@
             </div>
         </div>
     </div>
+
+    <!-- دالة تصدير الـ PDF التي كانت مفقودة -->
+    <script>
+        function downloadPDF() {
+            var element = document.getElementById('voucherContent');
+            var opt = {
+                margin:       10,
+                filename:     'Voucher_@Model.VoucherNumber .pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
 </body>
 </html>

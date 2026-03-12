@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = Localizer["بوابة تتبع الشحنات"];
-    Layout = null;
+    Layout = null; // صفحة مستقلة عن الـ Layout العام
     var isRtl = System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
     var htmlDir = isRtl ? "rtl" : "ltr";
 }
@@ -18,17 +18,19 @@
         :root {
             --primary-navy: #1e293b;
             --primary-gold: #b45309;
+            --bg-color: #f4f7f9;
         }
 
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #f4f7f9;
+            background-color: var(--bg-color);
             min-height: 100vh;
             margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
+            padding: 1rem;
         }
 
         .tracking-header {
@@ -170,40 +172,43 @@
             }
 
         @@media (max-width: 768px) {
-            .search-card {
-                padding: 1.5rem;
-                width: 90%;
-            }
+            .search-card
 
-            .search-input-wrapper {
-                flex-direction: column;
-                border: none;
-                padding: 0;
-                background: transparent;
-            }
+        {
+            padding: 1.5rem;
+            width: 90%;
+        }
 
-                .search-input-wrapper input {
-                    width: 100%;
-                    border: 2px solid var(--primary-gold);
-                    border-radius: 12px;
-                    margin-bottom: 1rem;
-                    text-align: center;
-                }
+        .search-input-wrapper {
+            flex-direction: column;
+            border: none;
+            padding: 0;
+            background: transparent;
+        }
 
-            .search-icon-left {
-                display: none;
-            }
-
-            .btn-track {
+            .search-input-wrapper input {
                 width: 100%;
-                justify-content: center;
+                border: 2px solid var(--primary-gold);
+                border-radius: 12px;
+                margin-bottom: 1rem;
+                text-align: center;
             }
+
+        .search-icon-left {
+            display: none;
+        }
+
+        .btn-track {
+            width: 100%;
+            justify-content: center;
+        }
+
         }
     </style>
 </head>
 <body>
     <div class="tracking-header">
-        <img src="~/images/logo.png" alt="Alargan Logo" class="logo-img" onerror="this.onerror=null; this.style.display='none'" />
+        <img src="~/images/logo.jpg" alt="Alargan Logo" class="logo-img" onerror="this.onerror=null; this.style.display='none'" />
         <h1>@Localizer["بوابة تتبع الشحنات"]</h1>
         <p>@Localizer["نظام الإدارة اللوجستية التقني"]</p>
     </div>
@@ -219,7 +224,7 @@
                 <button type="submit" class="btn-track">
                     <i class="fa-solid fa-magnifying-glass-location"></i> @Localizer["تتبع الآن"]
                 </button>
-                <input type="text" name="vin" placeholder="@Localizer["VIN أو رقم LOT أدخل رقم..."]" required dir="ltr" style="text-align: right;" />
+                <input type="text" name="vin" placeholder="@Localizer["أدخل رقم الشاصي (VIN) أو رقم اللوت..."]" required dir="ltr" style="text-align: right;" />
                 <div class="search-icon-left"><i class="fa-solid fa-magnifying-glass"></i></div>
             </div>
         </form>

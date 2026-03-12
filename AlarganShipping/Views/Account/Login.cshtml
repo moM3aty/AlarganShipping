@@ -36,9 +36,12 @@
     }
 
     @@media (min-width: 992px) {
-        .premium-brand-section {
-            display: flex;
-        }
+        .premium-brand-section
+
+    {
+        display: flex;
+    }
+
     }
 
     .premium-brand-section::before {
@@ -102,9 +105,12 @@
     }
 
     @@media (min-width: 992px) {
-        .premium-form-section {
-            width: 50%;
-        }
+        .premium-form-section
+
+    {
+        width: 50%;
+    }
+
     }
 
     .form-card {
@@ -123,9 +129,12 @@
     }
 
     @@media (min-width: 992px) {
-        .mobile-logo {
-            display: none;
-        }
+        .mobile-logo
+
+    {
+        display: none;
+    }
+
     }
 
     .mobile-logo img {
@@ -178,7 +187,7 @@
             box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
 
-    .btn-primary {
+    .btn-primary-login {
         width: 100%;
         padding: 1.1rem;
         margin-top: 1rem;
@@ -193,7 +202,7 @@
         box-shadow: 0 10px 20px rgba(184, 147, 90, 0.25);
     }
 
-        .btn-primary:hover {
+        .btn-primary-login:hover {
             transform: translateY(-2px);
             box-shadow: 0 15px 25px rgba(184, 147, 90, 0.35);
         }
@@ -231,41 +240,44 @@
         }
 
     @@media (max-width: 768px) {
-        .login-page-wrapper {
-            display: block;
+        .login-page-wrapper
+
+    {
+        display: block;
+    }
+
+    .premium-form-section {
+        display: block;
+        padding: 1rem;
+        padding-top: 6rem;
+        padding-bottom: 3rem;
+    }
+
+    .form-card {
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem;
+        border-radius: 1.5rem;
+    }
+
+    .mobile-logo img {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-header {
+        margin-bottom: 1.5rem;
+    }
+
+        .form-header h2 {
+            font-size: 1.4rem;
         }
 
-        .premium-form-section {
-            display: block;
-            padding: 1rem;
-            padding-top: 6rem;
-            padding-bottom: 3rem;
-        }
+    .top-floating-actions {
+        top: 15px;
+        inset-inline-end: 15px;
+    }
 
-        .form-card {
-            margin: 0 auto;
-            padding: 2.5rem 1.5rem;
-            border-radius: 1.5rem;
-        }
-
-        .mobile-logo img {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-header {
-            margin-bottom: 1.5rem;
-        }
-
-            .form-header h2 {
-                font-size: 1.4rem;
-            }
-
-        .top-floating-actions {
-            top: 15px;
-            inset-inline-end: 15px;
-        }
     }
 </style>
 
@@ -304,7 +316,7 @@
     <div class="premium-form-section">
         <div class="form-card">
             <div class="mobile-logo">
-                <img src="~/images/logo.png" alt="Alargan Logo" onerror="this.onerror=null; this.style.display='none'" />
+                <img src="~/images/logo.jpg" alt="Alargan Logo" onerror="this.onerror=null; this.style.display='none'" />
                 <h1 style="color: var(--primary-navy); font-weight: 900; margin:0;">ALARGAN</h1>
                 <p style="color: var(--primary-gold); font-weight: 700; font-size: 0.9rem;">AUTO SHIPPING</p>
             </div>
@@ -329,7 +341,7 @@
                     <span asp-validation-for="Password" style="color: #ef4444; font-size: 0.85rem; font-weight: 600;"></span>
                 </div>
 
-                <button type="submit" class="btn-primary">@Localizer["دخول للنظام"]</button>
+                <button type="submit" class="btn-primary-login">@Localizer["دخول للنظام"]</button>
             </form>
         </div>
     </div>

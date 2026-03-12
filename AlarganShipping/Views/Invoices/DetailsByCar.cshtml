@@ -1,0 +1,135 @@
+﻿@model AlarganShipping.Models.Invoice
+@{
+    ViewData["Title"] = Localizer["تفاصيل عملية البيع"];
+}
+
+<style>
+    .invoice-dashboard-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+        margin-top: 2rem;
+    }
+
+    .status-badge {
+        padding: 6px 15px;
+        border-radius: 8px;
+        font-weight: 900;
+        font-size: 0.9rem;
+    }
+
+    .status-paid {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .status-unpaid {
+        background: #fef2f2;
+        color: #ef4444;
+    }
+
+    .status-partial {
+        background: #fef9c3;
+        color: #d97706;
+    }
+
+    .amount-large {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 10px 0;
+        font-family: monospace;
+    }
+
+    .finance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+        border-top: 2px dashed #e2e8f0;
+        padding-top: 2rem;
+    }
+
+    .finance-box {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+        text-align: center;
+    }
+
+        .finance-box h4 {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+        }
+
+        .finance-box .val {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary-navy);
+            font-family: monospace;
+        }
+</style>
+
+<div class="page-header-container" style="display:flex; justify-content:space-between; align-items:center; background: white; padding: 1.5rem; border-radius: 1.5rem; box-shadow: 0 5px 20px rgba(0,0,0,0.03);">
+    <div>
+        <h2 style="margin:0; color:var(--primary-navy); font-weight:900;"><i class="fa-solid fa-file-invoice" style="color:var(--primary-gold);"></i> @Localizer["عملية البيع للسيارة"]</h2>
+        <p style="margin:5px 0 0 0; color:var(--text-muted); font-weight:700;">رقم الشاصي: @Model.Car?.VIN</p>
+    </div>
+    <a href="@Url.Action("Details", "Cars", new { id = Model.CarId })" class="btn btn-secondary" style="border-radius:10px; font-weight:bold;">
+        <i class="fa-solid fa-arrow-right"></i> @Localizer["العودة للسيارة"]
+    </a>
+</div>
+
+<div class="invoice-dashboard-card">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+        <div>
+            <div style="color: var(--text-muted); font-weight: 800; margin-bottom: 5px;">@Localizer["الإجمالي المطلوب"]</div>
+            <div class="amount-large">$@Model.TotalAmount.ToString("N2")</div>
+
+            @{
+                string badgeClass = Model.RemainingAmount <= 0 ? "status-paid" : (Model.AmountPaid > 0 ? "status-partial" : "status-unpaid");
+                string badgeText = Model.RemainingAmount <= 0 ? "مدفوع بالكامل" : (Model.AmountPaid > 0 ? "مدفوع جزئياً" : "غير مدفوع");
+            }
+            <span class="status-badge @badgeClass">@Localizer[badgeText]</span>
+        </div>
+
+        <div style="text-align: end;">
+            <div style="font-weight: 900; color: var(--primary-navy); font-size: 1.2rem;">@Localizer["رقم الفاتورة:"] @Model.InvoiceNumber</div>
+            <div style="color: var(--text-muted); font-weight: 700; margin-top: 5px;">@Localizer["تاريخ الإصدار:"] @Model.IssueDate.ToString("yyyy-MM-dd")</div>
+            <div style="margin-top: 15px;">
+                <span style="background: var(--primary-navy); color: white; padding: 5px 15px; border-radius: 8px; font-weight: 800;">
+                    @Localizer["العميل:"] @(Model.Customer?.Name ?? "-")
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="finance-grid">
+        <div class="finance-box">
+            <h4>@Localizer["المدفوع (Paid)"]</h4>
+            <div class="val" style="color: #16a34a;">$@Model.AmountPaid.ToString("N2")</div>
+        </div>
+        <div class="finance-box">
+            <h4>@Localizer["المتبقي (Balance)"]</h4>
+            <div class="val" style="color: #ef4444;">$@Model.RemainingAmount.ToString("N2")</div>
+        </div>
+        <div class="finance-box">
+            <h4>@Localizer["رسوم الشحن والجمارك"]</h4>
+            <div class="val">$@((Model.SeaFreight + Model.CustomsAndTaxes).ToString("N2"))</div>
+        </div>
+        <div class="finance-box">
+            <h4>@Localizer["عمولة الشركة"]</h4>
+            <div class="val">$@Model.CompanyCommission.ToString("N2")</div>
+        </div>
+    </div>
+
+    <div style="margin-top: 3rem; text-align: center; gap: 15px; display: flex; justify-content: center;">
+        <a href="@Url.Action("Edit", "Invoices", new { id = Model.Id })" class="btn" style="background: var(--primary-gold); color: white; border-radius: 10px; font-weight: 800; padding: 10px 25px;"><i class="fa-solid fa-pen"></i> @Localizer["تعديل الفاتورة"]</a>
+        <a href="@Url.Action("Create", "PaymentReceipts", new { invoiceId = Model.Id })" class="btn" style="background: var(--primary-navy); color: white; border-radius: 10px; font-weight: 800; padding: 10px 25px;"><i class="fa-solid fa-dollar-sign"></i> @Localizer["تسجيل دفعة جديدة"]</a>
+    </div>
+</div>

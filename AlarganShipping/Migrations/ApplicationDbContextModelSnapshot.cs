@@ -259,34 +259,37 @@ namespace AlarganShipping.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("ActualDeliveryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ActualPickupDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("CarId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DestinationLocationId")
+                    b.Property<int>("DestinationLocationId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DispatchDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("DriverName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DriverNotes")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DriverPhone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OrderNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OriginLocationId")
+                    b.Property<int>("OriginLocationId")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TowingCompany")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TowingFee")
@@ -434,6 +437,9 @@ namespace AlarganShipping.Migrations
                     b.Property<decimal>("LandFreight")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("SeaFreight")
                         .HasColumnType("decimal(18,2)");
 
@@ -545,11 +551,16 @@ namespace AlarganShipping.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("AttachmentPath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("PaymentDate")
@@ -564,7 +575,6 @@ namespace AlarganShipping.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReferenceNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -989,12 +999,14 @@ namespace AlarganShipping.Migrations
                     b.HasOne("AlarganShipping.Models.Location", "DestinationLocation")
                         .WithMany("DestinationDispatchOrders")
                         .HasForeignKey("DestinationLocationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("AlarganShipping.Models.Location", "OriginLocation")
                         .WithMany("OriginDispatchOrders")
                         .HasForeignKey("OriginLocationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("AlarganShipping.Models.Transporter", "Transporter")
                         .WithMany("DispatchOrders")

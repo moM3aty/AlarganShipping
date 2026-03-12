@@ -1,0 +1,166 @@
+﻿@model AlarganShipping.Models.Car
+@{
+    ViewData["Title"] = Localizer["تتبع سيارتي"];
+}
+
+<style>
+    /* ... (قم بنسخ ولصق نفس أكواد CSS الموجودة في Views/Tracking/Result.cshtml حرفياً لضمان نفس الشكل الجمالي) ... */
+    /* نظراً لضيق المساحة، سأضع التنسيقات الأساسية لتتبع السيارة هنا */
+    .tracking-wrapper {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 3rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        border: 1px solid #e2e8f0;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .car-title-large {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .vin-badge {
+        background-color: rgba(184, 147, 90, 0.1);
+        color: var(--primary-gold);
+        padding: 0.5rem 1.5rem;
+        border-radius: 0.75rem;
+        font-family: monospace;
+        font-size: 1.1rem;
+        font-weight: 900;
+        display: inline-block;
+        margin-bottom: 3rem;
+        border: 1px solid rgba(184, 147, 90, 0.2);
+    }
+
+    /* السجل الزمني للتتبع */
+    .timeline {
+        position: relative;
+        padding-inline-start: 2rem;
+        margin-bottom: 3rem;
+    }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            inset-inline-start: 0;
+            width: 4px;
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            inset-inline-start: -2rem;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-gold);
+            border: 4px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px var(--primary-gold);
+            transform: translateX(50%); /* For RTL adjustment */
+        }
+
+    html[dir="ltr"] .timeline-item::before {
+        transform: translateX(-50%);
+    }
+
+    .timeline-date {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 800;
+        margin-bottom: 0.3rem;
+    }
+
+    .timeline-title {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin-bottom: 0.3rem;
+    }
+
+    .timeline-desc {
+        color: #475569;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    /* الصور المرفقة للعميل */
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .gallery-img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 1rem;
+        border: 2px solid #e2e8f0;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+
+        .gallery-img:hover {
+            border-color: var(--primary-gold);
+            transform: scale(1.02);
+        }
+</style>
+
+<div class="tracking-wrapper">
+    <div style="text-align: center;">
+        <a href="@Url.Action("Index", "CustomerPortal")" style="color: #64748b; text-decoration: none; font-weight: 800; display: inline-block; margin-bottom: 1rem;"><i class="fa-solid fa-arrow-right"></i> @Localizer["العودة للوحة التحكم"]</a>
+        <h1 class="car-title-large">@Model.Year @Model.Make @Model.Model</h1>
+        <div class="vin-badge">VIN: @Model.VIN</div>
+    </div>
+
+    <h3 style="color: var(--primary-navy); font-weight: 900; margin-bottom: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem;"><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary-gold);"></i> @Localizer["سجل التتبع والمراحل"]</h3>
+
+    <div class="timeline">
+        @if (Model.TrackingLogs != null && Model.TrackingLogs.Any())
+        {
+            foreach (var log in Model.TrackingLogs.OrderByDescending(l => l.UpdateDate))
+            {
+                <div class="timeline-item">
+                    <div class="timeline-date">@log.UpdateDate.ToString("dd MMM yyyy - hh:mm tt") | <i class="fa-solid fa-location-dot"></i> @log.Location</div>
+                    <div class="timeline-title">@Localizer[log.Title]</div>
+                    <div class="timeline-desc">@log.Description</div>
+                </div>
+            }
+        }
+        else
+        {
+            <p style="color: #94a3b8; font-weight: 700;">@Localizer["لم يتم تسجيل أي تحديثات لهذه السيارة بعد."]</p>
+        }
+    </div>
+
+    <h3 style="color: var(--primary-navy); font-weight: 900; margin-bottom: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; margin-top: 3rem;"><i class="fa-solid fa-images" style="color: var(--primary-gold);"></i> @Localizer["صور ومرفقات السيارة"]</h3>
+    <div class="gallery-grid">
+        @if (!string.IsNullOrEmpty(Model.MainImageUrl))
+        {
+            <a href="@Model.MainImageUrl" target="_blank"><img src="@Model.MainImageUrl" class="gallery-img" alt="Main Car Image" /></a>
+        }
+        @if (Model.DocumentAttachments != null)
+        {
+            foreach (var doc in Model.DocumentAttachments.Where(d => d.DocumentType == "CarImage"))
+            {
+                <a href="@doc.FilePath" target="_blank"><img src="@doc.FilePath" class="gallery-img" alt="Car Image" /></a>
+            }
+        }
+    </div>
+</div>

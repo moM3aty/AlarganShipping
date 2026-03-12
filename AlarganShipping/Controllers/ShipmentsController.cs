@@ -36,10 +36,8 @@ namespace AlarganShipping.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Shipment shipment)
         {
-            ModelState.Remove("LoadingPort");
-            ModelState.Remove("DischargePort");
-            ModelState.Remove("Cars");
-            ModelState.Remove("Documents");
+            ModelState.Remove("LoadingPort"); ModelState.Remove("DischargePort");
+            ModelState.Remove("Cars"); ModelState.Remove("Documents");
 
             if (ModelState.IsValid)
             {
@@ -64,9 +62,6 @@ namespace AlarganShipping.Controllers
             return View(shipment);
         }
 
-        // ==========================================
-        // شاشة التعديل (GET)
-        // ==========================================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -81,40 +76,58 @@ namespace AlarganShipping.Controllers
             return View(shipment);
         }
 
-        // ==========================================
-        // حفظ التعديلات (POST)
-        // ==========================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Shipment shipment)
         {
             if (id != shipment.Id) return Json(new { success = false, errors = new[] { "خطأ في المعرف." } });
 
-            ModelState.Remove("LoadingPort");
-            ModelState.Remove("DischargePort");
-            ModelState.Remove("Cars");
-            ModelState.Remove("Documents");
+            ModelState.Remove("LoadingPort"); ModelState.Remove("DischargePort");
+            ModelState.Remove("Cars"); ModelState.Remove("Documents");
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // 💡 الترقية الذكية (Smart Upgrade): 
+                    // جلب الشحنة بالسيارات المرتبطة بها لمقارنة تغير الحالة
+                    var oldShipment = await _context.Shipments.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
+                    var linkedCars = await _context.Cars.Where(c => c.ShipmentId == id).ToListAsync();
+
                     _context.Update(shipment);
+
+                    // إذا تغيرت حالة الشحنة إلى مبحرة أو واصلة، نقوم بتحديث السيارات وإشعار العملاء
+                    if (oldShipment != null && oldShipment.Status != shipment.Status)
+                    {
+                        foreach (var car in linkedCars)
+                        {
+                            if (shipment.Status == "Sailed")
+                            {
+                                car.StatusId = 6; // أبحرت
+                                _context.TrackingLogs.Add(new TrackingLog { CarId = car.Id, Title = "أبحرت السفينة", Description = $"تم إبحار الحاوية رقم {shipment.ContainerNumber}", Location = "في البحر", ProgressPercentage = 83, UpdateDate = DateTime.Now });
+                                _context.Notifications.Add(new Notification { CustomerId = car.CustomerId, Title = "إبحار شحنة", Message = $"سيارتك {car.Make} أبحرت وهي في الطريق إليك.", Type = "TrackingUpdate" });
+                            }
+                            else if (shipment.Status == "Arrived")
+                            {
+                                car.StatusId = 7; // وصلت
+                                _context.TrackingLogs.Add(new TrackingLog { CarId = car.Id, Title = "وصول للميناء الوجهة", Description = $"السفينة وصلت للميناء بنجاح.", Location = "الميناء", ProgressPercentage = 100, UpdateDate = DateTime.Now });
+                                _context.Notifications.Add(new Notification { CustomerId = car.CustomerId, Title = "وصول السيارة!", Message = $"سيارتك {car.Make} وصلت إلى الميناء المخصص. يرجى الترتيب للتخليص.", Type = "TrackingUpdate" });
+                            }
+                            _context.Update(car);
+                        }
+                    }
+
                     await _context.SaveChangesAsync();
                     return Json(new { success = true });
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!_context.Shipments.Any(e => e.Id == shipment.Id)) return Json(new { success = false, errors = new[] { "الشحنة غير موجودة." } });
-                    else throw;
+                    return Json(new { success = false, errors = new[] { "حدث خطأ: " + ex.Message } });
                 }
             }
             return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
 
-        // ==========================================
-        // حذف الشحنة والحاوية (POST)
-        // ==========================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
@@ -122,10 +135,9 @@ namespace AlarganShipping.Controllers
             var shipment = await _context.Shipments.Include(s => s.Cars).FirstOrDefaultAsync(s => s.Id == id);
             if (shipment == null) return Json(new { success = false, message = "الشحنة غير موجودة." });
 
-            // حماية البيانات: منع حذف الشحنة إذا كان بها سيارات
             if (shipment.Cars != null && shipment.Cars.Any())
             {
-                return Json(new { success = false, message = "لا يمكن حذف هذه الشحنة لأنها تحتوي على سيارات. قم بإزالة السيارات منها أولاً." });
+                return Json(new { success = false, message = "لا يمكن حذف هذه الشحنة لأنها تحتوي على سيارات. قم بفك الارتباط أولاً." });
             }
 
             try
@@ -140,24 +152,17 @@ namespace AlarganShipping.Controllers
             }
         }
 
-        // ==========================================
-        // دوال ربط السيارات بالحاوية (AJAX)
-        // ==========================================
-
-        // 1. جلب السيارات المتاحة في المستودع (غير مرتبطة بشحنة)
         [HttpGet]
         public async Task<IActionResult> GetAvailableCars()
         {
-            // جلب السيارات التي ليس لها ShipmentId وحالتها (تم الشراء = 1 أو في المستودع = 2)
             var availableCars = await _context.Cars
-                .Where(c => c.ShipmentId == null && (c.StatusId == 1 || c.StatusId == 2))
+                .Where(c => c.ShipmentId == null && (c.StatusId == 1 || c.StatusId == 2 || c.StatusId == 4))
                 .Select(c => new { id = c.Id, make = c.Make, model = c.Model, vin = c.VIN })
                 .ToListAsync();
 
             return Json(availableCars);
         }
 
-        // 2. ربط السيارة بالشحنة
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LinkCar(int shipmentId, int carId)
@@ -165,21 +170,35 @@ namespace AlarganShipping.Controllers
             var shipment = await _context.Shipments.Include(s => s.Cars).FirstOrDefaultAsync(s => s.Id == shipmentId);
             var car = await _context.Cars.FindAsync(carId);
 
-            if (shipment == null || car == null)
-                return Json(new { success = false, message = "البيانات غير صحيحة." });
+            if (shipment == null || car == null) return Json(new { success = false, message = "البيانات غير صحيحة." });
+            if (shipment.Cars.Count >= 4) return Json(new { success = false, message = "الحاوية ممتلئة (الحد الأقصى 4 سيارات)." });
 
-            if (shipment.Cars.Count >= 4)
-                return Json(new { success = false, message = "الحاوية ممتلئة بالكامل (الحد الأقصى 4 سيارات)." });
-
-            // ربط السيارة وتغيير حالتها إلى "في الشحن" (StatusId = 3)
+            // 💡 تحديث تلقائي للحالة وإرسال إشعار
             car.ShipmentId = shipmentId;
-            car.StatusId = 3;
+            car.StatusId = 5; // جاري التحميل
+
+            _context.TrackingLogs.Add(new TrackingLog
+            {
+                CarId = car.Id,
+                Title = "تم التحميل في الحاوية",
+                Description = $"تم ربط السيارة بالحاوية رقم {shipment.ContainerNumber} وجاهزة للإقلاع.",
+                Location = "الميناء",
+                ProgressPercentage = 66,
+                UpdateDate = DateTime.Now
+            });
+
+            _context.Notifications.Add(new Notification
+            {
+                CustomerId = car.CustomerId,
+                Title = "تحديث الشحن",
+                Message = $"تم تحميل سيارتك {car.Make} {car.Model} بنجاح داخل الحاوية وتنتظر الإقلاع.",
+                Type = "TrackingUpdate"
+            });
 
             await _context.SaveChangesAsync();
             return Json(new { success = true });
         }
 
-        // 3. فك ارتباط السيارة عن الشحنة
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UnlinkCar(int carId)
@@ -187,9 +206,8 @@ namespace AlarganShipping.Controllers
             var car = await _context.Cars.FindAsync(carId);
             if (car == null) return Json(new { success = false, message = "السيارة غير موجودة." });
 
-            // فك الارتباط وإعادة الحالة إلى "في المستودع" (StatusId = 2)
             car.ShipmentId = null;
-            car.StatusId = 2;
+            car.StatusId = 2; // تعود للمستودع
 
             await _context.SaveChangesAsync();
             return Json(new { success = true });
