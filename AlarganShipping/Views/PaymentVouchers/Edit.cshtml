@@ -212,7 +212,8 @@
         <div class="form-grid">
             <div class="form-group">
                 <label asp-for="Amount" class="form-label">@Localizer["المبلغ المصروف (USD / OMR)"] *</label>
-                <input asp-for="Amount" type="number" step="0.01" class="form-control money-input" required />
+                <!-- استخدام InvariantCulture للحماية من مشكلة الفواصل عند التعديل -->
+                <input asp-for="Amount" type="number" step="0.01" class="form-control money-input" value="@Model.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture)" required />
             </div>
 
             <div class="form-group">

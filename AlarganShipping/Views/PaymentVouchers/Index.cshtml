@@ -170,6 +170,17 @@
             transform: scale(1.1);
         }
 
+    .btn-edit-pro {
+        color: var(--primary-gold);
+    }
+
+        .btn-edit-pro:hover {
+            background: var(--primary-gold);
+            color: white;
+            border-color: var(--primary-gold);
+            transform: scale(1.1);
+        }
+
     .btn-delete-pro {
         color: #ef4444;
     }
@@ -244,7 +255,7 @@
                                     @if (vou.Customer != null)
                                     {
                                         <div style="font-size: 0.8rem; color: var(--primary-gold); font-weight: 800;">
-                                            <i class="fa-solid fa-link"></i> مرتبطة بالعميل: @vou.Customer.Name
+                                            <i class="fa-solid fa-link"></i> مرتبط بالعميل: @vou.Customer.Name
                                         </div>
                                     }
                                 </td>
@@ -258,6 +269,9 @@
                                     <div class="actions-wrapper">
                                         <a href="@Url.Action("Print", "PaymentVouchers", new { id = vou.Id })" class="action-btn-pro btn-print-pro" title="@Localizer["طباعة السند"]">
                                             <i class="fa-solid fa-print"></i>
+                                        </a>
+                                        <a href="@Url.Action("Edit", "PaymentVouchers", new { id = vou.Id })" class="action-btn-pro btn-edit-pro" title="@Localizer["تعديل السند"]">
+                                            <i class="fa-solid fa-pen-to-square"></i>
                                         </a>
                                         <button type="button" class="action-btn-pro btn-delete-pro" onclick="confirmDelete(@vou.Id)" title="@Localizer["حذف وإلغاء"]">
                                             <i class="fa-solid fa-trash-can"></i>

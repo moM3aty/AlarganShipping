@@ -9,8 +9,8 @@
     <meta charset="utf-8" />
     <title>فاتورة @Model.InvoiceNumber</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <!-- استدعاء مكتبات التصدير -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <!-- مكتبة الـ PDF فقط (تم الاستغناء عن مكتبة الإكسل واستخدام الكود الأصلي لضمان العربية) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
@@ -21,11 +21,20 @@
         body {
             font-family: 'Cairo', sans-serif;
             background: #e2e8f0;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        /* غلاف الصفحة لحماية الطباعة من الـ Flexbox */
+        .page-container {
             display: flex;
             justify-content: center;
             flex-direction: column;
             align-items: center;
+            padding: 20px;
+            min-height: 100vh;
         }
 
         .invoice-box {
@@ -36,11 +45,15 @@
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             margin-top: 20px;
+            box-sizing: border-box;
+            border-top: 10px solid var(--primary-gold);
+            /* الحفاظ على الموضع النسبي مهم للطباعة */
+            position: relative; 
         }
 
         .header {
             text-align: center;
-            border-bottom: 3px solid var(--primary-gold);
+            border-bottom: 3px solid var(--primary-navy);
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
@@ -91,11 +104,14 @@
             padding: 15px 10px;
             text-align: right;
             font-size: 1.1rem;
+            border: 1px solid var(--primary-navy);
         }
 
         td {
             padding: 15px 10px;
             border-bottom: 1px solid #e2e8f0;
+            border-left: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
             font-weight: 700;
             font-size: 1.05rem;
         }
@@ -113,6 +129,7 @@
             border: 2px solid var(--primary-navy);
             border-radius: 12px;
             overflow: hidden;
+            background: white;
         }
 
             .totals div {
@@ -159,6 +176,8 @@
             display: flex;
             gap: 15px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .btn-action {
@@ -174,181 +193,285 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        .btn-print {
-            background: var(--primary-gold);
-        }
+        .btn-print { background: var(--primary-gold); }
+        .btn-print:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-excel { background: #10b981; }
+        .btn-excel:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-pdf { background: #ef4444; }
+        .btn-pdf:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-back { background: var(--primary-navy); }
+        .btn-back:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
-            .btn-print:hover {
-                background: #92400e;
-                transform: translateY(-2px);
-            }
-
-        .btn-excel {
-            background: #10b981;
-        }
-
-            .btn-excel:hover {
-                background: #059669;
-                transform: translateY(-2px);
-            }
-
-        .btn-pdf {
-            background: #ef4444;
-        }
-
-            .btn-pdf:hover {
-                background: #dc2626;
-                transform: translateY(-2px);
-            }
-
-        .btn-back {
-            background: var(--primary-navy);
-        }
-
-            .btn-back:hover {
-                background: #0f172a;
-                transform: translateY(-2px);
-            }
-
+        /* ========================================================
+           إعدادات الطباعة الصارمة
+           ======================================================== */
         @@media print {
-            body
+            @@page {
+                size: A4 portrait;
+                margin: 1cm;
+            }
 
-        {
-            background: white;
-            padding: 0;
-        }
+            body {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
 
-        .invoice-box {
-            box-shadow: none;
-            padding: 0;
-            max-width: 100%;
-            border: none;
-            margin: 0;
-        }
+            /* إلغاء الـ Flexbox الذي يكسر الطباعة */
+            .page-container {
+                display: block !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
 
-        .controls {
-            display: none;
-        }
+            .invoice-box {
+                box-shadow: none !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                border: none !important;
+                margin: 0 !important;
+                border-top: 10px solid var(--primary-gold) !important;
+            }
 
-        html, body {
-            height: 99%;
-            page-break-after: avoid;
-        }
+            .controls {
+                display: none !important;
+            }
 
-        th, .final {
-            background-color: var(--primary-navy) !important;
-            color: white !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
+            /* إجبار الألوان */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
 
-        .bank-info {
-            background-color: rgba(184, 147, 90, 0.05) !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
+            .info-row {
+                background-color: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
+                page-break-inside: avoid !important;
+            }
 
+            table { page-break-inside: auto !important; width: 100% !important; }
+            tr { page-break-inside: avoid !important; page-break-after: auto !important; }
+            
+            th {
+                background-color: var(--primary-navy) !important;
+                color: white !important;
+                border: 1px solid var(--primary-navy) !important;
+            }
+
+            .totals {
+                page-break-inside: avoid !important;
+                border: 2px solid var(--primary-navy) !important;
+                float: left !important; /* لإبقائه في اليسار وقت الطباعة */
+            }
+
+            .totals .final {
+                background-color: var(--primary-navy) !important;
+                color: white !important;
+            }
+
+            .remain {
+                background-color: #fef2f2 !important;
+                color: #ef4444 !important;
+            }
+
+            .bank-info {
+                background-color: rgba(184, 147, 90, 0.05) !important;
+                border: 2px dashed var(--primary-gold) !important;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="controls">
-        <button class="btn-action btn-back" onclick="history.back()">العودة</button>
-        <button class="btn-action btn-print" onclick="window.print()">طباعة (طابعة)</button>
-        <button class="btn-action btn-pdf" onclick="downloadPDF()">تحميل PDF</button>
-        <button class="btn-action btn-excel" onclick="downloadExcel()">تصدير Excel</button>
-    </div>
-
-    <div class="invoice-box" id="invoiceContent">
-        <div class="header">
-            <img src="/images/logo.png" alt="Logo" onerror="this.onerror=null; this.style.display='none'" />
-            <h1>ALARGAN AUTO SHIPPING</h1>
-            <p style="color:#64748b; font-weight:900; font-size:1.3rem; margin:5px 0 0 0;">فاتورة ضريبية - Tax Invoice</p>
+    <div class="page-container">
+        <div class="controls">
+            <button class="btn-action btn-back" onclick="history.back()">العودة</button>
+            <button class="btn-action btn-print" onclick="window.print()">طباعة (طابعة)</button>
+            <button class="btn-action btn-excel" onclick="downloadExcelFoolproof()">تصدير Excel</button>
         </div>
 
-        <div class="info-row">
-            <div>
-                <p>فاتورة مقدمة إلى: <span style="font-size: 1.4rem; color: var(--primary-navy);">@(Model.Customer?.Name)</span></p>
-                <p>السيارة: @(Model.Car?.Make) @(Model.Car?.VehicleType) @(Model.Car?.Year)</p>
-                <p>رقم الشاصي: <span dir="ltr" style="color: var(--primary-navy);">@(Model.Car?.VIN)</span></p>
+        <div class="invoice-box" id="invoiceContent">
+            <div class="header">
+                <img src="/images/logo.png" alt="Logo" onerror="this.onerror=null; this.style.display='none'" />
+                <h1>ALARGAN AUTO SHIPPING</h1>
+                <p style="color:#64748b; font-weight:900; font-size:1.3rem; margin:5px 0 0 0;">فاتورة ضريبية - Tax Invoice</p>
             </div>
-            <div style="text-align: left;">
-                <p>رقم الفاتورة: <span dir="ltr">@Model.InvoiceNumber</span></p>
-                <p>تاريخ الإصدار: <span>@Model.IssueDate.ToString("yyyy/MM/dd")</span></p>
-                @if (Model.IsShippingOnly)
-                {
-                    <p style="color:#ef4444; background:#fef2f2; padding:5px 10px; border-radius:8px; display:inline-block; margin-top: 10px; font-weight: 900;">(فاتورة شحن وجمارك فقط)</p>
-                }
+
+            <div class="info-row">
+                <div>
+                    <p>فاتورة مقدمة إلى: <span style="font-size: 1.4rem; color: var(--primary-navy);">@(Model.Customer?.Name ?? "-")</span></p>
+                    <p>السيارة: @(Model.Car?.Make ?? "-") @(Model.Car?.VehicleType ?? "-") @(Model.Car?.Year.ToString() ?? "-")</p>
+                    <p>رقم الشاصي: <span dir="ltr" style="color: var(--primary-navy);">@(Model.Car?.VIN ?? "-")</span></p>
+                </div>
+                <div style="text-align: left;">
+                    <p>رقم الفاتورة: <span dir="ltr">@Model.InvoiceNumber</span></p>
+                    <p>تاريخ الإصدار: <span>@Model.IssueDate.ToString("yyyy/MM/dd")</span></p>
+                    @if (Model.IsShippingOnly)
+                    {
+                        <p style="color:#ef4444; background:#fef2f2; padding:5px 10px; border-radius:8px; display:inline-block; margin-top: 10px; font-weight: 900;">(فاتورة شحن وجمارك فقط)</p>
+                    }
+                </div>
             </div>
-        </div>
 
-        <table id="exportTable">
-            <thead>
-                <tr>
-                    <th>البيان / الوصف</th>
-                    <th style="text-align: left;">المبلغ ($)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (!Model.IsShippingOnly)
-                {
-                    <tr><td>قيمة شراء السيارة</td><td class="amount">@Model.CarPrice.ToString("N2")</td></tr>
-                    <tr><td>رسوم المزاد</td><td class="amount">@Model.AuctionFees.ToString("N2")</td></tr>
-                }
-                <tr><td>النقل الداخلي (Towing)</td><td class="amount">@Model.InlandTowing.ToString("N2")</td></tr>
-                <tr><td>الشحن البحري</td><td class="amount">@Model.SeaFreight.ToString("N2")</td></tr>
-                <tr><td>التخليص الجمركي</td><td class="amount">@Model.CustomsAndTaxes.ToString("N2")</td></tr>
+            <table>
+                <thead>
+                    <tr>
+                        <th>البيان / الوصف</th>
+                        <th style="text-align: left; width: 30%;">المبلغ ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.IsShippingOnly)
+                    {
+                        <tr><td>قيمة شراء السيارة</td><td class="amount">@Model.CarPrice.ToString("N2")</td></tr>
+                        <tr><td>رسوم المزاد</td><td class="amount">@Model.AuctionFees.ToString("N2")</td></tr>
+                    }
+                    <tr><td>النقل الداخلي (Towing)</td><td class="amount">@Model.InlandTowing.ToString("N2")</td></tr>
+                    <tr><td>الشحن البحري</td><td class="amount">@Model.SeaFreight.ToString("N2")</td></tr>
+                    <tr><td>التخليص الجمركي</td><td class="amount">@Model.CustomsAndTaxes.ToString("N2")</td></tr>
 
-                @if (Model.StorageFees > 0)
-                {
-                    <tr><td style="color:#ef4444;">غرامات تأخير / أرضيات</td><td class="amount" style="color:#ef4444;">@Model.StorageFees.ToString("N2")</td></tr>
-                }
-                <tr><td>الرسوم الإدارية</td><td class="amount">@Model.CompanyCommission.ToString("N2")</td></tr>
-            </tbody>
-        </table>
+                    @if (Model.StorageFees > 0)
+                    {
+                        <tr><td style="color:#ef4444;">غرامات تأخير / أرضيات</td><td class="amount" style="color:#ef4444;">@Model.StorageFees.ToString("N2")</td></tr>
+                    }
+                    <tr><td>الرسوم الإدارية</td><td class="amount">@Model.CompanyCommission.ToString("N2")</td></tr>
+                </tbody>
+            </table>
 
-        <div class="totals">
-            <div class="final"><span>الإجمالي الكلي</span><span dir="ltr">$@Model.TotalAmount.ToString("N2")</span></div>
-            <div style="color:#16a34a;"><span>المدفوع مقدماً</span><span dir="ltr">-$@Model.AmountPaid.ToString("N2")</span></div>
-            <div class="remain"><span>المتبقي عند الاستلام</span><span dir="ltr">$@Model.RemainingAmount.ToString("N2")</span></div>
-        </div>
+            <div class="totals" style="float: left;">
+                <div class="final"><span>الإجمالي الكلي</span><span dir="ltr">$@Model.TotalAmount.ToString("N2")</span></div>
+                <div style="color:#16a34a;"><span>المدفوع مقدماً</span><span dir="ltr">-$@Model.AmountPaid.ToString("N2")</span></div>
+                <div class="remain"><span>المتبقي عند الاستلام</span><span dir="ltr">$@Model.RemainingAmount.ToString("N2")</span></div>
+            </div>
+            <div style="clear: both;"></div> <!-- لتنظيف الـ Float -->
 
-        <div class="footer">
-            <div class="bank-info">
-                <div style="color:var(--primary-gold); font-weight:900; margin-bottom: 10px;">تفاصيل الحساب البنكي:</div>
-                <div>بنك مسقط (Bank Muscat)</div>
-                <div>الاسم: Alargan Shipping</div>
-                <div style="font-family:monospace; font-size:1.4rem; font-weight:900; color: var(--primary-navy); margin-top: 5px;">0000 0000 0000 0000</div>
+            <div class="footer">
+                <div class="bank-info">
+                    <div style="color:var(--primary-gold); font-weight:900; margin-bottom: 10px;">تفاصيل الحساب البنكي:</div>
+                    <div>بنك مسقط (Bank Muscat)</div>
+                    <div>الاسم: Alargan Shipping</div>
+                    <div style="font-family:monospace; font-size:1.4rem; font-weight:900; color: var(--primary-navy); margin-top: 5px;">0000 0000 0000 0000</div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // 🌟 تثبيت صيغة الأرقام لحماية الـ JavaScript من أي خطأ Syntax 🌟
+        var carPrice = '@Model.CarPrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)';
+        var auctionFees = '@Model.AuctionFees.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)';
+        var inlandTowing = '@Model.InlandTowing.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)';
+        var seaFreight = '@Model.SeaFreight.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)';
+        var customsAndTaxes = '@Model.CustomsAndTaxes.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)';
+        var storageFees = '@Model.StorageFees.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)';
+        var companyCommission = '@Model.CompanyCommission.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)';
+        var totalAmount = '@Model.TotalAmount.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)';
+        var amountPaid = '@Model.AmountPaid.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)';
+        var remainingAmount = '@Model.RemainingAmount.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)';
+        var isShippingOnly = @Model.IsShippingOnly.ToString().ToLower();
+
+        // 🌟 الحل الجذري لمشكلة قص الـ PDF في المتصفحات العربية 🌟
         function downloadPDF() {
             var element = document.getElementById('invoiceContent');
+            
+            // حفظ التنسيقات الأصلية
+            var originalBoxShadow = element.style.boxShadow;
+            var originalBorderRadius = element.style.borderRadius;
+            var originalWidth = element.style.width;
+            var originalMaxWidth = element.style.maxWidth;
+
+            // تجهيز العنصر لكاميرا الـ PDF ليكون مثالياً ومقاسه ثابت
+            element.style.boxShadow = 'none';
+            element.style.borderRadius = '0';
+            element.style.width = '800px'; 
+            element.style.maxWidth = 'none';
+
             var opt = {
                 margin:       10,
-                filename:     'Invoice_@Model.InvoiceNumber .pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
+                filename:     'Invoice_@Model.InvoiceNumber' + '.pdf',
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true, 
+                    scrollX: 0, 
+                    scrollY: 0,
+                    windowWidth: 850 // خدعة لمنع الانهيار
+                },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-            html2pdf().set(opt).from(element).save();
+
+            html2pdf().set(opt).from(element).save().then(function() {
+                // إرجاع التنسيقات لطبيعتها في الموقع بعد التحميل
+                element.style.boxShadow = originalBoxShadow;
+                element.style.borderRadius = originalBorderRadius;
+                element.style.width = originalWidth;
+                element.style.maxWidth = originalMaxWidth;
+            });
         }
 
-        function downloadExcel() {
-            var table = document.getElementById("exportTable");
-            var wb = XLSX.utils.table_to_book(table, {sheet: "الفاتورة"});
+        // 🌟 الطريقة الآمنة تماماً لتصدير الإكسل وبدون كسر المتصفح بالـ HTML المفتوح 🌟
+        function downloadExcelFoolproof() {
+            var customerName = "@Html.Raw(Model.Customer?.Name ?? "-")";
+            var carInfo = "@Html.Raw(Model.Car?.Make + " " + Model.Car?.Model + " " + Model.Car?.Year)";
+            var vin = "@Html.Raw(Model.Car?.VIN ?? "-")";
+            var issueDate = "@Model.IssueDate.ToString("yyyy/MM/dd")";
+            var invoiceNo = "@Model.InvoiceNumber";
 
-            var ws = wb.Sheets["الفاتورة"];
-            XLSX.utils.sheet_add_aoa(ws, [
-                ["", ""],
-                ["الإجمالي الكلي", "@Model.TotalAmount.ToString("N2")"],
-                ["المدفوع مقدماً", "-@Model.AmountPaid.ToString("N2")"],
-                ["المتبقي", "@Model.RemainingAmount.ToString("N2")"]
-            ], {origin: -1});
+            // بناء ملف الـ Excel بطريقة الدمج العادي لمنع المتصفح من إغلاق التاجات
+            var excelContent = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel' xmlns='http://www.w3.org/TR/REC-html40'>";
+            excelContent += "<head><meta charset='utf-8' />";
+            excelContent += "<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>الفاتورة</x:Name><x:WorksheetOptions><x:DisplayRightToLeft/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->";
+            excelContent += "<style>";
+            excelContent += "table { border-collapse: collapse; width: 100%; direction: rtl; font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 14px; }";
+            excelContent += "th, td { border: 1px solid #000; padding: 10px; text-align: right; }";
+            excelContent += "th { background-color: #1e293b; color: #ffffff; font-weight: bold; font-size: 16px; }";
+            excelContent += ".amount { text-align: left; font-family: monospace; font-weight: bold; }";
+            excelContent += ".header-row { background-color: #f8fafc; font-weight: bold; }";
+            excelContent += ".total-row { background-color: #1e293b; color: #ffffff; font-weight: bold; font-size: 16px; }";
+            excelContent += "</style></head><body dir='rtl'>";
+            excelContent += "<h2 style='text-align: center; color: #b45309;'>شركة الأرجان للشحن - فاتورة ضريبية</h2>";
+            
+            excelContent += "<table>";
+            excelContent += "<tr><td class='header-row'>رقم الفاتورة</td><td style='text-align:left;'>" + invoiceNo + "</td></tr>";
+            excelContent += "<tr><td class='header-row'>تاريخ الإصدار</td><td style='text-align:left;'>" + issueDate + "</td></tr>";
+            excelContent += "<tr><td class='header-row'>العميل</td><td>" + customerName + "</td></tr>";
+            excelContent += "<tr><td class='header-row'>السيارة</td><td>" + carInfo + "</td></tr>";
+            excelContent += "<tr><td class='header-row'>رقم الشاصي (VIN)</td><td style='text-align:left;'>" + vin + "</td></tr>";
+            excelContent += "</table><br/><table>";
+            
+            excelContent += "<thead><tr><th style='width: 300px;'>البيان / الوصف</th><th style='width: 150px;'>المبلغ ($)</th></tr></thead><tbody>";
 
-            XLSX.writeFile(wb, 'Invoice_@Model.InvoiceNumber .xlsx');
+            if (!isShippingOnly) {
+                excelContent += "<tr><td>قيمة شراء السيارة</td><td class='amount'>" + carPrice + "</td></tr>";
+                excelContent += "<tr><td>رسوم المزاد</td><td class='amount'>" + auctionFees + "</td></tr>";
+            }
+            excelContent += "<tr><td>النقل الداخلي (Towing)</td><td class='amount'>" + inlandTowing + "</td></tr>";
+            excelContent += "<tr><td>الشحن البحري</td><td class='amount'>" + seaFreight + "</td></tr>";
+            excelContent += "<tr><td>التخليص الجمركي</td><td class='amount'>" + customsAndTaxes + "</td></tr>";
+            
+            if (parseFloat(storageFees) > 0) {
+                excelContent += "<tr><td style='color:#ef4444;'>غرامات تأخير / أرضيات</td><td class='amount' style='color:#ef4444;'>" + storageFees + "</td></tr>";
+            }
+            excelContent += "<tr><td>الرسوم الإدارية</td><td class='amount'>" + companyCommission + "</td></tr>";
+            excelContent += "<tr class='total-row'><td>الإجمالي الكلي</td><td class='amount'>" + totalAmount + "</td></tr>";
+            excelContent += "<tr><td style='color:#16a34a; font-weight:bold;'>المدفوع مقدماً</td><td class='amount' style='color:#16a34a;'>-" + amountPaid + "</td></tr>";
+            excelContent += "<tr><td style='color:#ef4444; font-weight:bold;'>المتبقي عند الاستلام</td><td class='amount' style='color:#ef4444;'>" + remainingAmount + "</td></tr>";
+            excelContent += "</tbody></table>";
+            
+            // الخدعة التي تمنع المتصفح من إنهاء سكريبت الجافاسكربت وتخريب الشاشة
+            excelContent += "</bo" + "dy></ht" + "ml>";
+
+            // استخدام Blob مع BOM لدعم العربية (UTF-8)
+            var blob = new Blob(['\uFEFF' + excelContent], { type: 'application/vnd.ms-excel;charset=utf-8' });
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement("a");
+            link.href = url;
+            link.download = "Invoice_" + invoiceNo + ".xls";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>

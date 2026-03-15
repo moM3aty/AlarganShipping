@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AlarganShipping.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AlarganShipping.Controllers
 {
+    [Authorize]
     public class AuctionsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -16,60 +18,79 @@ namespace AlarganShipping.Controllers
         // عرض قائمة المزادات
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Auctions.ToListAsync());
+            return View(await _context.Auctions.OrderByDescending(a => a.Id).ToListAsync());
         }
 
-        // شاشة إضافة مزاد (GET)
+        // شاشة الإضافة (عادية)
         public IActionResult Create()
         {
             return View();
         }
 
-        // حفظ مزاد جديد (POST - AJAX)
+        // 🌟 دالة الإضافة (تعمل مع الشاشة العادية وتعمل مع النافذة المنبثقة من السيارات) 🌟
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Auction auction)
         {
-            ModelState.Remove("Cars");
+            // 1. حماية الـ NULL: إذا كان رقم المشتري أو الموقع فارغاً، نعطيهم قيمة افتراضية
+            if (string.IsNullOrWhiteSpace(auction.BuyerNumber))
+            {
+                auction.BuyerNumber = "غير محدد";
+                // الأهم: إزالة الخطأ من نظام الفحص لكي لا يتوقف الكود
+                ModelState.Remove("BuyerNumber");
+            }
 
+            if (string.IsNullOrWhiteSpace(auction.Location))
+            {
+                auction.Location = "غير محدد";
+                ModelState.Remove("Location");
+            }
+            ModelState.Remove("Cars");
+            // 2. فحص حالة البيانات وحفظها
             if (ModelState.IsValid)
             {
                 _context.Add(auction);
                 await _context.SaveChangesAsync();
-                return Json(new { success = true });
+
+                // 3. إذا كان الطلب قادم من النافذة المنبثقة (AJAX) في شاشة السيارات
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = true, id = auction.Id, name = auction.Name });
+                }
+
+                // 4. إذا كان من شاشة الإضافة العادية
+                return RedirectToAction(nameof(Index));
             }
-            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
-        }
 
-        // شاشة تعديل مزاد (GET)
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null) return NotFound();
-
-            var auction = await _context.Auctions.FindAsync(id);
-            if (auction == null) return NotFound();
+            // في حال الفشل عبر الـ AJAX
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { success = false, message = "تأكد من إدخال البيانات بشكل صحيح." });
+            }
 
             return View(auction);
         }
 
-        // ==========================================
-        // إضافة مزاد سريع من شاشة السيارات (AJAX)
-        // ==========================================
+        // 🌟 دالة الإضافة السريعة (بديلة في حال استخدمت الجافاسكربت مساراً مختلفاً) 🌟
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateQuick(string name)
         {
-            if (string.IsNullOrWhiteSpace(name)) return Json(new { success = false, message = "الاسم مطلوب" });
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return Json(new { success = false, message = "اسم المزاد مطلوب." });
+            }
 
             try
             {
                 var auction = new Auction
                 {
                     Name = name,
-                    Location = "غير محدد"
+                    BuyerNumber = "غير محدد", // منع خطأ الـ NULL
+                    Location = "غير محدد",
+                    DefaultAuctionFee = 0
                 };
 
-                _context.Add(auction);
+                _context.Auctions.Add(auction);
                 await _context.SaveChangesAsync();
 
                 return Json(new { success = true, id = auction.Id, name = auction.Name });
@@ -80,13 +101,31 @@ namespace AlarganShipping.Controllers
             }
         }
 
-        // حفظ التعديلات (POST - AJAX)
+        // شاشة التعديل
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+            var auction = await _context.Auctions.FindAsync(id);
+            if (auction == null) return NotFound();
+            return View(auction);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Auction auction)
         {
-            if (id != auction.Id) return Json(new { success = false, errors = new[] { "خطأ في المعرف." } });
+            if (id != auction.Id) return NotFound();
 
+            if (string.IsNullOrWhiteSpace(auction.BuyerNumber))
+            {
+                auction.BuyerNumber = "غير محدد";
+                ModelState.Remove("BuyerNumber");
+            }
+            if (string.IsNullOrWhiteSpace(auction.Location))
+            {
+                auction.Location = "غير محدد";
+                ModelState.Remove("Location");
+            }
             ModelState.Remove("Cars");
 
             if (ModelState.IsValid)
@@ -95,45 +134,34 @@ namespace AlarganShipping.Controllers
                 {
                     _context.Update(auction);
                     await _context.SaveChangesAsync();
-                    return Json(new { success = true });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AuctionExists(auction.Id)) return Json(new { success = false, errors = new[] { "المزاد غير موجود." } });
+                    if (!AuctionExists(auction.Id)) return NotFound();
                     else throw;
                 }
+                return RedirectToAction(nameof(Index));
             }
-            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+            return View(auction);
         }
 
-        // حذف مزاد (POST - AJAX)
+        // الحذف
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             var auction = await _context.Auctions.FindAsync(id);
-            if (auction == null)
+            if (auction != null)
             {
-                return Json(new { success = false, message = "المزاد غير موجود." });
-            }
+                // لا تسمح بحذف مزاد به سيارات (اختياري، يفضل استخدامه)
+                var hasCars = await _context.Cars.AnyAsync(c => c.AuctionId == id);
+                if (hasCars) return Json(new { success = false, message = "لا يمكن حذف هذا المزاد لوجود سيارات مسجلة باسمه." });
 
-            // منع حذف المزاد إذا كانت هناك سيارات مرتبطة به
-            bool hasCars = await _context.Cars.AnyAsync(c => c.AuctionId == id);
-            if (hasCars)
-            {
-                return Json(new { success = false, message = "لا يمكن حذف هذا المزاد لوجود سيارات مسجلة فيه. قم بنقلها أو حذفها أولاً." });
-            }
-
-            try
-            {
                 _context.Auctions.Remove(auction);
                 await _context.SaveChangesAsync();
                 return Json(new { success = true });
             }
-            catch (Exception)
-            {
-                return Json(new { success = false, message = "حدث خطأ أثناء الحذف." });
-            }
+            return Json(new { success = false, message = "المزاد غير موجود." });
         }
 
         private bool AuctionExists(int id)

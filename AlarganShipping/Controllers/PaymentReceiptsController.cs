@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AlarganShipping.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.IO;
 
 namespace AlarganShipping.Controllers
 {
@@ -89,6 +90,116 @@ namespace AlarganShipping.Controllers
             return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
 
+        // شاشة تعديل السند
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var receipt = await _context.PaymentReceipts.FindAsync(id);
+            if (receipt == null) return NotFound();
+
+            ViewBag.CustomerId = new SelectList(_context.Customers, "Id", "Name", receipt.CustomerId);
+            return View(receipt);
+        }
+
+        // حفظ التعديلات وتسوية حسابات العميل
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, PaymentReceipt receipt, IFormFile? AttachmentFile)
+        {
+            if (id != receipt.Id) return Json(new { success = false, errors = new[] { "خطأ في المعرف." } });
+
+            ModelState.Remove("Customer");
+            ModelState.Remove("ReceiptNumber");
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var oldReceipt = await _context.PaymentReceipts.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
+                    if (oldReceipt == null) return Json(new { success = false, errors = new[] { "السند غير موجود." } });
+
+                    receipt.ReceiptNumber = oldReceipt.ReceiptNumber;
+
+                    // معالجة الملف الجديد إذا تم رفعه
+                    if (AttachmentFile != null && AttachmentFile.Length > 0)
+                    {
+                        if (!string.IsNullOrEmpty(oldReceipt.AttachmentPath))
+                        {
+                            var oldPath = Path.Combine(_env.WebRootPath, oldReceipt.AttachmentPath.TrimStart('/'));
+                            if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
+                        }
+
+                        var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "receipts");
+                        if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                        var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(AttachmentFile.FileName);
+                        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await AttachmentFile.CopyToAsync(fileStream);
+                        }
+                        receipt.AttachmentPath = "/uploads/receipts/" + uniqueFileName;
+                    }
+                    else
+                    {
+                        receipt.AttachmentPath = oldReceipt.AttachmentPath;
+                    }
+
+                    // تسوية حساب العميل في حال تغير المبالغ أو العميل نفسه
+                    if (oldReceipt.CustomerId != receipt.CustomerId)
+                    {
+                        // 1. التراجع عن تأثير السند القديم للعميل القديم
+                        var oldCustomer = await _context.Customers.FindAsync(oldReceipt.CustomerId);
+                        if (oldCustomer != null)
+                        {
+                            oldCustomer.TotalPaid -= oldReceipt.Amount;
+                            oldCustomer.TotalBalance += (oldReceipt.Amount + oldReceipt.Discount);
+                            if (oldCustomer.TotalPaid < 0) oldCustomer.TotalPaid = 0;
+                            _context.Update(oldCustomer);
+                        }
+
+                        // 2. تطبيق السند على العميل الجديد
+                        var newCustomer = await _context.Customers.FindAsync(receipt.CustomerId);
+                        if (newCustomer != null)
+                        {
+                            newCustomer.TotalPaid += receipt.Amount;
+                            newCustomer.TotalBalance -= (receipt.Amount + receipt.Discount);
+                            if (newCustomer.TotalBalance < 0) newCustomer.TotalBalance = 0;
+                            _context.Update(newCustomer);
+                        }
+                    }
+                    else
+                    {
+                        var customer = await _context.Customers.FindAsync(receipt.CustomerId);
+                        if (customer != null)
+                        {
+                            decimal oldDeduction = oldReceipt.Amount + oldReceipt.Discount;
+                            decimal newDeduction = receipt.Amount + receipt.Discount;
+
+                            customer.TotalPaid = customer.TotalPaid - oldReceipt.Amount + receipt.Amount;
+                            customer.TotalBalance = customer.TotalBalance + oldDeduction - newDeduction;
+
+                            if (customer.TotalBalance < 0) customer.TotalBalance = 0;
+                            if (customer.TotalPaid < 0) customer.TotalPaid = 0;
+
+                            _context.Update(customer);
+                        }
+                    }
+
+                    _context.Update(receipt);
+                    await _context.SaveChangesAsync();
+                    return Json(new { success = true });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { success = false, errors = new[] { "حدث خطأ: " + ex.Message } });
+                }
+            }
+            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+        }
+
         // شاشة الطباعة الاحترافية للسند
         public async Task<IActionResult> Print(int? id)
         {
@@ -103,7 +214,7 @@ namespace AlarganShipping.Controllers
             return View(receipt);
         }
 
-        // (يجب أن تظل دوال Edit و Delete موجودة كما كانت في الكود السابق لديك لحذف أو تعديل السندات)
+        // حذف السند
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)

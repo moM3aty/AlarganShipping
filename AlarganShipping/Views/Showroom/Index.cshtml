@@ -231,7 +231,8 @@
                         <a href="@Url.Action("Details", "Cars", new { id = car.Id })" style="background: #f1f5f9; color: var(--primary-navy); padding: 0.8rem; border-radius: 10px; font-weight: 800; text-align: center; text-decoration: none; flex: 1; border: 1px solid #e2e8f0;">
                             @Localizer["التفاصيل"]
                         </a>
-                        <button type="button" class="btn-sell" style="flex: 2;" onclick="openSellModal(@car.Id, '@car.Make @car.Model @car.Year', @car.PurchasePrice)">
+                        <!-- تم إضافة الـ ToString مع InvariantCulture كحل جذري لمنع خطأ الفواصل في الأرقام -->
+                        <button type="button" class="btn-sell" style="flex: 2;" onclick="openSellModal(@car.Id, '@car.Make @car.Model @car.Year', '@car.PurchasePrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)')">
                             <i class="fa-solid fa-handshake"></i> @Localizer["بيع لعميل"]
                         </button>
                     </div>
@@ -317,8 +318,9 @@ else
                                     confirmButtonColor: 'var(--primary-gold)',
                                     confirmButtonText: '@Html.Raw(Localizer["إصدار الفاتورة الآن"])'
                                 }).then(() => {
-                                    // توجيه لصفحة إنشاء الفاتورة مع تحديد العميل والسيارة مسبقاً (اختياري)
-                            window.location.href = '@Url.Action("Create", "Invoices")?carId=' + carId + '&customerId=' + result.value.customerId;});
+                                    // توجيه لصفحة إنشاء الفاتورة
+                                    window.location.href = '@Url.Action("Create", "Invoices")';
+                                });
                             } else {
                                 Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
                             }

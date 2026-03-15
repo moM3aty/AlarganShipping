@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<AlarganShipping.Models.Auction>
 @{
-    ViewData["Title"] = Localizer["إدارة المزادات"];
+    ViewData["Title"] = Localizer["إدارة المزادات والمعارض"];
 }
 
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
@@ -14,8 +14,10 @@
         padding: 1.5rem;
         border-radius: 1.5rem;
         box-shadow: 0 5px 20px rgba(44, 62, 80, 0.03);
-        border: 1px solid #f1f5f9;
         margin-bottom: 2rem;
+        border: 1px solid #f1f5f9;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
     .page-header-text h2 {
@@ -28,18 +30,21 @@
         gap: 10px;
     }
 
-        .page-header-text h2 i {
-            color: var(--primary-gold);
-        }
+    .page-header-text p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin: 0;
+        margin-top: 5px;
+    }
 
     .btn-add {
-        background: linear-gradient(to right, var(--primary-navy), var(--secondary-navy));
-        color: #ffffff;
+        background: var(--primary-navy);
+        color: white;
         font-weight: 800;
         padding: 0.85rem 1.75rem;
         border-radius: 1rem;
         text-decoration: none;
-        box-shadow: 0 4px 10px rgba(44, 62, 80, 0.3);
         transition: 0.3s;
         display: inline-flex;
         align-items: center;
@@ -47,10 +52,10 @@
     }
 
         .btn-add:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(44, 62, 80, 0.4);
-            background: linear-gradient(to right, var(--primary-gold), var(--secondary-gold));
+            background: var(--primary-gold);
             color: white;
+            box-shadow: 0 5px 15px rgba(184, 147, 90, 0.3);
+            transform: translateY(-2px);
         }
 
     .data-card {
@@ -59,7 +64,6 @@
         padding: 2.5rem;
         box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         border: 1px solid #f1f5f9;
-        overflow-x: auto;
     }
 
     .table-enterprise {
@@ -75,142 +79,122 @@
             padding: 1.25rem 1rem;
             border-bottom: 2px solid #e2e8f0;
             text-align: start;
-            white-space: nowrap;
         }
 
         .table-enterprise td {
             padding: 1.25rem 1rem;
             border-bottom: 1px solid #f1f5f9;
-            color: var(--text-dark);
+            color: var(--primary-navy);
             font-weight: 700;
             vertical-align: middle;
         }
 
-        .table-enterprise tbody tr:hover {
-            background-color: #f8fafc;
-            transition: 0.2s;
-        }
-
-    .auction-logo {
-        width: 45px;
-        height: 45px;
-        background: rgba(184, 147, 90, 0.1);
-        color: var(--primary-gold);
-        border-radius: 12px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        margin-inline-end: 15px;
-        vertical-align: middle;
-    }
-
-    /* ستايل أزرار الإجراءات (تعديل وحذف) بشكل عصري ومربع */
-    .action-btn {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
+    .action-btn-pro {
         width: 38px;
         height: 38px;
-        border-radius: 10px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 1rem;
-        cursor: pointer;
+        border-radius: 10px;
         transition: 0.3s;
         text-decoration: none;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        cursor: pointer;
+        font-size: 1.1rem;
     }
 
-    .btn-edit {
+    .btn-edit-pro {
         color: var(--primary-gold);
     }
 
-        .btn-edit:hover {
+        .btn-edit-pro:hover {
             background: var(--primary-gold);
             color: white;
             border-color: var(--primary-gold);
-            box-shadow: 0 4px 10px rgba(184, 147, 90, 0.2);
         }
 
-    .btn-delete {
+    .btn-delete-pro {
         color: #ef4444;
     }
 
-        .btn-delete:hover {
+        .btn-delete-pro:hover {
             background: #ef4444;
             color: white;
             border-color: #ef4444;
-            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
         }
 
-    /* ========================================================
-           تعديلات الموبايل (الميديا كويري)
-           ======================================================== */
+    .auction-badge {
+        background: rgba(184, 147, 90, 0.1);
+        color: var(--primary-gold);
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        border: 1px solid rgba(184, 147, 90, 0.2);
+    }
+
     @@media (max-width: 768px) {
         .page-header-container {
             flex-direction: column;
-            align-items: stretch;
-            gap: 1.5rem;
-            padding: 1.5rem;
-        }
-
-        .header-actions {
-            width: 100%;
+            text-align: center;
         }
 
         .btn-add {
             width: 100%;
-            justify-content: center; /* توسيط محتوى الزر */
+            justify-content: center;
         }
 
         .data-card {
-            padding: 1.5rem; /* تقليل حواف الجدول الجانبية لتوفير مساحة */
-            border-radius: 1.2rem;
+            padding: 1rem;
         }
     }
 </style>
 
-<div>
-    @Html.AntiForgeryToken()
-    <div class="page-header-container">
-        <div class="page-header-text">
-            <h2><i class="fa-solid fa-gavel"></i> @Localizer["إدارة المزادات"]</h2>
-            <p style="color: var(--text-muted); font-weight: 600; margin-top: 5px;">• @Localizer["قائمة المزادات المعتمدة وحسابات الشراء"]</p>
-        </div>
-        <div class="header-actions">
-            <a href="@Url.Action("Create", "Auctions")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة مزاد جديد"]</a>
-        </div>
+<div class="page-header-container">
+    <div class="page-header-text">
+        <h2><i class="fa-solid fa-gavel" style="color: var(--primary-gold);"></i> @Localizer["المزادات والمعارض"]</h2>
+        <p>• @Localizer["إدارة جهات الشراء والمزادات العالمية والمحلية"]</p>
     </div>
+    <div class="header-actions">
+        <a href="@Url.Action("Create", "Auctions")" class="btn-add"><i class="fa-solid fa-plus"></i> @Localizer["إضافة مزاد جديد"]</a>
+    </div>
+</div>
 
-    <div class="data-card">
+<div class="data-card">
+    <div style="overflow-x: auto; width: 100%;">
         <table id="auctionsTable" class="table-enterprise display" style="width:100%">
             <thead>
                 <tr>
-                    <th>@Localizer["اسم المزاد"]</th>
-                    <th>@Localizer["الموقع الأساسي"]</th>
-                    <th>@Localizer["رقم المشتري (Buyer No)"]</th>
-                    <!-- تمت إزالة عمود رسوم المزاد -->
-                    <th>@Localizer["إجراءات"]</th>
+                    <th>@Localizer["المزاد / المعرض"]</th>
+                    <th>@Localizer["رقم المشتري"] (Buyer No)</th>
+                    <th>@Localizer["المدينة / الموقع"]</th>
+                    <th>@Localizer["الرسوم الافتراضية"] ($)</th>
+                    <th style="text-align: center;">@Localizer["إجراءات"]</th>
                 </tr>
             </thead>
             <tbody>
                 @if (Model != null && Model.Any())
                 {
-                    foreach (var auc in Model)
+                    foreach (var item in Model)
                     {
                         <tr>
                             <td>
-                                <div class="auction-logo"><i class="fa-solid fa-building-columns"></i></div>
-                                <span style="font-weight: 900; color: var(--primary-navy); font-size: 1.1rem;">@auc.Name</span>
+                                <div style="font-weight: 900; font-size: 1.1rem; color: var(--primary-navy);">
+                                    <i class="fa-solid fa-building-columns" style="color: #cbd5e1; margin-inline-end: 5px;"></i> @item.Name
+                                </div>
                             </td>
-                            <td style="color: var(--text-muted);"><i class="fa-solid fa-location-dot" style="margin-inline-end: 5px;"></i> @auc.Location</td>
-                            <td style="font-family: monospace; font-weight: 900; color: var(--primary-navy);">@(string.IsNullOrEmpty(auc.BuyerNumber) ? "-" : auc.BuyerNumber)</td>
-                            <td>
-                                <div style="display:flex; gap: 8px;">
-                                    <a href="@Url.Action("Edit", "Auctions", new { id = auc.Id })" class="action-btn btn-edit" title="@Localizer["تعديل"]">
+                            <td><span class="auction-badge" dir="ltr">@(item.BuyerNumber ?? "-")</span></td>
+                            <td><i class="fa-solid fa-location-dot" style="color: var(--text-muted);"></i> @(item.Location ?? "-")</td>
+                            <td style="font-family: monospace; font-weight: 900; color: #16a34a;">
+                                $@item.DefaultAuctionFee.ToString("N2")
+                            </td>
+                            <td style="text-align: center;">
+                                <div style="display: flex; gap: 8px; justify-content: center;">
+                                    <a href="@Url.Action("Edit", "Auctions", new { id = item.Id })" class="action-btn-pro btn-edit-pro" title="@Localizer["تعديل"]">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
-                                    <button type="button" onclick="confirmDelete(@auc.Id)" class="action-btn btn-delete" title="@Localizer["حذف"]">
+                                    <button type="button" class="action-btn-pro btn-delete-pro" onclick="confirmDelete(@item.Id)" title="@Localizer["حذف"]">
                                         <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                 </div>
@@ -226,48 +210,6 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
     <script>
-        // دالة الحذف
-        function confirmDelete(id) {
-            Swal.fire({
-                title: "@Html.Raw(Localizer["هل أنت متأكد؟"])",
-                text: "@Html.Raw(Localizer["لن تتمكن من التراجع عن عملية الحذف!"])",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: 'var(--primary-navy)',
-                confirmButtonText: "@Html.Raw(Localizer["نعم، احذفه!"])",
-                cancelButtonText: "@Html.Raw(Localizer["إلغاء"])"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: '@Url.Action("Delete", "Auctions")', // إصلاح الرابط
-                        type: 'POST',
-                        data: {
-                            id: id, // تمرير الـ ID ضمن البيانات
-                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    title: "@Html.Raw(Localizer["تم الحذف!"])",
-                                    text: "@Html.Raw(Localizer["تم حذف المزاد بنجاح."])",
-                                    icon: 'success',
-                                    confirmButtonColor: 'var(--primary-gold)'
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire("@Html.Raw(Localizer["خطأ!"])", response.message || "@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])", 'error');
-                            }
-                        },
-                        error: function () {
-                            Swal.fire("@Html.Raw(Localizer["خطأ!"])", "@Html.Raw(Localizer["لا يمكن الاتصال بالخادم."])", 'error');
-                        }
-                    });
-                }
-            });
-        }
-
         $(document).ready(function () {
             var dir = $('html').attr('dir') === 'rtl';
             $('#auctionsTable').DataTable({
@@ -276,5 +218,40 @@
                 "responsive": true
             });
         });
+
+        function confirmDelete(id) {
+            Swal.fire({
+                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
+                text: '@Html.Raw(Localizer["لن تتمكن من استرجاع بيانات هذا المزاد!"])',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: 'var(--primary-navy)',
+                confirmButtonText: '@Html.Raw(Localizer["نعم، احذفه!"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Auctions")/' + id,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    title: '@Html.Raw(Localizer["تم الحذف!"])',
+                                    icon: 'success',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => location.reload());
+                            } else {
+                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+                            }
+                        }
+                    });
+                }
+            });
+        }
     </script>
 }

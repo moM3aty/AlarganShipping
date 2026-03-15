@@ -3,7 +3,7 @@
 @using System.Security.Claims
 @inject ApplicationDbContext DbContext
 @{
-     var isRtl = System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
+    var isRtl = System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
     var currentCulture = System.Globalization.CultureInfo.CurrentCulture.Name;
     var htmlDir = isRtl ? "rtl" : "ltr";
 
@@ -22,7 +22,7 @@
     {
         currentUser = DbContext.Users.FirstOrDefault(u => u.Email == userEmail);
     }
-     bool isAdmin = currentUser?.Role == "Admin";
+    bool isAdmin = currentUser?.Role == "Admin";
     bool isCustomer = userRole == "Customer";
 }
 <!DOCTYPE html>
@@ -39,7 +39,6 @@
 
     <style>
         :root {
-            /* الألوان المعتمدة بناءً على اللوجو */
             --primary-navy: #1e293b;
             --secondary-navy: #0f172a;
             --primary-gold: #b45309;
@@ -59,11 +58,23 @@
         body {
             font-family: 'Cairo', sans-serif;
             background-color: var(--bg-body);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
             color: var(--text-dark);
         }
+
+            /* --- إصلاح تخطيط العرض (Layout Fix) --- */
+            body.admin-layout {
+                display: flex;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            body.public-layout {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
 
         /* --- Sidebar & Overlay --- */
         .sidebar-overlay {
@@ -77,10 +88,10 @@
             backdrop-filter: blur(4px);
         }
 
-        .sidebar-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
+            .sidebar-overlay.show {
+                opacity: 1;
+                visibility: visible;
+            }
 
         .sidebar {
             width: var(--sidebar-width);
@@ -113,11 +124,11 @@
             overflow: hidden;
         }
 
-        .logo-placeholder img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+            .logo-placeholder img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
 
         .brand-name {
             font-size: 1.4rem;
@@ -143,9 +154,14 @@
             gap: 0.4rem;
         }
 
-        /* تعديل السكرول بار للقائمة الجانبية */
-        .nav-menu::-webkit-scrollbar { width: 5px; }
-        .nav-menu::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+            .nav-menu::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            .nav-menu::-webkit-scrollbar-thumb {
+                background-color: #cbd5e1;
+                border-radius: 10px;
+            }
 
         .nav-item {
             display: flex;
@@ -160,32 +176,32 @@
             font-size: 0.95rem;
         }
 
-        .nav-item:hover {
-            background: #f1f5f9;
-            color: var(--primary-navy);
-        }
+            .nav-item:hover {
+                background: #f1f5f9;
+                color: var(--primary-navy);
+            }
 
-        .nav-item i {
-            width: 20px;
-            text-align: center;
-            font-size: 1.1rem;
-            color: #94a3b8;
-            transition: 0.3s;
-        }
+            .nav-item i {
+                width: 20px;
+                text-align: center;
+                font-size: 1.1rem;
+                color: #94a3b8;
+                transition: 0.3s;
+            }
 
-        .nav-item:hover i {
-            color: var(--primary-gold);
-        }
+            .nav-item:hover i {
+                color: var(--primary-gold);
+            }
 
-        .nav-item.active {
-            background: var(--primary-navy);
-            color: white;
-            box-shadow: 0 4px 10px rgba(30, 41, 59, 0.2);
-        }
+            .nav-item.active {
+                background: var(--primary-navy);
+                color: white;
+                box-shadow: 0 4px 10px rgba(30, 41, 59, 0.2);
+            }
 
-        .nav-item.active i {
-            color: var(--primary-gold);
-        }
+                .nav-item.active i {
+                    color: var(--primary-gold);
+                }
 
         .user-profile-bottom {
             margin: 1rem;
@@ -288,10 +304,10 @@
             transition: 0.3s;
         }
 
-        .lang-btn:hover {
-            border-color: var(--primary-gold);
-            color: var(--primary-gold);
-        }
+            .lang-btn:hover {
+                border-color: var(--primary-gold);
+                color: var(--primary-gold);
+            }
 
         .date-box {
             background: white;
@@ -323,11 +339,11 @@
             text-decoration: none;
         }
 
-        .notification-bell:hover {
-            color: var(--primary-gold);
-            border-color: var(--primary-gold);
-            background: rgba(180, 83, 9, 0.05);
-        }
+            .notification-bell:hover {
+                color: var(--primary-gold);
+                border-color: var(--primary-gold);
+                background: rgba(180, 83, 9, 0.05);
+            }
 
         .notification-badge {
             position: absolute;
@@ -362,9 +378,9 @@
             transition: 0.3s;
         }
 
-        .btn-logout:hover {
-            background: #fef2f2;
-        }
+            .btn-logout:hover {
+                background: #fef2f2;
+            }
 
         .page-body {
             flex: 1;
@@ -415,7 +431,12 @@
             color: var(--primary-navy);
             text-decoration: none;
         }
-        .public-logo img { width: 50px; border-radius: 50%; border: 2px solid var(--primary-gold);}
+
+            .public-logo img {
+                width: 50px;
+                border-radius: 50%;
+                border: 2px solid var(--primary-gold);
+            }
 
         .public-nav-links {
             display: flex;
@@ -423,14 +444,16 @@
             align-items: center;
         }
 
-        .public-nav-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-weight: 700;
-            transition: 0.3s;
-        }
+            .public-nav-links a {
+                color: var(--text-muted);
+                text-decoration: none;
+                font-weight: 700;
+                transition: 0.3s;
+            }
 
-        .public-nav-links a:hover { color: var(--primary-gold); }
+                .public-nav-links a:hover {
+                    color: var(--primary-gold);
+                }
 
         .btn-portal-login {
             background: var(--primary-navy);
@@ -438,7 +461,10 @@
             padding: 0.5rem 1.5rem;
             border-radius: 10px;
         }
-        .btn-portal-login:hover { background: var(--primary-gold); }
+
+            .btn-portal-login:hover {
+                background: var(--primary-gold);
+            }
 
         .public-footer {
             background: white;
@@ -450,36 +476,80 @@
 
         /* --- الموبايل --- */
         @@media (max-width: 1024px) {
-            .sidebar {
-                position: fixed;
-                top: 0;
-                bottom: 0;
-                height: 100vh;
-                z-index: 1000;
-                box-shadow: 0 0 50px rgba(0,0,0,0.1);
+            .sidebar
+
+        {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            height: 100vh;
+            z-index: 1000;
+            box-shadow: 0 0 50px rgba(0,0,0,0.1);
+        }
+
+        html[dir="rtl"] .sidebar {
+            right: 0;
+            transform: translateX(100%);
+        }
+
+        html[dir="ltr"] .sidebar {
+            left: 0;
+            transform: translateX(-100%);
+        }
+
+            html[dir="rtl"] .sidebar.open, html[dir="ltr"] .sidebar.open {
+                transform: translateX(0);
             }
 
-            html[dir="rtl"] .sidebar { right: 0; transform: translateX(100%); }
-            html[dir="ltr"] .sidebar { left: 0; transform: translateX(-100%); }
-            html[dir="rtl"] .sidebar.open, html[dir="ltr"] .sidebar.open { transform: translateX(0); }
+        .mobile-toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-            .mobile-toggle-btn { display: flex; align-items: center; justify-content: center; }
-            .top-header { padding: 0 1rem; }
-            .date-box, .btn-logout span, .lang-btn span { display: none; }
-            
-            .btn-logout, .lang-btn {
-                width: 40px; height: 40px; padding: 0; border-radius: 50%;
-                display: flex; align-items: center; justify-content: center;
-            }
-            .page-body { padding: 1rem; }
-            .system-footer { flex-direction: column; gap: 0.8rem; text-align: center; }
+        .top-header {
+            padding: 0 1rem;
+        }
 
-            .public-navbar { flex-direction: column; gap: 1rem; text-align: center; }
-            .public-nav-links { flex-wrap: wrap; justify-content: center; }
+        .date-box, .btn-logout span, .lang-btn span {
+            display: none;
+        }
+
+        .btn-logout, .lang-btn {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-body {
+            padding: 1rem;
+        }
+
+        .system-footer {
+            flex-direction: column;
+            gap: 0.8rem;
+            text-align: center;
+        }
+
+        .public-navbar {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .public-nav-links {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
         }
     </style>
 </head>
-<body>
+<body class="@(User.Identity.IsAuthenticated ? "admin-layout" : "public-layout")">
 
     @if (User.Identity.IsAuthenticated)
     {
@@ -493,14 +563,14 @@
                 <h2 class="brand-name">@Localizer["الأرجان للشحن"]</h2>
                 <span class="brand-sub">ALARGAN AUTO SHIPPING</span>
             </div>
- <nav class="nav-menu">
+            <nav class="nav-menu">
                 @if (isCustomer)
                 {
                     <!-- القائمة الجانبية الخاصة بالعملاء -->
                     <a href="@Url.Action("Index", "CustomerPortal")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "CustomerPortal" ? "active" : "")"><i class="fa-solid fa-house-user"></i> @Localizer["لوحة التحكم الخاصة بي"]</a>
-                    
+
                     <a href="@Url.Action("PrintStatement", "Customers", new { id = currentCustomer?.Id })" target="_blank" class="nav-item"><i class="fa-solid fa-file-invoice"></i> @Localizer["طباعة كشف حسابي"]</a>
-                    
+
                     <a href="@Url.Action("Index", "Calculator")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Calculator" ? "active" : "")"><i class="fa-solid fa-calculator"></i> @Localizer["حاسبة تكاليف الشحن"]</a>
                     <a href="@Url.Action("Index", "Contact")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Contact" ? "active" : "")"><i class="fa-solid fa-headset"></i> @Localizer["اتصل بنا للدعم"]</a>
                 }
@@ -512,7 +582,7 @@
                     @if (isAdmin || currentUser?.CanManageCars == true)
                     {
                         <a href="@Url.Action("Index", "Cars")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Cars" ? "active" : "")"><i class="fa-solid fa-car-side"></i> @Localizer["إدارة السيارات والمخزون"]</a>
-                        
+
                         <!-- الزر الجديد لمعرض الشركة -->
                         <a href="@Url.Action("Index", "Showroom")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Showroom" ? "active" : "")" style="color: var(--primary-gold); font-weight: 900;">
                             <i class="fa-solid fa-store" style="color: var(--primary-gold);"></i> @Localizer["معرض سيارات الشركة"]
@@ -547,7 +617,9 @@
                     @if (isAdmin || currentUser?.CanManageSettings == true)
                     {
                         <div style="margin-top: 0.5rem; border-top: 1px solid #e2e8f0; padding-top: 0.5rem;"></div>
-                        <a href="@Url.Action("Index", "Users")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")"><i class="fa-solid fa-users-gear"></i> @Localizer["إدارة الموظفين"]</a>
+                        <a asp-controller="Users" asp-action="Index" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Users" ? "active" : "")">
+                            <i class="fa-solid fa-users-gear"></i> @Localizer["إدارة الموظفين والصلاحيات"]
+                        </a>
                         <a href="@Url.Action("Index", "Settings")" class="nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Settings" ? "active" : "")"><i class="fa-solid fa-gear"></i> @Localizer["إعدادات النظام"]</a>
                     }
                 }
@@ -612,14 +684,13 @@
             </a>
             <nav class="public-nav-links">
                 <a href="@Url.Action("Index", "Tracking")"><i class="fa-solid fa-location-dot"></i> @Localizer["تتبع شحنتك"]</a>
-                <a href="@Url.Action("Index", "Calculator")"><i class="fa-solid fa-calculator"></i> @Localizer["حاسبة التكاليف"]</a>
                 <a href="@Url.Action("Index", "Services")"><i class="fa-solid fa-briefcase"></i> @Localizer["خدماتنا"]</a>
                 <a href="@Url.Action("Index", "Contact")"><i class="fa-solid fa-headset"></i> @Localizer["اتصل بنا"]</a>
                 <a href="@Url.Action("Login", "Account")" class="btn-portal-login"><i class="fa-solid fa-user-lock"></i> @Localizer["الدخول"]</a>
             </nav>
         </header>
 
-        <main style="min-height: calc(100vh - 200px); background: white;">
+        <main style="flex: 1; background: white;">
             @RenderBody()
         </main>
 

@@ -302,9 +302,6 @@
             function calculateNet() {
                 var amount = parseFloat($('#amountInput').val()) || 0;
                 var discount = parseFloat($('#discountInput').val()) || 0;
-                // المبلغ بعد الخصم يمثل المبلغ الفعلي الذي سيدفعه العميل (إذا اعتبرنا ان Amount هو الاجمالي)
-                // في العادة في المحاسبة: Amount هو المدفوع، والـ Discount هو الخصم. المجموع هو ما ينزل من رصيده.
-                // بناء على تصميم الصورة المرفقة، "المبلغ بعد الخصم" هو حقل للقراءة فقط.
                 var net = amount - discount;
                 $('#netAmount').val(net.toFixed(3));
             }

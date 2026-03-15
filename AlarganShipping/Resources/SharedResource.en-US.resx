@@ -2078,4 +2078,83 @@
   <data name="المدير المالي / الاعتماد" xml:space="preserve"><value>Finance Manager / Approval</value></data>
   <data name="العودة للسجل" xml:space="preserve"><value>Back to Log</value></data>
   <data name="طباعة السند" xml:space="preserve"><value>Print Voucher</value></data>
+  <!-- ============================================== -->
+  <!-- نصوص شاشة تسجيل الدخول والموقع العام (Public) -->
+  <!-- ============================================== -->
+  <data name="تتبع شحنتك" xml:space="preserve"><value>Track your shipment</value></data>
+  <data name="خدماتنا" xml:space="preserve"><value>Our Services</value></data>
+  <data name="التواصل والفروع" xml:space="preserve"><value>Contact &amp; Branches</value></data>
+  <data name="أدخل بيانات الحساب للوصول إلى النظام" xml:space="preserve"><value>Enter account details to access the system</value></data>
+  <data name="اسم المستخدم أو البريد الإلكتروني" xml:space="preserve"><value>Username or Email</value></data>
+  <data name="ليس لديك حساب؟" xml:space="preserve"><value>Don't have an account?</value></data>
+  <data name="إنشاء حساب جديد" xml:space="preserve"><value>Create New Account</value></data>
+
+  <!-- ============================================== -->
+  <!-- نصوص بوابة العميل (Customer Portal) -->
+  <!-- ============================================== -->
+  <data name="لوحة التحكم الخاصة بي" xml:space="preserve"><value>My Dashboard</value></data>
+  <data name="مرحباً بك،" xml:space="preserve"><value>Welcome,</value></data>
+  <data name="بوابتك الذكية لمتابعة سياراتك ومدفوعاتك مع شركة الأرجان" xml:space="preserve"><value>Your smart gateway to track your cars and payments with Alargan</value></data>
+  <data name="إجمالي المشتريات والخدمات" xml:space="preserve"><value>Total Purchases &amp; Services</value></data>
+  <data name="ما تم سداده" xml:space="preserve"><value>Amount Paid</value></data>
+  <data name="سياراتي" xml:space="preserve"><value>My Cars</value></data>
+  <data name="تتبع حالة السيارة" xml:space="preserve"><value>Track Car Status</value></data>
+  <data name="لا توجد سيارات مسجلة في حسابك حالياً." xml:space="preserve"><value>No cars registered in your account currently.</value></data>
+
+  <!-- ============================================== -->
+  <!-- نصوص شاشة التتبع المفصلة (Tracking Result) -->
+  <!-- ============================================== -->
+  <data name="تتبع المركبة" xml:space="preserve"><value>Track Vehicle</value></data>
+  <data name="راقب تقدم شحنتك من خلال التحديثات الفورية" xml:space="preserve"><value>Monitor your shipment progress through instant updates</value></data>
+  <data name="تقدم الشحنة" xml:space="preserve"><value>Shipment Progress</value></data>
+  <data name="تم الطلب" xml:space="preserve"><value>Ordered</value></data>
+  <data name="تم إنشاء الطلب" xml:space="preserve"><value>Order Created</value></data>
+  <data name="جاري المعالجة" xml:space="preserve"><value>Processing</value></data>
+  <data name="قيد التحضير" xml:space="preserve"><value>Being Prepared</value></data>
+  <data name="تم الشحن" xml:space="preserve"><value>Shipped</value></data>
+  <data name="تم التوصيل" xml:space="preserve"><value>Delivered</value></data>
+  <data name="تتبع السفينة" xml:space="preserve"><value>Track Vessel</value></data>
+  <data name="مدينة المزاد" xml:space="preserve"><value>Auction City</value></data>
+  <data name="الاستلام" xml:space="preserve"><value>Received</value></data>
+  <data name="التوصيل" xml:space="preserve"><value>Delivery</value></data>
+  <data name="تاريخ الوصول" xml:space="preserve"><value>Arrival Date</value></data>
+  <data name="تاريخ التحميل" xml:space="preserve"><value>Loading Date</value></data>
+  <data name="تاريخ المغادرة" xml:space="preserve"><value>Departure Date</value></data>
+  <data name="الحالة والتفاصيل" xml:space="preserve"><value>Status &amp; Details</value></data>
+  <data name="المرفقات والصور" xml:space="preserve"><value>Attachments &amp; Images</value></data>
+  <data name="بيانات فنية" xml:space="preserve"><value>Technical Data</value></data>
+  <data name="تاريخ تسجيل السيارة" xml:space="preserve"><value>Car Registration Date</value></data>
+
+  <!-- ============================================== -->
+  <!-- نصوص الإعدادات المتقدمة (Settings) -->
+  <!-- ============================================== -->
+  <data name="إدارة الثوابت المالية ونماذج الطباعة" xml:space="preserve"><value>Manage financial constants and print templates</value></data>
+  <data name="إعدادات التواصل والصرف" xml:space="preserve"><value>Communication &amp; Exchange Settings</value></data>
+  <data name="إعدادات الطباعة ونماذج الفواتير" xml:space="preserve"><value>Print &amp; Invoice Templates Settings</value></data>
+  <data name="نموذج الفاتورة المفضل" xml:space="preserve"><value>Preferred Invoice Template</value></data>
+  <data name="نموذج عصري (Modern)" xml:space="preserve"><value>Modern Template</value></data>
+  <data name="نموذج كلاسيكي (Classic)" xml:space="preserve"><value>Classic Template</value></data>
+  <data name="نموذج مبسط (Simple)" xml:space="preserve"><value>Simple Template</value></data>
+  <data name="اللون الرئيسي للفواتير" xml:space="preserve"><value>Primary Invoice Color</value></data>
+  <data name="الرقم الضريبي (VAT No)" xml:space="preserve"><value>VAT Number</value></data>
+  <data name="رقم السجل التجاري (CR No)" xml:space="preserve"><value>CR Number</value></data>
+  <data name="ملاحظات وشروط الفاتورة (Footer)" xml:space="preserve"><value>Invoice Terms &amp; Notes (Footer)</value></data>
+  <data name="تقرير حالة النظام" xml:space="preserve"><value>System Status Report</value></data>
+  <data name="توليد ملف PDF رسمي يحتوي على كافة الإحصائيات" xml:space="preserve"><value>Generate official PDF with all statistics</value></data>
+  <data name="نظام الإدارة اللوجستية - تقرير حالة النظام" xml:space="preserve"><value>Logistics Management System - System Status Report</value></data>
+  <data name="تاريخ التقرير:" xml:space="preserve"><value>Report Date:</value></data>
+  <data name="أولاً: الإحصائيات الحالية" xml:space="preserve"><value>First: Current Statistics</value></data>
+  <data name="إجمالي العملاء" xml:space="preserve"><value>Total Customers</value></data>
+  <data name="ثانياً: القواعد المالية المطبقة" xml:space="preserve"><value>Second: Applied Financial Rules</value></data>
+
+  <!-- ============================================== -->
+  <!-- نصوص تقارير المحاسبة (Accounting) -->
+  <!-- ============================================== -->
+  <data name="المبيعات والفواتير" xml:space="preserve"><value>Sales &amp; Invoices</value></data>
+  <data name="التقرير المالي الشهري التفصيلي" xml:space="preserve"><value>Detailed Monthly Financial Report</value></data>
+  <data name="الشهر" xml:space="preserve"><value>Month</value></data>
+  <data name="إجمالي المبيعات (الإيرادات)" xml:space="preserve"><value>Total Sales (Revenues)</value></data>
+  <data name="إجمالي المشتريات (المصروفات)" xml:space="preserve"><value>Total Purchases (Expenses)</value></data>
+  <data name="صافي التدفق النقدي" xml:space="preserve"><value>Net Cash Flow</value></data>
+  <data name="الإجمالي السنوي" xml:space="preserve"><value>Annual Total</value></data>
 </root>

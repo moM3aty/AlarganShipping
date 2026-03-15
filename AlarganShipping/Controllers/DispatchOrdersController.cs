@@ -28,9 +28,10 @@ namespace AlarganShipping.Controllers
 
         public IActionResult Create(int? carId)
         {
-            ViewBag.CarId = new SelectList(_context.Cars, "Id", "VIN", carId);
-            ViewBag.TransporterId = new SelectList(_context.Transporters, "Id", "Name");
-            ViewBag.LocationId = new SelectList(_context.Locations, "Id", "Name");
+            // تم تغيير الأسماء لتجنب التعارض مع الموديل
+            ViewBag.CarsList = new SelectList(_context.Cars, "Id", "VIN", carId);
+            ViewBag.TransportersList = new SelectList(_context.Transporters, "Id", "Name");
+            ViewBag.LocationsList = new SelectList(_context.Locations, "Id", "Name");
             return View();
         }
 
@@ -79,9 +80,10 @@ namespace AlarganShipping.Controllers
             var dispatchOrder = await _context.DispatchOrders.FindAsync(id);
             if (dispatchOrder == null) return NotFound();
 
-            ViewBag.CarId = new SelectList(_context.Cars, "Id", "VIN", dispatchOrder.CarId);
-            ViewBag.TransporterId = new SelectList(_context.Transporters, "Id", "Name", dispatchOrder.TransporterId);
-            ViewBag.LocationId = new SelectList(_context.Locations, "Id", "Name");
+            // تم تغيير الأسماء لتجنب التعارض
+            ViewBag.CarsList = new SelectList(_context.Cars, "Id", "VIN", dispatchOrder.CarId);
+            ViewBag.TransportersList = new SelectList(_context.Transporters, "Id", "Name", dispatchOrder.TransporterId);
+            ViewBag.LocationsList = new SelectList(_context.Locations, "Id", "Name");
 
             return View(dispatchOrder);
         }

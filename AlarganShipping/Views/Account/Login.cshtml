@@ -179,6 +179,7 @@
         border-radius: 12px;
         outline: none;
         transition: 0.3s;
+        box-sizing: border-box;
     }
 
         .input-field:focus {
@@ -207,7 +208,26 @@
             box-shadow: 0 15px 25px rgba(184, 147, 90, 0.35);
         }
 
-    /* أداة تغيير اللغة وزر التتبع في شاشة تسجيل الدخول */
+    .auth-link {
+        text-align: center;
+        margin-top: 1.5rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+        .auth-link a {
+            color: var(--primary-navy);
+            text-decoration: none;
+            font-weight: 900;
+            transition: 0.3s;
+        }
+
+            .auth-link a:hover {
+                color: var(--primary-gold);
+            }
+
+    /* أداة تغيير اللغة والروابط العامة في شاشة تسجيل الدخول */
     .top-floating-actions {
         position: absolute;
         top: 20px;
@@ -215,6 +235,7 @@
         z-index: 10000;
         display: flex;
         gap: 10px;
+        flex-wrap: wrap;
     }
 
     .top-action-btn {
@@ -249,7 +270,7 @@
     .premium-form-section {
         display: block;
         padding: 1rem;
-        padding-top: 6rem;
+        padding-top: 8rem; /* مساحة للأزرار العلوية */
         padding-bottom: 3rem;
     }
 
@@ -274,29 +295,46 @@
         }
 
     .top-floating-actions {
-        top: 15px;
-        inset-inline-end: 15px;
+        top: 10px;
+        inset-inline-end: 10px;
+        inset-inline-start: 10px;
+        justify-content: center;
+    }
+
+    .top-action-btn {
+        font-size: 0.8rem;
+        padding: 6px 10px;
     }
 
     }
 </style>
 
-<!-- الأزرار العلوية العائمة (تتبع الشحنة + تغيير اللغة) -->
+<!-- الأزرار العلوية العائمة (الروابط العامة للعملاء) -->
 <div class="top-floating-actions">
-    <!-- زر العودة لصفحة التتبع -->
+    <!-- التتبع -->
     <a href="@Url.Action("Index", "Tracking")" class="top-action-btn">
-        <i class="fa-solid fa-truck-fast"></i> @Localizer["تتبع شحنتك"]
+        <i class="fa-solid fa-magnifying-glass-location"></i> @Localizer["تتبع شحنتك"]
+    </a>
+
+    <!-- الخدمات -->
+    <a href="@Url.Action("Index", "Services")" class="top-action-btn">
+        <i class="fa-solid fa-briefcase"></i> @Localizer["خدماتنا"]
+    </a>
+
+    <!-- الفروع والتواصل -->
+    <a href="@Url.Action("Index", "Contact")" class="top-action-btn">
+        <i class="fa-solid fa-building-user"></i> @Localizer["التواصل والفروع"]
     </a>
 
     <!-- زر تغيير اللغة -->
     <form asp-controller="Home" asp-action="SetLanguage" method="post" asp-route-returnUrl="@Context.Request.Path">
         @if (System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar"))
         {
-            <button type="submit" name="culture" value="en-US" class="top-action-btn">English</button>
+            <button type="submit" name="culture" value="en-US" class="top-action-btn"><i class="fa-solid fa-globe"></i> EN</button>
         }
         else
         {
-            <button type="submit" name="culture" value="ar" class="top-action-btn">العربية</button>
+            <button type="submit" name="culture" value="ar" class="top-action-btn"><i class="fa-solid fa-globe"></i> AR</button>
         }
     </form>
 </div>
@@ -323,15 +361,23 @@
 
             <div class="form-header">
                 <h2>@Localizer["تسجيل الدخول"]</h2>
-                <p style="color: var(--text-muted);">@Localizer["أهلاً بك مجدداً في نظام الأرجان"]</p>
+                <p style="color: var(--text-muted);">@Localizer["أدخل بيانات الحساب للوصول إلى النظام"]</p>
             </div>
 
             <form asp-action="Login" method="post">
-                <div asp-validation-summary="ModelOnly" style="color: #ef4444; background: #fef2f2; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;"></div>
+                <!-- رسالة النجاح في حال وجودها -->
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div style="color: #16a34a; background: #f0fdf4; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: bold; border: 1px solid #bbf7d0; text-align: center;">
+                        <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+                    </div>
+                }
+
+                <div asp-validation-summary="ModelOnly" style="color: #ef4444; background: #fef2f2; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: bold; border: 1px solid #fecaca;"></div>
 
                 <div class="input-group">
-                    <label class="input-label">@Localizer["البريد الإلكتروني"]</label>
-                    <input asp-for="Email" class="input-field" placeholder="admin@alargan.com" dir="ltr" />
+                    <label class="input-label">@Localizer["اسم المستخدم أو البريد الإلكتروني"]</label>
+                    <input asp-for="Email" class="input-field" placeholder="user / email@example.com" dir="ltr" />
                     <span asp-validation-for="Email" style="color: #ef4444; font-size: 0.85rem; font-weight: 600;"></span>
                 </div>
 
@@ -341,7 +387,14 @@
                     <span asp-validation-for="Password" style="color: #ef4444; font-size: 0.85rem; font-weight: 600;"></span>
                 </div>
 
-                <button type="submit" class="btn-primary-login">@Localizer["دخول للنظام"]</button>
+                <button type="submit" class="btn-primary-login">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> @Localizer["دخول للنظام"]
+                </button>
+
+                <!-- تمت إعادة زر إنشاء الحساب (Signup) هنا -->
+                <div class="auth-link">
+                    @Localizer["ليس لديك حساب؟"] <a href="@Url.Action("Register", "Account")">@Localizer["إنشاء حساب جديد"]</a>
+                </div>
             </form>
         </div>
     </div>

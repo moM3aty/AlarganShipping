@@ -1,6 +1,6 @@
 ﻿@model AlarganShipping.Models.Auction
 @{
-    ViewData["Title"] = Localizer["إضافة مزاد جديد"];
+    ViewData["Title"] = Localizer["إضافة مزاد أو معرض"];
 }
 
 <style>
@@ -12,7 +12,7 @@
     }
 
     .form-page-title {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
         font-weight: 900;
         color: var(--primary-navy);
         margin: 0;
@@ -45,6 +45,8 @@
         padding: 3rem;
         position: relative;
         overflow: hidden;
+        max-width: 800px;
+        margin: 0 auto;
     }
 
         .premium-form-card::before {
@@ -57,15 +59,14 @@
             background: linear-gradient(to right, var(--primary-navy), var(--primary-gold));
         }
 
-    .form-grid-2 {
+    .form-grid {
         display: grid;
         grid-template-columns: 1fr;
         gap: 1.5rem;
-        margin-bottom: 2rem;
     }
 
     @@media (min-width: 768px) {
-        .form-grid-2 {
+        .form-grid {
             grid-template-columns: repeat(2, 1fr);
         }
     }
@@ -75,51 +76,54 @@
         flex-direction: column;
     }
 
+    .form-group-full {
+        grid-column: 1 / -1;
+    }
+
     .form-label {
         font-weight: 800;
-        color: var(--text-muted);
+        color: var(--primary-navy);
         margin-bottom: 0.5rem;
-        font-size: 0.85rem;
+        font-size: 0.95rem;
     }
 
     .form-control {
-        padding: 0.85rem 1rem;
+        padding: 1rem 1.25rem;
         border: 2px solid #e2e8f0;
         border-radius: 0.75rem;
         font-family: inherit;
-        font-size: 0.95rem;
-        color: var(--primary-navy);
-        font-weight: 700;
-        background-color: white;
+        font-size: 1rem;
+        color: var(--text-dark);
+        background-color: #f8fafc;
         transition: 0.3s;
         outline: none;
     }
 
         .form-control:focus {
             border-color: var(--primary-gold);
+            background-color: #ffffff;
             box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
 
     .form-actions {
-        margin-top: 2rem;
+        margin-top: 3rem;
         padding-top: 1.5rem;
         border-top: 1px solid #f1f5f9;
         display: flex;
-        gap: 1rem;
-        align-items: center;
         justify-content: flex-end;
     }
 
     .btn-submit {
         background: var(--primary-navy);
-        color: white;
+        color: #ffffff;
         border: none;
-        padding: 0.85rem 2.5rem;
-        border-radius: 0.75rem;
+        padding: 1rem 3rem;
+        border-radius: 1rem;
         font-weight: 800;
-        font-size: 1rem;
+        font-size: 1.1rem;
         cursor: pointer;
         transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
         display: inline-flex;
         align-items: center;
         gap: 10px;
@@ -128,55 +132,67 @@
         .btn-submit:hover {
             background: var(--primary-gold);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(184, 147, 90, 0.3);
+            box-shadow: 0 8px 20px rgba(184, 147, 90, 0.4);
         }
 
-    .btn-cancel {
-        background: transparent;
-        color: var(--text-dark);
-        border: none;
-        font-weight: 800;
-        cursor: pointer;
-        text-decoration: none;
-        padding: 0.85rem 1rem;
+    @@media (max-width: 768px) {
+        .form-page-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .premium-form-card {
+            padding: 1.5rem;
+        }
+
+        .btn-submit {
+            width: 100%;
+            justify-content: center;
+        }
     }
 </style>
 
-<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
-
 <div>
     <div class="form-page-header">
-        <h2 class="form-page-title"><i class="fa-solid fa-gavel" style="color: var(--primary-gold);"></i> @Localizer["إضافة مزاد جديد"]</h2>
-        <a href="@Url.Action("Index", "Auctions")" class="btn-back"><i class="fa-solid fa-arrow-right-long"></i> @Localizer["العودة"]</a>
+        <h2 class="form-page-title"><i class="fa-solid fa-building-columns" style="color: var(--primary-gold);"></i> @Localizer["إضافة مزاد أو معرض"]</h2>
+        <a href="@Url.Action("Index", "Auctions")" class="btn-back"><i class="fa-solid fa-arrow-right-long"></i> @Localizer["إلغاء والعودة"]</a>
     </div>
 
     <div class="premium-form-card">
-        <form asp-action="Create" method="post" id="auctionForm">
+        <form asp-action="Create" method="post">
             @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom: 1rem; color: #ef4444; font-weight: bold;"></div>
 
-            <div class="form-grid-2">
-                <div class="form-group">
-                    <label asp-for="Name" class="form-label">@Localizer["اسم المزاد"] *</label>
-                    <input asp-for="Name" class="form-control" placeholder="Copart, IAAI..." required />
+            <div class="form-grid">
+                <div class="form-group form-group-full">
+                    <label asp-for="Name" class="form-label">@Localizer["اسم المزاد / المعرض"] *</label>
+                    <input asp-for="Name" class="form-control" placeholder="@Localizer["مثال: Copart, IAAI, معرض النسيم..."]" required />
+                    <span asp-validation-for="Name" style="color: #ef4444; font-size: 0.85rem; margin-top: 5px;"></span>
                 </div>
+
                 <div class="form-group">
-                    <label asp-for="Location" class="form-label">@Localizer["الموقع الأساسي"] *</label>
-                    <input asp-for="Location" class="form-control" placeholder="Multiple, USA, Canada..." required />
+                    <label asp-for="BuyerNumber" class="form-label">@Localizer["رقم المشتري (Buyer Number)"]</label>
+                    <input asp-for="BuyerNumber" class="form-control" dir="ltr" placeholder="اختياري..." />
+                    <span asp-validation-for="BuyerNumber" style="color: #ef4444; font-size: 0.85rem; margin-top: 5px;"></span>
                 </div>
+
                 <div class="form-group">
-                    <label asp-for="BuyerNumber" class="form-label">@Localizer["رقم المشتري (Buyer No)"]</label>
-                    <input asp-for="BuyerNumber" class="form-control" dir="ltr" />
+                    <label asp-for="Location" class="form-label">@Localizer["المدينة / الموقع"]</label>
+                    <input asp-for="Location" class="form-control" placeholder="اختياري..." />
+                    <span asp-validation-for="Location" style="color: #ef4444; font-size: 0.85rem; margin-top: 5px;"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="DefaultAuctionFee" class="form-label">@Localizer["رسوم المزاد الافتراضية"] ($)</label>
-                    <input asp-for="DefaultAuctionFee" type="number" step="0.01" class="form-control" dir="ltr" value="0" />
+
+                <div class="form-group form-group-full">
+                    <label asp-for="DefaultAuctionFee" class="form-label">@Localizer["رسوم المزاد الافتراضية ($)"]</label>
+                    <input asp-for="DefaultAuctionFee" type="number" step="0.01" class="form-control" placeholder="0.00" style="font-family: monospace; color: #16a34a;" />
+                    <span asp-validation-for="DefaultAuctionFee" style="color: #ef4444; font-size: 0.85rem; margin-top: 5px;"></span>
                 </div>
             </div>
 
             <div class="form-actions">
-                <button type="button" class="btn-cancel" onclick="javascript:history.back()">@Localizer["إلغاء"]</button>
-                <button type="submit" class="btn-submit" id="btnSubmit">
-                    <i class="fa-solid fa-save"></i> @Localizer["حفظ البيانات"]
+                <button type="submit" class="btn-submit" onclick="this.innerHTML='<i class=\'fa-solid fa-spinner fa-spin\'></i> جاري الحفظ...';">
+                    <i class="fa-solid fa-save"></i> @Localizer["حفظ بيانات المزاد"]
                 </button>
             </div>
         </form>
@@ -184,40 +200,7 @@
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
-
-    <script>
-        $(document).ready(function() {
-            $('#auctionForm').on('submit', function(e) {
-                e.preventDefault();
-                var form = $(this);
-                if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
-
-                var btn = $('#btnSubmit');
-                var originalText = btn.html();
-                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Html.Raw(Localizer["جاري الحفظ..."])').prop('disabled', true);
-
-                $.ajax({
-                    url: form.attr('action'), type: form.attr('method'), data: form.serialize(),
-                    success: function (response) {
-                        if (response.success) {
-                            Swal.fire({
-                                title: '@Html.Raw(Localizer["تم الحفظ بنجاح!"])', icon: 'success', confirmButtonColor: 'var(--primary-gold)',
-                                confirmButtonText: '@Html.Raw(Localizer["العودة للقائمة"])'
-                            }).then(() => { window.location.href = '@Url.Action("Index", "Auctions")'; });
-                        } else {
-                            var errorMsg = response.errors ? response.errors.join('\n') : '@Html.Raw(Localizer["تأكد من البيانات المدخلة"])';
-                            Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: errorMsg, icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
-                            btn.html(originalText).prop('disabled', false);
-                        }
-                    },
-                    error: function () {
-                        Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: '@Html.Raw(Localizer["حدث خطأ أثناء الحفظ."])', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
-                        btn.html(originalText).prop('disabled', false);
-                    }
-                });
-            });
-        });
-    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

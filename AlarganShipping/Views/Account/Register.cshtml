@@ -1,0 +1,388 @@
+﻿@{
+    ViewData["Title"] = Localizer["إنشاء حساب جديد"];
+    Layout = "_Layout";
+}
+
+<style>
+    .login-page-wrapper {
+        display: flex;
+        height: 100vh;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        background-color: var(--bg-body);
+        z-index: 9999;
+        margin: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .premium-brand-section {
+        display: none;
+        width: 50%;
+        background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--primary-navy) 100%);
+        color: white;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    @@media (min-width: 992px) {
+        .premium-brand-section
+
+    {
+        display: flex;
+    }
+
+    }
+
+    .premium-brand-section::before {
+        content: '';
+        position: absolute;
+        top: -10%;
+        right: -10%;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(184, 147, 90, 0.15) 0%, rgba(184, 147, 90, 0) 70%);
+    }
+
+    .logo-circle {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto 2rem;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        border: 4px solid rgba(184, 147, 90, 0.5);
+    }
+
+        .logo-circle img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 50%;
+        }
+
+    .brand-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        margin: 0 0 0.5rem 0;
+        color: var(--primary-gold);
+        text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .brand-badge {
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: 4px;
+        background: rgba(255,255,255,0.05);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        border: 1px solid rgba(255,255,255,0.1);
+        margin-bottom: 2rem;
+    }
+
+    .premium-form-section {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        min-height: 100%;
+    }
+    @@media (min-width: 992px) {
+        .premium-form-section
+
+    {
+        width: 50%;
+    }
+
+    }
+
+    .form-card {
+        width: 100%;
+        max-width: 480px;
+        background: white;
+        padding: 3rem;
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(44, 62, 80, 0.08);
+    }
+
+    .mobile-logo {
+        display: block;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    @@media (min-width: 992px) {
+        .mobile-logo
+
+    {
+        display: none;
+    }
+
+    }
+
+    .mobile-logo img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        border: 3px solid var(--primary-gold);
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+        .form-header h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--primary-navy);
+            margin: 0 0 0.5rem 0;
+        }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+    @@media (min-width: 576px) {
+        .form-grid
+
+    {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    }
+
+    .input-group-full {
+        grid-column: 1 / -1;
+    }
+
+    .input-label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .input-field {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        font-size: 1rem;
+        background-color: #f8fafc;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        outline: none;
+        transition: 0.3s;
+        box-sizing: border-box;
+    }
+
+        .input-field:focus {
+            background-color: white;
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
+        }
+
+    .btn-primary-register {
+        width: 100%;
+        padding: 1.1rem;
+        margin-top: 1.5rem;
+        border-radius: 12px;
+        font-weight: 800;
+        color: white;
+        font-size: 1.1rem;
+        background: linear-gradient(to right, var(--primary-navy), var(--secondary-navy));
+        border: none;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 10px 20px rgba(30, 41, 59, 0.2);
+        grid-column: 1 / -1;
+    }
+
+        .btn-primary-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(30, 41, 59, 0.3);
+            background: linear-gradient(to right, var(--primary-gold), var(--secondary-gold));
+        }
+
+    .auth-link {
+        text-align: center;
+        margin-top: 1.5rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        grid-column: 1 / -1;
+    }
+
+        .auth-link a {
+            color: var(--primary-gold);
+            text-decoration: none;
+            font-weight: 900;
+            transition: 0.3s;
+        }
+
+            .auth-link a:hover {
+                color: var(--primary-navy);
+            }
+
+    .top-floating-actions {
+        position: absolute;
+        top: 20px;
+        inset-inline-end: 20px;
+        z-index: 10000;
+        display: flex;
+        gap: 10px;
+    }
+
+    .top-action-btn {
+        background: white;
+        border: 1px solid #e2e8f0;
+        color: var(--primary-navy);
+        padding: 8px 15px;
+        border-radius: 8px;
+        font-weight: 800;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: 0.3s;
+    }
+
+        .top-action-btn:hover {
+            background: var(--primary-gold);
+            color: white;
+            border-color: var(--primary-gold);
+        }
+
+    @@media (max-width: 768px) {
+        .login-page-wrapper
+
+    {
+        display: block;
+    }
+
+    .premium-form-section {
+        display: block;
+        padding: 1rem;
+        padding-top: 6rem;
+        padding-bottom: 3rem;
+    }
+
+    .form-card {
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        border-radius: 1.5rem;
+    }
+
+    .mobile-logo img {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-header {
+        margin-bottom: 1.5rem;
+    }
+
+        .form-header h2 {
+            font-size: 1.4rem;
+        }
+
+    .top-floating-actions {
+        top: 15px;
+        inset-inline-end: 15px;
+    }
+
+    }
+</style>
+
+<div class="top-floating-actions">
+    <a href="@Url.Action("Index", "Tracking")" class="top-action-btn">
+        <i class="fa-solid fa-truck-fast"></i> @Localizer["تتبع شحنتك"]
+    </a>
+    <form asp-controller="Home" asp-action="SetLanguage" method="post" asp-route-returnUrl="@Context.Request.Path">
+        @if (System.Globalization.CultureInfo.CurrentCulture.Name.StartsWith("ar"))
+        {
+            <button type="submit" name="culture" value="en-US" class="top-action-btn">English</button>
+        }
+        else
+        {
+            <button type="submit" name="culture" value="ar" class="top-action-btn">العربية</button>
+        }
+    </form>
+</div>
+
+<div class="login-page-wrapper">
+    <div class="premium-brand-section">
+        <div class="brand-content" style="text-align: center; z-index: 10;">
+            <div class="logo-circle">
+                <img src="~/images/logo.jpg" alt="Alargan Logo" onerror="this.onerror=null; this.style.display='none'" />
+            </div>
+            <h1 class="brand-title">ALARGAN</h1>
+            <div class="brand-badge">AUTO SHIPPING</div>
+            <p style="color: #cbd5e1; font-size: 1.2rem;">@Localizer["انضم إلينا وابدأ باستيراد سيارتك بسهولة"]</p>
+        </div>
+    </div>
+
+    <div class="premium-form-section">
+        <div class="form-card">
+            <div class="mobile-logo">
+                <img src="~/images/logo.jpg" alt="Alargan Logo" onerror="this.onerror=null; this.style.display='none'" />
+                <h1 style="color: var(--primary-navy); font-weight: 900; margin:0;">ALARGAN</h1>
+                <p style="color: var(--primary-gold); font-weight: 700; font-size: 0.9rem;">AUTO SHIPPING</p>
+            </div>
+
+            <div class="form-header">
+                <h2>@Localizer["إنشاء حساب جديد"]</h2>
+                <p style="color: var(--text-muted);">@Localizer["أدخل بياناتك لإنشاء ملفك المالي وبوابة التتبع الخاصة بك"]</p>
+            </div>
+
+            <form asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" style="color: #ef4444; background: #fef2f2; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-weight: bold;"></div>
+
+                <div class="form-grid">
+                    <div class="input-group-full">
+                        <label class="input-label">@Localizer["الاسم الكامل"] *</label>
+                        <input name="FullName" class="input-field" placeholder="@Localizer["الاسم الثلاثي..."]" required />
+                    </div>
+
+                    <div>
+                        <label class="input-label">@Localizer["رقم الهاتف (واتساب)"] *</label>
+                        <input name="Phone" class="input-field" placeholder="968xxxxxxx" dir="ltr" required />
+                    </div>
+
+                    <div>
+                        <label class="input-label">@Localizer["كلمة المرور"] *</label>
+                        <input name="Password" type="password" class="input-field" placeholder="••••••••" dir="ltr" required />
+                    </div>
+
+                    <div class="input-group-full">
+                        <label class="input-label">@Localizer["البريد الإلكتروني"] *</label>
+                        <input name="Email" type="email" class="input-field" placeholder="email@example.com" dir="ltr" required />
+                        <small style="color: var(--primary-gold); font-weight: bold; margin-top: 5px; display: block;">* @Localizer["سيتم استخدام البريد الإلكتروني كاسم مستخدم لتسجيل الدخول."]</small>
+                    </div>
+
+                    <button type="submit" class="btn-primary-register">@Localizer["إنشاء الحساب الآن"]</button>
+
+                    <div class="auth-link">
+                        @Localizer["لديك حساب بالفعل؟"] <a href="@Url.Action("Login", "Account")">@Localizer["قم بتسجيل الدخول"]</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

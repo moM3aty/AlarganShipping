@@ -17,6 +17,9 @@ namespace AlarganShipping.Controllers
             _context = context;
         }
 
+        // ==========================================
+        // 1. تسجيل الدخول (Login)
+        // ==========================================
         [HttpGet]
         public IActionResult Login()
         {
@@ -36,7 +39,7 @@ namespace AlarganShipping.Controllers
         {
             if (ModelState.IsValid)
             {
-                // 1. التحقق مما إذا كان المستخدم موظفاً / مدير
+                // التحقق من الموظفين والإدارة
                 var user = await _context.Users
                     .FirstOrDefaultAsync(u => u.Email == model.Email && u.PasswordHash == model.Password && u.IsActive);
 
@@ -54,8 +57,7 @@ namespace AlarganShipping.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                // 2. التحقق مما إذا كان المستخدم عميلاً مسجلاً في البوابة
-                // تم استخدام حقل Email في واجهة الدخول ليستقبل إما الايميل للموظف أو اليوزرنيم للعميل
+                // التحقق من العملاء عبر بوابة العملاء
                 var customer = await _context.Customers
                     .FirstOrDefaultAsync(c => c.PortalUsername == model.Email && c.PortalPassword == model.Password && c.IsPortalActive);
 
@@ -63,10 +65,10 @@ namespace AlarganShipping.Controllers
                 {
                     var claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.NameIdentifier, customer.Id.ToString()), // حفظ ID العميل
+                        new Claim(ClaimTypes.NameIdentifier, customer.Id.ToString()),
                         new Claim(ClaimTypes.Name, customer.Name),
                         new Claim(ClaimTypes.Email, customer.PortalUsername ?? ""),
-                        new Claim(ClaimTypes.Role, "Customer") // إعطاء صلاحية عميل فقط
+                        new Claim(ClaimTypes.Role, "Customer")
                     };
 
                     await SignInAsync(claims);
@@ -79,6 +81,70 @@ namespace AlarganShipping.Controllers
             return View(model);
         }
 
+        // ==========================================
+        // 2. تسجيل حساب عميل جديد (Register)
+        // ==========================================
+        [HttpGet]
+        public IActionResult Register()
+        {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(string FullName, string Phone, string Email, string Password)
+        {
+            if (string.IsNullOrEmpty(FullName) || string.IsNullOrEmpty(Phone) || string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Password))
+            {
+                ModelState.AddModelError(string.Empty, "يرجى تعبئة جميع الحقول المطلوبة.");
+                return View();
+            }
+
+            // التأكد من عدم تكرار الإيميل في النظام
+            if (await _context.Customers.AnyAsync(c => c.PortalUsername == Email || c.Email == Email))
+            {
+                ModelState.AddModelError(string.Empty, "البريد الإلكتروني مستخدم بالفعل، يرجى تسجيل الدخول.");
+                return View();
+            }
+
+            try
+            {
+                // إنشاء ملف العميل المالي والتقني
+                var newCustomer = new Customer
+                {
+                    Name = FullName,
+                    Phone = Phone,
+                    Email = Email,
+                    CustomerCode = "CUST-" + new Random().Next(10000, 99999),
+                    PortalUsername = Email,
+                    PortalPassword = Password,
+                    IsPortalActive = false, // الحساب معطل حتى يوافق الأدمن
+                    Address = "",
+                    CivilId = "",
+                    TotalBalance = 0,
+                    TotalPaid = 0
+                };
+
+                _context.Customers.Add(newCustomer);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "تم إنشاء حسابك بنجاح! بانتظار موافقة الإدارة لتفعيل حسابك.";
+                return RedirectToAction("Login");
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "حدث خطأ أثناء التسجيل، يرجى المحاولة مرة أخرى.");
+                return View();
+            }
+        }
+
+        // ==========================================
+        // 3. تسجيل الخروج والمصادقة
+        // ==========================================
         private async Task SignInAsync(List<Claim> claims)
         {
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

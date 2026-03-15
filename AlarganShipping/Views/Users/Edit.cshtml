@@ -1,16 +1,25 @@
 ﻿@model AlarganShipping.Models.User
 @{
-    ViewData["Title"] = Localizer["تعديل صلاحيات الموظف"];
+    ViewData["Title"] = Localizer["تعديل بيانات الموظف"];
 }
 
 <style>
-    /* --- هيدر الصفحة --- */
+    /* نفس الستايل الجميل بتاع الإضافة */
     .form-page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 2rem;
-        gap: 1rem;
+    }
+
+    .form-page-title {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .btn-back {
@@ -22,9 +31,6 @@
         font-weight: 700;
         text-decoration: none;
         transition: 0.3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
     }
 
         .btn-back:hover {
@@ -32,242 +38,280 @@
             color: var(--primary-navy);
         }
 
-    /* --- بطاقة النموذج الفاخرة --- */
     .premium-form-card {
-        background: white;
+        background-color: #ffffff;
         border-radius: 1.5rem;
-        padding: 3rem;
+        box-shadow: 0 10px 30px rgba(44, 62, 80, 0.03);
         border: 1px solid #f1f5f9;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        padding: 3rem;
         position: relative;
         overflow: hidden;
+        max-width: 850px;
+        margin: 0 auto;
     }
 
         .premium-form-card::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
             right: 0;
+            left: 0;
             height: 6px;
             background: linear-gradient(to right, var(--primary-navy), var(--primary-gold));
         }
 
     .form-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: 1fr;
         gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    @@media (min-width: 768px) {
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 
     .form-group {
         display: flex;
         flex-direction: column;
-        margin-bottom: 1rem;
     }
 
     .form-label {
         font-weight: 800;
-        color: var(--text-muted);
+        color: var(--primary-navy);
         margin-bottom: 0.5rem;
-        font-size: 0.85rem;
+        font-size: 0.95rem;
     }
 
     .form-control {
-        padding: 0.85rem 1rem;
+        padding: 1rem 1.25rem;
         border: 2px solid #e2e8f0;
         border-radius: 0.75rem;
         font-family: inherit;
-        font-weight: 700;
+        font-size: 1rem;
+        color: var(--text-dark);
         background-color: #f8fafc;
-        outline: none;
         transition: 0.3s;
-        color: var(--primary-navy);
+        outline: none;
+        font-weight: 700;
     }
 
         .form-control:focus {
             border-color: var(--primary-gold);
-            background-color: white;
+            background-color: #ffffff;
             box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
 
-    /* صناديق الصلاحيات */
-    .permission-box {
+    .permissions-container {
         background: #f8fafc;
-        padding: 1.5rem;
-        border-radius: 1rem;
         border: 1px solid #e2e8f0;
-        margin-top: 1rem;
+        border-radius: 1.2rem;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
     }
 
-    .perm-item {
+    .permissions-title {
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 10px;
+    }
+
+    .switch-group {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px dashed #cbd5e1;
+    }
+
+        .switch-group:last-child {
+            border-bottom: none;
+        }
+
+    .switch-label {
+        font-weight: 800;
+        color: var(--text-dark);
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-bottom: 1rem;
-        cursor: pointer;
-        font-weight: 700;
-        color: var(--primary-navy);
     }
 
-        .perm-item input {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--primary-gold);
-            cursor: pointer;
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 26px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
         }
 
-    .btn-save {
-        background: var(--primary-navy);
-        color: white;
-        padding: 1rem 3.5rem;
-        border-radius: 1rem;
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+    input:checked + .slider {
+        background-color: var(--primary-gold);
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+    .form-actions {
+        margin-top: 2.5rem;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 1.5rem;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .btn-submit {
+        background: var(--primary-gold);
+        color: #ffffff;
         border: none;
+        padding: 1rem 3rem;
+        border-radius: 1rem;
         font-weight: 800;
+        font-size: 1.1rem;
         cursor: pointer;
         transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(184, 147, 90, 0.2);
         display: inline-flex;
         align-items: center;
-        justify-content: center;
         gap: 10px;
     }
 
-        .btn-save:hover {
-            background: var(--primary-gold);
+        .btn-submit:hover {
+            background: var(--secondary-gold);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(184, 147, 90, 0.2);
+            box-shadow: 0 8px 20px rgba(184, 147, 90, 0.3);
         }
 
-    /* تخصيص Select2 */
-    .select2-container--default .select2-selection--single {
-        background-color: #f8fafc;
-        border: 2px solid #e2e8f0;
-        border-radius: 0.75rem;
-        height: 45px;
-        display: flex;
-        align-items: center;
-    }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: var(--primary-navy);
-            font-weight: 700;
-        }
-
-    /* ========================================================
-           تعديلات الموبايل (الميديا كويري)
-           ======================================================== */
     @@media (max-width: 768px) {
         .form-page-header {
             flex-direction: column;
-            align-items: stretch;
+            gap: 1rem;
             text-align: center;
-        }
-
-        .btn-back {
-            justify-content: center;
         }
 
         .premium-form-card {
             padding: 1.5rem;
-            border-radius: 1.25rem;
         }
 
-        .form-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .permission-box {
-            padding: 1.25rem;
-        }
-
-        .perm-grid-mobile {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0.5rem;
-        }
-
-        .btn-save {
+        .btn-submit {
             width: 100%;
-        }
-
-        .form-actions-mobile {
-            text-align: center !important;
+            justify-content: center;
         }
     }
 </style>
 
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
 
 <div class="form-page-header">
-    <h2 style="color: var(--primary-navy); font-weight: 900;">@Localizer["تعديل الموظف:"] @Model.FullName</h2>
-    <a href="@Url.Action("Index", "Users")" class="btn-back"><i class="fa-solid fa-arrow-right-long"></i> @Localizer["العودة"]</a>
+    <h2 class="form-page-title"><i class="fa-solid fa-user-pen" style="color: var(--primary-gold);"></i> @Localizer["تعديل بيانات الموظف"]</h2>
+    <a href="@Url.Action("Index", "Users")" class="btn-back">@Localizer["إلغاء والعودة"]</a>
 </div>
 
 <div class="premium-form-card">
     <form asp-action="Edit" method="post" id="userEditForm">
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="Id" />
-        <input type="hidden" asp-for="PasswordHash" /> @* الحفاظ على كلمة المرور الأصلية *@
 
         <div class="form-grid">
             <div class="form-group">
-                <label class="form-label">@Localizer["الاسم الكامل"] *</label>
+                <label asp-for="FullName" class="form-label">@Localizer["الاسم الكامل"] *</label>
                 <input asp-for="FullName" class="form-control" required />
             </div>
+
             <div class="form-group">
-                <label class="form-label">@Localizer["البريد الإلكتروني"]</label>
-                <input asp-for="Email" class="form-control" readonly style="background: #e2e8f0; color: #94a3b8;" dir="ltr" />
+                <label asp-for="Email" class="form-label">@Localizer["البريد الإلكتروني (لتسجيل الدخول)"] *</label>
+                <input asp-for="Email" type="email" class="form-control" dir="ltr" required />
             </div>
+
             <div class="form-group">
-                <label class="form-label">@Localizer["حالة الحساب"]</label>
-                <select asp-for="IsActive" class="form-control">
-                    <option value="true">@Localizer["نشط (يمكنه الدخول)"]</option>
-                    <option value="false">@Localizer["معطل (لا يمكنه الدخول)"]</option>
+                <label asp-for="PasswordHash" class="form-label">@Localizer["كلمة المرور (اتركها فارغة للاحتفاظ بالقديمة)"]</label>
+                <input asp-for="PasswordHash" type="text" value="" class="form-control" dir="ltr" placeholder="******" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Role" class="form-label">@Localizer["الدور وصلاحية النظام"] *</label>
+                <select asp-for="Role" class="form-control" id="roleSelect" required>
+                    <option value="Staff">@Localizer["موظف (مخصص)"]</option>
+                    <option value="Admin">@Localizer["مدير نظام (وصول كامل)"]</option>
                 </select>
             </div>
 
-            <div class="permission-box" style="grid-column: 1 / -1;">
-                <h4 style="margin-bottom: 1.5rem; color: var(--primary-navy); font-weight: 900;"><i class="fa-solid fa-shield-halved"></i> @Localizer["تحديث صلاحيات الوصول"]</h4>
-                <div class="perm-grid-mobile" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-                    <label class="perm-item"><input type="checkbox" asp-for="CanManageCars" /> @Localizer["إدارة السيارات"]</label>
-                    <label class="perm-item"><input type="checkbox" asp-for="CanManageCustomers" /> @Localizer["إدارة العملاء"]</label>
-                    <label class="perm-item"><input type="checkbox" asp-for="CanManageFinance" /> @Localizer["إدارة المالية والفواتير"]</label>
-                    <label class="perm-item"><input type="checkbox" asp-for="CanManageSettings" /> @Localizer["إدارة الإعدادات"]</label>
+            <div class="form-group">
+                <label class="form-label">@Localizer["حالة الحساب"]</label>
+                <div style="display: flex; align-items: center; height: 100%;">
+                    <div class="switch-group" style="border: none; padding: 0; width: 100%;">
+                        <span class="switch-label" style="color: #16a34a;"><i class="fa-solid fa-power-off"></i> @Localizer["الحساب نشط (يمكنه الدخول)"]</span>
+                        <label class="switch"><input type="checkbox" asp-for="IsActive"><span class="slider"></span></label>
+                    </div>
                 </div>
             </div>
 
-            <div class="permission-box" style="grid-column: 1 / -1; border-color: var(--primary-gold); background: rgba(184,147,90,0.05);">
-                <h4 style="margin-bottom: 1.5rem; color: var(--primary-gold); font-weight: 900;"><i class="fa-solid fa-address-book"></i> @Localizer["الظهور في صفحة اتصل بنا (للعملاء)"]</h4>
-                <div class="form-grid">
-                    <label class="perm-item" style="grid-column: 1/-1;"><input type="checkbox" asp-for="ShowOnContactPage" /> @Localizer["تفعيل الظهور كجهة اتصال عامة"]</label>
-                    <div class="form-group">
-                        <label class="form-label">@Localizer["المسمى الوظيفي"]</label>
-                        <input asp-for="JobTitle" class="form-control" placeholder="مثال: مدير قسم المبيعات" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">@Localizer["رقم الهاتف العام"]</label>
-                        <input asp-for="PhoneNumber" class="form-control" placeholder="968xxxxxxx" dir="ltr" />
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">@Localizer["أيقونة القسم"]</label>
-                        <select asp-for="DepartmentIcon" class="form-control select2-icon">
-                            <option value="fa-user-tie">@Localizer["إدارة / عام"]</option>
-                            <option value="fa-headset">@Localizer["خدمة العملاء"]</option>
-                            <option value="fa-gavel">@Localizer["المزادات"]</option>
-                            <option value="fa-tags">@Localizer["المبيعات"]</option>
-                            <option value="fa-car">@Localizer["السيارات والعمليات"]</option>
-                            <option value="fa-ship">@Localizer["الشحن"]</option>
-                            <option value="fa-calculator">@Localizer["المالية والمحاسبة"]</option>
-                            <option value="fa-briefcase">@Localizer["مكتب / فرع"]</option>
-                        </select>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label asp-for="JobTitle" class="form-label">@Localizer["المسمى الوظيفي"]</label>
+                <input asp-for="JobTitle" class="form-control" />
             </div>
         </div>
 
-        <div class="form-actions-mobile" style="margin-top: 3rem; text-align: left; border-top: 1px solid #f1f5f9; padding-top: 2rem;">
-            <button type="submit" class="btn-save" id="btnSubmit">
-                <i class="fa-solid fa-save"></i> @Localizer["تحديث الصلاحيات والحساب"]
+        <div class="permissions-container" id="permsContainer" style="@(Model.Role == "Admin" ? "display:none;" : "")">
+            <div class="permissions-title">@Localizer["تخصيص صلاحيات الموظف"]</div>
+
+            <div class="switch-group">
+                <span class="switch-label"><i class="fa-solid fa-car" style="color: #64748b;"></i> @Localizer["إدارة السيارات والمزادات وأوامر النقل"]</span>
+                <label class="switch"><input type="checkbox" asp-for="CanManageCars"><span class="slider"></span></label>
+            </div>
+
+            <div class="switch-group">
+                <span class="switch-label"><i class="fa-solid fa-users" style="color: #64748b;"></i> @Localizer["إدارة وتعديل بيانات العملاء"]</span>
+                <label class="switch"><input type="checkbox" asp-for="CanManageCustomers"><span class="slider"></span></label>
+            </div>
+
+            <div class="switch-group">
+                <span class="switch-label"><i class="fa-solid fa-calculator" style="color: #64748b;"></i> @Localizer["إدارة المالية (فواتير وسندات وتقارير)"]</span>
+                <label class="switch"><input type="checkbox" asp-for="CanManageFinance"><span class="slider"></span></label>
+            </div>
+
+            <div class="switch-group">
+                <span class="switch-label"><i class="fa-solid fa-gear" style="color: #64748b;"></i> @Localizer["التحكم في إعدادات النظام"]</span>
+                <label class="switch"><input type="checkbox" asp-for="CanManageSettings"><span class="slider"></span></label>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit" id="btnSubmit">
+                <i class="fa-solid fa-save"></i> @Localizer["حفظ التعديلات"]
             </button>
         </div>
     </form>
@@ -275,57 +319,42 @@
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+
     <script>
-        function formatIcon(icon) {
-            if (!icon.id) { return icon.text; }
-            var $icon = $('<span><i class="fa-solid ' + icon.element.value + '" style="margin-inline-end: 8px; color: var(--primary-gold);"></i> ' + icon.text + '</span>');
-            return $icon;
-        }
-
         $(document).ready(function() {
-            var dir = $('html').attr('dir');
-
-            $('.select2-icon').select2({
-                dir: dir,
-                width: '100%',
-                templateResult: formatIcon,
-                templateSelection: formatIcon,
-                minimumResultsForSearch: Infinity
+            $('#roleSelect').on('change', function() {
+                if($(this).val() === 'Admin') {
+                    $('#permsContainer').slideUp();
+                } else {
+                    $('#permsContainer').slideDown();
+                }
             });
 
             $('#userEditForm').on('submit', function(e) {
                 e.preventDefault();
                 var form = $(this);
+                if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
+
                 var btn = $('#btnSubmit');
                 var originalText = btn.html();
-
-                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Localizer["جاري الحفظ..."]').prop('disabled', true);
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Html.Raw(Localizer["جاري التحديث..."])').prop('disabled', true);
 
                 $.ajax({
-                    url: form.attr('action'),
-                    type: 'POST',
-                    data: form.serialize(),
-                    success: function(res) {
-                        if(res.success) {
+                    url: form.attr('action'), type: form.attr('method'), data: form.serialize(),
+                    success: function (res) {
+                        if (res.success) {
                             Swal.fire({
-                                title: "@Html.Raw(Localizer["تم التحديث!"])",
-                                text: "@Html.Raw(Localizer["تم حفظ التعديلات وتحديث الصلاحيات بنجاح."])",
-                                icon: 'success',
-                                confirmButtonColor: 'var(--primary-gold)'
-                            }).then(() => window.location.href = '@Url.Action("Index", "Users")');
+                                title: '@Html.Raw(Localizer["تم التحديث!"])', icon: 'success', confirmButtonColor: 'var(--primary-gold)'
+                            }).then(() => { window.location.href = '@Url.Action("Index", "Users")'; });
                         } else {
-                            Swal.fire("@Html.Raw(Localizer["خطأ!"])", "@Html.Raw(Localizer["حدث خطأ أثناء التحديث"])", 'error');
+                            var errorMsg = res.errors ? res.errors.join('\n') : '@Html.Raw(Localizer["تأكد من البيانات"])';
+                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', errorMsg, 'error');
                             btn.html(originalText).prop('disabled', false);
                         }
-                    },
-                    error: function() {
-                        Swal.fire("@Html.Raw(Localizer["خطأ!"])", "@Html.Raw(Localizer["لا يمكن الاتصال بالسيرفر."])", 'error');
-                        btn.html(originalText).prop('disabled', false);
                     }
                 });
             });
         });
     </script>
-}
+}       

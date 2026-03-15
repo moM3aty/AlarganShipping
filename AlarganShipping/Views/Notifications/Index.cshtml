@@ -285,8 +285,8 @@
                         $('.btn-read').fadeOut();
 
                         Swal.fire({
-                            title: '@Localizer["تم التحديث"]',
-                            text: '@Localizer["تم تحديد كافة الإشعارات كمقروءة."]',
+                            title: '@Html.Raw(Localizer["تم التحديث"])',
+                            text: '@Html.Raw(Localizer["تم تحديد كافة الإشعارات كمقروءة."])',
                             icon: 'success',
                             confirmButtonColor: 'var(--primary-gold)'
                         });
