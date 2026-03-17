@@ -1,29 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using AlarganShipping.Models;
+using AlarganShipping.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AlarganShipping.Controllers
 {
     public class CalculatorController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICalculatorService _calculatorService;
 
-        public CalculatorController(ApplicationDbContext context)
+        public CalculatorController(ICalculatorService calculatorService)
         {
-            _context = context;
+            _calculatorService = calculatorService;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            // 1. جلب المزادات لاستخدام رسومها الافتراضية في الحاسبة
-            ViewBag.Auctions = await _context.Auctions.ToListAsync();
-
-            // 2. جلب موانئ الوصول (خارج أمريكا) ليختار منها العميل
-            ViewBag.DestinationPorts = await _context.Locations
-                .Where(l => l.LocationType == "Port" && l.Country != "USA")
-                .ToListAsync();
-
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult Calculate([FromBody] CalculatorRequest request)
+        {
+            if (request == null || request.SalePrice < 0) return BadRequest("بيانات غير صالحة");
+
+            var response = _calculatorService.Calculate(request);
+            return Json(response);
         }
     }
 }

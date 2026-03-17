@@ -1,4 +1,5 @@
 ﻿using AlarganShipping.Models;
+using AlarganShipping.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -26,7 +27,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/Login";
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
     });
-
+builder.Services.AddScoped<ICalculatorService, CalculatorService>();
 var app = builder.Build();
 
 // 4. إعداد اللغات المدعومة (العربية والإنجليزية)
