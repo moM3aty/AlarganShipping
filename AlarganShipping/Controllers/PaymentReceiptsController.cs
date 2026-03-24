@@ -36,18 +36,27 @@ namespace AlarganShipping.Controllers
             return View();
         }
 
-        // حفظ السند وتحديث حساب العميل (دعم الدفع الجزئي / الأقساط)
+        // حفظ السند وتحديث حساب العميل (دعم الدفع الجزئي / الأقساط والعملات)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PaymentReceipt receipt, IFormFile? AttachmentFile)
+        public async Task<IActionResult> Create(PaymentReceipt receipt, IFormFile? AttachmentFile, string currency = "USD", decimal exchangeRate = 0.386m)
         {
             ModelState.Remove("Customer");
             ModelState.Remove("ReceiptNumber");
-
+            ModelState.Remove("exchangeRate");
             if (ModelState.IsValid)
             {
                 // توليد رقم سند فريد
                 receipt.ReceiptNumber = "REC-" + DateTime.Now.ToString("yyyyMMddHHmmss");
+
+                // 💡 الحل الجذري لمشكلة العملة: 
+                // تحويل المبلغ المدخل إلى دولار قبل الحفظ لتجنب خطأ الـ ReadOnly في TotalDeducted
+                if (currency == "OMR" && exchangeRate > 0)
+                {
+                    decimal originalOmr = receipt.Amount;
+                    receipt.Amount = Math.Round(originalOmr / exchangeRate, 2);
+                    receipt.Notes += $" \n(ملاحظة مالية: المبلغ المستلم فعلياً {originalOmr} ريال عماني، تم تحويله للدولار بسعر صرف {exchangeRate})";
+                }
 
                 // معالجة المرفقات إن وجدت
                 if (AttachmentFile != null && AttachmentFile.Length > 0)
@@ -69,17 +78,15 @@ namespace AlarganShipping.Controllers
                 var customer = await _context.Customers.FindAsync(receipt.CustomerId);
                 if (customer != null)
                 {
-                    // العميل يستفيد من المبلغ المدفوع + الخصم المسموح به لتقليل دينه
-                    decimal totalDeduction = receipt.Amount + receipt.Discount;
+                    // العميل يستفيد من المبلغ المدفوع (المحول للدولار) + الخصم المسموح به لتقليل دينه
+                    decimal totalDeduction = receipt.TotalDeducted; // هذا الآن سيحسب (Amount بالدولار + Discount)
 
                     customer.TotalPaid += receipt.Amount;
                     customer.TotalBalance -= totalDeduction;
 
                     // منع الديون السالبة
-                    if (customer.TotalBalance < 0)
-                    {
-                        customer.TotalBalance = 0;
-                    }
+                    if (customer.TotalBalance < 0) customer.TotalBalance = 0;
+
                     _context.Update(customer);
                 }
 
@@ -102,15 +109,16 @@ namespace AlarganShipping.Controllers
             return View(receipt);
         }
 
-        // حفظ التعديلات وتسوية حسابات العميل
+        // حفظ التعديلات وتسوية حسابات العميل مع دعم العملات
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, PaymentReceipt receipt, IFormFile? AttachmentFile)
+        public async Task<IActionResult> Edit(int id, PaymentReceipt receipt, IFormFile? AttachmentFile, string currency = "USD", decimal exchangeRate = 0.386m)
         {
             if (id != receipt.Id) return Json(new { success = false, errors = new[] { "خطأ في المعرف." } });
 
             ModelState.Remove("Customer");
             ModelState.Remove("ReceiptNumber");
+            ModelState.Remove("exchangeRate");
 
             if (ModelState.IsValid)
             {
@@ -120,6 +128,15 @@ namespace AlarganShipping.Controllers
                     if (oldReceipt == null) return Json(new { success = false, errors = new[] { "السند غير موجود." } });
 
                     receipt.ReceiptNumber = oldReceipt.ReceiptNumber;
+
+                    // 💡 معالجة العملة عند التعديل
+                    if (currency == "OMR" && exchangeRate > 0)
+                    {
+                        decimal originalOmr = receipt.Amount;
+                        receipt.Amount = Math.Round(originalOmr / exchangeRate, 2);
+                        if (receipt.Notes == null || !receipt.Notes.Contains("ريال عماني"))
+                            receipt.Notes += $" \n(ملاحظة تعديل: المبلغ المستلم {originalOmr} ريال عماني بسعر صرف {exchangeRate})";
+                    }
 
                     // معالجة الملف الجديد إذا تم رفعه
                     if (AttachmentFile != null && AttachmentFile.Length > 0)
@@ -155,7 +172,7 @@ namespace AlarganShipping.Controllers
                         if (oldCustomer != null)
                         {
                             oldCustomer.TotalPaid -= oldReceipt.Amount;
-                            oldCustomer.TotalBalance += (oldReceipt.Amount + oldReceipt.Discount);
+                            oldCustomer.TotalBalance += oldReceipt.TotalDeducted;
                             if (oldCustomer.TotalPaid < 0) oldCustomer.TotalPaid = 0;
                             _context.Update(oldCustomer);
                         }
@@ -165,21 +182,19 @@ namespace AlarganShipping.Controllers
                         if (newCustomer != null)
                         {
                             newCustomer.TotalPaid += receipt.Amount;
-                            newCustomer.TotalBalance -= (receipt.Amount + receipt.Discount);
+                            newCustomer.TotalBalance -= receipt.TotalDeducted;
                             if (newCustomer.TotalBalance < 0) newCustomer.TotalBalance = 0;
                             _context.Update(newCustomer);
                         }
                     }
                     else
                     {
+                        // تعديل الفارق لنفس العميل
                         var customer = await _context.Customers.FindAsync(receipt.CustomerId);
                         if (customer != null)
                         {
-                            decimal oldDeduction = oldReceipt.Amount + oldReceipt.Discount;
-                            decimal newDeduction = receipt.Amount + receipt.Discount;
-
                             customer.TotalPaid = customer.TotalPaid - oldReceipt.Amount + receipt.Amount;
-                            customer.TotalBalance = customer.TotalBalance + oldDeduction - newDeduction;
+                            customer.TotalBalance = customer.TotalBalance + oldReceipt.TotalDeducted - receipt.TotalDeducted;
 
                             if (customer.TotalBalance < 0) customer.TotalBalance = 0;
                             if (customer.TotalPaid < 0) customer.TotalPaid = 0;
@@ -227,9 +242,8 @@ namespace AlarganShipping.Controllers
                 var customer = await _context.Customers.FindAsync(receipt.CustomerId);
                 if (customer != null)
                 {
-                    decimal totalDeduction = receipt.Amount + receipt.Discount;
                     customer.TotalPaid -= receipt.Amount;
-                    customer.TotalBalance += totalDeduction;
+                    customer.TotalBalance += receipt.TotalDeducted;
                     if (customer.TotalPaid < 0) customer.TotalPaid = 0;
                     _context.Update(customer);
                 }

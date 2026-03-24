@@ -81,7 +81,8 @@ namespace AlarganShipping.Models
         public int? ShipmentId { get; set; }
         [ForeignKey("ShipmentId")]
         public Shipment? Shipment { get; set; }
-
+        public DateTime? PurchaseDate { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public ICollection<TrackingLog> TrackingLogs { get; set; } = new List<TrackingLog>();
         public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
         public ICollection<DocumentAttachment> DocumentAttachments { get; set; } = new List<DocumentAttachment>();

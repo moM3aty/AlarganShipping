@@ -1,5 +1,7 @@
-﻿@{
+﻿@model AlarganShipping.Models.Invoice
+@{
     ViewData["Title"] = Localizer["المحاسبة والتقارير المالية"];
+    Layout = "_Layout"; // تأكد من أنك تستخدم اللايوت الخاص بك
 }
 
 <style>
@@ -242,26 +244,29 @@
             color: var(--text-dark);
         }
 
+    /* تنسيق جدول المناطق */
+    .zone-table td:nth-child(3) {
+        font-family: monospace;
+        font-size: 1.1rem;
+    }
+
     @@media (max-width: 768px) {
-        .page-header
+        .page-header {
+            text-align: center;
+            justify-content: center;
+        }
 
-    {
-        text-align: center;
-        justify-content: center;
-    }
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
 
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
+        .fin-data-grid {
+            grid-template-columns: 1fr;
+        }
 
-    .fin-data-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .report-container {
-        padding: 1.5rem;
-    }
-
+        .report-container {
+            padding: 1.5rem;
+        }
     }
 </style>
 
@@ -371,7 +376,6 @@
                     @{
                         decimal grandSales = 0;
                         decimal grandPurchases = 0;
-                        // تم الاستغناء عن CultureInfo واستخدام مصفوفة نصوص ثابتة لمنع خطأ 500 في السيرفرات
                         string[] arabicMonths = { "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر" };
                     }
                     @for (int i = 0; i < 12; i++)
@@ -404,12 +408,59 @@
             </table>
         </div>
     </div>
+
+    <!-- === قسم جديد: جدول المناطق والتسعير === -->
+    <div class="report-container">
+        <h3 class="chart-title" style="margin-bottom: 1.5rem;">
+            <i class="fa-solid fa-globe" style="color: var(--primary-gold);"></i>
+            جدول المناطق وتسعير الشحن البحري (Shipping Zones)
+        </h3>
+
+        <div style="overflow-x: auto;">
+            <table class="table-enterprise zone-table">
+                <thead>
+                    <tr>
+                        <th style="background: var(--primary-navy); color: white;">المنطقة (Zone)</th>
+                        <th style="background: var(--primary-navy); color: white;">الوصف / الموانئ</th>
+                        <th style="background: var(--primary-navy); color: white;">تكلفة الشحن البحري (Sea Freight)</th>
+                        <th style="background: var(--primary-navy); color: white;">ملاحظات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight: 900; color: var(--primary-navy);">منطقة 1 (Zone 1)</td>
+                        <td>الموانئ القريبة / نقل محلي</td>
+                        <td style="color: #16a34a;">$0.00</td>
+                        <td>غالباً لا تتطلب شحناً بحرياً</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 900; color: var(--primary-navy);">منطقة 2 (Zone 2)</td>
+                        <td>موانئ الشحن الأساسية</td>
+                        <td style="color: var(--primary-gold); font-weight: 900;">$1,095.16</td>
+                        <td>السعر القياسي للشحن (كما في الفاتورة النموذجية)</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 900; color: var(--primary-navy);">منطقة 3 (Zone 3)</td>
+                        <td>موانئ بعيدة أو تتطلب خدمات إضافية</td>
+                        <td style="color: #ef4444;">$860.64</td>
+                        <td>تكلفة تقديرية بناءً على بيانات الملف</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: center; background: #f8fafc; color: #64748b; font-size: 0.9rem;">
+                            <i class="fa-solid fa-circle-info"></i> ملاحظة: الأسعار المذكورة هي تكاليف الشحن البحري فقط ولا تشمل الجمارك أو الضرائب أو التأمين.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- استدعاء ملف الحاسبة المحدث (تأكد من رفع الملف في المسار الصحيح) -->
+    <script src="~/js/auctionCalculator.js"></script>
 
-    <!-- مكتبات التصدير -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -436,7 +487,7 @@
             });
         }
 
-        // --- تهيئة الرسم البياني بطريقة آمنة تماماً تمنع أخطاء الـ Syntax الخاصة بالجافاسكربت ---
+        // --- تهيئة الرسم البياني ---
         const salesData = [@Html.Raw(string.Join(",", ((decimal[])ViewBag.MonthlySales).Select(m => m.ToString(System.Globalization.CultureInfo.InvariantCulture))))];
         const purchasesData = [@Html.Raw(string.Join(",", ((decimal[])ViewBag.MonthlyPurchases).Select(m => m.ToString(System.Globalization.CultureInfo.InvariantCulture))))];
 

@@ -604,7 +604,7 @@
                                 <div class="dropdown-divider"></div>
 
                                 <a href="@Url.Action("DetailsByCar", "Invoices", new { carId = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-file-invoice"></i> @Localizer["تفاصيل عملية البيع"]</a>
-                                <button type="button" onclick="duplicateSale(@car.Id)" class="action-dropdown-item"><i class="fa-solid fa-copy"></i> @Localizer["نسخ (Duplicate)"]</button>
+                                <button type="button" onclick="duplicateCar(@car.Id)" class="action-dropdown-item"><i class="fa-solid fa-copy"></i> @Localizer["نسخ (Duplicate)"]</button>
                                 <a href="@Url.Action("Index", "PaymentReceipts")" class="action-dropdown-item"><i class="fa-solid fa-money-bill-wave"></i> @Localizer["عرض المدفوعات"]</a>
                                 <a href="@Url.Action("Create", "PaymentReceipts")" class="action-dropdown-item"><i class="fa-solid fa-dollar-sign"></i> @Localizer["إضافة دفعة"]</a>
                                 <a href="@Url.Action("Index", "PaymentVouchers")" class="action-dropdown-item"><i class="fa-solid fa-money-check"></i> @Localizer["عرض المصروفات"]</a>
@@ -686,7 +686,8 @@
                                     <div class="car-icon-box">
                                         @if (!string.IsNullOrEmpty(car.MainImageUrl))
                                         {
-                                            <img src="@car.MainImageUrl" alt="Car" />
+                                            <!-- إضافة onerror لعدم عرض صورة مكسورة إذا حُذفت من الخادم -->
+                                            <img src="@car.MainImageUrl" onerror="this.onerror=null; this.src='/images/logo.jpg';" alt="Car" />
                                         }
                                         else
                                         {
@@ -724,7 +725,7 @@
                                         <a href="@Url.Action("Edit", "Cars", new { id = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-pen-to-square"></i> @Localizer["تعديل البيانات"]</a>
                                         <div class="dropdown-divider"></div>
                                         <a href="@Url.Action("DetailsByCar", "Invoices", new { carId = car.Id })" class="action-dropdown-item"><i class="fa-solid fa-file-invoice"></i> @Localizer["تفاصيل عملية البيع"]</a>
-                                        <button type="button" onclick="duplicateSale(@car.Id)" class="action-dropdown-item"><i class="fa-solid fa-copy"></i> @Localizer["نسخ"]</button>
+                                        <button type="button" onclick="duplicateCar(@car.Id)" class="action-dropdown-item"><i class="fa-solid fa-copy"></i> @Localizer["نسخ"]</button>
                                         <a href="@Url.Action("Index", "PaymentReceipts")" class="action-dropdown-item"><i class="fa-solid fa-money-bill-wave"></i> @Localizer["عرض المدفوعات"]</a>
                                         <a href="@Url.Action("Create", "PaymentReceipts")" class="action-dropdown-item"><i class="fa-solid fa-dollar-sign"></i> @Localizer["إضافة دفعة"]</a>
                                         <a href="@Url.Action("Index", "PaymentVouchers")" class="action-dropdown-item"><i class="fa-solid fa-money-check"></i> @Localizer["عرض المصروفات"]</a>
@@ -755,6 +756,9 @@
 </div>
 
 @section Scripts {
+    <!-- إضافة مكتبة SweetAlert2 لمنع خطأ Swal is not defined -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+
     <script>
         function toggleDropdown(event, id) {
             event.preventDefault();
@@ -808,11 +812,38 @@
             }
         }
 
-        function duplicateSale(id) {
-            Swal.fire({ title: '@Html.Raw(Localizer["جاري النسخ..."])', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            $.post('@Url.Action("DuplicateSale", "Cars")/' + id, { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
-                if(res.success) Swal.fire('@Html.Raw(Localizer["نجاح"])', res.message, 'success').then(() => location.reload());
-                else Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+        // دالة النسخ الذكية مع إدخال رقم الشاصي الجديد
+        function duplicateCar(id) {
+            Swal.fire({
+                title: '@Html.Raw(Localizer["نسخ بيانات السيارة"])',
+                text: '@Html.Raw(Localizer["أدخل رقم الشاصي (VIN) للسيارة الجديدة (اختياري):"])',
+                input: 'text',
+                inputPlaceholder: '@Html.Raw(Localizer["اتركه فارغاً للتوليد التلقائي..."])',
+                inputAttributes: { autocapitalize: 'off', dir: 'ltr' },
+                showCancelButton: true,
+                confirmButtonText: '<i class="fa-solid fa-copy"></i> @Html.Raw(Localizer["نسخ وحفظ"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])',
+                confirmButtonColor: 'var(--primary-gold)',
+                cancelButtonColor: 'var(--primary-navy)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: '@Html.Raw(Localizer["جاري النسخ..."])', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+                    $.post('@Url.Action("DuplicateSale", "Cars")', {
+                        id: id,
+                        newVin: result.value,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    }, function(res) {
+                        if(res.success) {
+                            Swal.fire({ title: '@Html.Raw(Localizer["تم النسخ!"])', text: res.message, icon: 'success', confirmButtonColor: 'var(--primary-gold)' })
+                            .then(() => location.reload());
+                        } else {
+                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+                        }
+                    }).fail(function() {
+                        Swal.fire('@Html.Raw(Localizer["خطأ في السيرفر!"])', '', 'error');
+                    });
+                }
             });
         }
 

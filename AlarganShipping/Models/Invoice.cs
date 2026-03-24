@@ -96,5 +96,16 @@ namespace AlarganShipping.Models
         // الحقل الجديد لحل المشكلة
         [Display(Name = "ملاحظات الإلغاء أو التعديل")]
         public string? Notes { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        [Display(Name = "رسوم التحويل")]
+        public decimal TransferFees { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        [Display(Name = "نقل داخل عمان")]
+        public decimal OmanTowingFees { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        [Display(Name = "رسوم حجم السيارة")]
+        public decimal CarSizeFees { get; set; }
     }
 }

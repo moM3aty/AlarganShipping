@@ -214,13 +214,24 @@
 
         <div class="form-grid">
             <div class="form-group car-purchase-group">
-                <label asp-for="CarPrice" class="form-label">@Localizer["قيمة شراء السيارة ($)"]</label>
+                <label asp-for="CarPrice" class="form-label">@Localizer["سعر بيع السيارة للعميل ($)"]</label>
                 <input asp-for="CarPrice" class="form-control input-money calc-field" type="number" step="0.01" />
             </div>
             <div class="form-group car-purchase-group">
                 <label asp-for="AuctionFees" class="form-label">@Localizer["رسوم المزاد والبوابة ($)"]</label>
                 <input asp-for="AuctionFees" class="form-control input-money calc-field" type="number" step="0.01" />
             </div>
+
+            <!-- الحقول الثلاثة الجديدة -->
+            <div class="form-group">
+                <label asp-for="TransferFees" class="form-label">@Localizer["رسوم التحويل ($)"]</label>
+                <input asp-for="TransferFees" class="form-control input-money calc-field" type="number" step="0.01" />
+            </div>
+            <div class="form-group">
+                <label asp-for="CarSizeFees" class="form-label">@Localizer["رسوم حجم السيارة ($)"]</label>
+                <input asp-for="CarSizeFees" class="form-control input-money calc-field" type="number" step="0.01" />
+            </div>
+
             <div class="form-group">
                 <label asp-for="InlandTowing" class="form-label">@Localizer["النقل الداخلي (Towing) ($)"]</label>
                 <input asp-for="InlandTowing" class="form-control input-money calc-field" type="number" step="0.01" />
@@ -233,6 +244,13 @@
                 <label asp-for="CustomsAndTaxes" class="form-label">@Localizer["رسوم التخليص الجمركي ($)"]</label>
                 <input asp-for="CustomsAndTaxes" class="form-control input-money calc-field" type="number" step="0.01" />
             </div>
+
+            <!-- الحقل الجديد: النقل داخل عمان -->
+            <div class="form-group">
+                <label asp-for="OmanTowingFees" class="form-label">@Localizer["رسوم النقل داخل عمان ($)"]</label>
+                <input asp-for="OmanTowingFees" class="form-control input-money calc-field" type="number" step="0.01" />
+            </div>
+
             <div class="form-group">
                 <label asp-for="StorageFees" class="form-label" style="color: #ef4444;">@Localizer["غرامات تأخير / أرضيات ($)"]</label>
                 <input asp-for="StorageFees" class="form-control input-money calc-field" type="number" step="0.01" style="border-color: #fca5a5;" />
@@ -279,7 +297,7 @@
         $(document).ready(function() {
             $('.select2').select2({ dir: $('html').attr('dir'), width: '100%' });
 
-            // دالة حساب المجاميع ديناميكياً
+            // دالة حساب المجاميع ديناميكياً شاملة البنود الجديدة
             function calculateTotals() {
                 var isShippingOnly = $('#IsShippingOnly').is(':checked');
 
@@ -292,14 +310,18 @@
 
                 var carPrice = parseFloat($('#CarPrice').val()) || 0;
                 var auction = parseFloat($('#AuctionFees').val()) || 0;
+                var transfer = parseFloat($('#TransferFees').val()) || 0;
+                var sizeFee = parseFloat($('#CarSizeFees').val()) || 0;
                 var towing = parseFloat($('#InlandTowing').val()) || 0;
                 var sea = parseFloat($('#SeaFreight').val()) || 0;
                 var customs = parseFloat($('#CustomsAndTaxes').val()) || 0;
+                var omanTowing = parseFloat($('#OmanTowingFees').val()) || 0;
                 var storage = parseFloat($('#StorageFees').val()) || 0;
                 var comm = parseFloat($('#CompanyCommission').val()) || 0;
+
                 var paid = parseFloat($('#AmountPaid').val()) || 0;
 
-                var total = carPrice + auction + towing + sea + customs + storage + comm;
+                var total = carPrice + auction + transfer + sizeFee + towing + sea + customs + omanTowing + storage + comm;
                 var remaining = total - paid;
 
                 $('#lblTotal').text(total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));

@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AlarganShipping.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AlarganShipping.Controllers
 {
+    [Authorize]
     public class InvoicesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -42,7 +44,10 @@ namespace AlarganShipping.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Invoice invoice)
         {
-            ModelState.Remove("Customer"); ModelState.Remove("Car"); ModelState.Remove("InvoiceNumber");
+            ModelState.Remove("Customer");
+            ModelState.Remove("Car");
+            ModelState.Remove("InvoiceNumber");
+            ModelState.Remove("TotalAmount");
 
             if (ModelState.IsValid)
             {
@@ -53,8 +58,10 @@ namespace AlarganShipping.Controllers
 
                 decimal carCost = invoice.IsShippingOnly ? 0 : (invoice.CarPrice + invoice.AuctionFees);
 
+                // إضافة البنود الثلاثة الجديدة للعملية الحسابية
                 invoice.TotalAmount = carCost + invoice.InlandTowing + invoice.SeaFreight +
-                                      invoice.CustomsAndTaxes + invoice.CompanyCommission + invoice.StorageFees;
+                                      invoice.CustomsAndTaxes + invoice.CompanyCommission + invoice.StorageFees +
+                                      invoice.TransferFees + invoice.OmanTowingFees + invoice.CarSizeFees;
 
                 _context.Add(invoice);
 
@@ -101,7 +108,10 @@ namespace AlarganShipping.Controllers
         {
             if (id != invoice.Id) return Json(new { success = false, errors = new[] { "خطأ في المعرف." } });
 
-            ModelState.Remove("Customer"); ModelState.Remove("Car"); ModelState.Remove("InvoiceNumber");
+            ModelState.Remove("Customer");
+            ModelState.Remove("Car");
+            ModelState.Remove("InvoiceNumber");
+            ModelState.Remove("TotalAmount");
 
             if (ModelState.IsValid)
             {
@@ -114,8 +124,11 @@ namespace AlarganShipping.Controllers
                     invoice.IssueDate = oldInvoice.IssueDate;
 
                     decimal carCost = invoice.IsShippingOnly ? 0 : (invoice.CarPrice + invoice.AuctionFees);
+
+                    // إضافة البنود الثلاثة الجديدة في التعديل
                     invoice.TotalAmount = carCost + invoice.InlandTowing + invoice.SeaFreight +
-                                          invoice.CustomsAndTaxes + invoice.CompanyCommission + invoice.StorageFees;
+                                          invoice.CustomsAndTaxes + invoice.CompanyCommission + invoice.StorageFees +
+                                          invoice.TransferFees + invoice.OmanTowingFees + invoice.CarSizeFees;
 
                     // 💡 أتمتة: تعديل الفروقات المحاسبية بذكاء
                     if (oldInvoice.CustomerId != invoice.CustomerId)
@@ -179,6 +192,7 @@ namespace AlarganShipping.Controllers
                     customer.TotalBalance -= invoice.TotalAmount;
                     customer.TotalPaid -= invoice.AmountPaid;
                     if (customer.TotalBalance < 0) customer.TotalBalance = 0;
+                    if (customer.TotalPaid < 0) customer.TotalPaid = 0;
                     _context.Update(customer);
                 }
 

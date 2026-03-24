@@ -1,7 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AlarganShipping.Models;
+using Microsoft.AspNetCore.Hosting;
 
 namespace AlarganShipping.Controllers
 {
@@ -87,9 +95,6 @@ namespace AlarganShipping.Controllers
             return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
 
-        // ==========================================
-        // ترقية دوال الرفع (معالجة الملفات الميتة)
-        // ==========================================
         private async Task<string> UploadFileAsync(IFormFile file, string subFolder)
         {
             var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", subFolder);
@@ -155,13 +160,12 @@ namespace AlarganShipping.Controllers
                     var existingCar = await _context.Cars.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
                     if (mainImage != null && mainImage.Length > 0)
                     {
-                        // مسح الصورة القديمة لتوفير المساحة
                         DeleteOldFile(existingCar.MainImageUrl);
                         car.MainImageUrl = await UploadFileAsync(mainImage, "cars");
                     }
                     else
                     {
-                        car.MainImageUrl = existingCar.MainImageUrl; // الحفاظ على الصورة السابقة
+                        car.MainImageUrl = existingCar.MainImageUrl;
                     }
 
                     _context.Update(car);
@@ -189,6 +193,7 @@ namespace AlarganShipping.Controllers
                 .Include(c => c.TrackingLogs)
                 .Include(c => c.CarInspections)
                 .Include(c => c.DocumentAttachments)
+                .Include(c => c.Invoices)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (car == null) return NotFound();
@@ -207,7 +212,6 @@ namespace AlarganShipping.Controllers
 
             try
             {
-                // مسح الصور المرفقة من السيرفر
                 DeleteOldFile(car.MainImageUrl);
                 foreach (var doc in car.DocumentAttachments)
                 {
@@ -224,75 +228,63 @@ namespace AlarganShipping.Controllers
             }
         }
 
-        public async Task<IActionResult> PackingList(int? id)
-        {
-            if (id == null) return NotFound();
-            var car = await _context.Cars
-                .Include(c => c.Customer)
-                .Include(c => c.Shipment).ThenInclude(s => s.DischargePort)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (car == null) return NotFound();
-            return View(car);
-        }
-
-    
-
-       
         // ========================================================
-        // 1. دالة مرتجع البيع (إصلاح شامل)
+        // دوال الإجراءات المصححة
         // ========================================================
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReturnSale(int id)
         {
-            var invoice = await _context.Invoices.FirstOrDefaultAsync(i => i.CarId == id);
-            if (invoice == null)
-                return Json(new { success = false, message = "لا توجد فاتورة مبيعات مرتبطة بهذه السيارة لعمل مرتجع." });
+            var car = await _context.Cars.Include(c => c.Invoices).FirstOrDefaultAsync(c => c.Id == id);
+            if (car == null)
+                return Json(new { success = false, message = "السيارة غير موجودة." });
 
-            try
+            string inventoryName = "سيارات الشركة (المخزون)";
+            var inventoryCustomer = await _context.Customers.FirstOrDefaultAsync(c => c.Name == inventoryName);
+
+            // إنشاء حساب المخزون إذا لم يكن موجوداً
+            if (inventoryCustomer == null)
             {
-                // أ. استرجاع مبالغ مديونية العميل
-                var customer = await _context.Customers.FindAsync(invoice.CustomerId);
-                if (customer != null)
-                {
-                    customer.TotalBalance -= invoice.TotalAmount;
-                    customer.TotalPaid -= invoice.AmountPaid;
-                    if (customer.TotalBalance < 0) customer.TotalBalance = 0;
-                    if (customer.TotalPaid < 0) customer.TotalPaid = 0;
-                    _context.Update(customer);
-                }
-
-                // ب. حذف الفاتورة أو تصفيرها (الأفضل حذفها في المرتجع الكامل)
-                _context.Invoices.Remove(invoice);
-
-                // ج. إعادة السيارة للحالة السابقة (مثلاً: وصول المستودع)
-                var car = await _context.Cars.FindAsync(id);
-                if (car != null) car.StatusId = 4;
-
-                // د. تسجيل حركة تتبع للمرتجع
-                _context.TrackingLogs.Add(new TrackingLog
-                {
-                    CarId = id,
-                    Title = "مرتجع بيع",
-                    Description = "تم إلغاء عملية البيع وإعادة السيارة للمخزون.",
-                    Location = "المكتب الرئيسي",
-                    UpdateDate = DateTime.Now,
-                    ProgressPercentage = 50
-                });
-
+                inventoryCustomer = new Customer { Name = inventoryName, CustomerCode = "INV-001", Phone = "0000000000" };
+                _context.Customers.Add(inventoryCustomer);
                 await _context.SaveChangesAsync();
-                return Json(new { success = true, message = "تم تنفيذ المرتجع بنجاح وتحديث حساب العميل." });
             }
-            catch (Exception ex)
+
+            if (car.CustomerId == inventoryCustomer.Id)
+                return Json(new { success = false, message = "السيارة موجودة بالفعل في معرض الشركة ولم تُباع بعد." });
+
+            var oldCustomer = await _context.Customers.FindAsync(car.CustomerId);
+
+            var invoice = car.Invoices?.FirstOrDefault();
+            if (invoice != null && oldCustomer != null)
             {
-                return Json(new { success = false, message = "حدث خطأ: " + ex.Message });
+                oldCustomer.TotalBalance -= invoice.TotalAmount;
+                oldCustomer.TotalPaid -= invoice.AmountPaid;
+                if (oldCustomer.TotalBalance < 0) oldCustomer.TotalBalance = 0;
+                if (oldCustomer.TotalPaid < 0) oldCustomer.TotalPaid = 0;
+
+                _context.Invoices.Remove(invoice);
             }
+
+            car.CustomerId = inventoryCustomer.Id;
+            car.SellingPrice = null;
+            car.StatusId = 4;
+
+            _context.TrackingLogs.Add(new TrackingLog
+            {
+                CarId = car.Id,
+                Title = "إرجاع مبيعات",
+                Description = $"تم إرجاع السيارة من العميل ({oldCustomer?.Name ?? "غير محدد"}) إلى معرض الشركة.",
+                Location = "المعرض",
+                UpdateDate = DateTime.Now,
+                ProgressPercentage = 30
+            });
+
+            await _context.SaveChangesAsync();
+            return Json(new { success = true, message = "تم إلغاء البيع، وتسوية حساب العميل، وإرجاع السيارة للمخزون." });
         }
 
-        // ========================================================
-        // 2. دالة إرسال الفاتورة عبر الإيميل
-        // ========================================================
         [HttpPost]
         public async Task<IActionResult> EmailSale(int id, string email)
         {
@@ -302,12 +294,9 @@ namespace AlarganShipping.Controllers
             if (car == null || !car.Invoices.Any())
                 return Json(new { success = false, message = "لا توجد فاتورة مرتبطة بهذه السيارة لإرسالها." });
 
-            // هنا نضع منطق الإرسال الحقيقي مستقبلاً (SMTP)
-            // حالياً نقوم بإرسال تأجيل ناجح
             return Json(new { success = true, message = $"تم إرسال الفاتورة بنجاح إلى {email}" });
         }
 
-        // دالة مساعدة لمسح الملفات
         private void DeleteOldFile(string filePath)
         {
             if (!string.IsNullOrEmpty(filePath))
@@ -316,11 +305,62 @@ namespace AlarganShipping.Controllers
                 if (System.IO.File.Exists(fullPath)) System.IO.File.Delete(fullPath);
             }
         }
-    
+
         [HttpPost]
-        public async Task<IActionResult> DuplicateSale(int id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DuplicateSale(int id, string? newVin)
         {
-            return Json(new { success = true, message = "تم إنشاء نسخة من عملية البيع بنجاح." });
+            var originalCar = await _context.Cars.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+            if (originalCar == null)
+                return Json(new { success = false, message = "السيارة الأصلية غير موجودة." });
+
+            // إذا لم يدخل المستخدم شاصي، نقوم بتوليده تلقائياً (17 رقم)
+            string finalVin = newVin;
+            if (string.IsNullOrWhiteSpace(finalVin))
+            {
+                // توليد شاصي مؤقت: COPY + 13 رقم من التاريخ الحالي
+                finalVin = "COPY" + DateTime.Now.Ticks.ToString().Substring(0, 13);
+            }
+
+            if (await _context.Cars.AnyAsync(c => c.VIN == finalVin))
+                return Json(new { success = false, message = "عذراً، رقم الشاصي الجديد مسجل لسيارة أخرى في النظام!" });
+
+            var newCar = new Car
+            {
+                VIN = finalVin.ToUpper(),
+                Make = originalCar.Make,
+                Model = originalCar.Model,
+                Year = originalCar.Year,
+                Color = originalCar.Color,
+                InternalCode = "AUTO-" + DateTime.Now.Year + "-" + new Random().Next(1000, 9999),
+                VehicleType = originalCar.VehicleType,
+                VehicleShape = originalCar.VehicleShape,
+                PurchasePrice = originalCar.PurchasePrice,
+                SellingPrice = originalCar.SellingPrice,
+                EstimatedProfit = originalCar.EstimatedProfit,
+                LotNumber = originalCar.LotNumber,
+                PlateNo = originalCar.PlateNo,
+                CurrentLocation = originalCar.CurrentLocation,
+                CardNo = originalCar.CardNo,
+                EngineNo = originalCar.EngineNo,
+                TaxType = originalCar.TaxType,
+                TaxAmount = originalCar.TaxAmount,
+                CustomsDeclaration = originalCar.CustomsDeclaration,
+                InsuranceNo = originalCar.InsuranceNo,
+                TaxMethod = originalCar.TaxMethod,
+                StatusId = originalCar.StatusId,
+                AuctionId = originalCar.AuctionId,
+                CustomerId = originalCar.CustomerId,
+                PurchaseDate = originalCar.PurchaseDate,
+                AddDate = DateTime.Now,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.Cars.Add(newCar);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "تم إنشاء نسخة من السيارة بنجاح (يمكنك تعديل رقم الشاصي لاحقاً)." });
         }
+
     }
 }

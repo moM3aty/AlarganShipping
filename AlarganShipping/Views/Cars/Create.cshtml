@@ -118,21 +118,15 @@
     }
 
     @@media (min-width: 768px) {
-        .form-grid-4
-
-    {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
+        .form-grid-4 {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 
     @@media (min-width: 1200px) {
-        .form-grid-4
-
-    {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
+        .form-grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
     }
 
     .form-group {
@@ -254,6 +248,63 @@
         border: 1px solid #dcfce7;
     }
 
+    .image-edit-box {
+        background: #f8fafc;
+        border: 2px dashed #cbd5e1;
+        padding: 1.5rem;
+        border-radius: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        grid-column: 1 / -1;
+        gap: 2rem;
+        transition: 0.3s;
+        cursor: pointer;
+        margin-bottom: 2rem;
+    }
+
+        .image-edit-box:hover {
+            border-color: var(--primary-gold);
+            background: rgba(184, 147, 90, 0.05);
+        }
+
+        .image-edit-box input[type="file"] {
+            display: none;
+        }
+
+    .img-upload-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .img-upload-info i {
+            font-size: 2.5rem;
+            color: var(--primary-gold);
+        }
+
+    .img-upload-text h4 {
+        margin: 0 0 5px 0;
+        color: var(--primary-navy);
+        font-weight: 900;
+    }
+
+    .img-upload-text p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .form-actions {
+        margin-top: 4rem;
+        padding-top: 2rem;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
     .btn-submit {
         background: var(--primary-navy);
         color: white;
@@ -310,33 +361,40 @@
     }
 
     @@media (max-width: 768px) {
-        .details-header
+        .details-header {
+            flex-direction: column;
+            text-align: center;
+            padding: 2rem 1.5rem;
+            gap: 1.5rem;
+        }
 
-    {
-        flex-direction: column;
-        text-align: center;
-        padding: 2rem 1.5rem;
-        gap: 1.5rem;
-    }
+        .header-content {
+            flex-direction: column;
+        }
 
-    .header-content {
-        flex-direction: column;
-    }
+        .btn-action-light {
+            width: 100%;
+            justify-content: center;
+        }
 
-    .btn-action-light {
-        width: 100%;
-        justify-content: center;
-    }
+        .premium-form-card {
+            padding: 1.5rem;
+        }
 
-    .premium-form-card {
-        padding: 1.5rem;
-    }
+        .image-edit-box {
+            flex-direction: column;
+            text-align: center;
+        }
 
-    .btn-submit {
-        width: 100%;
-        justify-content: center;
-    }
+        .form-actions {
+            flex-direction: column;
+            gap: 1rem;
+        }
 
+        .btn-submit {
+            width: 100%;
+            justify-content: center;
+        }
     }
 </style>
 
@@ -360,6 +418,31 @@
     <div class="premium-form-card">
         <form asp-action="Create" method="post" id="carForm" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
+
+            <div class="image-edit-box" onclick="document.getElementById('mainImageUpload').click()">
+                <div class="img-upload-info">
+                    <i class="fa-solid fa-image"></i>
+                    <div class="img-upload-text">
+                        <h4>@Localizer["صورة السيارة الرئيسية"]</h4>
+                        <p id="mainImgNameText">@Localizer["اضغط هنا لاختيار صورة (اختياري)"]</p>
+                    </div>
+                </div>
+                <div style="background: white; padding: 0.5rem 1rem; border-radius: 0.8rem; border: 1px solid #e2e8f0; font-weight: 800; color: var(--primary-navy);">@Localizer["استعراض..."]</div>
+                <input type="file" id="mainImageUpload" name="mainImage" accept="image/*" onchange="showEditFileName(this)" />
+            </div>
+
+            <!-- التواريخ والزمن -->
+            <div class="section-divider"><i class="fa-regular fa-calendar-days" style="color:var(--primary-gold);"></i> @Localizer["التواريخ والزمن"]</div>
+            <div class="form-grid-4" style="margin-bottom: 1.5rem; background: rgba(184, 147, 90, 0.05); padding: 1.5rem; border-radius: 1rem; border: 1px dashed var(--primary-gold);">
+                <div class="form-group">
+                    <label asp-for="PurchaseDate" class="form-label">@Localizer["تاريخ الشراء"]</label>
+                    <input asp-for="PurchaseDate" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="CreatedAt" class="form-label">@Localizer["وقت وتاريخ إضافة السيارة للنظام"] *</label>
+                    <input asp-for="CreatedAt" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
+                </div>
+            </div>
 
             <!-- 1. البيانات الأساسية -->
             <div class="section-divider"><i class="fa-solid fa-car" style="color:var(--primary-gold);"></i> @Localizer["البيانات الأساسية"]</div>
@@ -473,42 +556,6 @@
                 </div>
             </div>
 
-            <!-- 4. المرفقات والمستندات -->
-            <div class="section-divider"><i class="fa-solid fa-cloud-arrow-up" style="color:var(--primary-gold);"></i> @Localizer["المرفقات والمستندات (PDF / JPG)"]</div>
-            <div class="form-grid-4">
-                <div class="file-upload-box">
-                    <i class="fa-solid fa-camera"></i>
-                    <label>@Localizer["صورة السيارة الرئيسية"]</label>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">@Localizer["الواجهة الأمامية"]</div>
-                    <input type="file" id="mainImage" name="mainImage" accept="image/*" onchange="showFileName(this, 'mainImgName')" />
-                    <div class="file-name" id="mainImgName"></div>
-                </div>
-
-                <div class="file-upload-box">
-                    <i class="fa-solid fa-file-invoice-dollar"></i>
-                    <label>@Localizer["فاتورة المزاد"]</label>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Auction Invoice</div>
-                    <input type="file" id="auctionInvoice" name="auctionInvoice" accept="image/*,.pdf" onchange="showFileName(this, 'invoiceName')" />
-                    <div class="file-name" id="invoiceName"></div>
-                </div>
-
-                <div class="file-upload-box">
-                    <i class="fa-solid fa-money-bill-transfer"></i>
-                    <label>@Localizer["إيصال التحويل"]</label>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Bank Receipt</div>
-                    <input type="file" id="bankTransfer" name="bankTransfer" accept="image/*,.pdf" onchange="showFileName(this, 'transferName')" />
-                    <div class="file-name" id="transferName"></div>
-                </div>
-
-                <div class="file-upload-box">
-                    <i class="fa-solid fa-certificate"></i>
-                    <label>@Localizer["ملكية السيارة"]</label>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Car Title</div>
-                    <input type="file" id="carTitle" name="carTitle" accept="image/*,.pdf" onchange="showFileName(this, 'titleName')" />
-                    <div class="file-name" id="titleName"></div>
-                </div>
-            </div>
-
             <div style="margin-top: 4rem; text-align: left; border-top: 1px solid #f1f5f9; padding-top: 2rem;">
                 <button type="submit" class="btn-submit" id="btnSubmit">
                     <i class="fa-solid fa-save"></i> @Localizer["حفظ بيانات المركبة"]
@@ -522,13 +569,12 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+
     <script>
-        function showFileName(input, textElementId) {
+        function showEditFileName(input) {
             var fileName = input.value.split('\\').pop();
             if(fileName) {
-                var el = document.getElementById(textElementId);
-                el.innerText = "✔ " + fileName;
-                el.style.display = "inline-block";
+                $('#mainImgNameText').text("✔ " + fileName).css('color', '#16a34a');
             }
         }
 
@@ -565,92 +611,72 @@
                 cancelButtonColor: 'var(--primary-navy)'
             }).then((result) => {
                 if (result.isConfirmed && result.value) {
-                    Swal.fire({ title: '@Html.Raw(Localizer["جاري الإضافة..."])', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-
-                    $.post('@Url.Action("CreateQuick", "Customers")', {
-                        name: result.value,
-                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                    }).done(function(res) {
-                        var isSuccess = res.success !== undefined ? res.success : res.Success;
-                        if (isSuccess) {
-                            var newId = res.id !== undefined ? res.id : res.Id;
-                            var newName = res.name !== undefined ? res.name : res.Name;
-                            $('#CustomerId').append(new Option(newName, newId, true, true)).trigger('change');
-                            Swal.fire({ title: '@Html.Raw(Localizer["تمت الإضافة بنجاح!"])', icon: 'success', timer: 1500, showConfirmButton: false });
-                        } else {
-                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message || '@Html.Raw(Localizer["لم يتم الحفظ في قاعدة البيانات."])', 'error');
+                    $.post('@Url.Action("CreateQuick", "Customers")', { name: result.value, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
+                        if (res.success) {
+                            $('#CustomerId').append(new Option(res.name, res.id, true, true)).trigger('change');
+                            Swal.fire({ title: '@Html.Raw(Localizer["تمت الإضافة!"])', icon: 'success', timer: 1500, showConfirmButton: false });
                         }
-                    }).fail(function() {
-                        Swal.fire('@Html.Raw(Localizer["خطأ في السيرفر!"])', '@Html.Raw(Localizer["حدث خطأ أثناء الاتصال."])', 'error');
                     });
                 }
             });
         }
 
         function quickAddAuction() {
-             Swal.fire({
-                 title: '@Html.Raw(Localizer["إضافة معرض جديد"])',
-                 input: 'text',
-                 inputPlaceholder: '@Html.Raw(Localizer["اسم المعرض أو المزاد..."])',
-                 showCancelButton: true,
-                 confirmButtonText: '@Html.Raw(Localizer["إضافة"])',
-                 cancelButtonText: '@Html.Raw(Localizer["إلغاء"])',
-                 confirmButtonColor: 'var(--primary-gold)',
-                 cancelButtonColor: 'var(--primary-navy)'
-             }).then((result) => {
-                 if (result.isConfirmed && result.value) {
-                     Swal.fire({ title: '@Html.Raw(Localizer["جاري الإضافة..."])', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-
-                     $.post('@Url.Action("CreateQuick", "Auctions")', {
-                         name: result.value,
-                         __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                     }).done(function(res) {
-                         var isSuccess = res.success !== undefined ? res.success : res.Success;
-                         if (isSuccess) {
-                             var newId = res.id !== undefined ? res.id : res.Id;
-                             var newName = res.name !== undefined ? res.name : res.Name;
-                             $('#AuctionId').append(new Option(newName, newId, true, true)).trigger('change');
-                             Swal.fire({ title: '@Html.Raw(Localizer["تمت الإضافة بنجاح!"])', icon: 'success', timer: 1500, showConfirmButton: false });
-                         } else {
-                             Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message || '@Html.Raw(Localizer["لم يتم الحفظ في قاعدة البيانات."])', 'error');
-                         }
-                     }).fail(function() {
-                         Swal.fire('@Html.Raw(Localizer["خطأ في السيرفر!"])', '@Html.Raw(Localizer["حدث خطأ أثناء الاتصال."])', 'error');
-                     });
-                 }
-             });
-         }
+            Swal.fire({
+                title: '@Html.Raw(Localizer["إضافة معرض جديد"])',
+                input: 'text',
+                inputPlaceholder: '@Html.Raw(Localizer["اسم المعرض أو المزاد..."])',
+                showCancelButton: true,
+                confirmButtonText: '@Html.Raw(Localizer["إضافة"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])',
+                confirmButtonColor: 'var(--primary-gold)',
+                cancelButtonColor: 'var(--primary-navy)'
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    $.post('@Url.Action("CreateQuick", "Auctions")', { name: result.value, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
+                        if (res.success) {
+                            $('#AuctionId').append(new Option(res.name, res.id, true, true)).trigger('change');
+                            Swal.fire({ title: '@Html.Raw(Localizer["تمت الإضافة!"])', icon: 'success', timer: 1500, showConfirmButton: false });
+                        }
+                    });
+                }
+            });
+        }
 
         $(document).ready(function() {
             var dir = $('html').attr('dir');
             $('.select2-search').select2({ dir: dir, width: '100%' });
 
-            $('#TaxTypeSelect').on('change', function() {
-                if ($(this).val() === 'شامل الضريبة') {
+            function handleTaxType() {
+                if ($('#TaxTypeSelect').val() === 'شامل الضريبة') {
                     $('#TaxAmountInput').val('0').prop('readonly', true).css({ 'background-color': '#e2e8f0', 'cursor': 'not-allowed' });
                 } else {
                     $('#TaxAmountInput').prop('readonly', false).css({ 'background-color': '#f8fafc', 'cursor': 'text' });
                 }
-            });
+            }
+
+            $('#TaxTypeSelect').on('change', handleTaxType);
+            handleTaxType();
 
             $('#carForm').on('submit', function(e) {
                 e.preventDefault();
-                var form = this;
-                if (!form.checkValidity()) { form.reportValidity(); return; }
+                var form = $(this);
+                if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
 
                 var btn = $('#btnSubmit');
                 var originalText = btn.html();
                 btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Html.Raw(Localizer["جاري الحفظ..."])').prop('disabled', true);
 
-                var formData = new FormData(form);
+                var formData = new FormData(form[0]);
 
                 $.ajax({
-                    url: $(form).attr('action'), type: $(form).attr('method'), data: formData,
+                    url: form.attr('action'), type: form.attr('method'), data: formData,
                     processData: false, contentType: false,
                     success: function (response) {
                         if (response.success) {
-                            Swal.fire({ title: '@Html.Raw(Localizer["تم الحفظ بنجاح!"])', icon: 'success', confirmButtonColor: 'var(--primary-gold)' })
-                            .then(() => { window.location.href = '@Url.Action("Index", "Cars")'; });
+                            Swal.fire({
+                                title: '@Html.Raw(Localizer["تم الحفظ بنجاح!"])', icon: 'success', confirmButtonColor: 'var(--primary-gold)'
+                            }).then(() => { window.location.href = '@Url.Action("Index", "Cars")'; });
                         } else {
                             var errorMsg = response.errors ? response.errors.join('\n') : '@Html.Raw(Localizer["تأكد من البيانات المدخلة"])';
                             Swal.fire({ title: '@Html.Raw(Localizer["خطأ!"])', text: errorMsg, icon: 'error', confirmButtonColor: 'var(--primary-navy)' });

@@ -4,6 +4,7 @@
 }
 
 <style>
+    /* التنسيقات العصرية (نفس الـ Create) */
     .form-page-header {
         display: flex;
         justify-content: space-between;
@@ -39,47 +40,22 @@
 
     .premium-form-card {
         background-color: #ffffff;
-        border-radius: 1rem;
+        border-radius: 1.5rem;
         box-shadow: 0 10px 30px rgba(44, 62, 80, 0.03);
         border: 1px solid #f1f5f9;
-        padding: 2rem;
+        padding: 2.5rem;
     }
 
-    .form-hint-text {
-        text-align: center;
-        color: var(--text-muted);
-        font-size: 0.9rem;
-        font-weight: 700;
-        margin-bottom: 2rem;
-    }
-
-    /* تخطيط مطابق للصورة المرفقة */
-    .row-top {
+    .form-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .gray-panel {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        padding: 1.5rem;
-        border-radius: 0.75rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .row-amounts {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
     }
 
     .form-group {
         display: flex;
         flex-direction: column;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .form-label {
@@ -87,70 +63,112 @@
         color: var(--primary-navy);
         margin-bottom: 0.5rem;
         font-size: 0.9rem;
-        text-align: end;
     }
 
     .form-control {
-        padding: 0.75rem 1rem;
-        border: 1px solid #cbd5e1;
-        border-radius: 0.5rem;
+        padding: 0.85rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
         font-family: inherit;
         font-size: 1rem;
         font-weight: 700;
         transition: 0.3s;
         outline: none;
-        text-align: end;
+        background: #f8fafc;
     }
 
         .form-control:focus {
             border-color: var(--primary-gold);
-            box-shadow: 0 0 0 3px rgba(184, 147, 90, 0.1);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
         }
 
-        .form-control[readonly] {
-            background-color: #e2e8f0;
-            cursor: not-allowed;
+    .input-money {
+        font-family: monospace;
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+    }
+
+    /* محول العملات */
+    .currency-switcher {
+        display: flex;
+        gap: 10px;
+        background: #f1f5f9;
+        padding: 6px;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .currency-btn {
+        flex: 1;
+        text-align: center;
+    }
+
+        .currency-btn input {
+            display: none;
+        }
+
+        .currency-btn label {
+            display: block;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 1rem;
+            border-radius: 0.75rem;
+            transition: 0.3s;
             color: #64748b;
         }
 
-    .file-input-wrapper {
-        display: flex;
-        align-items: center;
-        border: 1px solid #cbd5e1;
-        border-radius: 0.5rem;
-        overflow: hidden;
-    }
+        .currency-btn input:checked + label {
+            background: var(--primary-navy);
+            color: white;
+            box-shadow: 0 4px 10px rgba(30, 41, 59, 0.2);
+        }
 
-    .btn-browse {
-        background: #e2e8f0;
-        color: var(--primary-navy);
-        padding: 0.75rem 1.5rem;
+    .conversion-alert {
+        margin-top: 10px;
+        padding: 15px;
+        border-radius: 10px;
         font-weight: 800;
-        border: none;
-        border-inline-end: 1px solid #cbd5e1;
-        cursor: pointer;
-    }
-
-    .file-path-display {
-        flex: 1;
-        padding: 0.75rem 1rem;
-        color: var(--text-muted);
-        font-size: 0.9rem;
-        background: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    input[type="file"] {
         display: none;
     }
 
-    /* أزرار الإجراءات */
+        .conversion-alert.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+    .alert-green {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #16a34a;
+    }
+
+    .alert-blue {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #1d4ed8;
+    }
+
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
     .form-actions {
-        display: flex;
-        justify-content: flex-start;
-        margin-top: 2rem;
+        margin-top: 2.5rem;
+        text-align: left;
         border-top: 1px solid #f1f5f9;
         padding-top: 1.5rem;
     }
@@ -159,38 +177,69 @@
         background: var(--primary-gold);
         color: white;
         border: none;
-        padding: 0.85rem 2.5rem;
-        border-radius: 0.5rem;
+        padding: 1rem 3rem;
+        border-radius: 0.75rem;
         font-weight: 900;
-        font-size: 1rem;
+        font-size: 1.1rem;
         cursor: pointer;
         transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(184, 147, 90, 0.2);
     }
 
         .btn-submit:hover {
             background: var(--secondary-gold);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(184, 147, 90, 0.3);
+            box-shadow: 0 8px 20px rgba(184, 147, 90, 0.3);
         }
 
-    /* Select2 Fix */
-    .select2-container .select2-selection--single {
-        height: 42px;
-        border: 1px solid #cbd5e1;
-        border-radius: 0.5rem;
+    .select2-container--default .select2-selection--single {
+        background-color: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        height: 48px;
         display: flex;
+        align-items: center;
+        transition: 0.3s;
+    }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            font-weight: 700;
+            color: var(--primary-navy);
+            padding: 0 1rem;
+        }
+
+    .file-input-wrapper {
+        display: flex;
+        align-items: center;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        background: #f8fafc;
+    }
+
+    .btn-browse {
+        background: #e2e8f0;
+        color: var(--primary-navy);
+        padding: 0.85rem 1.5rem;
+        font-weight: 800;
+        border: none;
+        border-inline-end: 2px solid #cbd5e1;
+        cursor: pointer;
+    }
+
+    .file-path-display {
+        flex: 1;
+        padding: 0.85rem 1rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        background: transparent;
+        display: flex;
+        justify-content: space-between;
         align-items: center;
     }
 
-    .select2-container--default .select2-selection--single .select2-selection__rendered {
-        font-weight: 700;
-        color: var(--primary-navy);
-    }
-
-    @@media (max-width: 768px) {
-        .row-top, .row-amounts {
-            grid-template-columns: 1fr;
-        }
+    input[type="file"] {
+        display: none;
     }
 </style>
 
@@ -199,14 +248,11 @@
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet" />
 
 <div class="form-page-header">
-    <h2 class="form-page-title"><i class="fa-solid fa-pen-to-square" style="color: var(--primary-gold);"></i> @Localizer["تعديل الدفع"]</h2>
-    <a href="@Url.Action("Index", "PaymentReceipts")" class="btn-back"><i class="fa-solid fa-xmark"></i></a>
+    <h2 class="form-page-title"><i class="fa-solid fa-pen-to-square" style="color: var(--primary-gold);"></i> @Localizer["تعديل السداد / الدفع"]</h2>
+    <a href="@Url.Action("Index", "PaymentReceipts")" class="btn-back"><i class="fa-solid fa-xmark"></i> @Localizer["إلغاء والعودة"]</a>
 </div>
 
 <div class="premium-form-card">
-    <p class="form-hint-text">@Localizer["يرجى ملء المعلومات أدناه. تسميات الحقول التي تحمل علامة * هي حقول الإدخال."]</p>
-
-    <!-- حقل مخفي لحفظ رقم السند والعميل القديم لتسوية الحسابات أثناء التعديل -->
     <div style="text-align: center; margin-bottom: 20px; font-family: monospace; font-size: 1.2rem; font-weight: bold; color: var(--primary-navy);">
         رقم السند: @Model.ReceiptNumber
     </div>
@@ -215,77 +261,101 @@
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="ReceiptNumber" />
-        <input type="hidden" asp-for="AttachmentPath" /> <!-- الحفاظ على مسار الملف القديم -->
+        <input type="hidden" asp-for="AttachmentPath" />
 
-        <div class="form-group" style="margin-bottom: 2rem;">
-            <label asp-for="CustomerId" class="form-label" style="text-align: right;">@Localizer["العميل"] *</label>
-            <select asp-for="CustomerId" class="form-control select2" asp-items="ViewBag.CustomerId" required>
-                <option value="">-- @Localizer["اختر العميل"] --</option>
-            </select>
-        </div>
-
-        <div class="row-top">
+        <div class="form-grid">
             <div class="form-group">
-                <label asp-for="ReferenceNumber" class="form-label">@Localizer["الرقم المرجعي"]</label>
-                <input asp-for="ReferenceNumber" class="form-control" />
+                <label asp-for="CustomerId" class="form-label">@Localizer["العميل"] *</label>
+                <select asp-for="CustomerId" class="form-control select2" asp-items="ViewBag.CustomerId" required>
+                    <option value="">-- @Localizer["اختر العميل"] --</option>
+                </select>
             </div>
+
             <div class="form-group">
-                <label asp-for="PaymentDate" class="form-label">@Localizer["تاريخ"] *</label>
+                <label asp-for="PaymentDate" class="form-label">@Localizer["تاريخ وتوقيت الاستلام"] *</label>
                 <input asp-for="PaymentDate" type="datetime-local" class="form-control" value="@Model.PaymentDate.ToString("yyyy-MM-ddTHH:mm")" required />
             </div>
         </div>
 
-        <div class="gray-panel">
-            <div class="row-amounts">
+        <div style="border: 2px dashed #cbd5e1; padding: 2rem; border-radius: 1.2rem; background: #f8fafc; margin-bottom: 2rem;">
+            <div class="form-grid">
                 <div class="form-group">
-                    <label class="form-label">@Localizer["المبلغ بعد الخصم"]</label>
-                    <input type="text" id="netAmount" class="form-control" readonly value="@((Model.Amount - Model.Discount).ToString("0.000"))" />
+                    <label class="form-label">@Localizer["عملة الدفع لتسوية الحساب"] *</label>
+                    <div class="currency-switcher">
+                        <div class="currency-btn">
+                            <input type="radio" name="currency" id="currUSD" value="USD" checked>
+                            <label for="currUSD"><i class="fa-solid fa-dollar-sign"></i> دولار أمريكي ($)</label>
+                        </div>
+                        <div class="currency-btn">
+                            <input type="radio" name="currency" id="currOMR" value="OMR">
+                            <label for="currOMR"><i class="fa-solid fa-money-bill-wave"></i> ريال عماني (OMR)</label>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label asp-for="Discount" class="form-label">@Localizer["خصم مسموح به"]</label>
-                    <input asp-for="Discount" type="number" step="0.001" class="form-control calc-input" id="discountInput" />
-                </div>
-                <div class="form-group">
-                    <label asp-for="Amount" class="form-label">@Localizer["مبلغ"] * (OMR)</label>
-                    <input asp-for="Amount" type="number" step="0.001" class="form-control calc-input" id="amountInput" required />
+
+                <div class="form-group" id="exchangeRateGroup" style="display:none;">
+                    <label class="form-label">@Localizer["سعر الصرف (1$ = ? OMR)"]</label>
+                    <input type="number" name="exchangeRate" id="exchangeRate" value="0.386" step="0.001" class="form-control" style="border-color: var(--primary-gold);" />
                 </div>
             </div>
 
-            <div class="form-group" style="width: 30%; margin-inline-start: auto;">
-                <label asp-for="PaymentMethod" class="form-label">@Localizer["الدفع بواسطة"] *</label>
-                <select asp-for="PaymentMethod" class="form-control" required style="text-align: end;">
-                    <option value="نقداً">نقداً</option>
-                    <option value="تحويل بنكي">تحويل بنكي</option>
-                    <option value="شيك">شيك</option>
-                    <option value="POS">نقاط البيع (POS)</option>
+            <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="form-group">
+                    <label asp-for="Amount" class="form-label" style="font-size: 1.1rem;">@Localizer["المبلغ"] *</label>
+                    <input asp-for="Amount" id="inpAmount" class="form-control input-money" type="number" step="0.01" value="@Model.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture)" required />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Discount" class="form-label" style="font-size: 1.1rem;">@Localizer["خصم مسموح به (بالدولار)"]</label>
+                    <input asp-for="Discount" id="inpDiscount" class="form-control input-money" type="number" step="0.01" style="color: var(--primary-gold);" value="@Model.Discount.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+                </div>
+            </div>
+
+            <div id="conversionMsg" class="conversion-alert"></div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label asp-for="PaymentMethod" class="form-label">@Localizer["طريقة الدفع"] *</label>
+                <select asp-for="PaymentMethod" class="form-control select2" required>
+                    <option value="نقداً">نقداً (Cash)</option>
+                    <option value="تحويل بنكي">تحويل بنكي (Bank Transfer)</option>
+                    <option value="شيك">شيك (Cheque)</option>
+                    <option value="POS">نقاط البيع بطاقة (POS)</option>
                 </select>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label class="form-label">@Localizer["ملحقات (استبدال الملف الحالي)"]</label>
-            <div class="file-input-wrapper">
-                <button type="button" class="btn-browse" onclick="document.getElementById('AttachmentFile').click()">
-                    <i class="fa-solid fa-folder-open"></i> @Localizer["تصفح"]
-                </button>
-                <div class="file-path-display">
-                    <span id="fileNameDisplay">@(string.IsNullOrEmpty(Model.AttachmentPath) ? "لم يتم اختيار ملف" : "يوجد ملف مرفق حالياً")</span>
-                    @if (!string.IsNullOrEmpty(Model.AttachmentPath))
-                    {
-                        <a href="@Model.AttachmentPath" target="_blank" style="color: var(--primary-gold);"><i class="fa-solid fa-download"></i> عرض</a>
-                    }
+            <div class="form-group">
+                <label asp-for="ReferenceNumber" class="form-label">@Localizer["الرقم المرجعي"]</label>
+                <input asp-for="ReferenceNumber" class="form-control" dir="ltr" />
+            </div>
+
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <label class="form-label">@Localizer["ملحقات (استبدال الملف الحالي)"]</label>
+                <div class="file-input-wrapper">
+                    <button type="button" class="btn-browse" onclick="document.getElementById('AttachmentFile').click()">
+                        <i class="fa-solid fa-folder-open"></i> @Localizer["تصفح"]
+                    </button>
+                    <div class="file-path-display">
+                        <span id="fileNameDisplay">@(string.IsNullOrEmpty(Model.AttachmentPath) ? "لم يتم اختيار ملف" : "يوجد ملف مرفق حالياً")</span>
+                        @if (!string.IsNullOrEmpty(Model.AttachmentPath))
+                        {
+                            <a href="@Model.AttachmentPath" target="_blank" style="color: var(--primary-gold);"><i class="fa-solid fa-download"></i> عرض الملف</a>
+                        }
+                    </div>
+                    <input type="file" id="AttachmentFile" name="AttachmentFile" onchange="document.getElementById('fileNameDisplay').innerText = this.files[0].name" />
                 </div>
-                <input type="file" id="AttachmentFile" name="AttachmentFile" onchange="document.getElementById('fileNameDisplay').innerText = this.files[0].name" />
             </div>
         </div>
 
         <div class="form-group">
-            <label asp-for="Notes" class="form-label">@Localizer["مذكرة"]</label>
-            <textarea asp-for="Notes" class="form-control summernote" rows="4"></textarea>
+            <label asp-for="Notes" class="form-label">@Localizer["مذكرة / ملاحظات"]</label>
+            <textarea asp-for="Notes" class="form-control summernote" rows="3"></textarea>
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn-submit" id="btnSubmit"><i class="fa-solid fa-save"></i> @Localizer["حفظ التعديلات"]</button>
+            <button type="submit" class="btn-submit" id="btnSubmit">
+                <i class="fa-solid fa-save"></i> @Localizer["حفظ التعديلات وتسوية الحساب"]
+            </button>
         </div>
     </form>
 </div>
@@ -299,27 +369,34 @@
     <script>
         $(document).ready(function() {
             $('.select2').select2({ dir: $('html').attr('dir') });
+            $('.summernote').summernote({ height: 120, toolbar: [['style', ['bold', 'italic', 'clear']]] });
 
-            $('.summernote').summernote({
-                height: 150,
-                toolbar: [
-                    ['style', ['bold', 'italic', 'underline', 'clear']],
-                    ['font', ['strikethrough', 'superscript']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link']],
-                    ['view', ['codeview']]
-                ]
-            });
+            // دالة حساب التحويل الديناميكي للتعديل
+            function calculateEquivalent() {
+                var amount = parseFloat($('#inpAmount').val()) || 0;
+                var currency = $('input[name="currency"]:checked').val();
+                var exRate = parseFloat($('#exchangeRate').val()) || 0.386;
+                var msgBox = $('#conversionMsg');
 
-            function calculateNet() {
-                var amount = parseFloat($('#amountInput').val()) || 0;
-                var discount = parseFloat($('#discountInput').val()) || 0;
-                var net = amount - discount;
-                $('#netAmount').val(net.toFixed(3));
+                if (amount <= 0) {
+                    msgBox.removeClass('show');
+                    return;
+                }
+
+                if (currency === 'OMR') {
+                    $('#exchangeRateGroup').slideDown();
+                    var usdValue = amount / exRate;
+                    msgBox.removeClass('alert-blue').addClass('alert-green show');
+                    msgBox.html('<i class="fa-solid fa-arrow-right-arrow-left"></i> @Html.Raw(Localizer["المبلغ المُدخل بالريال، سيتم خصم"]) <strong style="font-size:1.2rem; font-family:monospace;">$' + usdValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</strong> @Html.Raw(Localizer["كقيمة دولارية."])');
+                } else {
+                    $('#exchangeRateGroup').slideUp();
+                    msgBox.removeClass('alert-green').addClass('alert-blue show');
+                    msgBox.html('<i class="fa-solid fa-check-circle"></i> @Html.Raw(Localizer["الدفعة بالدولار، سيتم تعديل الحساب بالقيمة المدخلة كما هي."])');
+                }
             }
 
-            $('.calc-input').on('input', calculateNet);
-            calculateNet(); // تشغيل عند التحميل لضبط القيمة الافتراضية
+            $('#inpAmount, #exchangeRate').on('input', calculateEquivalent);
+            $('input[name="currency"]').on('change', calculateEquivalent);
 
             $('#receiptEditForm').on('submit', function(e) {
                 e.preventDefault();
@@ -327,8 +404,8 @@
                 if (!form.checkValidity()) { form.reportValidity(); return; }
 
                 var btn = $('#btnSubmit');
-                var originalText = btn.html();
-                btn.html('<i class="fa-solid fa-spinner fa-spin"></i>').prop('disabled', true);
+                var origText = btn.html();
+                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> جاري التحديث...').prop('disabled', true);
 
                 var formData = new FormData(form);
 
@@ -338,17 +415,17 @@
                     success: function (response) {
                         if (response.success) {
                             Swal.fire({
-                                title: "تم التحديث بنجاح!", text: "تم تعديل بيانات الدفعة وتسوية رصيد العميل.", icon: 'success', confirmButtonColor: 'var(--primary-gold)'
+                                title: "تم التحديث بنجاح!", text: "تم تعديل بيانات الدفعة وتسوية رصيد العميل مالياً.", icon: 'success', confirmButtonColor: 'var(--primary-gold)'
                             }).then(() => { window.location.href = '@Url.Action("Index", "PaymentReceipts")'; });
                         } else {
                             var errorMsg = response.errors ? response.errors.join('\n') : "تأكد من البيانات";
                             Swal.fire("خطأ!", errorMsg, 'error');
-                            btn.html(originalText).prop('disabled', false);
+                            btn.html(origText).prop('disabled', false);
                         }
                     },
                     error: function () {
                         Swal.fire("خطأ!", "حدث خطأ أثناء الاتصال بالسيرفر.", 'error');
-                        btn.html(originalText).prop('disabled', false);
+                        btn.html(origText).prop('disabled', false);
                     }
                 });
             });

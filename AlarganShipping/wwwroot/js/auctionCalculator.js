@@ -1,6 +1,10 @@
-﻿// دالة لحساب رسوم المشتري (Buyer Fee) بناءً على جدول العمولات المرفق
+﻿// wwwroot/js/auctionCalculator.js
+
+// دالة لحساب رسوم المشتري (Buyer Fee) بناءً على جدول العمولات الجديد (Sheet2)
 function getBuyerFee(salePrice) {
     if (salePrice <= 0) return 0;
+
+    // نطاقات الأسعار بناءً على الملف المحدث
     if (salePrice >= 0 && salePrice <= 49.99) return 25.00;
     if (salePrice >= 50 && salePrice <= 99.99) return 45.00;
     if (salePrice >= 100 && salePrice <= 199.99) return 80.00;
@@ -20,12 +24,37 @@ function getBuyerFee(salePrice) {
     if (salePrice >= 1300 && salePrice <= 1399.99) return 400.00;
     if (salePrice >= 1400 && salePrice <= 1499.99) return 410.00;
 
-    // بناءً على الصورة، مبلغ 1500 يعطي عمولة 315 (مقاربة لأسعار IAAI)
-    if (salePrice >= 1500 && salePrice <= 1599.99) return 315.00;
+    // التعديل الهام بناءً على الملف: 1500 - 1599.99 = 420.00
+    if (salePrice >= 1500 && salePrice <= 1599.99) return 420.00;
+    if (salePrice >= 1600 && salePrice <= 1699.99) return 440.00;
+    if (salePrice >= 1700 && salePrice <= 1799.99) return 450.00;
+    if (salePrice >= 1800 && salePrice <= 1999.99) return 465.00;
+    if (salePrice >= 2000 && salePrice <= 2399.99) return 500.00;
+    if (salePrice >= 2400 && salePrice <= 2499.99) return 525.00;
+    if (salePrice >= 2500 && salePrice <= 2999.99) return 550.00;
+    if (salePrice >= 3000 && salePrice <= 3499.99) return 650.00;
+    if (salePrice >= 3500 && salePrice <= 3999.99) return 700.00;
+    if (salePrice >= 4000 && salePrice <= 4499.99) return 725.00;
+    if (salePrice >= 4500 && salePrice <= 4999.99) return 750.00;
+    if (salePrice >= 5000 && salePrice <= 5499.99) return 775.00;
+    if (salePrice >= 5500 && salePrice <= 5999.99) return 775.00;
+    if (salePrice >= 6000 && salePrice <= 6499.99) return 800.00;
+    if (salePrice >= 6500 && salePrice <= 6999.99) return 800.00;
+    if (salePrice >= 7000 && salePrice <= 7499.99) return 825.00;
+    if (salePrice >= 7500 && salePrice <= 7999.99) return 825.00;
+    if (salePrice >= 8000 && salePrice <= 8499.99) return 850.00;
+    if (salePrice >= 8500 && salePrice <= 8999.99) return 850.00;
+    if (salePrice >= 9000 && salePrice <= 9999.99) return 850.00;
+    if (salePrice >= 10000 && salePrice <= 10499.99) return 900.00;
+    if (salePrice >= 10500 && salePrice <= 10999.99) return 900.00;
+    if (salePrice >= 11000 && salePrice <= 11499.99) return 900.00;
+    if (salePrice >= 11500 && salePrice <= 11999.99) return 900.00;
+    if (salePrice >= 12000 && salePrice <= 12499.99) return 900.00;
+    if (salePrice >= 12500 && salePrice <= 14999.99) return 900.00;
 
-    // للقيم الأعلى يتم حساب نسبة مئوية تقريبية (يمكن للمستخدم تعديلها يدوياً في الحاسبة)
-    if (salePrice >= 1600) {
-        return 315.00 + ((salePrice - 1500) * 0.02);
+    // للقيم الأعلى يتم حساب نسبة 7.5% كما هو موضح في نهاية الجدول
+    if (salePrice >= 15000) {
+        return salePrice * 0.075; // 7.50%
     }
 
     return 0;
@@ -39,7 +68,7 @@ function calculateTotalAuctionFees(salePrice) {
 
     const buyerFee = getBuyerFee(salePrice);
 
-    // الرسوم الثابتة (بيئة، بوابة، الخ)
+    // الرسوم الثابتة (بيئة، بوابة، الخ) - مأخوذة من ورقة1
     const environmentalFee = 15;
     const virtualBidFee = 95;
     const gateFee = 95;
