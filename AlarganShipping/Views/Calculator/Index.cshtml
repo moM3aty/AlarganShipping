@@ -1,425 +1,2011 @@
-﻿@{
-    ViewData["Title"] = Localizer["حاسبة التكاليف الشاملة"];
+﻿@model AlarganShipping.Models.Invoice
+@{
+    ViewData["Title"] = Localizer["المحاسبة والتقارير المالية"];
+    Layout = "_Layout";
+
+    // --- الحماية الجذرية من أخطاء الـ Null ---
+    decimal totalSales = ViewBag.TotalSales as decimal? ?? 0m;
+    decimal totalPaid = ViewBag.TotalPaid as decimal? ?? 0m;
+    decimal pendingCollections = ViewBag.PendingCollections as decimal? ?? 0m;
+    int invoicesCount = ViewBag.InvoicesCount as int? ?? 0;
+
+    decimal totalPurchases = ViewBag.TotalPurchases as decimal? ?? 0m;
+    decimal totalExpenses = ViewBag.TotalExpenses as decimal? ?? 0m;
+    int purchasedCarsCount = ViewBag.PurchasedCarsCount as int? ?? 0;
+
+    decimal[] monthlySales = ViewBag.MonthlySales as decimal[] ?? new decimal[12];
+    decimal[] monthlyPurchases = ViewBag.MonthlyPurchases as decimal[] ?? new decimal[12];
+
+    int currentYear = ViewBag.CurrentYear as int? ?? DateTime.Now.Year;
+    string errorMessage = ViewBag.ErrorMessage as string;
 }
 
 <style>
-    .calc-container {
+    /* --- التنسيقات الأساسية --- */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+    }
+
+    .page-subtitle {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-top: 5px;
+    }
+
+    .accounting-tabs {
+        display: flex;
+        gap: 10px;
+        background: white;
+        padding: 0.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        overflow-x: auto;
+        border: 1px solid #e2e8f0;
+        scrollbar-width: none;
+        margin-bottom: 2rem;
+    }
+
+        .accounting-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+    .acc-tab {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        white-space: nowrap;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+    }
+
+        .acc-tab:hover {
+            background: #f8fafc;
+            color: var(--primary-navy);
+        }
+
+        .acc-tab.active {
+            background: var(--primary-navy);
+            color: white;
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
+        }
+
+    /* =========================================================
+           تصميم الحاسبة الذكية المتطابق مع الصورة (Pixel-Perfect)
+           ========================================================= */
+
+    :root {
+        --calc-navy: #1e293b;
+        --calc-gold: #B88E44;
+        --calc-bg: #f8fafc;
+        --calc-text-muted: #94a3b8;
+        --calc-border: #f1f5f9;
+    }
+
+    .smart-calc-master-container {
+        font-family: 'Cairo', sans-serif;
+        background-color: var(--calc-bg);
+        border-radius: 30px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.02);
+        margin-bottom: 3rem;
+        border: 1px solid white;
+    }
+
+    /* --- هيدر الحاسبة --- */
+    .calc-top-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 3rem;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .calc-brand-area {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .calc-logo-box {
+        width: 60px;
+        height: 60px;
+        background-color: var(--calc-navy);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--calc-gold);
+        font-weight: 900;
+        font-size: 0.75rem;
+        text-align: center;
+        line-height: 1.1;
+        letter-spacing: 1px;
+    }
+
+    .calc-title-texts h1 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--calc-navy);
+        margin: 0 0 2px 0;
+        letter-spacing: -0.5px;
+    }
+
+    .calc-title-texts p {
+        color: var(--calc-gold);
+        font-size: 0.8rem;
+        font-weight: 800;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .calc-header-buttons {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-calc-outline {
+        background: white;
+        border: 1px solid #e2e8f0;
+        color: var(--calc-navy);
+        padding: 0.7rem 1.2rem;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+        .btn-calc-outline:hover {
+            border-color: var(--calc-gold);
+            color: var(--calc-gold);
+        }
+
+        .btn-calc-outline i {
+            color: var(--calc-gold);
+        }
+
+    .btn-calc-primary {
+        background: var(--calc-navy);
+        color: white;
+        border: none;
+        padding: 0.7rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(30, 41, 59, 0.2);
+    }
+
+        .btn-calc-primary:hover {
+            background: var(--calc-gold);
+        }
+
+        .btn-calc-primary i {
+            color: var(--calc-gold);
+        }
+
+    /* --- التخطيط العام للحاسبة (يمين ويسار) --- */
+    .calc-main-layout {
         display: grid;
         grid-template-columns: 1fr;
         gap: 2rem;
-        max-width: 1300px;
-        margin: 0 auto;
-    }
-    @@media(min-width: 1024px) { .calc-container { grid-template-columns: 400px 1fr; } }
-
-    /* --- قسم الإدخال --- */
-    .input-card {
-        background: white; border-radius: 1.5rem; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; align-self: start;
-    }
-    .input-card h3 { font-size: 1.3rem; font-weight: 900; color: var(--primary-navy); margin-bottom: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
-    
-    .form-group { margin-bottom: 1.2rem; }
-    .form-label { display: block; font-weight: 800; color: var(--text-dark); margin-bottom: 0.5rem; font-size: 0.85rem; }
-    .form-control {
-        width: 100%; padding: 0.7rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem;
-        font-size: 1.1rem; font-family: monospace; font-weight: bold; background: #f8fafc; transition: 0.3s;
-        text-align: left; direction: ltr; color: var(--primary-navy);
-    }
-    .form-control:focus { border-color: #2563eb; background: white; outline: none; }
-
-    .radio-group { display: flex; gap: 8px; background: #f8fafc; padding: 5px; border-radius: 0.75rem; border: 1px solid #e2e8f0; }
-    .radio-btn { flex: 1; text-align: center; }
-    .radio-btn input { display: none; }
-    .radio-btn label {
-        display: block; padding: 8px 5px; cursor: pointer; font-weight: 800; font-size: 0.85rem;
-        border-radius: 0.5rem; transition: 0.3s; color: var(--text-muted);
-    }
-    .radio-btn input:checked + label { background: var(--primary-navy); color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-
-    /* قسم المتغيرات الديناميكية */
-    .dynamic-vars-section {
-        margin-top: 2rem; padding-top: 1.5rem; border-top: 2px dashed #e2e8f0;
-    }
-    .dynamic-vars-section h4 {
-        font-size: 1rem; font-weight: 900; color: var(--primary-gold); margin-bottom: 1rem;
-    }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-    /* --- قسم النتائج (مطابق للإكسل) --- */
-    .results-area { 
-        display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: flex-start;
-    }
-    .tables-wrapper {
-        flex: 1; min-width: 350px; border: 3px solid #000080; background: white;
-    }
-    
-    .summary-wrapper {
-        flex: 1; min-width: 300px; display: flex; flex-direction: column; justify-content: flex-start; gap: 1.5rem; padding: 1.5rem 0;
+        align-items: start;
     }
 
-    .excel-table { width: 100%; border-collapse: collapse; font-family: 'Segoe UI', Tahoma, sans-serif; font-weight: bold; }
-    .excel-table td { padding: 5px 10px; border: 1px solid #000080; font-size: 0.95rem; }
-    .excel-table td:first-child { text-transform: uppercase; width: 60%; }
-    .excel-table td:nth-child(2) { text-align: center; width: 10%; border-right: none; color: var(--primary-navy); }
-    .excel-table td:nth-child(3) { text-align: right; width: 30%; border-left: none; font-family: monospace; font-size: 0.95rem; }
-
-    /* ألوان الإكسل المحددة */
-    .bg-auction-header { background-color: #dbeafe; color: black; font-size: 1.4rem; text-align: center; border-bottom: 2px solid #000080; }
-    .bg-yellow { background-color: #fef08a; color: #1e3a8a; }
-    .bg-green { background-color: #4ade80; color: white; }
-    .bg-blue { background-color: #93c5fd; color: #1e3a8a; font-size: 1rem; }
-    .bg-shipping-header { background-color: #e2e8f0; text-align: center; font-size: 1.4rem; border-top: 3px solid #000080; border-bottom: 2px solid #000080; }
-    .bg-gray-dark { background-color: #94a3b8; color: white; }
-    .bg-gray-light { background-color: #cbd5e1; }
-    
-    .text-blue { color: #1d4ed8 !important; }
-    .text-red { color: #ef4444 !important; }
-
-    /* الإجمالي النهائي الأحمر */
-    .row-final { border-top: 3px solid #000080; }
-    .row-final td { padding: 12px 10px; }
-    .row-final td:first-child { font-size: 1.3rem; color: red; text-transform: lowercase; font-weight: 900; }
-    .row-final td:last-child { font-size: 1.6rem; color: red;  font-family: monospace; font-weight: 900; }
-
-    /* الملخص الجانبي */
-    .summary-box { 
-        text-align: right; font-family: 'Cairo', sans-serif; font-weight: bold; background: white;
-        padding: 1.5rem; border-radius: 1rem; border: 1px solid #e2e8f0; box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+    @@media(min-width: 1024px) {
+        .calc-main-layout {
+            grid-template-columns: 1fr 380px; /* النتائج يسار (1fr)، المدخلات يمين (380px) */
+        }
     }
-    .summary-box .lbl { font-size: 1.1rem; color: #334155; font-weight: 800; display: block; margin-bottom: 5px; }
-    .summary-box .val { font-size: 1.6rem; color: var(--primary-navy); font-weight: 900; font-family: monospace; }
+
+    /* ==================== القسم الأيمن (المدخلات) ==================== */
+    .calc-inputs-sidebar {
+        background: white;
+        border-radius: 2rem;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        border: 1px solid var(--calc-border);
+    }
+
+    .inputs-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .inputs-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: var(--calc-navy);
+    }
+
+    .icon-car-small {
+        background: rgba(184, 147, 90, 0.1);
+        color: var(--calc-gold);
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    .btn-refresh {
+        background: transparent;
+        border: none;
+        color: #ef4444;
+        cursor: pointer;
+        font-size: 1.2rem;
+        transition: 0.3s;
+        padding: 5px;
+    }
+
+        .btn-refresh:hover {
+            transform: rotate(180deg);
+        }
+
+    .calc-form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .calc-label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--calc-text-muted);
+        margin-bottom: 8px;
+        text-align: right;
+    }
+
+    .calc-input-wrapper {
+        position: relative;
+    }
+
+        .calc-input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--calc-gold);
+            font-size: 1.2rem;
+        }
+
+    /* حقول الإدخال */
+    .calc-input {
+        width: 100%;
+        background: var(--calc-bg);
+        border: 2px solid var(--calc-border);
+        border-radius: 1rem;
+        padding: 1rem 1rem 1rem 2.5rem;
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--calc-navy);
+        text-align: center;
+        direction: ltr;
+        font-family: monospace;
+        transition: 0.3s;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+        .calc-input:focus {
+            border-color: var(--calc-gold);
+            background: white;
+        }
+
+    .calc-input-sm {
+        width: 100%;
+        background: var(--calc-bg);
+        border: 2px solid var(--calc-border);
+        border-radius: 1rem;
+        padding: 1rem;
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--calc-navy);
+        text-align: center;
+        transition: 0.3s;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+        .calc-input-sm:focus {
+            border-color: var(--calc-gold);
+            background: white;
+        }
+
+    /* شبكة الحقول الصغيرة */
+    .calc-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 1.5rem;
+    }
+
+    /* أزرار الراديو (نوع السيارة) */
+    .radio-grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+    .radio-wrap {
+        position: relative;
+    }
+
+        .radio-wrap input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .radio-box {
+        background: white;
+        border: 2px solid var(--calc-border);
+        border-radius: 1rem;
+        padding: 12px 5px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        height: 100%;
+        justify-content: center;
+    }
+
+    .radio-icon {
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        transition: 0.3s;
+    }
+
+    .radio-box span {
+        font-size: 0.75rem;
+        font-weight: 900;
+        color: #64748b;
+        transition: 0.3s;
+    }
+
+    /* ألوان أيقونات السيارات */
+    .ic-elec {
+        background: #fefce8;
+        color: #eab308;
+    }
+
+    .ic-small {
+        background: var(--calc-navy);
+        color: white;
+    }
+
+    .ic-mid {
+        background: #eef2ff;
+        color: #6366f1;
+    }
+
+    .ic-big {
+        background: #eff6ff;
+        color: #3b82f6;
+    }
+
+    /* تأثير التحديد للسيارات */
+    .radio-wrap input[type="radio"]:checked + .radio-box {
+        background: var(--calc-navy);
+        border-color: var(--calc-navy);
+        box-shadow: 0 8px 20px rgba(30, 41, 59, 0.2);
+        transform: translateY(-2px);
+    }
+
+        .radio-wrap input[type="radio"]:checked + .radio-box .radio-icon {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .radio-wrap input[type="radio"]:checked + .radio-box span {
+            color: white;
+        }
+
+    /* أزرار الراديو (بلد المنشأ) */
+    .radio-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .origin-box {
+        background: white;
+        border: 2px solid var(--calc-border);
+        border-radius: 1rem;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .origin-box span {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 900;
+            color: #64748b;
+        }
+
+        .origin-box small {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--calc-text-muted);
+            margin-top: 4px;
+        }
+
+    .radio-wrap input[type="radio"]:checked + .origin-box {
+        background: var(--calc-bg);
+        border-color: var(--calc-navy);
+    }
+
+        .radio-wrap input[type="radio"]:checked + .origin-box span {
+            color: var(--calc-navy);
+        }
+
+    /* إعدادات متقدمة */
+    .adv-settings-btn {
+        width: 100%;
+        background: white;
+        border: 1px solid var(--calc-border);
+        padding: 15px;
+        border-radius: 1rem;
+        text-align: right;
+        font-weight: 800;
+        color: var(--calc-navy);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+
+    .adv-settings-panel {
+        display: none;
+        background: var(--calc-bg);
+        padding: 15px;
+        border-radius: 1rem;
+        margin-top: 10px;
+        border: 1px solid var(--calc-border);
+    }
+
+    /* Select2 الخاص بالمزاد */
+    .select2-container--default .select2-selection--single {
+        background-color: var(--calc-bg);
+        border: 2px solid var(--calc-border);
+        border-radius: 1rem;
+        height: 60px;
+        display: none;
+        align-items: center;
+        padding: 0 10px;
+        transition: 0.3s;
+    }
+
+        .select2-container--default .select2-selection--single:focus {
+            border-color: var(--calc-gold);
+            background: white;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 58px;
+        }
+
+
+    /* ==================== القسم الأيسر (النتائج) ==================== */
+    .calc-results-main {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    /* 1. الشريط الكحلي (Navy Banner) */
+    .navy-banner {
+        background: var(--calc-navy);
+        border-radius: 2rem;
+        padding: 2.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        flex-wrap: wrap;
+        gap: 20px;
+        box-shadow: 0 15px 35px rgba(30, 41, 59, 0.2);
+    }
+
+        .navy-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+    .banner-right {
+        display: flex;
+        gap: 15px;
+        z-index: 2;
+        flex-wrap: wrap;
+    }
+
+    .banner-box {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 1.5rem;
+        padding: 1.5rem;
+        text-align: center;
+        min-width: 150px;
+        backdrop-filter: blur(10px);
+    }
+
+        .banner-box .lbl {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--calc-gold);
+            margin-bottom: 10px;
+        }
+
+        .banner-box .val-wrap {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .banner-box .val {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: white;
+            font-family: monospace;
+        }
+
+        .banner-box .curr {
+            font-size: 0.8rem;
+            color: var(--calc-gold);
+            font-weight: bold;
+        }
+
+    .banner-left {
+        text-align: left;
+        z-index: 2;
+    }
+
+        .banner-left .lbl {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #94a3b8;
+            margin-bottom: 5px;
+            text-align: right;
+        }
+
+        .banner-left .val-wrap {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .banner-left .val {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: white;
+            font-family: monospace;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .banner-left .curr {
+            font-size: 1.2rem;
+            color: var(--calc-gold);
+            font-weight: 900;
+        }
+
+    /* 2. كروت التفاصيل (الشحن يمين، المزاد يسار - حسب الصورة) */
+    .res-cards-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .res-cards-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .res-card {
+        background: white;
+        border-radius: 2rem;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        border: 1px solid var(--calc-border);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .res-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px dashed var(--calc-border);
+        padding-bottom: 1rem;
+    }
+
+        .res-card-header h4 {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--calc-navy);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .res-card-header h4 i {
+                color: #94a3b8;
+                font-size: 1rem;
+            }
+
+    .res-card-badge {
+        font-size: 0.6rem;
+        font-weight: 900;
+        color: #94a3b8;
+        background: var(--calc-bg);
+        padding: 5px 10px;
+        border-radius: 8px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .res-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 2rem;
+    }
+
+    .res-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--calc-gold);
+    }
+
+        .res-item .val-wrap {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .res-item .val {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--calc-navy);
+            font-family: monospace;
+        }
+
+        .res-item .curr {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-family: 'Cairo', sans-serif;
+        }
+
+    .res-card-footer {
+        margin-top: auto;
+        border-top: 2px dashed var(--calc-border);
+        padding-top: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+        .res-card-footer .lbl-box {
+            display: flex;
+            flex-direction: column;
+            text-align: right;
+        }
+
+        .res-card-footer .lbl {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        .res-card-footer .sub-lbl {
+            font-size: 0.75rem;
+            color: #3b82f6;
+            font-weight: 800;
+            font-family: monospace;
+            margin-top: 3px;
+        }
+
+        .res-card-footer .val-wrap {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .res-card-footer .val {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--calc-gold);
+            font-family: monospace;
+            line-height: 1;
+        }
+
+        .res-card-footer .curr {
+            font-size: 1rem;
+            color: var(--calc-gold);
+            font-weight: bold;
+        }
+
+    /* 3. الملاحظات */
+    .notes-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 1.5rem 2rem;
+        border: 1px solid var(--calc-border);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .notes-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #3b82f6;
+        font-weight: 900;
+        font-size: 0.95rem;
+        margin-bottom: 5px;
+    }
+
+    .notes-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    @@media (max-width: 768px) {
+        .notes-list {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .notes-list li {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #64748b;
+        position: relative;
+        padding-right: 15px;
+    }
+
+        .notes-list li::before {
+            content: '•';
+            position: absolute;
+            right: 0;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+
+    /* --- الإحصائيات أسفل الحاسبة --- */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .fin-card {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .fin-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .fin-card-title {
+        font-size: 1.25rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin: 0;
+    }
+
+    .fin-icon {
+        width: 45px;
+        height: 45px;
+        background: rgba(184, 147, 90, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-gold);
+        font-size: 1.3rem;
+    }
+
+    .fin-data-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+    }
+
+    .fin-data-box {
+        padding: 1.25rem;
+        background: #f8fafc;
+        border-radius: 1.25rem;
+        border: 1px solid #f1f5f9;
+        text-align: center;
+        transition: 0.3s;
+    }
+
+        .fin-data-box:hover {
+            border-color: var(--primary-gold);
+            background: white;
+        }
+
+    .fin-label {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .fin-value {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        font-family: monospace;
+    }
+
+        .fin-value.green {
+            color: #16a34a;
+        }
+
+        .fin-value.red {
+            color: #ef4444;
+        }
+
+    .chart-container, .report-container {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        margin-top: 2rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    }
+
+    .chart-title {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: var(--primary-navy);
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .export-btns {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-export {
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 0.75rem;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.3s;
+        color: white;
+    }
+
+    .btn-excel {
+        background: #10b981;
+    }
+
+        .btn-excel:hover {
+            background: #059669;
+        }
+
+    .btn-pdf {
+        background: #ef4444;
+    }
+
+        .btn-pdf:hover {
+            background: #dc2626;
+        }
+
+    .table-enterprise {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: start;
+        margin-top: 1rem;
+    }
+
+        .table-enterprise th {
+            padding: 1rem;
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 800;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .table-enterprise td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
 </style>
 
-<div class="page-header-container" style="background: white; padding: 1.5rem; border-radius: 1.5rem; box-shadow: 0 5px 20px rgba(0,0,0,0.03); margin-bottom: 2rem;">
-    <h2><i class="fa-solid fa-calculator" style="color: var(--primary-gold);"></i> حاسبة التكاليف الشاملة </h2>
-</div>
-
-<div class="calc-container">
-    
-    <!-- لوحة الإدخال والمتغيرات -->
-    <div class="input-card">
-        <h3>البيانات الأساسية (Inputs)</h3>
-        
-        <div class="form-group">
-            <label class="form-label">SALE PRICE ($)</label>
-            <input type="number" id="inpSalePrice" class="form-control" value="1500" style="border-color: var(--primary-gold);" />
+<div class="accounting-dashboard-page">
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div style="background: #fef2f2; color: #ef4444; padding: 1rem; border-radius: 1rem; margin-bottom: 1rem; font-weight: bold; border: 1px solid #fecaca;">
+            <i class="fa-solid fa-triangle-exclamation"></i> @errorMessage
         </div>
+    }
 
-        <div class="form-group">
-            <label class="form-label">SUV / Car Type</label>
-            <div class="radio-group">
-                <div class="radio-btn">
-                    <input type="radio" name="carType" id="typeSmall" value="3">
-                    <label for="typeSmall">Small</label>
+
+    <!-- =========================================================
+         واجهة الحاسبة الذكية (Pixel-Perfect Match)
+         ========================================================= -->
+    <div class="smart-calc-master-container" id="calculatorArea">
+
+        <!-- هيدر الحاسبة -->
+        <div class="calc-top-header">
+            <div class="calc-header-buttons" style="visibility:hidden;">
+                <button class="btn-calc-primary"><i class="fa-solid fa-bolt"></i> ابدأ الآن</button>
+                <button class="btn-calc-outline"><i class="fa-solid fa-share-nodes"></i> مشاركة</button>
+                <button onclick="window.print()" class="btn-calc-outline"><i class="fa-regular fa-file-pdf"></i> تحميل النتائج</button>
+            </div>
+            <div class="calc-brand-area">
+                <div class="calc-title-texts">
+                    <h1>حاسبة استيراد السيارات</h1>
+                    <p>Al Argan Auto Shipping</p>
                 </div>
-                <div class="radio-btn">
-                    <input type="radio" name="carType" id="typeMid" value="2">
-                    <label for="typeMid">Mid</label>
-                </div>
-                <div class="radio-btn">
-                    <input type="radio" name="carType" id="typeBig" value="1" checked>
-                    <label for="typeBig">Big</label>
-                </div>
+                <div class="calc-logo-box">AL ARGAN</div>
             </div>
         </div>
 
-        <!-- المتغيرات القابلة للتعديل -->
-        <div class="dynamic-vars-section">
-            <h4><i class="fa-solid fa-sliders"></i> المتغيرات (Dynamic Variables)</h4>
-            
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label">سعر الصرف (OMR/USD)</label>
-                    <input type="number" id="inpExchangeRate" class="form-control" value="0.386" step="0.001" />
+        <!-- التخطيط الجانبي (يمين مدخلات، يسار نتائج) -->
+        <div class="calc-main-layout">
+
+            <!-- كارت النتائج (اليسار) -->
+            <div class="calc-results-main">
+
+                <!-- الشريط الكحلي العلوي للنتائج -->
+                <div class="navy-banner">
+                    <div class="banner-right">
+                        <div class="banner-box">
+                            <span class="lbl">المبلغ عند الوصول</span>
+                            <div class="val-wrap">
+                                <span class="val" id="resArrivalDue">836.78</span>
+                                <span class="curr">ر.ع</span>
+                            </div>
+                        </div>
+                        <div class="banner-box">
+                            <span class="lbl">المبلغ الإجمالي المستحق</span>
+                            <div class="val-wrap">
+                                <span class="val" id="resInitialDue">1,849.99</span>
+                                <span class="curr">ر.ع</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="banner-left">
+                        <span class="lbl">الإجمالي الكلي</span>
+                        <div class="val-wrap">
+                            <span class="val" id="resGrandTotal">2,686.77</span>
+                            <span class="curr">ر.ع</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">الشحن البحري (+ OMR)</label>
-                    <input type="number" id="inpOceanFreight" class="form-control" value="300" />
+
+                <!-- تفصيل الشحن والمزاد -->
+                <div class="res-cards-grid">
+
+                    <!-- كارت الشحن والرسوم (يمين في الصورة) -->
+                    <div class="res-card">
+                        <div class="res-card-header">
+                            <span class="res-card-badge">SHIPPING & FEES</span>
+                            <h4>الشحن والرسوم <i class="fa-solid fa-box"></i></h4>
+                        </div>
+                        <div class="res-list">
+                            <div class="res-item">
+                                <span class="lbl">الشحن الكلي</span>
+                                <div class="val-wrap"><span class="val" id="resOceanFreight">604</span> <span class="curr">ر.ع</span></div>
+                            </div>
+                            <div class="res-item">
+                                <span class="lbl">الضريبة (VAT)</span>
+                                <div class="val-wrap" id="resTaxContainer"><span class="val" id="resTax">106.00</span> <span class="curr">ر.ع</span></div>
+                            </div>
+                            <div class="res-item">
+                                <span class="lbl">الجمارك (Customs)</span>
+                                <div class="val-wrap" id="resCustomsContainer"><span class="val" id="resCustoms">111.30</span> <span class="curr">ر.ع</span></div>
+                            </div>
+                            <div class="res-item">
+                                <span class="lbl">عمولة الشركة</span>
+                                <div class="val-wrap"><span class="val" id="resCommission">30</span> <span class="curr">ر.ع</span></div>
+                            </div>
+                            <div class="res-item">
+                                <span class="lbl">النقل البري</span>
+                                <div class="val-wrap"><span class="val" id="resTransport">0</span> <span class="curr">ر.ع</span></div>
+                            </div>
+                        </div>
+                        <div class="res-card-footer">
+                            <div class="lbl-box">
+                                <span class="lbl">إجمالي الشحن</span>
+                                <span class="lbl">شامل الرسوم</span>
+                            </div>
+                            <div class="val-wrap">
+                                <span class="val" id="resShippingTotal">649.48</span>
+                                <span class="curr">ر.ع</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- كارت المزاد (يسار في الصورة) -->
+                    <div class="res-card">
+                        <div class="res-card-header">
+                            <span class="res-card-badge">AUCTION DETAILS</span>
+                            <h4>المزاد <i class="fa-solid fa-gavel"></i></h4>
+                        </div>
+                        <div class="res-list">
+                            <div class="res-item">
+                                <span class="lbl">رسوم المشتري</span>
+                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resBuyerFee">555</span></div>
+                            </div>
+                            <div class="res-item">
+                                <span class="lbl">رسوم البيئة</span>
+                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resEnvFee">15</span></div>
+                            </div>
+                            <div class="res-item">
+                                <span class="lbl">رسوم المزايدة</span>
+                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resVirtualFee">110</span></div>
+                            </div>
+                            <div class="res-item">
+                                <span class="lbl">رسوم البوابة</span>
+                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resGateFee">95</span></div>
+                            </div>
+                            <div class="res-item">
+                                <span class="lbl">رسوم الملكية</span>
+                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resTitleFee">40</span></div>
+                            </div>
+                        </div>
+                        <div class="res-card-footer">
+                            <div class="lbl-box">
+                                <span class="lbl">إجمالي المزاد</span>
+                                <span class="sub-lbl" id="resAuctionUSD">$4,715</span>
+                            </div>
+                            <div class="val-wrap">
+                                <span class="val" id="resAuctionOMR">1,819.99</span>
+                                <span class="curr">ر.ع</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- الملاحظات -->
+                <div class="notes-card">
+                    <div class="notes-header">
+                        <i class="fa-solid fa-circle-info"></i> ملاحظات الحساب
+                    </div>
+                    <ul class="notes-list">
+                        <li>الضريبة = (إجمالي المزاد بالريال + 300 ر.ع) × 5%</li>
+                        <li>السيارات الكهربائية معفاة تماماً من الضريبة والجمارك</li>
+                        <li>الجمارك = الضريبة + 5% من قيمة الضريبة (لغير الأمريكي)</li>
+                        <li>يتم إدخال عمولة الشركة والنقل البري يدوياً</li>
+                    </ul>
                 </div>
             </div>
 
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label">نسبة الضريبة (Tax %)</label>
-                    <input type="number" id="inpTaxPerc" class="form-control" value="5" step="0.1" />
+            <!-- كارت الإدخال (اليمين) -->
+            <div class="calc-inputs-sidebar">
+                <div class="inputs-header">
+                    <button class="btn-refresh" onclick="location.reload()" title="إعادة تعيين"><i class="fa-solid fa-rotate-right"></i></button>
+                    <div class="inputs-title">
+                        بيانات السيارة <div class="icon-car-small"><i class="fa-solid fa-car-side"></i></div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">خدمة الدفع (Payment Svc)</label>
-                    <input type="number" id="inpPaymentSvc" class="form-control" value="15.48" step="0.01" />
-                </div>
-            </div>
 
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label">عمولة المكتب (Office Comm)</label>
-                    <input type="number" id="inpOfficeComm" class="form-control" value="50" />
+                <!-- سعر الشراء -->
+                <div class="calc-form-group">
+                    <label class="calc-label">سعر الشراء ($)</label>
+                    <div class="calc-input-wrapper">
+                        <input type="number" id="inpSalePrice" class="calc-input calc-trigger" value="3900" step="100" />
+                        <i class="fa-solid fa-dollar-sign"></i>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">رسوم سيارة كبيرة (Big Car)</label>
-                    <input type="number" id="inpFeeBig" class="form-control" value="120" />
+
+                <!-- موقع المزاد -->
+                <div class="calc-form-group">
+                    <label class="calc-label">موقع المزاد</label>
+                    <select id="selAuction" class="form-control calc-trigger" style="width: 100%;background-color: var(--calc-bg);border: 2px solid var(--calc-border);border-radius: 1rem;height: 60px;display: flex;align-items: center;padding: 0 10px;transition: 0.3s;color:#000;font-family:Cairo; font-weight:900;"></select>
                 </div>
-            </div>
-            
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label">رسوم سيارة وسط (Mid Car)</label>
-                    <input type="number" id="inpFeeMid" class="form-control" value="60" />
+
+                <!-- النقل والعمولة -->
+                <div class="calc-grid-2">
+                    <div>
+                        <label class="calc-label">العمولة (ر.ع)</label>
+                        <input type="number" id="inpComm" class="calc-input-sm calc-trigger" value="30" />
+                    </div>
+                    <div>
+                        <label class="calc-label">النقل (ر.ع)</label>
+                        <input type="number" id="inpTransport" class="calc-input-sm calc-trigger" value="0" />
+                    </div>
+                </div>
+
+                <!-- نوع السيارة -->
+                <div class="calc-form-group">
+                    <label class="calc-label">نوع السيارة</label>
+                    <div class="radio-grid-4">
+                        <label class="radio-wrap">
+                            <input type="radio" name="carType" value="Electric" class="calc-trigger">
+                            <div class="radio-box">
+                                <div class="radio-icon ic-elec"><i class="fa-solid fa-bolt"></i></div>
+                                <span>كهرباء</span>
+                            </div>
+                        </label>
+                        <label class="radio-wrap">
+                            <input type="radio" name="carType" value="Small" class="calc-trigger" checked>
+                            <div class="radio-box">
+                                <div class="radio-icon ic-small"><i class="fa-solid fa-car"></i></div>
+                                <span>صغيرة</span>
+                            </div>
+                        </label>
+                        <label class="radio-wrap">
+                            <input type="radio" name="carType" value="Mid" class="calc-trigger">
+                            <div class="radio-box">
+                                <div class="radio-icon ic-mid"><i class="fa-solid fa-car-side"></i></div>
+                                <span>وسط</span>
+                            </div>
+                        </label>
+                        <label class="radio-wrap">
+                            <input type="radio" name="carType" value="Big" class="calc-trigger">
+                            <div class="radio-box">
+                                <div class="radio-icon ic-big"><i class="fa-solid fa-truck"></i></div>
+                                <span>كبيرة</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- بلد المنشأ -->
+                <div class="calc-form-group" style="margin-bottom: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 0.65rem; color: #3b82f6; font-weight: bold; cursor: pointer;"><i class="fa-solid fa-circle-info"></i> ما هو الـ VIN</span>
+                        <label class="calc-label" style="margin: 0;">بلد المنشأ</label>
+                    </div>
+                    <div class="radio-grid-2">
+                        <label class="radio-wrap">
+                            <input type="radio" name="origin" value="NON_US" class="calc-trigger" checked>
+                            <div class="origin-box">
+                                <span>غير أمريكية</span>
+                                <small>جمرك + ضريبة</small>
+                            </div>
+                        </label>
+                        <label class="radio-wrap">
+                            <input type="radio" name="origin" value="US_EXEMPT" class="calc-trigger">
+                            <div class="origin-box">
+                                <span>أمريكية</span>
+                                <small>إعفاء جمركي</small>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- إعدادات متقدمة (قابلة للطي) -->
+                <div>
+                    <div class="adv-settings-btn" onclick="$('#advSettings').slideToggle();"><i class="fa-solid fa-gear"></i> إعدادات متقدمة </div>
+                    <div class="adv-settings-panel" id="advSettings">
+                        <div class="calc-grid-2" style="margin-bottom: 0;">
+                            <div>
+                                <label class="calc-label">سعر الصرف</label>
+                                <input type="number" id="inpExRate" class="calc-input-sm calc-trigger" value="0.386" step="0.001" style="padding: 0.5rem;" />
+                            </div>
+                            <div>
+                                <label class="calc-label">رسوم الدفع</label>
+                                <input type="number" id="inpPaymentSvc" class="calc-input-sm calc-trigger" value="15.48" step="0.01" style="padding: 0.5rem;" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <!-- لوحة النتائج -->
-    <div class="results-area">
-        
-        <!-- جداول الإكسل -->
-        <div class="tables-wrapper" dir="ltr">
-            <table class="excel-table">
-                <tr><td colspan="3" class="bg-auction-header">Auction</td></tr>
-                <tr>
-                    <td class="text-blue">SALE PRICE</td><td>$</td>
-                    <td class="text-blue" id="tdSalePrice">0.00</td>
-                </tr>
-                <tr class="bg-yellow">
-                    <td class="text-blue">BUYER FEE</td><td>$</td>
-                    <td class="text-blue" id="tdBuyerFee">0.00</td>
-                </tr>
-                <tr class="bg-yellow">
-                    <td class="text-blue">ENVIRONMENTAL FEE</td><td>$</td>
-                    <td class="text-blue" id="tdEnvFee">0.00</td>
-                </tr>
-                <tr class="bg-yellow">
-                    <td class="text-blue">VIRTUAL BID FEE</td><td>$</td>
-                    <td class="text-blue" id="tdVirtualFee">0.00</td>
-                </tr>
-                <tr class="bg-yellow">
-                    <td class="text-blue">GATE</td><td>$</td>
-                    <td class="text-blue" id="tdGateFee">0.00</td>
-                </tr>
-                <tr class="bg-yellow">
-                    <td class="text-blue">TITLE PICKUP FEE</td><td>$</td>
-                    <td class="text-blue" id="tdTitleFee">0.00</td>
-                </tr>
-                <tr class="bg-green">
-                    <td style="color: white;">Total IN Auction</td><td style="color: white;">$</td>
-                    <td style="color: white;" id="tdTotalAuctionUSD">0.00</td>
-                </tr>
-                <tr class="bg-blue">
-                    <td class="text-blue">TOTAL</td><td></td>
-                    <td class="text-blue" id="tdTotalOMR">0.00 .ر.ع</td>
-                </tr>
-                <tr>
-                    <td>SEA SHIPPING</td><td>$</td>
-                    <td id="tdSeaShipping">0.00</td>
-                </tr>
-                
-                <tr><td colspan="3" class="bg-shipping-header">Shipping</td></tr>
-                
-                <tr class="bg-gray-dark">
-                    <td>TAX CARD</td><td></td>
-                    <td id="tdTaxCard">0.00 .ر.ع</td>
-                </tr>
-                <tr class="bg-gray-light">
-                    <td>Payment Service</td><td></td>
-                    <td id="tdPaymentService">0.00 .ر.ع</td>
-                </tr>
-                <tr>
-                    <td class="text-red">TAX</td><td></td>
-                    <td id="tdTax">0.00 .ر.ع</td>
-                </tr>
-                <tr class="bg-gray-light">
-                    <td class="text-red">customs</td><td></td>
-                    <td id="tdCustoms">0.00 .ر.ع</td>
-                </tr>
-                <tr class="bg-gray-light">
-                    <td>customs VAT</td><td></td>
-                    <td id="tdCustomsVat">0.00 .ر.ع</td>
-                </tr>
-                <tr class="bg-gray-light">
-                    <td class="text-red">Shipping COST</td><td></td>
-                    <td id="tdShippingCost">0.00 .ر.ع</td>
-                </tr>
-                <tr class="bg-gray-light">
-                    <td>office commission</td><td></td>
-                    <td id="tdOfficeComm">0.00 .ر.ع</td>
-                </tr>
-                <tr class="bg-gray-dark">
-                    <td>SUV / big car</td><td></td>
-                    <td id="tdCarTypeFee">0.00 .ر.ع</td>
-                </tr>
-                <tr class="bg-gray-dark">
-                    <td>TOTAL Shipping</td><td></td>
-                    <td  id="tdTotalShipping">0.00 .ر.ع</td>
-                </tr>
-                
-                <tr class="row-final">
-                    <td>final total</td>
-                    <td colspan="2" id="tdFinalTotal">0.00 .ر.ع</td>
-                </tr>
+    <!-- =========================================================
+         الجزء السفلي (الإحصائيات والرسوم البيانية)
+         ========================================================= -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+        <div class="fin-card">
+            <div class="fin-card-header">
+                <h3 class="fin-card-title">@Localizer["المبيعات والإيرادات"]</h3>
+                <div class="fin-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+            </div>
+            <div class="fin-data-grid">
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["إجمالي المبيعات"]</span>
+                    <span class="fin-value" dir="ltr">$@totalSales.ToString("N2")</span>
+                </div>
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["المستلم (سندات قبض)"]</span>
+                    <span class="fin-value green" dir="ltr">$@totalPaid.ToString("N2")</span>
+                </div>
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["المتأخرات (ذمم)"]</span>
+                    <span class="fin-value red" dir="ltr">$@pendingCollections.ToString("N2")</span>
+                </div>
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["عدد الفواتير"]</span>
+                    <span class="fin-value" style="font-family: 'Cairo';">@invoicesCount</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="fin-card">
+            <div class="fin-card-header">
+                <h3 class="fin-card-title">@Localizer["المشتريات والتكاليف"]</h3>
+                <div class="fin-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+            </div>
+            <div class="fin-data-grid">
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["إجمالي قيمة الشراء"]</span>
+                    <span class="fin-value" dir="ltr">$@totalPurchases.ToString("N2")</span>
+                </div>
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["تكاليف النقل (Towing)"]</span>
+                    <span class="fin-value" dir="ltr" style="color: #f59e0b;">$@totalExpenses.ToString("N2")</span>
+                </div>
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["إجمالي التكاليف"]</span>
+                    <span class="fin-value red" dir="ltr">$@((totalPurchases + totalExpenses).ToString("N2"))</span>
+                </div>
+                <div class="fin-data-box">
+                    <span class="fin-label">@Localizer["سيارات مشتراة"]</span>
+                    <span class="fin-value" style="font-family: 'Cairo';">@purchasedCarsCount</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الرسم البياني (Chart.js) -->
+    <div class="chart-container">
+        <h3 class="chart-title"><i class="fa-solid fa-chart-line" style="color: var(--primary-gold);"></i> @Localizer["نظرة عامة على التدفقات النقدية لعام"] @currentYear</h3>
+        <div style="width: 100%; position: relative;">
+            <canvas id="financeChart" height="250"></canvas>
+        </div>
+    </div>
+
+    <!-- جدول التقارير المحاسبية والتصدير -->
+    <div class="report-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <h3 class="chart-title" style="margin: 0;"><i class="fa-solid fa-file-invoice" style="color: var(--primary-gold);"></i> @Localizer["التقرير المالي الشهري التفصيلي"]</h3>
+            <div class="export-btns">
+                <button onclick="exportToExcel()" class="btn-export btn-excel"><i class="fa-solid fa-file-excel"></i> @Localizer["تصدير Excel"]</button>
+                <button onclick="exportToPDF()" class="btn-export btn-pdf"><i class="fa-solid fa-file-pdf"></i> @Localizer["تصدير PDF"]</button>
+            </div>
+        </div>
+        <div style="overflow-x: auto;" id="pdfContentArea">
+            <h2 style="display: none; text-align: center; color: var(--primary-navy);" id="pdfReportTitle">تقرير التدفقات النقدية - @currentYear</h2>
+            <table id="accountingReportTable" class="table-enterprise">
+                <thead>
+                    <tr>
+                        <th>@Localizer["الشهر"]</th>
+                        <th>@Localizer["إجمالي المبيعات (الإيرادات)"]</th>
+                        <th>@Localizer["إجمالي المشتريات (المصروفات)"]</th>
+                        <th>@Localizer["صافي التدفق النقدي"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        decimal grandSales = 0;
+                        decimal grandPurchases = 0;
+                        string[] arabicMonths = { "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر" };
+                    }
+                    @for (int i = 0; i < 12; i++)
+                    {
+                        decimal mSales = monthlySales[i];
+                        decimal mPurchases = monthlyPurchases[i];
+                        decimal mNet = mSales - mPurchases;
+                        grandSales += mSales;
+                        grandPurchases += mPurchases;
+
+                        string monthName = arabicMonths[i];
+                        <tr>
+                            <td style="font-weight: 900; color: var(--primary-navy);">@monthName</td>
+                            <td style="color: #16a34a; font-family: monospace; font-size: 1.1rem;">$@mSales.ToString("N2")</td>
+                            <td style="color: #ef4444; font-family: monospace; font-size: 1.1rem;">$@mPurchases.ToString("N2")</td>
+                            <td style="font-family: monospace; font-weight: 900; font-size: 1.1rem; color: @(mNet >= 0 ? "#16a34a" : "#ef4444")">
+                                $@mNet.ToString("N2")
+                            </td>
+                        </tr>
+                    }
+                    <tr style="background: rgba(184, 147, 90, 0.1);">
+                        <td style="font-weight: 900; color: var(--primary-navy); font-size: 1.1rem;">@Localizer["الإجمالي السنوي"]</td>
+                        <td style="color: #16a34a; font-family: monospace; font-size: 1.2rem; font-weight: 900;">$@grandSales.ToString("N2")</td>
+                        <td style="color: #ef4444; font-family: monospace; font-size: 1.2rem; font-weight: 900;">$@grandPurchases.ToString("N2")</td>
+                        <td style="font-family: monospace; font-weight: 900; font-size: 1.2rem; color: @((grandSales - grandPurchases) >= 0 ? "#16a34a" : "#ef4444")">
+                            $@((grandSales - grandPurchases).ToString("N2"))
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </div>
-
-        <!-- ملخص الدفع (اليمين) -->
-        <div class="summary-wrapper" dir="rtl">
-            <div class="summary-box" style="border-left: 5px solid var(--primary-gold);">
-                <span class="lbl">الإجمـــــالي المستحق (ر.ع)</span>
-                <span class="val" id="tdDueNow">0.00</span>
-            </div>
-            <div class="summary-box" style="border-left: 5px solid #16a34a;">
-                <span class="lbl">عنـــــــــــــد الوصـــــــــــول (ر.ع)</span>
-                <span class="val" id="tdDueArrival">0.00</span>
-            </div>
-        </div>
-
     </div>
 </div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <script>
+        // =======================================================
+        // البيانات الكاملة للموانئ (388 موقع)
+        // =======================================================
+        const SHIPPING_RATES = [
+            { id: 1, state: "Alabama", city: "Birmingham", auctionLocation: "Birmingham North Copart", price: 604 },
+            { id: 2, state: "Alabama", city: "Hueytown", auctionLocation: "Birmingham Copart", price: 624 },
+            { id: 3, state: "Alabama", city: "Bessemer", auctionLocation: "Birmingham IAA", price: 624 },
+            { id: 4, state: "Alabama", city: "Newton", auctionLocation: "Dothan Copart", price: 624 },
+            { id: 5, state: "Alabama", city: "Headland", auctionLocation: "Dothan IAA", price: 624 },
+            { id: 6, state: "Alabama", city: "Theodore", auctionLocation: "Mobile South Copart", price: 624 },
+            { id: 7, state: "Alabama", city: "Tanner", auctionLocation: "Tanner Copart", price: 624 },
+            { id: 8, state: "Alabama", city: "Birmingham", auctionLocation: "Birmingham Manheim", price: 604 },
+            { id: 9, state: "Alabama", city: "Athens", auctionLocation: "Huntsville IAA", price: 634 },
+            { id: 10, state: "Alabama", city: "Montgomery", auctionLocation: "Montgomery Copart", price: 624 },
+            { id: 11, state: "Alabama", city: "Eight Mile", auctionLocation: "Mobile Copart", price: 624 },
+            { id: 12, state: "Florida", city: "Jacksonville", auctionLocation: "FL - Jacksonville North Copart", price: 566 },
+            { id: 13, state: "Florida", city: "Jacksonville", auctionLocation: "Jacksonville East Copart", price: 566 },
+            { id: 14, state: "Florida", city: "Jacksonville", auctionLocation: "Jacksonville West Copart", price: 566 },
+            { id: 15, state: "Florida", city: "Jacksonville", auctionLocation: "Jacksonville IAA Manheim", price: 566 },
+            { id: 16, state: "Florida", city: "Pembroke Pines", auctionLocation: "Miami-North IAA", price: 584 },
+            { id: 17, state: "Florida", city: "Apopka", auctionLocation: "Orlando North Copart", price: 584 },
+            { id: 18, state: "Florida", city: "Orlando", auctionLocation: "Orlando South Copart", price: 594 },
+            { id: 19, state: "Florida", city: "Ocoee", auctionLocation: "Orlando Manheim", price: 584 },
+            { id: 20, state: "Florida", city: "Clearwater", auctionLocation: "Clearwater IAA", price: 590 },
+            { id: 21, state: "Florida", city: "Riverview", auctionLocation: "Tampa South Copart", price: 590 },
+            { id: 22, state: "Florida", city: "Homestead", auctionLocation: "Miami South Copart", price: 592 },
+            { id: 23, state: "Florida", city: "Palmetto", auctionLocation: "Tampa IAA", price: 592 },
+            { id: 24, state: "Florida", city: "Tampa", auctionLocation: "Tampa Manheim", price: 592 },
+            { id: 25, state: "Florida", city: "Opa-Locka", auctionLocation: "Opa Locka Copart", price: 594 },
+            { id: 26, state: "Florida", city: "Orlando", auctionLocation: "Orlando IAA", price: 594 },
+            { id: 27, state: "Florida", city: "Sanford", auctionLocation: "Orlando-North IAA", price: 594 },
+            { id: 28, state: "Florida", city: "Hudson", auctionLocation: "Tampa North IAA", price: 594 },
+            { id: 29, state: "Florida", city: "North Fort Myers", auctionLocation: "Fort Myers IAA", price: 624 },
+            { id: 30, state: "Florida", city: "Fontana", auctionLocation: "Fort Myers Manheim", price: 624 },
+            { id: 31, state: "Florida", city: "Opa-Locka", auctionLocation: "Miami North Copart", price: 604 },
+            { id: 32, state: "Florida", city: "Miami", auctionLocation: "Miami North IAA, Copart", price: 620 },
+            { id: 33, state: "Florida", city: "Ocala", auctionLocation: "Ocala Copart", price: 604 },
+            { id: 34, state: "Florida", city: "Punta Gorda", auctionLocation: "Punta Gorda South Copart", price: 614 },
+            { id: 35, state: "Florida", city: "Midway", auctionLocation: "Tallahassee Copart", price: 604 },
+            { id: 36, state: "Florida", city: "Milton", auctionLocation: "Pensacola IAA", price: 624 },
+            { id: 37, state: "Florida", city: "Pensacola", auctionLocation: "Pensacola Manheim", price: 624 },
+            { id: 38, state: "Florida", city: "Miami", auctionLocation: "Miami Central Copart", price: 620 },
+            { id: 39, state: "Florida", city: "Opa-Locka", auctionLocation: "Miami IAA", price: 620 },
+            { id: 40, state: "Florida", city: "West Palm Beach", auctionLocation: "West Palm Beach Copart", price: 608 },
+            { id: 41, state: "Florida", city: "Fort Pierce", auctionLocation: "Fort Pierce IAA", price: 614 },
+            { id: 42, state: "Florida", city: "Fort Pierce", auctionLocation: "Ft. Pierce Copart", price: 614 },
+            { id: 43, state: "Georgia", city: "Savannah", auctionLocation: "Savannah Copart", price: 532 },
+            { id: 44, state: "Georgia", city: "Rincon", auctionLocation: "Savannah IAA", price: 532 },
+            { id: 45, state: "Georgia", city: "Austell", auctionLocation: "Atlanta West Copart", price: 584 },
+            { id: 46, state: "Georgia", city: "Tifton", auctionLocation: "Tifton IAA, Copart", price: 572 },
+            { id: 47, state: "Georgia", city: "Loganville", auctionLocation: "Atlanta IAA", price: 584 },
+            { id: 48, state: "Georgia", city: "Ellenwood", auctionLocation: "Atlanta South Copart", price: 584 },
+            { id: 49, state: "Georgia", city: "Lake City", auctionLocation: "Atlanta South IAA", price: 584 },
+            { id: 50, state: "Georgia", city: "Cartersville", auctionLocation: "Cartersville Copart", price: 584 },
+            { id: 51, state: "Georgia", city: "Atlanta", auctionLocation: "Manheim Atlanta", price: 584 },
+            { id: 52, state: "Georgia", city: "Byron", auctionLocation: "Macon Copart", price: 584 },
+            { id: 53, state: "Georgia", city: "Macon", auctionLocation: "Macon IAA, Copart", price: 584 },
+            { id: 54, state: "Georgia", city: "Loganville", auctionLocation: "Atlanta East Copart", price: 584 },
+            { id: 55, state: "Georgia", city: "Winder", auctionLocation: "Atlanta East IAA", price: 594 },
+            { id: 56, state: "Georgia", city: "College Park", auctionLocation: "Atlanta Manheim", price: 594 },
+            { id: 57, state: "Georgia", city: "East Point", auctionLocation: "Crashedtoys Atlanta Copart", price: 594 },
+            { id: 58, state: "Georgia", city: "Gainesville", auctionLocation: "Atlanta North Copart", price: 604 },
+            { id: 59, state: "Georgia", city: "Acworth", auctionLocation: "Atlanta North IAA", price: 604 },
+            { id: 60, state: "Georgia", city: "Fairburn", auctionLocation: "Fairburn Copart", price: 604 },
+            { id: 61, state: "Kentucky", city: "Walton", auctionLocation: "Walton Copart", price: 704 },
+            { id: 62, state: "Kentucky", city: "Ashland", auctionLocation: "Ashland IAA", price: 714 },
+            { id: 63, state: "Kentucky", city: "Earlington", auctionLocation: "Earlington Copart", price: 694 },
+            { id: 64, state: "Kentucky", city: "Paducah", auctionLocation: "Paducah IAA", price: 704 },
+            { id: 65, state: "Kentucky", city: "Lawrenceburg", auctionLocation: "Lexington West Copart", price: 684 },
+            { id: 66, state: "Kentucky", city: "Eminence", auctionLocation: "Louisville North IAA", price: 694 },
+            { id: 67, state: "Kentucky", city: "Bowling Green", auctionLocation: "Bowling Green IAA", price: 694 },
+            { id: 68, state: "Kentucky", city: "Lexington", auctionLocation: "Lexington East Copart", price: 694 },
+            { id: 69, state: "Kentucky", city: "Louisville", auctionLocation: "Louisville Copart", price: 704 },
+            { id: 70, state: "Kentucky", city: "Shepherdsville", auctionLocation: "Louisville IAA", price: 694 },
+            { id: 71, state: "North Carolina", city: "China Grove", auctionLocation: "China Grove Copart", price: 584 },
+            { id: 72, state: "North Carolina", city: "Concord", auctionLocation: "Concord IAA, Copart", price: 594 },
+            { id: 73, state: "North Carolina", city: "Lumberton", auctionLocation: "Lumberton Copart", price: 584 },
+            { id: 74, state: "North Carolina", city: "Dunn", auctionLocation: "Raleigh Copart", price: 584 },
+            { id: 75, state: "North Carolina", city: "Clayton", auctionLocation: "Raleigh IAA", price: 594 },
+            { id: 76, state: "North Carolina", city: "Charlotte", auctionLocation: "Charlotte IAA", price: 594 },
+            { id: 77, state: "North Carolina", city: "Concord", auctionLocation: "Charlotte Manheim", price: 594 },
+            { id: 78, state: "North Carolina", city: "Graham", auctionLocation: "Greensboro IAA", price: 594 },
+            { id: 79, state: "North Carolina", city: "Mebane", auctionLocation: "Mebane Copart", price: 594 },
+            { id: 80, state: "North Carolina", city: "Mocksville", auctionLocation: "Mocksville Copart", price: 594 },
+            { id: 81, state: "North Carolina", city: "Gastonia", auctionLocation: "NC-Gastonia Copart", price: 594 },
+            { id: 82, state: "North Carolina", city: "Castle Hayne", auctionLocation: "Wilmington IAA", price: 604 },
+            { id: 83, state: "North Carolina", city: "Wilmington", auctionLocation: "Wilmington Manheim", price: 604 },
+            { id: 84, state: "North Carolina", city: "Fletcher", auctionLocation: "Asheville IAA", price: 624 },
+            { id: 85, state: "North Carolina", city: "Knightdale", auctionLocation: "Raleigh North-Knightdale Copart", price: 604 },
+            { id: 86, state: "South Carolina", city: "Lexington", auctionLocation: "Lexington IAA", price: 564 },
+            { id: 87, state: "South Carolina", city: "Harleyville", auctionLocation: "North Charleston Copart", price: 564 },
+            { id: 88, state: "South Carolina", city: "Greer", auctionLocation: "Greer Manheim", price: 576 },
+            { id: 89, state: "South Carolina", city: "Gaston", auctionLocation: "Sha Liu Copart", price: 584 },
+            { id: 90, state: "South Carolina", city: "Simpsonville", auctionLocation: "Greenville IAA", price: 582 },
+            { id: 91, state: "South Carolina", city: "Spartanburg", auctionLocation: "Spartanburg Copart", price: 588 },
+            { id: 92, state: "South Carolina", city: "Ravenel", auctionLocation: "Charleston IAA", price: 564 },
+            { id: 93, state: "South Carolina", city: "Columbia", auctionLocation: "Columbia IAA, Copart", price: 572 },
+            { id: 94, state: "Tennessee", city: "Chattanooga", auctionLocation: "Chattanooga IAA", price: 620 },
+            { id: 95, state: "Tennessee", city: "Madisonville", auctionLocation: "Knoxville Copart", price: 644 },
+            { id: 96, state: "Tennessee", city: "Knoxville", auctionLocation: "Knoxville IAA", price: 644 },
+            { id: 97, state: "Tennessee", city: "Lebanon", auctionLocation: "Nashville Copart", price: 644 },
+            { id: 98, state: "Tennessee", city: "Nashville", auctionLocation: "Nashville IAA, Copart", price: 644 },
+            { id: 99, state: "Tennessee", city: "Mount Juliet", auctionLocation: "Manheim Nashville", price: 644 },
+            { id: 100, state: "Tennessee", city: "Memphis", auctionLocation: "MemphisIAA, Copart", price: 664 },
+            { id: 101, state: "Georgia", city: "Georgia", auctionLocation: "AUGUSTA", price: 584 },
+            { id: 102, state: "Connecticut", city: "East Granby", auctionLocation: "Hartford Springfield Copart", price: 609 },
+            { id: 103, state: "Connecticut", city: "New Britain", auctionLocation: "Hartford Copart", price: 609 },
+            { id: 104, state: "Connecticut", city: "East Windsor", auctionLocation: "Hartford IAA", price: 609 },
+            { id: 105, state: "Connecticut", city: "Middletown", auctionLocation: "Hartford-South IAA", price: 609 },
+            { id: 106, state: "Connecticut", city: "New Britain", auctionLocation: "Hartford South Copart", price: 609 },
+            { id: 107, state: "Delaware", city: "New Castle", auctionLocation: "New Castle IAA", price: 639 },
+            { id: 108, state: "Delaware", city: "Seaford", auctionLocation: "Seaford Copart", price: 645 },
+            { id: 109, state: "Iowa", city: "Eldridge", auctionLocation: "Davenport Copart", price: 769 },
+            { id: 110, state: "Iowa", city: "Davenport", auctionLocation: "Davenport IAA", price: 769 },
+            { id: 111, state: "Iowa", city: "Des Moines", auctionLocation: "Des Moines Copart", price: 749 },
+            { id: 112, state: "Iowa", city: "De Soto", auctionLocation: "Des Moines IAA", price: 749 },
+            { id: 113, state: "Illinois", city: "Matteson", auctionLocation: "Chicago Manheim", price: 709 },
+            { id: 114, state: "Illinois", city: "Elgin", auctionLocation: "Chicago North Copart", price: 719 },
+            { id: 115, state: "Illinois", city: "Dundee", auctionLocation: "Chicago-North IAA", price: 719 },
+            { id: 116, state: "Illinois", city: "Granite City", auctionLocation: "St. Louis IAA", price: 719 },
+            { id: 117, state: "Illinois", city: "Wheeling", auctionLocation: "Wheeling Copart", price: 719 },
+            { id: 118, state: "Illinois", city: "Chicago Heights", auctionLocation: "Chicago South Copart", price: 729 },
+            { id: 119, state: "Illinois", city: "Markham", auctionLocation: "Chicago-South IAA", price: 729 },
+            { id: 120, state: "Illinois", city: "Pekin", auctionLocation: "Peoria Copart", price: 739 },
+            { id: 121, state: "Illinois", city: "Aurora", auctionLocation: "Chicago-West IAA", price: 749 },
+            { id: 122, state: "Illinois", city: "Alorton", auctionLocation: "Southern Illinois Copart", price: 749 },
+            { id: 123, state: "Illinois", city: "Lincoln", auctionLocation: "Lincoln IAA", price: 769 },
+            { id: 124, state: "Indiana", city: "Hammond", auctionLocation: "Hammond Copart", price: 709 },
+            { id: 125, state: "Indiana", city: "Indianapolis", auctionLocation: "IndianapolisIAA, Copart", price: 721 },
+            { id: 126, state: "Indiana", city: "Hartford City", auctionLocation: "Hartford City Copart", price: 729 },
+            { id: 127, state: "Indiana", city: "Indiana", auctionLocation: "Dyer Copart", price: 729 },
+            { id: 128, state: "Indiana", city: "Cicero", auctionLocation: "Cicero Copart", price: 739 },
+            { id: 129, state: "Indiana", city: "Fort Wayne", auctionLocation: "IN - Fort Wayne Copart", price: 729 },
+            { id: 130, state: "Indiana", city: "South Bend", auctionLocation: "South Bend IAA", price: 729 },
+            { id: 131, state: "Indiana", city: "Clarksville", auctionLocation: "Manheim Louisville", price: 749 },
+            { id: 132, state: "Massachusetts", city: "Mendon", auctionLocation: "South Boston Copart", price: 629 },
+            { id: 133, state: "Massachusetts", city: "East Taunton", auctionLocation: "Taunton IAA", price: 629 },
+            { id: 134, state: "Massachusetts", city: "Hudson", auctionLocation: "Hudson Copart", price: 629 },
+            { id: 135, state: "Massachusetts", city: "West Warren", auctionLocation: "West Warren Copart", price: 639 },
+            { id: 136, state: "Massachusetts", city: "North Billerica", auctionLocation: "North Boston Copart", price: 649 },
+            { id: 137, state: "Massachusetts", city: "Templeton", auctionLocation: "Templeton IAA", price: 649 },
+            { id: 138, state: "Massachusetts", city: "Shirley", auctionLocation: "Boston - Shirley IAA", price: 649 },
+            { id: 139, state: "Massachusetts", city: "Assonet", auctionLocation: "MA - Freetown Copart", price: 659 },
+            { id: 140, state: "Maryland", city: "Finksburg", auctionLocation: "Baltimore Copart", price: 629 },
+            { id: 141, state: "Maryland", city: "Baltimore", auctionLocation: "Baltimore IAA", price: 629 },
+            { id: 142, state: "Maryland", city: "Dundalk", auctionLocation: "Dundalk IAA", price: 629 },
+            { id: 143, state: "Maryland", city: "Laurel", auctionLocation: "Laurel IAA", price: 629 },
+            { id: 144, state: "Maryland", city: "Brandywine", auctionLocation: "Metro Dc IAA", price: 629 },
+            { id: 145, state: "Maryland", city: "Waldorf", auctionLocation: "Washington Dc Copart", price: 629 },
+            { id: 146, state: "Maryland", city: "White Marsh", auctionLocation: "Diedra Banks Copart", price: 629 },
+            { id: 147, state: "Maine", city: "Lyman", auctionLocation: "Lyman Copart", price: 679 },
+            { id: 148, state: "Maine", city: "Lyman", auctionLocation: "Holmes Road Copart", price: 679 },
+            { id: 149, state: "Maine", city: "Gorham", auctionLocation: "Portland - Gorham IAA", price: 689 },
+            { id: 150, state: "Michigan", city: "Woodhaven", auctionLocation: "Detroit Copart", price: 709 },
+            { id: 151, state: "Michigan", city: "Belleville", auctionLocation: "Detroit IAA", price: 709 },
+            { id: 152, state: "Michigan", city: "Carleton", auctionLocation: "Detroit Manheim", price: 759 },
+            { id: 153, state: "Michigan", city: "Byron Center", auctionLocation: "Grand Rapids IAA", price: 749 },
+            { id: 154, state: "Michigan", city: "Portland", auctionLocation: "Ionia Copart", price: 759 },
+            { id: 155, state: "Michigan", city: "Davison", auctionLocation: "Flint Copart", price: 709 },
+            { id: 156, state: "Michigan", city: "Flint", auctionLocation: "Flint IAA", price: 739 },
+            { id: 157, state: "Michigan", city: "Lansing", auctionLocation: "Lansing Copart", price: 759 },
+            { id: 158, state: "Michigan", city: "Flint", auctionLocation: "Mt. Morris Manheim", price: 739 },
+            { id: 159, state: "Minnesota", city: "Maple Grove", auctionLocation: "Minneapolis Manheim", price: 729 },
+            { id: 160, state: "Minnesota", city: "Blaine", auctionLocation: "Minneapolis Copart", price: 749 },
+            { id: 161, state: "Minnesota", city: "Ham Lake", auctionLocation: "Minneapolis North Copart", price: 749 },
+            { id: 162, state: "Minnesota", city: "Avon", auctionLocation: "St. Cloud Copart", price: 779 },
+            { id: 163, state: "Minnesota", city: "Blaine", auctionLocation: "Crashedtoys Minneapolis Copart", price: 799 },
+            { id: 164, state: "Minnesota", city: "Saint Paul", auctionLocation: "Minneapolis/St. Paul IAA", price: 799 },
+            { id: 165, state: "Missouri", city: "Bridgeton", auctionLocation: "St. Louis Copart, Manheim", price: 719 },
+            { id: 166, state: "Missouri", city: "Rogersville", auctionLocation: "Springfield Copart", price: 769 },
+            { id: 167, state: "Missouri", city: "Springfield", auctionLocation: "Springfield IAA", price: 769 },
+            { id: 168, state: "Missouri", city: "Columbia", auctionLocation: "Columbia Copart", price: 729 },
+            { id: 169, state: "Missouri", city: "Sikeston", auctionLocation: "Sikeston Copart", price: 769 },
+            { id: 170, state: "North Dakota", city: "Fargo", auctionLocation: "Fargo IAA", price: 909 },
+            { id: 171, state: "North Dakota", city: "Bismarck", auctionLocation: "ND - Bismarck Copart", price: 1029 },
+            { id: 172, state: "Nebraska", city: "Omaha", auctionLocation: "Omaha Manheim", price: 809 },
+            { id: 173, state: "Nebraska", city: "Springfield", auctionLocation: "Omaha IAA", price: 809 },
+            { id: 174, state: "Nebraska", city: "Greenwood", auctionLocation: "Lincoln Copart", price: 769 },
+            { id: 175, state: "New Hampshire", city: "Candia", auctionLocation: "Candia Copart", price: 663 },
+            { id: 176, state: "New Hampshire", city: "Salem", auctionLocation: "Manchester IAA", price: 675 },
+            { id: 177, state: "New Jersey", city: "MANALAPAN", auctionLocation: "Englishtown", price: 569 },
+            { id: 178, state: "New Jersey", city: "MURRAY", auctionLocation: "Port Murray", price: 609 },
+            { id: 179, state: "New Jersey", city: "Carteret", auctionLocation: "Northern New Jersey IAA", price: 559 },
+            { id: 180, state: "New Jersey", city: "Avenel", auctionLocation: "Avenel New Jersey IAA", price: 569 },
+            { id: 181, state: "New Jersey", city: "Morganville", auctionLocation: "Central New Jersey IAA", price: 569 },
+            { id: 182, state: "New Jersey", city: "Hillsborough", auctionLocation: "Somerville Copart", price: 569 },
+            { id: 183, state: "New Jersey", city: "Windsor", auctionLocation: "Trenton Copart", price: 569 },
+            { id: 184, state: "New Jersey", city: "Turnersville", auctionLocation: "Southern New Jersey IAA", price: 589 },
+            { id: 185, state: "New Jersey", city: "Glassboro", auctionLocation: "Glassboro West Copart", price: 601 },
+            { id: 186, state: "New Jersey", city: "Glassboro", auctionLocation: "Glassboro East Copart", price: 601 },
+            { id: 187, state: "New York", city: "Marlboro", auctionLocation: "Newburgh Copart", price: 597 },
+            { id: 188, state: "New York", city: "Rock Tavern", auctionLocation: "Newburgh IAA", price: 597 },
+            { id: 189, state: "New York", city: "Brookhaven", auctionLocation: "Long Island Copart", price: 599 },
+            { id: 190, state: "New York", city: "Medford", auctionLocation: "Long Island IAA", price: 599 },
+            { id: 191, state: "New York", city: "Albany", auctionLocation: "Albany Copart", price: 609 },
+            { id: 192, state: "New York", city: "Schenectady", auctionLocation: "Albany IAA", price: 609 },
+            { id: 193, state: "New York", city: "Clifton Park", auctionLocation: "Manheim Albany", price: 619 },
+            { id: 194, state: "New York", city: "Cicero", auctionLocation: "Syracuse IAA", price: 629 },
+            { id: 195, state: "New York", city: "Le Roy", auctionLocation: "Rochester Copart", price: 669 },
+            { id: 196, state: "New York", city: "Bergen", auctionLocation: "Rochester IAA", price: 669 },
+            { id: 197, state: "New York", city: "Central Square", auctionLocation: "Syracuse Copart", price: 639 },
+            { id: 198, state: "New York", city: "Angola", auctionLocation: "Buffalo Copart", price: 699 },
+            { id: 199, state: "New York", city: "Buffalo", auctionLocation: "Buffalo IAA, Copart", price: 749 },
+            { id: 200, state: "Ohio", city: "Lorain", auctionLocation: "Cleveland IAA", price: 697 },
+            { id: 201, state: "Ohio", city: "Cleveland", auctionLocation: "Cleveland Manheim", price: 669 },
+            { id: 202, state: "Ohio", city: "Hamilton", auctionLocation: "Cincinnati Manheim", price: 689 },
+            { id: 203, state: "Ohio", city: "West Chester", auctionLocation: "Cincinnati IAA", price: 709 },
+            { id: 204, state: "Ohio", city: "Northfield", auctionLocation: "Cleveland East Copart", price: 689 },
+            { id: 205, state: "Ohio", city: "Columbia Station", auctionLocation: "Cleveland West Copart", price: 689 },
+            { id: 206, state: "Ohio", city: "Moraine", auctionLocation: "Dayton Copart", price: 709 },
+            { id: 207, state: "Ohio", city: "Dayton", auctionLocation: "Dayton IAA", price: 699 },
+            { id: 208, state: "Ohio", city: "New Philadelphia", auctionLocation: "Akron-Canton IAA", price: 749 },
+            { id: 209, state: "Ohio", city: "Columbus", auctionLocation: "Columbus Copart", price: 709 },
+            { id: 210, state: "Ohio", city: "Grove City", auctionLocation: "Columbus IAA", price: 709 },
+            { id: 211, state: "Pennsylvania", city: "Bridgeport", auctionLocation: "Bridgeport IAA", price: 597 },
+            { id: 212, state: "Pennsylvania", city: "Hatfield", auctionLocation: "Philadelphia Manheim", price: 605 },
+            { id: 213, state: "Pennsylvania", city: "Pennsburg", auctionLocation: "Philadelphia Copart", price: 605 },
+            { id: 214, state: "Pennsylvania", city: "Conshohocken", auctionLocation: "Philadelphia IAA", price: 605 },
+            { id: 215, state: "Pennsylvania", city: "Chalfont", auctionLocation: "Philadelphia East Copart", price: 609 },
+            { id: 216, state: "Pennsylvania", city: "Duryea", auctionLocation: "Scranton Copart", price: 609 },
+            { id: 217, state: "Pennsylvania", city: "Pittston", auctionLocation: "Scranton IAA", price: 609 },
+            { id: 218, state: "Pennsylvania", city: "Grantville", auctionLocation: "Harrisburg Copart", price: 619 },
+            { id: 219, state: "Pennsylvania", city: "York Haven", auctionLocation: "York Haven Copart", price: 619 },
+            { id: 220, state: "Pennsylvania", city: "York Springs", auctionLocation: "York Springs IAA", price: 619 },
+            { id: 221, state: "Pennsylvania", city: "Chambersburg", auctionLocation: "Chambersburg Copart", price: 647 },
+            { id: 222, state: "Pennsylvania", city: "Ebensburg", auctionLocation: "Altoona Copart", price: 669 },
+            { id: 223, state: "Pennsylvania", city: "East Freedom", auctionLocation: "Altoona IAA", price: 669 },
+            { id: 224, state: "Pennsylvania", city: "Aliquippa", auctionLocation: "Pittsburgh IAA", price: 659 },
+            { id: 225, state: "Pennsylvania", city: "Adamsburg", auctionLocation: "Pittsburgh East Copart", price: 669 },
+            { id: 226, state: "Pennsylvania", city: "Ellwood City", auctionLocation: "Pittsburgh North Copart", price: 669 },
+            { id: 227, state: "Pennsylvania", city: "West Mifflin", auctionLocation: "Pittsburgh South Copart", price: 689 },
+            { id: 228, state: "Pennsylvania", city: "Gibsonia", auctionLocation: "Pittsburgh North IAA", price: 689 },
+            { id: 229, state: "Pennsylvania", city: "West Mifflin", auctionLocation: "PA - Pittsburgh West Copart", price: 689 },
+            { id: 230, state: "Pennsylvania", city: "Garland", auctionLocation: "Erie IAA", price: 709 },
+            { id: 231, state: "Rhode Island", city: "Exeter", auctionLocation: "Exeter Copart", price: 639 },
+            { id: 232, state: "Rhode Island", city: "East Providence", auctionLocation: "Providence IAA", price: 649 },
+            { id: 233, state: "South Dakota", city: "Sioux Falls", auctionLocation: "Sioux Falls IAA", price: 869 },
+            { id: 234, state: "Virginia", city: "Fredericksburg", auctionLocation: "Fredericksburg Copart, Manheim", price: 639 },
+            { id: 235, state: "Virginia", city: "Fredericksburg", auctionLocation: "Fredericksburg South IAA", price: 639 },
+            { id: 236, state: "Virginia", city: "Fredericksburg", auctionLocation: "Northern Virginia IAA", price: 639 },
+            { id: 237, state: "Virginia", city: "Culpeper", auctionLocation: "Culpeper IAA", price: 649 },
+            { id: 238, state: "Virginia", city: "Hampton", auctionLocation: "Hampton Copart", price: 649 },
+            { id: 239, state: "Virginia", city: "Charles City", auctionLocation: "Richmond East Copart", price: 649 },
+            { id: 240, state: "Virginia", city: "Sandston", auctionLocation: "Richmond Copart", price: 649 },
+            { id: 241, state: "Virginia", city: "Ashland", auctionLocation: "Richmond IAA, Copart", price: 649 },
+            { id: 242, state: "Virginia", city: "Suffolk", auctionLocation: "Suffolk IAA", price: 685 },
+            { id: 243, state: "Virginia", city: "Yorktown", auctionLocation: "Tidewater IAA", price: 661 },
+            { id: 244, state: "Virginia", city: "Chatham", auctionLocation: "Danville Copart", price: 669 },
+            { id: 245, state: "Virginia", city: "Montvale", auctionLocation: "Roanoke IAA", price: 669 },
+            { id: 246, state: "Virginia", city: "Pulaski", auctionLocation: "Pulaski IAA", price: 683 },
+            { id: 247, state: "Vermont", city: "Essex", auctionLocation: "Burlington IAA", price: 709 },
+            { id: 248, state: "Wisconsin", city: "Madison", auctionLocation: "Madison Copart", price: 757 },
+            { id: 249, state: "Wisconsin", city: "Mcfarland", auctionLocation: "Madison South Copart", price: 759 },
+            { id: 250, state: "Wisconsin", city: "Portage", auctionLocation: "Portage IAA", price: 749 },
+            { id: 251, state: "Wisconsin", city: "Appleton", auctionLocation: "Appleton IAA, Copart", price: 769 },
+            { id: 252, state: "Wisconsin", city: "Cudahy", auctionLocation: "Milwaukee Copart", price: 769 },
+            { id: 253, state: "Wisconsin", city: "Sussex", auctionLocation: "Milwaukee IAA", price: 769 },
+            { id: 254, state: "Wisconsin", city: "Milwaukee", auctionLocation: "Milwaukee North Copart", price: 769 },
+            { id: 255, state: "West Virginia", city: "Buckhannon", auctionLocation: "Buckhannon IAA", price: 697 },
+            { id: 256, state: "West Virginia", city: "Hurricane", auctionLocation: "Charleston IAA, Copart", price: 729 },
+            { id: 257, state: "West Virginia", city: "Shady Spring", auctionLocation: "Shady Spring IAA", price: 739 },
+            { id: 258, state: "Arkansas", city: "Conway", auctionLocation: "Little Rock Copart, Manheim", price: 692 },
+            { id: 259, state: "Arkansas", city: "Lincoln", auctionLocation: "Fayetteville IAA", price: 684 },
+            { id: 260, state: "Arkansas", city: "Prairie Grove", auctionLocation: "Fayetteville Copart", price: 684 },
+            { id: 261, state: "Arkansas", city: "Scott", auctionLocation: "Little Rock IAA", price: 692 },
+            { id: 262, state: "Arizona", city: "Phoenix", auctionLocation: "Phoenix IAA, Copart", price: 836 },
+            { id: 263, state: "Colorado", city: "Aurora", auctionLocation: "Denver Manheim", price: 804 },
+            { id: 264, state: "Colorado", city: "Brighton", auctionLocation: "Denver Copart", price: 804 },
+            { id: 265, state: "Colorado", city: "Colorado Springs", auctionLocation: "Colorado Springs Copart", price: 784 },
+            { id: 266, state: "Colorado", city: "Commerce City", auctionLocation: "Denver East IAA", price: 804 },
+            { id: 267, state: "Colorado", city: "Delta", auctionLocation: "Western Colorado IAA", price: 884 },
+            { id: 268, state: "Colorado", city: "Denver", auctionLocation: "Denver IAA", price: 804 },
+            { id: 269, state: "Colorado", city: "Littleton", auctionLocation: "Denver South Copart", price: 784 },
+            { id: 270, state: "Kansas", city: "Kansas City", auctionLocation: "Kansas City IAA, Copart", price: 784 },
+            { id: 271, state: "Kansas", city: "Park City", auctionLocation: "Wichita IAA", price: 744 },
+            { id: 272, state: "Kansas", city: "Wichita", auctionLocation: "Wichita Copart", price: 744 },
+            { id: 273, state: "Louisiana", city: "Covington", auctionLocation: "New Orleans IAA", price: 672 },
+            { id: 274, state: "Louisiana", city: "Greenwell Springs", auctionLocation: "Baton Rouge Copart", price: 644 },
+            { id: 275, state: "Louisiana", city: "Greenwood", auctionLocation: "Shreveport IAA", price: 636 },
+            { id: 276, state: "Louisiana", city: "Lafayette", auctionLocation: "Lafayette IAA", price: 672 },
+            { id: 277, state: "Louisiana", city: "Livingston", auctionLocation: "Baton Rouge IAA", price: 672 },
+            { id: 278, state: "Louisiana", city: "New Orleans", auctionLocation: "New Orleans Copart", price: 672 },
+            { id: 279, state: "Louisiana", city: "New Orleans", auctionLocation: "New Orleans East IAA", price: 672 },
+            { id: 280, state: "Louisiana", city: "Scott", auctionLocation: "Lafayette Manheim", price: 672 },
+            { id: 281, state: "Louisiana", city: "Shreveport", auctionLocation: "Shreveport Copart", price: 636 },
+            { id: 282, state: "Louisiana", city: "Slidell", auctionLocation: "New Orleans Manheim", price: 672 },
+            { id: 283, state: "Mississippi", city: "Byram", auctionLocation: "Jackson IAA", price: 684 },
+            { id: 284, state: "Mississippi", city: "Florence", auctionLocation: "Jackson Copart", price: 684 },
+            { id: 285, state: "Mississippi", city: "Grenada", auctionLocation: "Grenada IAA", price: 678 },
+            { id: 286, state: "Mississippi", city: "Moss Point", auctionLocation: "Gulf Coast IAA", price: 684 },
+            { id: 287, state: "New Mexico", city: "Albuquerque", auctionLocation: "Albuquerque IAA, Copart", price: 744 },
+            { id: 288, state: "Oklahoma", city: "Oklahoma City", auctionLocation: "Oklahoma City IAA, Copart", price: 674 },
+            { id: 289, state: "Oklahoma", city: "Sapulpa", auctionLocation: "Manheim Tulsa", price: 684 },
+            { id: 290, state: "Oklahoma", city: "Tulsa", auctionLocation: "Tulsa IAA, Copart", price: 684 },
+            { id: 291, state: "Texas", city: "Abilene", auctionLocation: "Abilene IAA, Copart", price: 674 },
+            { id: 292, state: "Texas", city: "Amarillo", auctionLocation: "Amarillo IAA, Copart", price: 684 },
+            { id: 293, state: "Texas", city: "Andrews", auctionLocation: "Andrews Copart", price: 692 },
+            { id: 294, state: "Texas", city: "Anthony", auctionLocation: "El Paso Copart", price: 704 },
+            { id: 295, state: "Texas", city: "Corpus Christi", auctionLocation: "Corpus Christi IAA, Copart", price: 624 },
+            { id: 296, state: "Texas", city: "Dale", auctionLocation: "Austin IAA", price: 614 },
+            { id: 297, state: "Texas", city: "Dallas", auctionLocation: "Crashedtoys Dallas Copart", price: 624 },
+            { id: 298, state: "Texas", city: "Donna", auctionLocation: "Mcallen IAA", price: 622 },
+            { id: 299, state: "Texas", city: "El Paso", auctionLocation: "El Paso IAA, Copart, Manheim", price: 694 },
+            { id: 300, state: "Texas", city: "Euless", auctionLocation: "Dallas Fort Worth Manheim", price: 624 },
+            { id: 301, state: "Texas", city: "Grand Prairie", auctionLocation: "Dallas Copart", price: 624 },
+            { id: 302, state: "Texas", city: "Grand Prairie", auctionLocation: "Dallas/Ft Worth IAA", price: 624 },
+            { id: 303, state: "Texas", city: "Haslet", auctionLocation: "Ft. Worth Copart", price: 624 },
+            { id: 304, state: "Texas", city: "Hawley", auctionLocation: "Abilene IAA", price: 674 },
+            { id: 305, state: "Texas", city: "Houston", auctionLocation: "Houston East Copart", price: 604 },
+            { id: 306, state: "Texas", city: "Houston", auctionLocation: "Houston IAA, Copart", price: 604 },
+            { id: 307, state: "Texas", city: "Houston", auctionLocation: "Houston North IAA", price: 604 },
+            { id: 308, state: "Texas", city: "Houston", auctionLocation: "Texas Hobby Manheim", price: 604 },
+            { id: 309, state: "Texas", city: "Justin", auctionLocation: "Fort Worth North IAA", price: 634 },
+            { id: 310, state: "Texas", city: "Longview", auctionLocation: "Longview IAA, Copart", price: 624 },
+            { id: 311, state: "Texas", city: "Lubbock", auctionLocation: "Lubbock IAA", price: 694 },
+            { id: 312, state: "Texas", city: "Lufkin", auctionLocation: "Lufkin Copart", price: 612 },
+            { id: 313, state: "Texas", city: "Mercedes", auctionLocation: "Mcallen Copart", price: 622 },
+            { id: 314, state: "Texas", city: "New Braunfels", auctionLocation: "Austin Copart", price: 624 },
+            { id: 315, state: "Texas", city: "Odessa", auctionLocation: "Permian Basin IAA", price: 674 },
+            { id: 316, state: "Texas", city: "Rosharon", auctionLocation: "Houston South IAA", price: 604 },
+            { id: 317, state: "Texas", city: "San Antonio", auctionLocation: "San Antonio- South IAA", price: 624 },
+            { id: 318, state: "Texas", city: "San Antonio", auctionLocation: "an Antonio IAA, Copart, Manhei", price: 632 },
+            { id: 319, state: "Texas", city: "Temple", auctionLocation: "Waco Copart", price: 632 },
+            { id: 320, state: "Texas", city: "Wilmer", auctionLocation: "Drive Dallas Copart", price: 624 },
+            { id: 321, state: "Texas", city: "Wilmer", auctionLocation: "DallasIAA", price: 624 },
+            { id: 322, state: "Texas", city: "Wilmer", auctionLocation: "Dallas South Copart", price: 624 },
+            { id: 323, state: "Arizona", city: "Tolleson", auctionLocation: "Phoenix Manheim", price: 787 },
+            { id: 324, state: "Arizona", city: "Tucson", auctionLocation: "Tucson IAA, Copart, Manheim", price: 805 },
+            { id: 325, state: "California", city: "Gardena", auctionLocation: "Los AngelesIAA, Copart", price: 725 },
+            { id: 326, state: "California", city: "Wilmington", auctionLocation: "Long Beach Copart", price: 731 },
+            { id: 327, state: "California", city: "Wilmington", auctionLocation: "Los Angeles South IAA", price: 731 },
+            { id: 328, state: "California", city: "Los Angeles", auctionLocation: "Los Angeles Copart", price: 735 },
+            { id: 329, state: "California", city: "Carson", auctionLocation: "Ace - Carson IAA", price: 739 },
+            { id: 330, state: "California", city: "Anaheim", auctionLocation: "Anaheim IAA", price: 739 },
+            { id: 331, state: "California", city: "Fontana", auctionLocation: "Fontana IAA", price: 739 },
+            { id: 332, state: "California", city: "Colton", auctionLocation: "Colton IAA", price: 745 },
+            { id: 333, state: "California", city: "Colton", auctionLocation: "San Bernardino Copart", price: 745 },
+            { id: 334, state: "California", city: "Sun Valley", auctionLocation: "Sun Valley Copart", price: 745 },
+            { id: 335, state: "California", city: "Lancaster", auctionLocation: "CA - Sun Valley Copart", price: 755 },
+            { id: 336, state: "California", city: "San Diego", auctionLocation: "San Diego IAA, Copart", price: 755 },
+            { id: 337, state: "California", city: "Oceanside", auctionLocation: "San Diego Manheim", price: 755 },
+            { id: 338, state: "California", city: "Van Nuys", auctionLocation: "Van Nuys Copart", price: 755 },
+            { id: 339, state: "California", city: "Bakersfield", auctionLocation: "Bakersfield Copart", price: 763 },
+            { id: 340, state: "California", city: "Adelanto", auctionLocation: "Adelanto Copart", price: 765 },
+            { id: 341, state: "California", city: "Rancho Cucamonga", auctionLocation: "Rancho Cucamonga Copart", price: 785 },
+            { id: 342, state: "California", city: "Perris", auctionLocation: "Ace - Perris IAA", price: 795 },
+            { id: 343, state: "California", city: "Fresno", auctionLocation: "Fresno IAA, Copart, Manheim", price: 795 },
+            { id: 344, state: "California", city: "Hesperia", auctionLocation: "High Desert IAA", price: 795 },
+            { id: 345, state: "California", city: "Los Angeles", auctionLocation: "North Hollywood IAA", price: 765 },
+            { id: 346, state: "California", city: "North Hollywood", auctionLocation: "North Hollywood IAA", price: 765 },
+            { id: 347, state: "California", city: "Sacramento", auctionLocation: "Sacramento Copart", price: 803 },
+            { id: 348, state: "California", city: "Gardena", auctionLocation: "Ace - Carson (CA) IAA", price: 725 },
+            { id: 349, state: "California", city: "Martinez", auctionLocation: "Martinez Copart", price: 805 },
+            { id: 350, state: "California", city: "Sacramento", auctionLocation: "Crashedtoys Sacramento Copart", price: 815 },
+            { id: 351, state: "California", city: "Bay Point", auctionLocation: "East Bay IAA", price: 815 },
+            { id: 352, state: "California", city: "Hayward", auctionLocation: "Hayward Copart", price: 815 },
+            { id: 353, state: "California", city: "Rancho Cordova", auctionLocation: "Sacramento IAA, Copart", price: 815 },
+            { id: 354, state: "California", city: "San Jose", auctionLocation: "San Jose Copart", price: 815 },
+            { id: 355, state: "California", city: "Sacramento", auctionLocation: "So Sacramento Copart", price: 815 },
+            { id: 356, state: "California", city: "Vallejo", auctionLocation: "Vallejo Copart", price: 815 },
+            { id: 357, state: "California", city: "Fremont", auctionLocation: "Fremont IAA", price: 835 },
+            { id: 358, state: "California", city: "Antelope", auctionLocation: "Antelope Copart", price: 835 },
+            { id: 359, state: "California", city: "Redding", auctionLocation: "CA Redding Copart", price: 895 },
+            { id: 360, state: "Colorado", city: "Denver", auctionLocation: "Denver Central Copart", price: 933 },
+            { id: 361, state: "Nevada", city: "Las Vegas", auctionLocation: "Las Vegas Copart", price: 795 },
+            { id: 362, state: "Nevada", city: "Henderson", auctionLocation: "Las Vegas IAA", price: 795 },
+            { id: 363, state: "Nevada", city: "Reno", auctionLocation: "Reno Copart", price: 835 },
+            { id: 364, state: "Nevada", city: "Mccarran", auctionLocation: "Reno IAA, Copart", price: 835 },
+            { id: 365, state: "Utah", city: "Farr West", auctionLocation: "Ogden Copart", price: 835 },
+            { id: 366, state: "Utah", city: "Ogden", auctionLocation: "Salt Lake City IAA, Copart", price: 845 },
+            { id: 367, state: "Utah", city: "Salt Lake City", auctionLocation: "UT Salt Lake City Copart", price: 845 },
+            { id: 368, state: "Utah", city: "North Salt Lake", auctionLocation: "North Salt Lake Copart", price: 905 },
+            { id: 369, state: "Utah", city: "Magna", auctionLocation: "UT Salt Lake City Magna Copart", price: 905 },
+            { id: 370, state: "Wyoming", city: "Casper", auctionLocation: "Casper IAA, Copart", price: 1215 },
+            { id: 371, state: "Idaho", city: "Nampa", auctionLocation: "Boise Copart", price: 963 },
+            { id: 372, state: "Idaho", city: "Meridian", auctionLocation: "Boise IAA", price: 979 },
+            { id: 373, state: "Montana", city: "Missoula", auctionLocation: "Missoula IAA", price: 1019 },
+            { id: 374, state: "Montana", city: "Helena", auctionLocation: "Helena Copart", price: 1049 },
+            { id: 375, state: "Montana", city: "Billings", auctionLocation: "Billings IAA, Copart", price: 1129 },
+            { id: 376, state: "Oregon", city: "Portland", auctionLocation: "Portland IAA", price: 899 },
+            { id: 377, state: "Oregon", city: "Portland", auctionLocation: "Portland North Copart", price: 899 },
+            { id: 378, state: "Oregon", city: "Woodburn", auctionLocation: "Portland South Copart", price: 899 },
+            { id: 379, state: "Oregon", city: "Portland", auctionLocation: "Portland West IAA", price: 899 },
+            { id: 380, state: "Oregon", city: "Eugene", auctionLocation: "Eugene IAA, Copart", price: 939 },
+            { id: 381, state: "Washington", city: "Graham", auctionLocation: "Graham Copart", price: 849 },
+            { id: 382, state: "Washington", city: "Arlington", auctionLocation: "North Seattle Copart", price: 865 },
+            { id: 383, state: "Washington", city: "Puyallup", auctionLocation: "Seattle IAA", price: 865 },
+            { id: 384, state: "Washington", city: "Kent", auctionLocation: "Seattle Manheim", price: 865 },
+            { id: 385, state: "Washington", city: "Airway Heights", auctionLocation: "Spokane Copart", price: 919 },
+            { id: 386, state: "Washington", city: "Spokane Valley", auctionLocation: "Spokane IAA, Copart", price: 919 },
+            { id: 387, state: "Washington", city: "Pasco", auctionLocation: "Pasco Copart", price: 929 },
+            { id: 388, state: "Washington", city: "Washington", auctionLocation: "Elkotn", price: 905 }
+        ];
+
+        function round(num) { return Math.round((num + Number.EPSILON) * 100) / 100; }
+
+        function getBuyerFee(price) {
+            if (price < 100) return 1;
+            if (price < 200) return 25;
+            if (price < 300) return 60;
+            if (price < 350) return 85;
+            if (price < 400) return 100;
+            if (price < 450) return 125;
+            if (price < 500) return 135;
+            if (price < 550) return 145;
+            if (price < 600) return 155;
+            if (price < 700) return 170;
+            if (price < 800) return 195;
+            if (price < 900) return 215;
+            if (price < 1000) return 230;
+            if (price < 1200) return 250;
+            if (price < 1300) return 270;
+            if (price < 1400) return 285;
+            if (price < 1500) return 300;
+            if (price < 1600) return 315;
+            if (price < 1700) return 330;
+            if (price < 1800) return 350;
+            if (price < 2000) return 370;
+            if (price < 2400) return 390;
+            if (price < 2500) return 425;
+            if (price < 3000) return 460;
+            if (price < 3500) return 505;
+            if (price < 4000) return 555;
+            if (price < 4500) return 600;
+            if (price < 5000) return 625;
+            if (price < 5500) return 650;
+            if (price < 6000) return 675;
+            if (price < 6500) return 700;
+            if (price < 7000) return 720;
+            if (price < 7500) return 755;
+            if (price < 8000) return 775;
+            if (price < 8500) return 800;
+            if (price < 9000) return 820;
+            if (price < 10000) return 820;
+            if (price < 11500) return 850;
+            if (price < 12000) return 860;
+            if (price < 12500) return 875;
+            if (price < 15000) return 890;
+            return round(price * 0.06);
+        }
+
         $(document).ready(function () {
-            
-            // دالة التقريب لضمان التطابق مع الإكسل
-            function round(num) {
-                return Math.round((num + Number.EPSILON) * 100) / 100;
-            }
 
-            // دالة Buyer Fee مطابقة للإكسل تماماً
-            function getBuyerFee(p) {
-                if (p < 0) return 0;
-                if (p <= 99.99) return 1;
-                if (p <= 199.99) return 25;
-                if (p <= 299.99) return 60;
-                if (p <= 349.99) return 85;
-                if (p <= 399.99) return 100;
-                if (p <= 449.99) return 125;
-                if (p <= 499.99) return 135;
-                if (p <= 549.99) return 145;
-                if (p <= 599.99) return 155;
-                if (p <= 699.99) return 170;
-                if (p <= 799.99) return 195;
-                if (p <= 899.99) return 215;
-                if (p <= 999.99) return 230;
-                if (p <= 1199.99) return 250;
-                if (p <= 1299.99) return 270;
-                if (p <= 1399.99) return 285;
-                if (p <= 1499.99) return 300;
-                if (p <= 1599.99) return 315;
-                if (p <= 1699.99) return 330;
-                if (p <= 1799.99) return 350;
-                if (p <= 1999.99) return 370;
-                if (p <= 2399.99) return 390;
-                if (p <= 2499.99) return 425;
-                if (p <= 2999.99) return 460;
-                if (p <= 3499.99) return 505;
-                if (p <= 3999.99) return 555;
-                if (p <= 4499.99) return 600;
-                if (p <= 4999.99) return 625;
-                if (p <= 5499.99) return 650;
-                if (p <= 5999.99) return 675;
-                if (p <= 6499.99) return 700;
-                if (p <= 6999.99) return 720;
-                if (p <= 7499.99) return 755;
-                if (p <= 7999.99) return 775;
-                if (p <= 8499.99) return 800;
-                if (p <= 8999.99) return 820;
-                if (p <= 9999.99) return 820;
-                if (p <= 11499.99) return 850;
-                if (p <= 11999.99) return 860;
-                if (p <= 12499.99) return 875;
-                if (p <= 14999.99) return 890;
-                return round(p * 6 / 100);
-            }
+            // تهيئة Select2
+            $('#selAuction').select2({
+                data: SHIPPING_RATES.map(r => ({ id: r.price, text: r.auctionLocation, city: r.city, state: r.state })),
+                dir: $('html').attr('dir'),
+                templateResult: function(data) {
+                    if (!data.id) return data.text;
+                    return $(`
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="text-align: right;">
+                                <div style="font-weight:900; color:var(--calc-navy); font-size:0.9rem;">${data.text}</div>
+                                <div style="font-size:0.65rem; color:#94a3b8; text-transform:uppercase;">${data.city}, ${data.state}</div>
+                            </div>
+                            <div style="font-weight:900; color:var(--calc-gold); direction: ltr;">${data.id} ر.ع</div>
+                        </div>
+                    `);
+                },
+                templateSelection: function(data) {
+                    if (!data.id) return data.text;
+                    return $(`<div style="font-weight:900; width:100%; display:flex; justify-content:space-between; align-items:center;"><span>${data.text}</span> <span style="color:var(--calc-gold); direction:ltr; font-size:0.9rem;">${data.id} ر.ع</span></div>`);
+                }
+            });
 
-            // دالة Virtual Bid Fee
-            function getVirtualBidFee(p) {
-                if (p < 0) return 0;
-                if (p <= 99.99) return 0;
-                if (p <= 499.99) return 50;
-                if (p <= 999.99) return 65;
-                if (p <= 1499.99) return 85;
-                if (p <= 1999.99) return 95;
-                if (p <= 3999.99) return 110;
-                if (p <= 5999.99) return 125;
-                if (p <= 7999.99) return 145;
-                return 160;
-            }
-
-            // الدالة الديناميكية لحساب كل شيء فورياً بالـ JS
-            function calculateLocal() {
-                // 1. جلب المدخلات
+            // الدالة الديناميكية لحساب الحاسبة
+            function calculateSmartCalculator() {
                 var salePrice = parseFloat($('#inpSalePrice').val()) || 0;
-                var carType = parseInt($('input[name="carType"]:checked').val()); // 1=Big, 2=Mid, 3=Small
-                
-                // 2. جلب المتغيرات الديناميكية
-                var exRate = parseFloat($('#inpExchangeRate').val()) || 0;
-                var oceanFreightOMR = parseFloat($('#inpOceanFreight').val()) || 0;
-                var taxPerc = parseFloat($('#inpTaxPerc').val()) || 0;
-                var paymentSvc = parseFloat($('#inpPaymentSvc').val()) || 0;
-                var officeComm = parseFloat($('#inpOfficeComm').val()) || 0;
-                var feeBig = parseFloat($('#inpFeeBig').val()) || 0;
-                var feeMid = parseFloat($('#inpFeeMid').val()) || 0;
+                var oceanPrice = parseFloat($('#selAuction').val()) || 604;
+                var comm = parseFloat($('#inpComm').val()) || 0;
+                var transport = parseFloat($('#inpTransport').val()) || 0;
 
-                // --- 3. حساب المزاد (Auction) ---
-                var envFee = 15.00;
-                var gateFee = 95.00;
-                var titleFee = 40.00;
+                var carType = $('input[name="carType"]:checked').val();
+                var origin = $('input[name="origin"]:checked').val();
+
+                var exRate = parseFloat($('#inpExRate').val()) || 0.386;
+                var paymentSvc = parseFloat($('#inpPaymentSvc').val()) || 15.48;
+
+                // ثوابت المزاد
+                var envFee = 15;
+                var virtualFee = 110;
+                var gateFee = 95;
+                var titleFee = 40;
                 var buyerFee = getBuyerFee(salePrice);
-                var virtualFee = getVirtualBidFee(salePrice);
-                
-                var totalAuctionUSD = salePrice + buyerFee + envFee + virtualFee + gateFee + titleFee;
-                var totalOMR = round(totalAuctionUSD * exRate); // B8 * 0.386
 
-                // --- 4. حساب الشحن (Shipping) ---
-                var seaShipping = round(totalOMR + oceanFreightOMR); // B9 + 300
-                var taxCard = 0.00;
-                var tax = round(seaShipping * (taxPerc / 100));
-                var customs = 0.00;
-                var customsVat = round(customs * (5 / 100)); // B15 * 5%
-                var shippingCost = 0.00;
-                var carTypeFee = carType === 1 ? feeBig : (carType === 2 ? feeMid : 0);
+                // 1. حساب المزاد
+                var auctionTotalUSD = salePrice + buyerFee + envFee + virtualFee + gateFee + titleFee;
+                var auctionTotalOMR = round(auctionTotalUSD * exRate);
 
-                var totalShipping = round(taxCard + paymentSvc + tax + customs + customsVat + shippingCost + officeComm + carTypeFee);
+                // 2. حساب الشحن الأساسي
+                var shippingTotalOMR = oceanPrice + comm + transport + paymentSvc;
 
-                // --- 5. الإجماليات (Totals) ---
-                var finalTotal = round(totalShipping + totalOMR); // B21 + B9
-                var dueNow = round(totalOMR + paymentSvc + officeComm); // B9 + B13 + B18
-                var dueArrival = round(finalTotal - dueNow); // B24 - C16
+                // 3. حساب الضرائب والجمارك
+                var taxOMR = (auctionTotalOMR + 300) * 0.05;
+                var customsOMR = (origin === 'NON_US') ? (taxOMR + (taxOMR * 0.05)) : 0;
 
-                // --- 6. تحديث الواجهة (UI) مع التنسيق للأرقام ---
+                var isElectric = (carType === 'Electric');
+                var finalTaxOMR = isElectric ? 0 : taxOMR;
+                var finalCustomsOMR = isElectric ? 0 : customsOMR;
+
+                // 4. المجاميع النهائية
+                var grandTotal = auctionTotalOMR + shippingTotalOMR + finalCustomsOMR + finalTaxOMR;
+                var initialDue = auctionTotalOMR + comm;
+                var arrivalDue = grandTotal - initialDue;
+
+                // 5. التحديث في الشاشة
                 const fmt = (num) => num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                
-                $('#tdSalePrice').text(fmt(salePrice));
-                $('#tdBuyerFee').text(fmt(buyerFee));
-                $('#tdEnvFee').text(fmt(envFee));
-                $('#tdVirtualFee').text(fmt(virtualFee));
-                $('#tdGateFee').text(fmt(gateFee));
-                $('#tdTitleFee').text(fmt(titleFee));
-                $('#tdTotalAuctionUSD').text(fmt(totalAuctionUSD));
-                $('#tdTotalOMR').text(fmt(totalOMR) + ' .ر.ع');
 
-                $('#tdSeaShipping').text(fmt(seaShipping));
-                $('#tdTaxCard').text(fmt(taxCard) + ' .ر.ع');
-                $('#tdPaymentService').text(fmt(paymentSvc) + ' .ر.ع');
-                $('#tdTax').text(fmt(tax) + ' .ر.ع');
-                $('#tdCustoms').text(fmt(customs) + ' .ر.ع');
-                $('#tdCustomsVat').text(fmt(customsVat) + ' .ر.ع');
-                $('#tdShippingCost').text(fmt(shippingCost) + ' .ر.ع');
-                $('#tdOfficeComm').text(fmt(officeComm) + ' .ر.ع');
-                $('#tdCarTypeFee').text(fmt(carTypeFee) + ' .ر.ع');
-                $('#tdTotalShipping').text(fmt(totalShipping) + ' .ر.ع');
+                $('#resBuyerFee').text(fmt(buyerFee));
+                $('#resEnvFee').text(fmt(envFee));
+                $('#resVirtualFee').text(fmt(virtualFee));
+                $('#resGateFee').text(fmt(gateFee));
+                $('#resTitleFee').text(fmt(titleFee));
+                $('#resAuctionUSD').text('$' + fmt(auctionTotalUSD));
+                $('#resAuctionOMR').text(fmt(auctionTotalOMR));
 
-                $('#tdFinalTotal').text(fmt(finalTotal) + ' .ر.ع');
-                $('#tdDueNow').text(fmt(dueNow));
-                $('#tdDueArrival').text(fmt(dueArrival));
+                $('#resOceanFreight').text(fmt(oceanPrice));
+                $('#resCommission').text(fmt(comm));
+                $('#resTransport').text(fmt(transport));
+
+                if(isElectric) {
+                    $('#resTaxContainer').html('<span style="color:#16a34a; background:#f0fdf4; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;">معفية تماماً</span>');
+                    $('#resCustomsContainer').html('<span style="color:#16a34a; background:#f0fdf4; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;">معفية تماماً</span>');
+                } else {
+                    $('#resTaxContainer').html('<span class="val">' + fmt(finalTaxOMR) + '</span> <span class="curr">ر.ع</span>');
+                    $('#resCustomsContainer').html('<span class="val">' + fmt(finalCustomsOMR) + '</span> <span class="curr">ر.ع</span>');
+                }
+
+                $('#resShippingTotal').text(fmt(shippingTotalOMR + finalTaxOMR + finalCustomsOMR - paymentSvc));
+
+                $('#resGrandTotal').text(fmt(grandTotal));
+                $('#resInitialDue').text(fmt(initialDue));
+                $('#resArrivalDue').text(fmt(arrivalDue));
             }
 
-            // تشغيل الحساب عند كتابة أو تغيير أي شيء في المدخلات أو المتغيرات الديناميكية
-            $('.form-control, input[type="radio"]').on('input change', calculateLocal);
+            $('.calc-trigger').on('input change', calculateSmartCalculator);
+            $('#selAuction').on('change', calculateSmartCalculator);
 
-            // تشغيل الدالة مرة واحدة عند تحميل الصفحة
-            calculateLocal();
+            calculateSmartCalculator();
+
+            // --- دوال التصدير والرسوم البيانية ---
+            window.exportToExcel = function() {
+                var table = document.getElementById("accountingReportTable");
+                var wb = XLSX.utils.table_to_book(table, {sheet: "التقرير المالي"});
+                XLSX.writeFile(wb, "Accounting_Report_@(currentYear).xlsx");
+            }
+
+            window.exportToPDF = function() {
+                $('#pdfReportTitle').show();
+                var element = document.getElementById('pdfContentArea');
+                var opt = {
+                  margin:       10,
+                  filename:     'Accounting_Report_@(currentYear).pdf',
+                  image:        { type: 'jpeg', quality: 0.98 },
+                  html2canvas:  { scale: 2, useCORS: true },
+                  jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                html2pdf().set(opt).from(element).save().then(function(){
+                    $('#pdfReportTitle').hide();
+                });
+            }
+
+            const salesData = [@Html.Raw(string.Join(",", monthlySales.Select(m => m.ToString(System.Globalization.CultureInfo.InvariantCulture))))];
+            const purchasesData = [@Html.Raw(string.Join(",", monthlyPurchases.Select(m => m.ToString(System.Globalization.CultureInfo.InvariantCulture))))];
+            const monthLabels = [ '@Html.Raw(Localizer["يناير"])', '@Html.Raw(Localizer["فبراير"])', '@Html.Raw(Localizer["مارس"])', '@Html.Raw(Localizer["أبريل"])', '@Html.Raw(Localizer["مايو"])', '@Html.Raw(Localizer["يونيو"])', '@Html.Raw(Localizer["يوليو"])', '@Html.Raw(Localizer["أغسطس"])', '@Html.Raw(Localizer["سبتمبر"])', '@Html.Raw(Localizer["أكتوبر"])', '@Html.Raw(Localizer["نوفمبر"])', '@Html.Raw(Localizer["ديسمبر"])'];
+
+            const rootStyles = getComputedStyle(document.documentElement);
+            const goldColor = rootStyles.getPropertyValue('--calc-gold').trim() || '#B88E44';
+            const navyColor = rootStyles.getPropertyValue('--calc-navy').trim() || '#1e293b';
+
+            if(document.getElementById('financeChart')){
+                const ctx = document.getElementById('financeChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: monthLabels,
+                        datasets: [
+                            { label: '@Html.Raw(Localizer["إيرادات الفواتير"])', data: salesData, borderColor: navyColor, backgroundColor: navyColor + '10', tension: 0.4, borderWidth: 3, pointRadius: 4, fill: true },
+                            { label: '@Html.Raw(Localizer["المصروفات والمشتريات"])', data: purchasesData, borderColor: goldColor, backgroundColor: goldColor + '10', tension: 0.4, borderWidth: 3, pointRadius: 4, fill: true }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { position: 'top', labels: { usePointStyle: true, font: { family: 'Cairo', weight: 'bold' } } } },
+                        scales: { y: { beginAtZero: true, ticks: { font: { family: 'monospace', weight: 'bold' } } }, x: { ticks: { font: { family: 'Cairo', weight: 'bold' } } } },
+                        interaction: { mode: 'index', intersect: false }
+                    }
+                });
+            }
         });
     </script>
 }
