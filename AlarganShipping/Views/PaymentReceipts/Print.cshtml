@@ -1,7 +1,7 @@
 ﻿@model AlarganShipping.Models.PaymentReceipt
 @{
     ViewData["Title"] = "طباعة سند قبض";
-    Layout = null; 
+    Layout = null;
 }
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -13,55 +13,261 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
-        :root { --brand-red: #a81c2f; --text-dark: #1e293b; }
-        body { font-family: 'Cairo', sans-serif; background-color: #e2e8f0; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        
-        .controls { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; max-width: 800px; justify-content: flex-end; direction: ltr; }
-        .btn-action { background: white; color: var(--text-dark); border: 1px solid #cbd5e1; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: 700; display: flex; align-items: center; gap: 5px; text-decoration: none; }
+        :root {
+            --brand-red: #a81c2f;
+            --text-dark: #1e293b;
+        }
 
-        .receipt-card { background: white; width: 100%; max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; display: flex; flex-direction: column; }
-        .top-bar { height: 25px; background-color: var(--brand-red); width: 100%; }
-        
-        .header-section { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
-        .company-name-en { font-size: 1.2rem; font-weight: 700; color: var(--text-dark); flex: 1; text-align: left; }
-        .logo-area { flex: 1; text-align: center; }
-        .logo-area img { height: 90px; object-fit: contain; }
-        .company-name-ar { font-size: 1.4rem; font-weight: 900; color: var(--text-dark); flex: 1; text-align: right; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #e2e8f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-        .title-section { display: flex; justify-content: space-between; align-items: center; padding: 0 40px; margin-bottom: 40px; }
-        .receipt-no { color: var(--brand-red); font-weight: 900; font-size: 1.1rem; flex: 1; text-align: left; }
-        .receipt-title { flex: 1; text-align: center; }
-        .receipt-title h2 { margin: 0; color: var(--brand-red); font-size: 1.6rem; font-weight: 900; }
-        .receipt-title p { margin: 0; font-weight: 700; color: var(--text-dark); font-size: 1.1rem; }
-        .receipt-date { flex: 1; text-align: right; font-weight: 700; font-size: 1.1rem; color: var(--text-dark); }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 800px;
+            justify-content: flex-end;
+            direction: ltr;
+        }
 
-        .body-section { padding: 0 40px; flex-grow: 1; }
-        .form-row { display: flex; align-items: flex-end; margin-bottom: 25px; }
-        .label-ar { font-weight: 800; color: var(--text-dark); font-size: 1.1rem; white-space: nowrap; }
-        .label-en { font-weight: 700; color: var(--text-dark); font-size: 1.05rem; white-space: nowrap; }
-        .dotted-value { flex-grow: 1; border-bottom: 2px dotted #64748b; margin: 0 15px; text-align: center; font-weight: 800; font-size: 1.1rem; color: var(--text-dark); padding-bottom: 2px; }
+        .btn-action {
+            background: white;
+            color: var(--text-dark);
+            border: 1px solid #cbd5e1;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+        }
 
-        .signatures-section { display: flex; justify-content: space-between; padding: 20px 40px 40px; margin-top: 20px; }
-        .sig-block { display: flex; align-items: flex-end; width: 45%; }
-        .bottom-bar { background-color: var(--brand-red); padding: 12px 40px; display: flex; justify-content: flex-start; align-items: center; gap: 15px; direction: ltr; }
-        .contact-icon { width: 28px; height: 28px; border: 1.5px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; }
+        .receipt-card {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            height: 25px;
+            background-color: var(--brand-red);
+            width: 100%;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+        }
+
+        .company-name-en {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            flex: 1;
+            text-align: left;
+        }
+
+        .logo-area {
+            flex: 1;
+            text-align: center;
+        }
+
+            .logo-area img {
+                height: 90px;
+                object-fit: contain;
+            }
+
+        .company-name-ar {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            flex: 1;
+            text-align: right;
+        }
+
+        .title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            margin-bottom: 40px;
+        }
+
+        .receipt-no {
+            color: var(--brand-red);
+            font-weight: 900;
+            font-size: 1.1rem;
+            flex: 1;
+            text-align: left;
+        }
+
+        .receipt-title {
+            flex: 1;
+            text-align: center;
+        }
+
+            .receipt-title h2 {
+                margin: 0;
+                color: var(--brand-red);
+                font-size: 1.6rem;
+                font-weight: 900;
+            }
+
+            .receipt-title p {
+                margin: 0;
+                font-weight: 700;
+                color: var(--text-dark);
+                font-size: 1.1rem;
+            }
+
+        .receipt-date {
+            flex: 1;
+            text-align: right;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+
+        .body-section {
+            padding: 0 40px;
+            flex-grow: 1;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: flex-end;
+            margin-bottom: 25px;
+        }
+
+        .label-ar {
+            font-weight: 800;
+            color: var(--text-dark);
+            font-size: 1.1rem;
+            white-space: nowrap;
+        }
+
+        .label-en {
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 1.05rem;
+            white-space: nowrap;
+        }
+
+        .dotted-value {
+            flex-grow: 1;
+            border-bottom: 2px dotted #64748b;
+            margin: 0 15px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            padding-bottom: 2px;
+        }
+
+        .signatures-section {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 40px 40px;
+            margin-top: 20px;
+        }
+
+        .sig-block {
+            display: flex;
+            align-items: flex-end;
+            width: 45%;
+        }
+
+        .bottom-bar {
+            background-color: var(--brand-red);
+            padding: 12px 40px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 15px;
+            direction: ltr;
+        }
+
+        .contact-icon {
+            width: 28px;
+            height: 28px;
+            border: 1.5px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+        }
 
         /* ========================================================
-           كود الطباعة الموحد (One Page Magic)
-           ======================================================== */
+                   كود الطباعة الموحد (One Page Magic)
+                   ======================================================== */
         @@media print {
-            @@page { size: A4 landscape; margin: 5mm; }
-            body, html { background: white !important; padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100vh !important; overflow: hidden !important; }
-            .controls { display: none !important; }
-            .receipt-card { 
-                box-shadow: none !important; margin: 0 !important; padding: 0 !important; 
-                width: 100% !important; max-width: 100% !important; border: none !important;
-                transform: scale(0.95); transform-origin: top center;
+            @@page {
+                size: A4 landscape;
+                margin: 5mm;
             }
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-            .top-bar, .bottom-bar { background-color: var(--brand-red) !important; color: white !important; }
-            .receipt-no, .receipt-title h2 { color: var(--brand-red) !important; }
-            img { display: inline-block !important; visibility: visible !important; }
+
+            body, html {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                height: 100vh !important;
+                overflow: hidden !important;
+            }
+
+            .controls {
+                display: none !important;
+            }
+
+            .receipt-card {
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                border: none !important;
+                transform: scale(0.95);
+                transform-origin: top center;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            .top-bar, .bottom-bar {
+                background-color: var(--brand-red) !important;
+                color: white !important;
+            }
+
+            .receipt-no, .receipt-title h2 {
+                color: var(--brand-red) !important;
+            }
+
+            img {
+                display: inline-block !important;
+                visibility: visible !important;
+            }
         }
     </style>
 </head>
@@ -94,6 +300,7 @@
                 <div class="dotted-value">@Model.Customer?.Name</div>
                 <div class="label-en" dir="ltr">Received from Mr</div>
             </div>
+
             <div class="form-row">
                 <div class="label-ar">مبلغ قدره</div>
                 <div class="dotted-value" dir="ltr">
@@ -101,19 +308,33 @@
                 </div>
                 <div class="label-en" dir="ltr">Amount</div>
             </div>
+
             <div class="form-row">
                 <div class="label-ar">وذلك مقابل</div>
-                <div class="dotted-value">@Html.Raw(Model.Notes)</div>
+                <div class="dotted-value">
+                    @Html.Raw(Model.Notes)
+
+                    @* طباعة تفاصيل السيارة المرتبطة إذا تم تحديدها (لتأكيد كشف الحساب) *@
+                    @if (Model.Car != null)
+                    {
+                        <span style="color: var(--brand-red); font-size: 0.95rem; margin-right: 10px;">
+                            [ دفعة لسيارة: @Model.Car.Make @Model.Car.Model - شاصي: <span dir="ltr">@Model.Car.VIN</span> ]
+                        </span>
+                    }
+                </div>
                 <div class="label-en" dir="ltr">Being</div>
             </div>
+
             <div class="form-row">
                 <div class="label-ar">نقدا / شيك رقم</div>
-                <div class="dotted-value">@Model.PaymentMethod - @(Model.ReferenceNumber ?? "...................")</div>
+                <div class="dotted-value">@Model.PaymentMethod - @(string.IsNullOrWhiteSpace(Model.ReferenceNumber) ? "..................." : Model.ReferenceNumber)</div>
                 <div class="label-en" dir="ltr">Cash / Check number</div>
             </div>
+
             <div class="form-row">
                 <div class="label-ar">على بنك</div>
-                <div class="dotted-value">....................................................................</div>
+                <!-- ✅ التعديل هنا: جلب اسم البنك إذا وجد، وإلا نضع نقاط -->
+                <div class="dotted-value">@(string.IsNullOrWhiteSpace(Model.BankName) ? "...................................................................." : Model.BankName)</div>
                 <div class="label-en" dir="ltr">On a Bank</div>
             </div>
         </div>

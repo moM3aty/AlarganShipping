@@ -16,6 +16,26 @@ namespace AlarganShipping.Controllers
             _context = context;
         }
 
+        // --- الدالة المركزية لحساب الإجمالي (تحسين رقم 10 و 4) ---
+        private decimal CalculateTotal(Invoice invoice)
+        {
+            // إذا كان شحن فقط، نتجاهل قيمة السيارة والمزاد تماماً
+            decimal carCost = invoice.IsShippingOnly ? 0 : (invoice.CarPrice + invoice.AuctionFees);
+
+            // جمع البنود الباقية (مع استخدام ClearanceFees بدلاً من تضارب الجمارك)
+            return carCost
+                 + invoice.TransferFees
+                 + invoice.CarSizeFees
+                 + invoice.InlandTowing
+                 + invoice.SeaFreight
+                 + invoice.OmanTowingFees
+                 + invoice.ClearanceFees
+                 + invoice.TaxAmount
+                 + invoice.CustomsAmount
+                 + invoice.StorageFees
+                 + invoice.CompanyCommission;
+        }
+
         public async Task<IActionResult> Index()
         {
             var invoices = await _context.Invoices
@@ -48,7 +68,7 @@ namespace AlarganShipping.Controllers
             ModelState.Remove("Car");
             ModelState.Remove("InvoiceNumber");
             ModelState.Remove("TotalAmount");
-
+            ModelState.Remove("CarSizeFees");
             if (ModelState.IsValid)
             {
                 if (string.IsNullOrEmpty(invoice.InvoiceNumber) || invoice.InvoiceNumber == "INV-AUTO")
@@ -56,28 +76,23 @@ namespace AlarganShipping.Controllers
                     invoice.InvoiceNumber = "INV-" + DateTime.Now.ToString("yyMM") + "-" + new Random().Next(1000, 9999);
                 }
 
-                decimal carCost = invoice.IsShippingOnly ? 0 : (invoice.CarPrice + invoice.AuctionFees);
-
-                // إضافة البنود الثلاثة الجديدة للعملية الحسابية
-                invoice.TotalAmount = carCost + invoice.InlandTowing + invoice.SeaFreight +
-                                      invoice.CustomsAndTaxes + invoice.CompanyCommission + invoice.StorageFees +
-                                      invoice.TransferFees + invoice.OmanTowingFees + invoice.CarSizeFees;
+                // الحساب الموحد
+                invoice.TotalAmount = CalculateTotal(invoice);
 
                 _context.Add(invoice);
 
-                // 💡 أتمتة: تحديث حساب العميل وإرسال إشعار فاتورة
                 var customer = await _context.Customers.FindAsync(invoice.CustomerId);
                 if (customer != null)
                 {
                     customer.TotalBalance += invoice.TotalAmount;
-                    customer.TotalPaid += invoice.AmountPaid; // في حالة دفع مقدم
+                    customer.TotalPaid += invoice.AmountPaid;
                     _context.Update(customer);
 
                     _context.Notifications.Add(new Notification
                     {
                         CustomerId = customer.Id,
                         Title = "فاتورة جديدة",
-                        Message = $"تم إصدار فاتورة جديدة برقم {invoice.InvoiceNumber} بقيمة {invoice.TotalAmount.ToString("N2")}$. يرجى المراجعة والسداد.",
+                        Message = $"تم إصدار فاتورة جديدة برقم {invoice.InvoiceNumber} بقيمة {invoice.TotalAmount.ToString("N2")}$.",
                         Type = "InvoiceAlert"
                     });
                 }
@@ -112,6 +127,7 @@ namespace AlarganShipping.Controllers
             ModelState.Remove("Car");
             ModelState.Remove("InvoiceNumber");
             ModelState.Remove("TotalAmount");
+            ModelState.Remove("CarSizeFees");
 
             if (ModelState.IsValid)
             {
@@ -123,14 +139,9 @@ namespace AlarganShipping.Controllers
                     invoice.InvoiceNumber = oldInvoice.InvoiceNumber;
                     invoice.IssueDate = oldInvoice.IssueDate;
 
-                    decimal carCost = invoice.IsShippingOnly ? 0 : (invoice.CarPrice + invoice.AuctionFees);
+                    // الحساب الموحد
+                    invoice.TotalAmount = CalculateTotal(invoice);
 
-                    // إضافة البنود الثلاثة الجديدة في التعديل
-                    invoice.TotalAmount = carCost + invoice.InlandTowing + invoice.SeaFreight +
-                                          invoice.CustomsAndTaxes + invoice.CompanyCommission + invoice.StorageFees +
-                                          invoice.TransferFees + invoice.OmanTowingFees + invoice.CarSizeFees;
-
-                    // 💡 أتمتة: تعديل الفروقات المحاسبية بذكاء
                     if (oldInvoice.CustomerId != invoice.CustomerId)
                     {
                         var oldCustomer = await _context.Customers.FindAsync(oldInvoice.CustomerId);
@@ -148,6 +159,9 @@ namespace AlarganShipping.Controllers
                             newCustomer.TotalBalance += invoice.TotalAmount;
                             newCustomer.TotalPaid += invoice.AmountPaid;
                             _context.Update(newCustomer);
+
+                            // إشعار نقل الفاتورة لعميل جديد
+                            _context.Notifications.Add(new Notification { CustomerId = newCustomer.Id, Title = "فاتورة معدلة", Message = $"تم تحويل الفاتورة رقم {invoice.InvoiceNumber} إلى حسابك.", Type = "InvoiceAlert" });
                         }
                     }
                     else
@@ -162,6 +176,12 @@ namespace AlarganShipping.Controllers
                             customer.TotalPaid += diffPaid;
                             if (customer.TotalBalance < 0) customer.TotalBalance = 0;
                             _context.Update(customer);
+
+                            // إشعار التعديل (تحسين رقم 7)
+                            if (diffBalance != 0)
+                            {
+                                _context.Notifications.Add(new Notification { CustomerId = customer.Id, Title = "تعديل فاتورة", Message = $"تم تعديل إجمالي الفاتورة {invoice.InvoiceNumber}. الإجمالي الجديد: {invoice.TotalAmount.ToString("N2")}$.", Type = "InvoiceAlert" });
+                            }
                         }
                     }
 

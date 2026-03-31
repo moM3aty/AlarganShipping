@@ -430,6 +430,9 @@ namespace AlarganShipping.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("CustomsAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal>("CustomsFees")
                         .HasColumnType("decimal(18,2)");
 
@@ -456,6 +459,9 @@ namespace AlarganShipping.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("StorageFees")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TaxAmount")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("TotalAmount")
@@ -569,6 +575,12 @@ namespace AlarganShipping.Migrations
                     b.Property<string>("AttachmentPath")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("BankName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CarId")
+                        .HasColumnType("int");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
@@ -593,6 +605,8 @@ namespace AlarganShipping.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CarId");
 
                     b.HasIndex("CustomerId");
 
@@ -1110,11 +1124,17 @@ namespace AlarganShipping.Migrations
 
             modelBuilder.Entity("AlarganShipping.Models.PaymentReceipt", b =>
                 {
+                    b.HasOne("AlarganShipping.Models.Car", "Car")
+                        .WithMany()
+                        .HasForeignKey("CarId");
+
                     b.HasOne("AlarganShipping.Models.Customer", "Customer")
                         .WithMany("PaymentReceipts")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Car");
 
                     b.Navigation("Customer");
                 });

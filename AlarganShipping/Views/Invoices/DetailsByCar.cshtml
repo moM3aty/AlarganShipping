@@ -2,11 +2,19 @@
 @{
     ViewData["Title"] = Localizer["تفاصيل عملية البيع"];
 
-    // تجميع الرسوم لسهولة العرض
-    decimal carTotal = Model.CarPrice + Model.AuctionFees;
-    decimal usPickup = Model.InlandTowing; // رسوم الالتقاط والنقل بأمريكا
-    decimal shippingAndCustoms = Model.SeaFreight + Model.CustomsAndTaxes;
-    decimal otherFees = Model.TransferFees + Model.OmanTowingFees + Model.CarSizeFees + Model.StorageFees;
+    // --- التجميع المحاسبي لسهولة العرض على العميل ---
+
+    // 1. قيمة السيارة والمزاد
+    decimal carTotal = Model.CarPrice + Model.AuctionFees + Model.TransferFees;
+
+    // 2. رسوم الشحن (أمريكا + بحري + عمان + الحجم)
+    decimal shippingFees = Model.InlandTowing + Model.SeaFreight + Model.OmanTowingFees + Model.CarSizeFees;
+
+    // 3. الضريبة والجمارك (تخليص + ضريبة + جمارك)
+    decimal taxAndCustoms = Model.CustomsAndTaxes + Model.TaxAmount + Model.CustomsAmount;
+
+    // 4. الغرامات والأرضيات
+    decimal penalties = Model.StorageFees;
 }
 
 <style>
@@ -95,6 +103,13 @@
             font-family: monospace;
         }
 
+    .breakdown-sub {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
     /* قسم الدفعات النهائي */
     .finance-grid {
         display: grid;
@@ -182,29 +197,36 @@
         </div>
     </div>
 
-    <!-- تفصيل بنود الفاتورة -->
     <div class="breakdown-grid">
-        <div class="breakdown-box">
-            <h4><i class="fa-solid fa-car"></i> @Localizer["قيمة السيارة والمزاد"]</h4>
-            <div class="val">$@carTotal.ToString("N2")</div>
+        @if (!Model.IsShippingOnly)
+        {
+            <div class="breakdown-box">
+                <h4><i class="fa-solid fa-car"></i> @Localizer["قيمة شراء السيارة"]</h4>
+                <div class="val">$@carTotal.ToString("N2")</div>
+                <div class="breakdown-sub">شراء + مزاد + تحويل</div>
+            </div>
+        }
+
+        <div class="breakdown-box" style="border-color: #cbd5e1; background: white;">
+            <h4><i class="fa-solid fa-ship"></i> @Localizer["رسوم الشحن"]</h4>
+            <div class="val">$@shippingFees.ToString("N2")</div>
+            <div class="breakdown-sub">أمريكا + بحري + عمان + حجم السيارة</div>
         </div>
 
         <div class="breakdown-box" style="border-color: #cbd5e1; background: white;">
-            <h4><i class="fa-solid fa-truck-pickup"></i> @Localizer["رسوم الالتقاط (أمريكا)"]</h4>
-            <div class="val">$@usPickup.ToString("N2")</div>
-            <div style="font-size: 0.75rem; color: #94a3b8; font-weight: bold; margin-top: 5px;">Inland Towing (USA)</div>
+            <h4><i class="fa-solid fa-building-columns"></i> @Localizer["الضريبة والجمارك"]</h4>
+            <div class="val">$@taxAndCustoms.ToString("N2")</div>
+            <div class="breakdown-sub">تخليص + ضريبة VAT + جمارك</div>
         </div>
 
-        <div class="breakdown-box" style="border-color: #cbd5e1; background: white;">
-            <h4><i class="fa-solid fa-ship"></i> @Localizer["الشحن والجمارك"]</h4>
-            <div class="val">$@shippingAndCustoms.ToString("N2")</div>
-            <div style="font-size: 0.75rem; color: #94a3b8; font-weight: bold; margin-top: 5px;">Sea Freight + Customs</div>
-        </div>
-
-        <div class="breakdown-box">
-            <h4><i class="fa-solid fa-plus"></i> @Localizer["رسوم أخرى (حجم/نقل)"]</h4>
-            <div class="val">$@otherFees.ToString("N2")</div>
-        </div>
+        @if (penalties > 0)
+        {
+            <div class="breakdown-box" style="background: #fef2f2; border-color: #fecaca;">
+                <h4 style="color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> @Localizer["رسوم غرامات"]</h4>
+                <div class="val" style="color: #dc2626;">$@penalties.ToString("N2")</div>
+                <div class="breakdown-sub" style="color: #f87171;">تأخير وتخزين (Storage)</div>
+            </div>
+        }
 
         <div class="breakdown-box" style="background: rgba(184, 147, 90, 0.05); border-color: rgba(184, 147, 90, 0.2);">
             <h4><i class="fa-solid fa-hand-holding-dollar"></i> @Localizer["عمولة الشركة (الإدارة)"]</h4>
@@ -212,25 +234,23 @@
         </div>
     </div>
 
-    <!-- قسم الدفعات -->
     <div class="finance-grid">
         <div class="finance-box paid-box">
-            <h4>@Localizer["إجمالي ما دفعه العميل"]</h4>
+            <h4>@Localizer["إجمالي ما دفعه العميل مقدماً"]</h4>
             <div class="val">$@Model.AmountPaid.ToString("N2")</div>
         </div>
         <div class="finance-box balance-box">
-            <h4>@Localizer["المتبقي للتحصيل (الديون)"]</h4>
+            <h4>@Localizer["المتبقي للتحصيل عند الاستلام"]</h4>
             <div class="val">$@Model.RemainingAmount.ToString("N2")</div>
         </div>
     </div>
 
-    <!-- أزرار التحكم -->
     <div style="margin-top: 2.5rem; border-top: 1px solid #f1f5f9; padding-top: 2rem; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
         <a href="@Url.Action("Details", "Invoices", new { id = Model.Id })" class="btn" style="background: var(--primary-navy); color: white; border-radius: 10px; font-weight: 800; padding: 12px 30px; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-            <i class="fa-solid fa-print"></i> @Localizer["طباعة الفاتورة"]
+            <i class="fa-solid fa-print"></i> @Localizer["طباعة الفاتورة للعميل"]
         </a>
         <a href="@Url.Action("Edit", "Invoices", new { id = Model.Id })" class="btn" style="background: var(--primary-gold); color: white; border-radius: 10px; font-weight: 800; padding: 12px 30px; text-decoration: none; box-shadow: 0 4px 10px rgba(184, 147, 90, 0.2);">
-            <i class="fa-solid fa-pen"></i> @Localizer["تعديل الرسوم"]
+            <i class="fa-solid fa-pen"></i> @Localizer["تعديل الفاتورة والرسوم"]
         </a>
         <a href="@Url.Action("Create", "PaymentReceipts", new { invoiceId = Model.Id })" class="btn" style="background: #16a34a; color: white; border-radius: 10px; font-weight: 800; padding: 12px 30px; text-decoration: none; box-shadow: 0 4px 10px rgba(22, 163, 74, 0.2);">
             <i class="fa-solid fa-dollar-sign"></i> @Localizer["تسجيل دفعة استلام"]

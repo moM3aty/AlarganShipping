@@ -8,7 +8,7 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. إعداد الترجمة
+// 1. إعداد الترجمة (عربي وانجليزي)
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 builder.Services.AddControllersWithViews()
@@ -27,22 +27,48 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/Login";
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
     });
+
 builder.Services.AddScoped<ICalculatorService, CalculatorService>();
+
 var app = builder.Build();
 
-// 4. إعداد اللغات المدعومة (العربية والإنجليزية)
-var supportedCultures = new[]
+// ========================================================================
+// 4. الحل الجذري والسحري (تهيئة اللغات وضبط الفاصلة العشرية)
+// ========================================================================
+
+// أ. تجهيز الثقافة الإنجليزية (تستخدم النقطة تلقائياً)
+var enCulture = new CultureInfo("en-US");
+
+// ب. تجهيز الثقافة العربية، وإجبارها على استخدام النقطة (.) في الأرقام بدلاً من الفاصلة (,)
+var arCulture = new CultureInfo("ar");
+arCulture.NumberFormat.NumberDecimalSeparator = ".";
+arCulture.NumberFormat.CurrencyDecimalSeparator = ".";
+
+var supportedCultures = new[] { enCulture, arCulture };
+
+// ج. إعداد خيارات الترجمة والـ Culture
+var localizationOptions = new RequestLocalizationOptions
 {
-    new CultureInfo("ar"),
-    new CultureInfo("en-US")
+    // الواجهة الافتراضية عربي، لكن الأرقام والتواريخ الافتراضية أمريكي
+    DefaultRequestCulture = new RequestCulture(culture: enCulture, uiCulture: arCulture),
+    SupportedCultures = supportedCultures,     // لضبط الأرقام والتواريخ
+    SupportedUICultures = supportedCultures,   // لضبط نصوص الواجهة والترجمة
+
+    // منع المتصفح من فرض لغته الخاصة (تجاهل لغة المتصفح والاعتماد على الكوكيز أو الرابط)
+    RequestCultureProviders = new List<IRequestCultureProvider>
+    {
+        new QueryStringRequestCultureProvider(),
+        new CookieRequestCultureProvider()
+    }
 };
 
-app.UseRequestLocalization(new RequestLocalizationOptions
-{
-    DefaultRequestCulture = new RequestCulture("ar"),
-    SupportedCultures = supportedCultures,
-    SupportedUICultures = supportedCultures
-});
+app.UseRequestLocalization(localizationOptions);
+
+// فرض الـ Culture على الـ Threads في الخلفية لضمان عمل الـ Model Binding بنجاح
+CultureInfo.DefaultThreadCurrentCulture = enCulture;
+CultureInfo.DefaultThreadCurrentUICulture = arCulture;
+
+// ========================================================================
 
 // 5. إعدادات بيئة العمل
 if (!app.Environment.IsDevelopment())

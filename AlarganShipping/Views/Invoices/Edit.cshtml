@@ -4,7 +4,6 @@
 }
 
 <style>
-    /* نفس تنسيقات الـ Create بالضبط لضمان توحيد المظهر */
     .form-page-header {
         display: flex;
         justify-content: space-between;
@@ -201,56 +200,39 @@
             flex: 1;
         }
 
-    .select2-container--default .select2-selection--single {
-        background-color: white;
+    .size-selector {
+        display: flex;
+        gap: 10px;
+    }
+
+    .size-option {
+        flex: 1;
+        text-align: center;
+        background: #f8fafc;
         border: 2px solid #e2e8f0;
         border-radius: 0.75rem;
-        height: 45px;
-        display: flex;
-        align-items: center;
+        padding: 10px;
+        cursor: pointer;
+        font-weight: bold;
         transition: 0.3s;
     }
 
-        .select2-container--default .select2-selection--single:focus {
-            border-color: var(--primary-gold);
-            box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1);
+        .size-option.active {
+            background: var(--primary-navy);
+            color: white;
+            border-color: var(--primary-navy);
         }
 
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: var(--primary-navy);
-            font-weight: 700;
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 43px;
-            right: 10px;
-        }
-
-    html[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
-        left: 10px;
-        right: auto;
+    .usd-preview {
+        display: block;
+        font-size: 0.75rem;
+        color: #3b82f6;
+        margin-top: 5px;
+        font-family: monospace;
     }
 
-    @@media (max-width: 768px) {
-        .premium-form-card
-
-    {
-        padding: 1.5rem;
-    }
-
-    .form-page-header {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .btn-back {
-        width: 100%;
-        justify-content: center;
-        display: flex;
-    }
-
+    .size-option.active .usd-preview {
+        color: #bfdbfe;
     }
 </style>
 
@@ -266,7 +248,6 @@
     <form asp-action="Edit" method="post" id="invoiceEditForm">
         @Html.AntiForgeryToken()
 
-        <!-- حقول مخفية للحفاظ على البيانات الأساسية -->
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="InvoiceNumber" />
         <input type="hidden" asp-for="IssueDate" />
@@ -275,11 +256,11 @@
         <div class="form-grid" style="margin-bottom: 2rem;">
             <div class="form-group">
                 <label asp-for="CustomerId" class="form-label">@Localizer["العميل"] *</label>
-                <select asp-for="CustomerId" class="form-control select2" asp-items="ViewBag.CustomerId" required></select>
+                <select asp-for="CustomerId" class="form-control select2" asp-items="ViewBag.CustomerId"></select>
             </div>
             <div class="form-group">
                 <label asp-for="CarId" class="form-label">@Localizer["السيارة المرتبطة"] *</label>
-                <select asp-for="CarId" class="form-control select2" asp-items="ViewBag.CarId" required></select>
+                <select asp-for="CarId" class="form-control select2" asp-items="ViewBag.CarId"></select>
             </div>
         </div>
 
@@ -293,57 +274,70 @@
         <div class="form-grid">
             <div class="form-group car-cost-group">
                 <label asp-for="CarPrice" class="form-label">@Localizer["سعر بيع السيارة للعميل ($)"]</label>
-                <input asp-for="CarPrice" class="form-control input-money calc-field" type="number" step="0.01" />
+                <input asp-for="CarPrice" class="form-control input-money calc-field" type="number" step="0.01" value="@Model.CarPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
             </div>
             <div class="form-group car-cost-group">
                 <label asp-for="AuctionFees" class="form-label">@Localizer["رسوم المزاد والبوابة ($)"]</label>
-                <input asp-for="AuctionFees" class="form-control input-money calc-field" type="number" step="0.01" />
+                <input asp-for="AuctionFees" class="form-control input-money calc-field" type="number" step="0.01" value="@Model.AuctionFees.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
             </div>
 
-            <!-- الحقول الثلاثة الجديدة -->
             <div class="form-group">
                 <label asp-for="TransferFees" class="form-label">@Localizer["رسوم التحويل ($)"]</label>
-                <input asp-for="TransferFees" class="form-control input-money calc-field" type="number" step="0.01" />
+                <input asp-for="TransferFees" class="form-control input-money calc-field" type="number" step="0.01" value="@Model.TransferFees.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
             </div>
+
             <div class="form-group">
-                <label asp-for="CarSizeFees" class="form-label">@Localizer["رسوم حجم السيارة ($)"]</label>
-                <input asp-for="CarSizeFees" class="form-control input-money calc-field" type="number" step="0.01" />
+                <label class="form-label">@Localizer["حجم السيارة (يُحسب بالدولار)"]</label>
+                <div class="size-selector">
+                    <div class="size-option @(Model.CarSizeFees == 0 ? "active" : "")" data-omr="0">صغيرة (0)<br><span class="usd-preview">$0.00</span></div>
+                    <div class="size-option @(Model.CarSizeFees > 0 && Model.CarSizeFees < 300 ? "active" : "")" data-omr="60">وسط (60)<br><span class="usd-preview">$155.44</span></div>
+                    <div class="size-option @(Model.CarSizeFees > 300 ? "active" : "")" data-omr="120">كبيرة (120)<br><span class="usd-preview">$310.88</span></div>
+                </div>
+                <!-- تم تغيير الحقل المخفي إلى input type="number" step="0.01" hidden لتسهيل الـ Model Binding -->
+                <input type="number" step="0.01" name="CarSizeFees" id="CarSizeFees" class="calc-field" value="@Model.CarSizeFees.ToString(System.Globalization.CultureInfo.InvariantCulture)" hidden />
             </div>
 
             <div class="form-group">
                 <label asp-for="InlandTowing" class="form-label">@Localizer["النقل الداخلي بأمريكا (Towing) ($)"]</label>
-                <input asp-for="InlandTowing" class="form-control input-money calc-field" type="number" step="0.01" />
+                <input asp-for="InlandTowing" class="form-control input-money calc-field" type="number" step="0.01" value="@Model.InlandTowing.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
             </div>
             <div class="form-group">
                 <label asp-for="SeaFreight" class="form-label">@Localizer["الشحن البحري ($)"]</label>
-                <input asp-for="SeaFreight" class="form-control input-money calc-field" type="number" step="0.01" />
+                <input asp-for="SeaFreight" class="form-control input-money calc-field" type="number" step="0.01" value="@Model.SeaFreight.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
             </div>
-            <div class="form-group">
-                <label asp-for="CustomsAndTaxes" class="form-label">@Localizer["رسوم التخليص الجمركي ($)"]</label>
-                <input asp-for="CustomsAndTaxes" class="form-control input-money calc-field" type="number" step="0.01" />
-            </div>
-
-            <!-- الحقل الجديد: النقل داخل عمان -->
             <div class="form-group">
                 <label asp-for="OmanTowingFees" class="form-label">@Localizer["رسوم النقل داخل عمان ($)"]</label>
-                <input asp-for="OmanTowingFees" class="form-control input-money calc-field" type="number" step="0.01" />
+                <input asp-for="OmanTowingFees" class="form-control input-money calc-field" type="number" step="0.01" value="@Model.OmanTowingFees.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ClearanceFees" class="form-label">@Localizer["رسوم التخليص فقط ($)"]</label>
+                <input asp-for="ClearanceFees" class="form-control input-money calc-field" type="number" step="0.01" value="@Model.ClearanceFees.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+            </div>
+            <div class="form-group">
+                <label asp-for="TaxAmount" class="form-label">@Localizer["مبلغ الضريبة VAT ($)"]</label>
+                <input asp-for="TaxAmount" class="form-control input-money calc-field" type="number" step="0.01" value="@Model.TaxAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+            </div>
+            <div class="form-group">
+                <label asp-for="CustomsAmount" class="form-label">@Localizer["مبلغ الجمارك ($)"]</label>
+                <input asp-for="CustomsAmount" class="form-control input-money calc-field" type="number" step="0.01" value="@Model.CustomsAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
             </div>
 
             <div class="form-group">
                 <label asp-for="StorageFees" class="form-label" style="color: #ef4444;">@Localizer["غرامات تأخير / أرضيات ($)"]</label>
-                <input asp-for="StorageFees" class="form-control input-money calc-field" type="number" step="0.01" style="border-color: #fca5a5;" />
+                <input asp-for="StorageFees" class="form-control input-money calc-field" type="number" step="0.01" style="border-color: #fca5a5;" value="@Model.StorageFees.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
             </div>
             <div class="form-group">
-                <label asp-for="CompanyCommission" class="form-label" style="color: var(--primary-gold);">@Localizer["عمولة الشركة (الأتعاب الإدارية) ($)"]</label>
-                <input asp-for="CompanyCommission" class="form-control input-money calc-field" type="number" step="0.01" />
+                <label asp-for="CompanyCommission" class="form-label" style="color: var(--primary-gold);">@Localizer["عمولة الشركة ($)"]</label>
+                <input asp-for="CompanyCommission" class="form-control input-money calc-field" type="number" step="0.01" value="@Model.CompanyCommission.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
             </div>
         </div>
 
         <div class="section-title"><i class="fa-solid fa-hand-holding-dollar" style="color: var(--primary-gold);"></i> الدفعات والاستلام</div>
         <div class="form-grid">
             <div class="form-group">
-                <label asp-for="AmountPaid" class="form-label" style="color: #16a34a;">@Localizer["المبلغ المدفوع مقدماً (عربون / دفعة) ($)"]</label>
-                <input asp-for="AmountPaid" class="form-control input-money calc-field" type="number" step="0.01" style="border-color: #86efac;" />
+                <label asp-for="AmountPaid" class="form-label" style="color: #16a34a;">@Localizer["المبلغ المدفوع مقدماً ($)"]</label>
+                <input asp-for="AmountPaid" class="form-control input-money calc-field" type="number" step="0.01" style="border-color: #86efac;" value="@Model.AmountPaid.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
             </div>
         </div>
 
@@ -355,7 +349,8 @@
                 </div>
             </div>
             <div class="total-amount">$<span id="lblTotal">0.00</span></div>
-            <input type="hidden" asp-for="TotalAmount" id="TotalAmountHidden" />
+            <!-- الحقل المخفي -->
+            <input type="number" step="0.01" asp-for="TotalAmount" id="TotalAmountHidden" value="@Model.TotalAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)" hidden />
         </div>
 
         <div class="form-actions">
@@ -377,36 +372,50 @@
             var dir = $('html').attr('dir');
             $('.select2').select2({ dir: dir, width: '100%' });
 
+            var exchangeRate = 0.386;
+            $('.size-option').click(function() {
+                $('.size-option').removeClass('active');
+                $(this).addClass('active');
+                var omrValue = parseFloat($(this).data('omr'));
+                var usdValue = omrValue > 0 ? (omrValue / exchangeRate) : 0;
+                var rawValue = Math.round(usdValue * 100) / 100;
+
+                $('#CarSizeFees').val(rawValue);
+                calculateTotals();
+            });
+
             function calculateTotals() {
                 var isShippingOnly = $('#IsShippingOnly').is(':checked');
 
                 if(isShippingOnly) {
                     $('.car-cost-group').css({ 'opacity': '0.4', 'pointer-events': 'none' });
-                    $('#CarPrice').val(0);
-                    $('#AuctionFees').val(0);
                 } else {
                     $('.car-cost-group').css({ 'opacity': '1', 'pointer-events': 'auto' });
                 }
 
                 var carPrice = parseFloat($('#CarPrice').val()) || 0;
                 var auction = parseFloat($('#AuctionFees').val()) || 0;
+                var carTotal = isShippingOnly ? 0 : (carPrice + auction);
+
                 var transfer = parseFloat($('#TransferFees').val()) || 0;
                 var sizeFee = parseFloat($('#CarSizeFees').val()) || 0;
                 var towing = parseFloat($('#InlandTowing').val()) || 0;
                 var sea = parseFloat($('#SeaFreight').val()) || 0;
-                var customs = parseFloat($('#CustomsAndTaxes').val()) || 0;
+                var clearance = parseFloat($('#ClearanceFees').val()) || 0;
+                var taxAmt = parseFloat($('#TaxAmount').val()) || 0;
+                var customsAmt = parseFloat($('#CustomsAmount').val()) || 0;
                 var omanTowing = parseFloat($('#OmanTowingFees').val()) || 0;
                 var storage = parseFloat($('#StorageFees').val()) || 0;
                 var comm = parseFloat($('#CompanyCommission').val()) || 0;
 
                 var paid = parseFloat($('#AmountPaid').val()) || 0;
 
-                var total = carPrice + auction + transfer + sizeFee + towing + sea + customs + omanTowing + storage + comm;
+                var total = carTotal + transfer + sizeFee + towing + sea + clearance + taxAmt + customsAmt + omanTowing + storage + comm;
                 var remaining = total - paid;
 
-                $('#lblTotal').text(total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+                $('#lblTotal').text(total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
                 $('#TotalAmountHidden').val(total);
-                $('#lblRemaining').text('$' + remaining.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+                $('#lblRemaining').text('$' + remaining.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
             }
 
             $('.calc-field').on('input', calculateTotals);
@@ -416,16 +425,23 @@
             $('#invoiceEditForm').on('submit', function(e) {
                 e.preventDefault();
                 var form = $(this);
-                if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
+
+                if (!$('#CustomerId').val() || !$('#CarId').val()) {
+                    Swal.fire('@Html.Raw(Localizer["تنبيه"])', '@Html.Raw(Localizer["يرجى اختيار العميل والسيارة."])', 'warning');
+                    return;
+                }
 
                 var btn = $('#btnSubmit');
                 var originalText = btn.html();
                 btn.html('<i class="fa-solid fa-spinner fa-spin"></i>').prop('disabled', true);
 
+                // إرسال مباشر وصريح لأن Program.cs سيقوم بمعالجة الأرقام باللغة الإنجليزية
+                var formData = form.serialize();
+
                 $.ajax({
                     url: form.attr('action'),
                     type: form.attr('method'),
-                    data: form.serialize(),
+                    data: formData,
                     success: function(res) {
                         if (res.success) {
                             Swal.fire({ title: '@Html.Raw(Localizer["تم التحديث بنجاح!"])', icon: 'success', confirmButtonColor: 'var(--primary-gold)' })

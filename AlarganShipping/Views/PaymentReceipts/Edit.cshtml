@@ -271,7 +271,15 @@
                 </select>
             </div>
 
+            <!-- الحقل الجديد: ربط الدفعة بالسيارة -->
             <div class="form-group">
+                <label asp-for="CarId" class="form-label" style="color: var(--primary-gold);">@Localizer["ربط الدفعة بسيارة معينة (اختياري)"]</label>
+                <select asp-for="CarId" id="CarId" class="form-control select2" asp-items="ViewBag.CustomerCars">
+                    <option value="">-- @Localizer["سداد عام (أو اختر سيارة)"] --</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="grid-column: 1 / -1;">
                 <label asp-for="PaymentDate" class="form-label">@Localizer["تاريخ وتوقيت الاستلام"] *</label>
                 <input asp-for="PaymentDate" type="datetime-local" class="form-control" value="@Model.PaymentDate.ToString("yyyy-MM-ddTHH:mm")" required />
             </div>
@@ -329,6 +337,12 @@
                 <input asp-for="ReferenceNumber" class="form-control" dir="ltr" />
             </div>
 
+            <!-- الحقل المضاف: مسحوب على بنك -->
+            <div class="form-group">
+                <label asp-for="BankName" class="form-label">@Localizer["مسحوب على بنك (اختياري)"]</label>
+                <input asp-for="BankName" class="form-control" placeholder="@Localizer["مثال: بنك مسقط، بنك ظفار..."]" />
+            </div>
+
             <div class="form-group" style="grid-column: 1 / -1;">
                 <label class="form-label">@Localizer["ملحقات (استبدال الملف الحالي)"]</label>
                 <div class="file-input-wrapper">
@@ -370,6 +384,31 @@
         $(document).ready(function() {
             $('.select2').select2({ dir: $('html').attr('dir') });
             $('.summernote').summernote({ height: 120, toolbar: [['style', ['bold', 'italic', 'clear']]] });
+
+            // --- جلب سيارات العميل ديناميكياً (AJAX) إذا تم تغيير العميل ---
+            $('#CustomerId').on('change', function() {
+                var custId = $(this).val();
+                var carSelect = $('#CarId');
+
+                carSelect.empty();
+
+                if(custId) {
+                    carSelect.append('<option value="">-- @Html.Raw(Localizer["جاري جلب السيارات..."]) --</option>');
+
+                    $.get('@Url.Action("GetCustomerCars", "PaymentReceipts")', { customerId: custId }, function(data) {
+                        carSelect.empty();
+                        carSelect.append('<option value="">-- @Html.Raw(Localizer["سداد عام (أو اختر سيارة)"]) --</option>');
+
+                        data.forEach(function(car) {
+                            carSelect.append(new Option(car.text, car.id, false, false));
+                        });
+
+                        carSelect.trigger('change');
+                    });
+                } else {
+                    carSelect.append('<option value="">-- @Html.Raw(Localizer["يرجى اختيار العميل أولاً"]) --</option>');
+                }
+            });
 
             // دالة حساب التحويل الديناميكي للتعديل
             function calculateEquivalent() {

@@ -30,30 +30,34 @@ namespace AlarganShipping.Models
 
         [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "قيمة السيارة")]
+        [Range(0, 99999999.99, ErrorMessage = "القيمة يجب أن تكون 0 أو أكبر")]
         public decimal CarPrice { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "رسوم المزاد")]
+        [Range(0, 99999999.99, ErrorMessage = "القيمة يجب أن تكون 0 أو أكبر")]
         public decimal AuctionFees { get; set; }
 
-        // --- الحقول الأصلية (لضمان عمل النظام القديم والتقارير) ---
         [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "النقل الداخلي")]
+        [Range(0, 99999999.99, ErrorMessage = "القيمة يجب أن تكون 0 أو أكبر")]
         public decimal LandFreight { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "الشحن البحري")]
+        [Range(0, 99999999.99, ErrorMessage = "القيمة يجب أن تكون 0 أو أكبر")]
         public decimal SeaFreight { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
-        [Display(Name = "الجمارك والضرائب")]
+        [Display(Name = "رسوم التخليص فقط")]
+        [Range(0, 99999999.99, ErrorMessage = "القيمة يجب أن تكون 0 أو أكبر")]
         public decimal CustomsFees { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "عمولة الشركة")]
+        [Range(0, 99999999.99, ErrorMessage = "القيمة يجب أن تكون 0 أو أكبر")]
         public decimal AdminFees { get; set; }
 
-        // --- أسماء مستعارة (للتوافق مع الشاشات الجديدة بدون كسر الداتابيز) ---
         [NotMapped]
         public decimal InlandTowing
         {
@@ -62,7 +66,15 @@ namespace AlarganShipping.Models
         }
 
         [NotMapped]
+        [Display(Name = "رسوم التخليص فقط")]
         public decimal CustomsAndTaxes
+        {
+            get => CustomsFees;
+            set => CustomsFees = value;
+        }
+
+        [NotMapped]
+        public decimal ClearanceFees
         {
             get => CustomsFees;
             set => CustomsFees = value;
@@ -75,37 +87,50 @@ namespace AlarganShipping.Models
             set => AdminFees = value;
         }
 
-        // --- الحقول الجديدة المضافة ---
         [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "غرامات تأخير / أرضيات (Storage)")]
+        [Range(0, 99999999.99, ErrorMessage = "القيمة يجب أن تكون 0 أو أكبر")]
         public decimal StorageFees { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "المبلغ المدفوع مقدماً")]
+        [Range(0, 99999999.99, ErrorMessage = "القيمة يجب أن تكون 0 أو أكبر")]
         public decimal AmountPaid { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "الإجمالي")]
         public decimal TotalAmount { get; set; }
 
-        // حقل محسوب لا يتم تخزينه في الداتابيز وإنما يُحسب وقت العرض
         [NotMapped]
         [Display(Name = "المبلغ المتبقي")]
         public decimal RemainingAmount => TotalAmount - AmountPaid;
 
-        // الحقل الجديد لحل المشكلة
         [Display(Name = "ملاحظات الإلغاء أو التعديل")]
         public string? Notes { get; set; }
+
         [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "رسوم التحويل")]
+        [Range(0, 99999999.99, ErrorMessage = "القيمة يجب أن تكون 0 أو أكبر")]
         public decimal TransferFees { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "نقل داخل عمان")]
+        [Range(0, 99999999.99, ErrorMessage = "القيمة يجب أن تكون 0 أو أكبر")]
         public decimal OmanTowingFees { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         [Display(Name = "رسوم حجم السيارة")]
+        [Range(0, 99999999.99, ErrorMessage = "القيمة يجب أن تكون 0 أو أكبر")]
         public decimal CarSizeFees { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        [Display(Name = "مبلغ الضريبة")]
+        [Range(0, 99999999.99, ErrorMessage = "القيمة يجب أن تكون 0 أو أكبر")]
+        public decimal TaxAmount { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        [Display(Name = "مبلغ الجمارك")]
+        [Range(0, 99999999.99, ErrorMessage = "القيمة يجب أن تكون 0 أو أكبر")]
+        public decimal CustomsAmount { get; set; }
     }
 }

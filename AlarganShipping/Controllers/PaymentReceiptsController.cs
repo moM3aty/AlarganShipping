@@ -24,15 +24,47 @@ namespace AlarganShipping.Controllers
         {
             var receipts = await _context.PaymentReceipts
                 .Include(p => p.Customer)
+                .Include(p => p.Car) // جلب بيانات السيارة المرتبطة
                 .OrderByDescending(p => p.PaymentDate)
                 .ToListAsync();
             return View(receipts);
         }
 
-        // شاشة إضافة سند جديد
-        public IActionResult Create()
+        // دالة لجلب سيارات العميل فورياً (AJAX)
+        [HttpGet]
+        public async Task<IActionResult> GetCustomerCars(int customerId)
+        {
+            var cars = await _context.Cars
+                .Where(c => c.CustomerId == customerId)
+                .Select(c => new {
+                    id = c.Id,
+                    text = $"{c.Make} {c.Model} ({c.Year}) - VIN: {c.VIN}"
+                })
+                .ToListAsync();
+
+            return Json(cars);
+        }
+
+        // شاشة إضافة سند جديد (مع استقبال invoiceId إن وجد)
+        public async Task<IActionResult> Create(int? invoiceId)
         {
             ViewBag.CustomerId = new SelectList(_context.Customers, "Id", "Name");
+
+            // إذا تم تحويل المستخدم من صفحة تفاصيل الفاتورة، نقوم بتجهيز البيانات المسبقة
+            if (invoiceId.HasValue)
+            {
+                var invoice = await _context.Invoices.Include(i => i.Car).FirstOrDefaultAsync(i => i.Id == invoiceId);
+                if (invoice != null)
+                {
+                    ViewBag.PreSelectedCustomerId = invoice.CustomerId;
+                    ViewBag.PreSelectedCarId = invoice.CarId;
+                    if (invoice.Car != null)
+                    {
+                        ViewBag.PreSelectedCarText = $"{invoice.Car.Make} {invoice.Car.Model} ({invoice.Car.Year}) - VIN: {invoice.Car.VIN}";
+                    }
+                }
+            }
+
             return View();
         }
 
@@ -42,15 +74,17 @@ namespace AlarganShipping.Controllers
         public async Task<IActionResult> Create(PaymentReceipt receipt, IFormFile? AttachmentFile, string currency = "USD", decimal exchangeRate = 0.386m)
         {
             ModelState.Remove("Customer");
+            ModelState.Remove("Car");
             ModelState.Remove("ReceiptNumber");
             ModelState.Remove("exchangeRate");
+            ModelState.Remove("Discount");
+
             if (ModelState.IsValid)
             {
                 // توليد رقم سند فريد
                 receipt.ReceiptNumber = "REC-" + DateTime.Now.ToString("yyyyMMddHHmmss");
 
-                // 💡 الحل الجذري لمشكلة العملة: 
-                // تحويل المبلغ المدخل إلى دولار قبل الحفظ لتجنب خطأ الـ ReadOnly في TotalDeducted
+                // تحويل المبلغ المدخل إلى دولار قبل الحفظ
                 if (currency == "OMR" && exchangeRate > 0)
                 {
                     decimal originalOmr = receipt.Amount;
@@ -74,17 +108,15 @@ namespace AlarganShipping.Controllers
                     receipt.AttachmentPath = "/uploads/receipts/" + uniqueFileName;
                 }
 
-                // تحديث مديونية العميل (نظام الأقساط والدفع الجزئي)
+                // تحديث مديونية العميل
                 var customer = await _context.Customers.FindAsync(receipt.CustomerId);
                 if (customer != null)
                 {
-                    // العميل يستفيد من المبلغ المدفوع (المحول للدولار) + الخصم المسموح به لتقليل دينه
-                    decimal totalDeduction = receipt.TotalDeducted; // هذا الآن سيحسب (Amount بالدولار + Discount)
+                    decimal totalDeduction = receipt.TotalDeducted;
 
                     customer.TotalPaid += receipt.Amount;
                     customer.TotalBalance -= totalDeduction;
 
-                    // منع الديون السالبة
                     if (customer.TotalBalance < 0) customer.TotalBalance = 0;
 
                     _context.Update(customer);
@@ -102,10 +134,17 @@ namespace AlarganShipping.Controllers
         {
             if (id == null) return NotFound();
 
-            var receipt = await _context.PaymentReceipts.FindAsync(id);
+            var receipt = await _context.PaymentReceipts.Include(r => r.Car).FirstOrDefaultAsync(r => r.Id == id);
             if (receipt == null) return NotFound();
 
             ViewBag.CustomerId = new SelectList(_context.Customers, "Id", "Name", receipt.CustomerId);
+
+            // جلب سيارات العميل الحالي لملء القائمة المنسدلة في التعديل
+            var customerCars = await _context.Cars.Where(c => c.CustomerId == receipt.CustomerId)
+                .Select(c => new { Id = c.Id, Text = $"{c.Make} {c.Model} ({c.Year}) - VIN: {c.VIN}" })
+                .ToListAsync();
+            ViewBag.CustomerCars = new SelectList(customerCars, "Id", "Text", receipt.CarId);
+
             return View(receipt);
         }
 
@@ -117,6 +156,7 @@ namespace AlarganShipping.Controllers
             if (id != receipt.Id) return Json(new { success = false, errors = new[] { "خطأ في المعرف." } });
 
             ModelState.Remove("Customer");
+            ModelState.Remove("Car");
             ModelState.Remove("ReceiptNumber");
             ModelState.Remove("exchangeRate");
 
@@ -129,7 +169,7 @@ namespace AlarganShipping.Controllers
 
                     receipt.ReceiptNumber = oldReceipt.ReceiptNumber;
 
-                    // 💡 معالجة العملة عند التعديل
+                    // معالجة العملة عند التعديل
                     if (currency == "OMR" && exchangeRate > 0)
                     {
                         decimal originalOmr = receipt.Amount;
@@ -164,10 +204,9 @@ namespace AlarganShipping.Controllers
                         receipt.AttachmentPath = oldReceipt.AttachmentPath;
                     }
 
-                    // تسوية حساب العميل في حال تغير المبالغ أو العميل نفسه
+                    // تسوية حساب العميل
                     if (oldReceipt.CustomerId != receipt.CustomerId)
                     {
-                        // 1. التراجع عن تأثير السند القديم للعميل القديم
                         var oldCustomer = await _context.Customers.FindAsync(oldReceipt.CustomerId);
                         if (oldCustomer != null)
                         {
@@ -177,7 +216,6 @@ namespace AlarganShipping.Controllers
                             _context.Update(oldCustomer);
                         }
 
-                        // 2. تطبيق السند على العميل الجديد
                         var newCustomer = await _context.Customers.FindAsync(receipt.CustomerId);
                         if (newCustomer != null)
                         {
@@ -189,7 +227,6 @@ namespace AlarganShipping.Controllers
                     }
                     else
                     {
-                        // تعديل الفارق لنفس العميل
                         var customer = await _context.Customers.FindAsync(receipt.CustomerId);
                         if (customer != null)
                         {
@@ -222,6 +259,7 @@ namespace AlarganShipping.Controllers
 
             var receipt = await _context.PaymentReceipts
                 .Include(r => r.Customer)
+                .Include(r => r.Car) // طباعة الشاصي في السند
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (receipt == null) return NotFound();

@@ -253,6 +253,11 @@
     <form asp-action="Create" method="post" id="receiptForm" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
 
+        <!-- حقول مساعدة للتهيئة المسبقة (إذا أتى من صفحة تفاصيل الفاتورة) -->
+        <input type="hidden" id="preSelectedCustomerId" value="@ViewBag.PreSelectedCustomerId" />
+        <input type="hidden" id="preSelectedCarId" value="@ViewBag.PreSelectedCarId" />
+        <input type="hidden" id="preSelectedCarText" value="@ViewBag.PreSelectedCarText" />
+
         <div class="form-grid">
             <div class="form-group">
                 <label asp-for="CustomerId" class="form-label">@Localizer["العميل (المُسدد)"] *</label>
@@ -261,7 +266,15 @@
                 </select>
             </div>
 
+            <!-- ربط الدفعة بالسيارة -->
             <div class="form-group">
+                <label asp-for="CarId" class="form-label" style="color: var(--primary-gold);">@Localizer["ربط الدفعة بسيارة معينة (اختياري)"]</label>
+                <select asp-for="CarId" id="CarId" class="form-control select2">
+                    <option value="">-- @Localizer["يرجى اختيار العميل أولاً"] --</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="grid-column: 1 / -1;">
                 <label asp-for="PaymentDate" class="form-label">@Localizer["تاريخ وتوقيت الاستلام"] *</label>
                 <input asp-for="PaymentDate" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
             </div>
@@ -316,7 +329,13 @@
 
             <div class="form-group">
                 <label asp-for="ReferenceNumber" class="form-label">@Localizer["رقم المرجع (رقم التحويل/الشيك)"]</label>
-                <input asp-for="ReferenceNumber" class="form-control" dir="ltr" placeholder="اختياري..." />
+                <input asp-for="ReferenceNumber" class="form-control" dir="ltr" placeholder="@Localizer["اختياري..."]" />
+            </div>
+
+            <!-- الحقل المضاف: مسحوب على بنك -->
+            <div class="form-group">
+                <label asp-for="BankName" class="form-label">@Localizer["مسحوب على بنك (اختياري)"]</label>
+                <input asp-for="BankName" class="form-control" placeholder="@Localizer["مثال: بنك مسقط، بنك ظفار..."]" />
             </div>
 
             <div class="form-group" style="grid-column: 1 / -1;">
@@ -354,6 +373,46 @@
         $(document).ready(function() {
             $('.select2').select2({ dir: $('html').attr('dir') });
             $('.summernote').summernote({ height: 120, toolbar: [['style', ['bold', 'italic', 'clear']]] });
+
+            // --- جلب سيارات العميل ديناميكياً (AJAX) ---
+            $('#CustomerId').on('change', function() {
+                var custId = $(this).val();
+                var carSelect = $('#CarId');
+
+                carSelect.empty();
+
+                if(custId) {
+                    carSelect.append('<option value="">-- @Html.Raw(Localizer["جاري جلب السيارات..."]) --</option>');
+
+                    $.get('@Url.Action("GetCustomerCars", "PaymentReceipts")', { customerId: custId }, function(data) {
+                        carSelect.empty();
+                        carSelect.append('<option value="">-- @Html.Raw(Localizer["سداد عام (أو اختر سيارة)"]) --</option>');
+
+                        data.forEach(function(car) {
+                            carSelect.append(new Option(car.text, car.id, false, false));
+                        });
+
+                        // إذا كان هناك سيارة مختارة مسبقاً (من شاشة أخرى)
+                        var preSelectedCarId = $('#preSelectedCarId').val();
+                        var preSelectedCarText = $('#preSelectedCarText').val();
+                        if(preSelectedCarId && !carSelect.find('option[value="' + preSelectedCarId + '"]').length) {
+                            carSelect.append(new Option(preSelectedCarText, preSelectedCarId, true, true));
+                        } else if (preSelectedCarId) {
+                            carSelect.val(preSelectedCarId);
+                        }
+
+                        carSelect.trigger('change');
+                    });
+                } else {
+                    carSelect.append('<option value="">-- @Html.Raw(Localizer["يرجى اختيار العميل أولاً"]) --</option>');
+                }
+            });
+
+            // تهيئة مبدئية إذا تم تمرير قيم من صفحة أخرى
+            var preCustId = $('#preSelectedCustomerId').val();
+            if(preCustId) {
+                $('#CustomerId').val(preCustId).trigger('change');
+            }
 
             // دالة حساب التحويل الديناميكي
             function calculateEquivalent() {

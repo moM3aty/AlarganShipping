@@ -23,6 +23,14 @@ namespace AlarganShipping.Models
         [Column(TypeName = "decimal(18,3)")]
         [Display(Name = "المبلغ")]
         public decimal Amount { get; set; }
+        [Display(Name = "اسم البنك")]
+        public string? BankName { get; set; }
+
+        [Display(Name = "السيارة المرتبطة")]
+        public int? CarId { get; set; }
+
+        [ForeignKey("CarId")]
+        public Car? Car { get; set; }
 
         [Column(TypeName = "decimal(18,3)")]
         [Display(Name = "خصم مسموح به")]

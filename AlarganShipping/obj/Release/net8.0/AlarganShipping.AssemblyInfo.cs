@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AlarganShipping")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e8cc85952bff8a148c76c8eb5839d93b59bfdc38")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7cebaa285b0ee3089dadfaba64ad94de98eaa94d")]
 [assembly: System.Reflection.AssemblyProductAttribute("AlarganShipping")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AlarganShipping")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -27,7 +27,6 @@
             align-items: center;
         }
 
-        /* حاوية الأزرار */
         .controls-wrapper {
             width: 100%;
             max-width: 800px;
@@ -62,37 +61,34 @@
             background: var(--primary-gold);
         }
 
-        /* === صندوق الفاتورة (مضبوط على صفحة واحدة) === */
         .invoice {
             background: white;
-            width: 210mm; /* عرض A4 */
-            height: 297mm; /* طول A4 ثابت */
+            width: 210mm;
+            min-height: 297mm;
             box-sizing: border-box;
-            padding: 10mm 12mm; /* هوامش أقل لتوفير المساحة */
+            padding: 15mm;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            display: flex; /* لتحكم في توزيع المحتوى */
+            display: flex;
             flex-direction: column;
-            overflow: hidden; /* منع أي محتوى خارج الصفحة */
         }
 
-        /* الرأس */
         .header {
             text-align: center;
             border-bottom: 3px solid var(--primary-navy);
-            padding-bottom: 8px;
-            margin-bottom: 15px;
-            flex-shrink: 0; /* لا يتقلص */
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            flex-shrink: 0;
         }
 
             .header img {
-                height: 60px; /* تصغير اللوجو */
+                height: 70px;
                 margin-bottom: 5px;
             }
 
             .header h1 {
                 margin: 0;
                 color: var(--primary-navy);
-                font-size: 22px; /* تصغير العنوان قليلاً */
+                font-size: 24px;
                 font-weight: 900;
             }
 
@@ -103,29 +99,28 @@
                 font-size: 14px;
             }
 
-        /* معلومات العميل والتاريخ */
         .meta-info {
             display: flex;
             justify-content: space-between;
             background: var(--bg-gray);
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
             border: 1px solid #cbd5e1;
             flex-shrink: 0;
         }
 
             .meta-info div p {
-                margin: 3px 0;
+                margin: 4px 0;
                 font-weight: 700;
                 color: #334155;
-                font-size: 12px; /* تصغير خط العميل */
+                font-size: 13px;
             }
 
             .meta-info span {
                 color: var(--primary-gold);
                 font-family: monospace;
-                font-size: 13px;
+                font-size: 14px;
             }
 
         .highlight-badge {
@@ -133,16 +128,15 @@
             color: #dc2626;
             padding: 2px 8px;
             border-radius: 4px;
-            font-size: 10px;
+            font-size: 11px;
             margin-top: 5px;
             display: inline-block;
             font-weight: 900;
             border: 1px solid #fecaca;
         }
 
-        /* الجدول */
         .table-wrapper {
-            flex-grow: 1; /* يأخذ المساحة المتبقية */
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
         }
@@ -150,19 +144,21 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px; /* تصغير خط الجدول */
+            font-size: 14px;
+            margin-bottom: 20px;
         }
 
         th {
             background: var(--primary-navy);
             color: white;
-            padding: 6px 8px; /* تقليل المسافة داخل الخلايا */
+            padding: 10px;
             text-align: right;
             font-weight: 700;
+            border-radius: 4px 4px 0 0;
         }
 
         td {
-            padding: 5px 8px;
+            padding: 10px;
             border-bottom: 1px solid #e2e8f0;
             font-weight: 700;
         }
@@ -170,20 +166,27 @@
             td.price {
                 text-align: left;
                 font-family: monospace;
-                font-size: 13px;
+                font-size: 15px;
                 color: var(--primary-navy);
             }
 
-        /* المجاميع */
+        .desc-sub {
+            display: block;
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
         .summary {
             display: flex;
             justify-content: flex-start;
-            margin-top: 10px; /* مساحة بسيطة فوق المجموع */
+            margin-top: 10px;
             flex-shrink: 0;
         }
 
         .summary-box {
-            width: 250px;
+            width: 280px;
             border: 2px solid var(--primary-navy);
             border-radius: 6px;
             overflow: hidden;
@@ -192,16 +195,16 @@
         .row {
             display: flex;
             justify-content: space-between;
-            padding: 6px 10px;
+            padding: 8px 12px;
             border-bottom: 1px solid #e2e8f0;
             font-weight: 800;
-            font-size: 13px;
+            font-size: 14px;
         }
 
             .row.total {
                 background: var(--primary-navy);
                 color: white;
-                font-size: 15px;
+                font-size: 16px;
                 font-weight: 900;
                 border: none;
             }
@@ -213,93 +216,92 @@
             .row.due {
                 background: #fef2f2;
                 color: #dc2626;
-                font-size: 14px;
+                font-size: 15px;
                 border: none;
             }
 
-        /* التذييل */
         .footer {
             text-align: center;
             border-top: 2px dashed #cbd5e1;
-            padding-top: 10px;
-            margin-top: auto; /* يدفع التذييل للأسفل تلقائياً */
+            padding-top: 15px;
+            margin-top: auto;
         }
 
         .bank-card {
             display: inline-block;
             background: rgba(255,255,255,0.5);
             border: 2px dashed var(--primary-gold);
-            padding: 8px 20px;
+            padding: 10px 25px;
             border-radius: 6px;
             text-align: right;
         }
 
             .bank-card h4 {
-                margin: 0 0 2px;
+                margin: 0 0 4px;
                 color: var(--primary-gold);
-                font-size: 12px;
+                font-size: 13px;
             }
 
             .bank-card p {
                 margin: 2px 0;
-                font-size: 11px;
+                font-size: 12px;
             }
 
         .bank-num {
             font-family: monospace;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 900;
             color: var(--primary-navy);
             letter-spacing: 1px;
         }
 
-        /* ========================================================
-                                   تعليمات الطباعة (Media Print)
-                                   ======================================================== */
         @@media print {
-            body {
-                background: none;
-                padding: 0;
-                margin: 0;
-            }
-            /* إخفاء كل شيء عدا الفاتورة */
-            .controls-wrapper, .btn {
-                display: none !important;
-            }
+            body
 
-            .invoice {
-                box-shadow: none;
-                margin: 0;
-                width: 100%;
-                height: auto; /* السماح للمتصفح بضبط الطباعة */
-                padding: 5mm; /* هوامش الطباعة */
-            }
+        {
+            background: none;
+            padding: 0;
+            margin: 0;
+        }
 
-            * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                color-adjust: exact !important;
-            }
+        .controls-wrapper, .btn {
+            display: none !important;
+        }
 
-            .header {
-                border-bottom-color: var(--primary-navy) !important;
-            }
+        .invoice {
+            box-shadow: none;
+            margin: 0;
+            width: 100%;
+            height: auto;
+            padding: 0;
+        }
 
-            .meta-info {
-                background-color: var(--bg-gray) !important;
-            }
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+        }
 
-            th {
-                background-color: var(--primary-navy) !important;
-            }
+        .header {
+            border-bottom-color: var(--primary-navy) !important;
+        }
 
-            .row.total {
-                background-color: var(--primary-navy) !important;
-            }
+        .meta-info {
+            background-color: var(--bg-gray) !important;
+        }
 
-            .row.due {
-                background-color: #fef2f2 !important;
-            }
+        th {
+            background-color: var(--primary-navy) !important;
+        }
+
+        .row.total {
+            background-color: var(--primary-navy) !important;
+        }
+
+        .row.due {
+            background-color: #fef2f2 !important;
+        }
+
         }
     </style>
 </head>
@@ -311,14 +313,12 @@
     </div>
 
     <div class="invoice" id="invoice-area">
-        <!-- الهيدر -->
         <div class="header">
             <img src="/images/logo.jpg" alt="Logo" onerror="this.style.display='none'">
             <h1>ALARGAN AUTO SHIPPING</h1>
             <p>فاتورة ضريبية - Tax Invoice</p>
         </div>
 
-        <!-- معلومات أساسية -->
         <div class="meta-info">
             <div>
                 <p>العميل: <span>@(Model.Customer?.Name ?? "-")</span></p>
@@ -335,69 +335,116 @@
             </div>
         </div>
 
-        <!-- جدول التفاصيل -->
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th>البيان</th>
+                        <th>البيان (Description)</th>
                         <th style="width: 30%; text-align: left;">المبلغ (USD)</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (!Model.IsShippingOnly)
                     {
-                        <tr><td>قيمة السيارة</td><td class="price">@Model.CarPrice.ToString("N2")</td></tr>
-                        <tr><td>رسوم المزاد</td><td class="price">@Model.AuctionFees.ToString("N2")</td></tr>
+                        <tr>
+                            <td>قيمة السيارة (Car Price)</td>
+                            <td class="price">@Model.CarPrice.ToString("N2")</td>
+                        </tr>
+                        <tr>
+                            <td>رسوم المزاد (Auction Fees)</td>
+                            <td class="price">@Model.AuctionFees.ToString("N2")</td>
+                        </tr>
                     }
 
                     @if (Model.TransferFees > 0)
                     {
-                        <tr><td>رسوم التحويل</td><td class="price">@Model.TransferFees.ToString("N2")</td></tr>
+                        <tr>
+                            <td>رسوم التحويل (Transfer Fees)</td>
+                            <td class="price">@Model.TransferFees.ToString("N2")</td>
+                        </tr>
                     }
 
                     @if (Model.CarSizeFees > 0)
                     {
-                        <tr><td>رسوم حجم السيارة (SUV/Big)</td><td class="price">@Model.CarSizeFees.ToString("N2")</td></tr>
+                        <tr>
+                            <td>رسوم حجم السيارة (Car Size Surcharge)</td>
+                            <td class="price">@Model.CarSizeFees.ToString("N2")</td>
+                        </tr>
                     }
 
-                    <tr><td>النقل الداخلي (أمريكا)</td><td class="price">@Model.InlandTowing.ToString("N2")</td></tr>
-                    <tr><td>الشحن البحري</td><td class="price">@Model.SeaFreight.ToString("N2")</td></tr>
-                    <tr><td>التخليص الجمركي</td><td class="price">@Model.CustomsAndTaxes.ToString("N2")</td></tr>
+                    <tr>
+                        <td>النقل الداخلي بأمريكا (Inland Towing)</td>
+                        <td class="price">@Model.InlandTowing.ToString("N2")</td>
+                    </tr>
+
+                    <tr>
+                        <td>الشحن البحري (Sea Freight)</td>
+                        <td class="price">@Model.SeaFreight.ToString("N2")</td>
+                    </tr>
 
                     @if (Model.OmanTowingFees > 0)
                     {
-                        <tr><td>النقل الداخلي في عمان</td><td class="price">@Model.OmanTowingFees.ToString("N2")</td></tr>
+                        <tr>
+                            <td>رسوم النقل داخل عمان (Oman Towing)</td>
+                            <td class="price">@Model.OmanTowingFees.ToString("N2")</td>
+                        </tr>
                     }
+
+                    <tr>
+                        <td>رسوم التخليص الجمركي (Customs Clearance)</td>
+                        <td class="price">@Model.CustomsAndTaxes.ToString("N2")</td>
+                    </tr>
+
+                    <tr>
+                        <td>الضريبة (VAT)</td>
+                        <td class="price">@Model.TaxAmount.ToString("N2")</td>
+                    </tr>
+
+                    <tr>
+                        <td>الجمارك (Customs Duty)</td>
+                        <td class="price">@Model.CustomsAmount.ToString("N2")</td>
+                    </tr>
 
                     @if (Model.StorageFees > 0)
                     {
-                        <tr style="color:#dc2626"><td>غرامات / تخزين</td><td class="price" style="color:#dc2626">@Model.StorageFees.ToString("N2")</td></tr>
+                        <tr style="color:#dc2626">
+                            <td>غرامات تأخير / أرضيات (Storage/Penalties)</td>
+                            <td class="price" style="color:#dc2626">@Model.StorageFees.ToString("N2")</td>
+                        </tr>
                     }
-                    <tr><td>العمولة الإدارية</td><td class="price">@Model.CompanyCommission.ToString("N2")</td></tr>
+
+                    <tr>
+                        <td>عمولة الشركة والأتعاب الإدارية (Admin Fees)</td>
+                        <td class="price">@Model.CompanyCommission.ToString("N2")</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- المجاميع -->
         <div class="summary">
             <div class="summary-box">
                 <div class="row total">
-                    <span>الإجمالي</span>
+                    <span>الإجمالي (Total)</span>
                     <span>$@Model.TotalAmount.ToString("N2")</span>
                 </div>
                 <div class="row paid">
-                    <span>المدفوع</span>
+                    <span>المدفوع (Paid)</span>
                     <span>$@Model.AmountPaid.ToString("N2")</span>
                 </div>
                 <div class="row due">
-                    <span>المتبقي</span>
+                    <span>المتبقي للتحصيل (Due)</span>
                     <span>$@Model.RemainingAmount.ToString("N2")</span>
                 </div>
             </div>
         </div>
 
-       
+        <div class="footer">
+            <div class="bank-card">
+                <h4>تفاصيل الحساب البنكي</h4>
+                <p>بنك مسقط - Bank Muscat</p>
+                <p class="bank-num">0000 0000 0000 0000</p>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -407,13 +454,7 @@
                 margin: 0,
                 filename: 'Invoice_@(Model.InvoiceNumber).pdf',
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: {
-                    scale: 2,
-                    useCORS: true,
-                    scrollX: 0,
-                    scrollY: 0,
-                    windowWidth: 794 
-                },
+                html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 794 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 

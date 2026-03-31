@@ -61,5 +61,45 @@ namespace AlarganShipping.Controllers
             }
             return Json(new { success = false, errors = new[] { "يرجى التأكد من إرفاق الملف." } });
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            // 1. البحث عن المستند في قاعدة البيانات
+            var document = await _context.DocumentAttachments.FindAsync(id);
+
+            if (document == null)
+            {
+                return Json(new { success = false, message = "المستند غير موجود أو تم حذفه مسبقاً." });
+            }
+
+            try
+            {
+                // 2. حذف الملف الفعلي (Physical File) من السيرفر (مجلد wwwroot)
+                if (!string.IsNullOrEmpty(document.FilePath))
+                {
+                    // تنظيف المسار لضمان دمجه بشكل صحيح
+                    var fileRelativePath = document.FilePath.TrimStart('~', '/').Replace("/", "\\");
+                    var fullPath = Path.Combine(_env.WebRootPath, fileRelativePath);
+
+                    if (System.IO.File.Exists(fullPath))
+                    {
+                        System.IO.File.Delete(fullPath);
+                    }
+                }
+
+                // 3. حذف السجل من قاعدة البيانات
+                _context.DocumentAttachments.Remove(document);
+                await _context.SaveChangesAsync();
+
+                // 4. إرجاع رسالة نجاح للـ AJAX
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                // في حال حدوث مشكلة (مثلاً الملف قيد الاستخدام من برنامج آخر)
+                return Json(new { success = false, message = "حدث خطأ أثناء الحذف: " + ex.Message });
+            }
+        }
     }
 }
