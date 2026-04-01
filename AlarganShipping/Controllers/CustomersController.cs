@@ -15,7 +15,49 @@ namespace AlarganShipping.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var customers = await _context.Customers.OrderByDescending(c => c.Id).ToListAsync();
+            var customers = await _context.Customers
+                .Include(c => c.Invoices)
+                .Include(c => c.PaymentReceipts)
+                .OrderByDescending(c => c.Id)
+                .ToListAsync();
+
+            // 💡 تصحيح الأرصدة تلقائياً (Self-Healing) لجميع العملاء لمنع أي تضارب مالي
+            var refunds = await _context.PaymentVouchers
+                .Where(v => v.Category == "إرجاع أموال لعميل" && v.CustomerId != null)
+                .GroupBy(v => v.CustomerId)
+                .ToDictionaryAsync(g => g.Key, g => g.Sum(v => v.Amount));
+
+            bool changesMade = false;
+
+            foreach (var customer in customers)
+            {
+                decimal totalInvoices = customer.Invoices?.Sum(i => i.TotalAmount) ?? 0;
+                decimal totalPaidInAdvance = customer.Invoices?.Sum(i => i.AmountPaid) ?? 0;
+                decimal totalReceipts = customer.PaymentReceipts?.Sum(r => r.TotalDeducted) ?? 0;
+
+                decimal totalRefunds = refunds.ContainsKey(customer.Id) ? refunds[customer.Id] : 0;
+
+                decimal calculatedPaid = totalPaidInAdvance + totalReceipts - totalRefunds;
+                if (calculatedPaid < 0) calculatedPaid = 0;
+
+                // المتبقي هو إجمالي الفواتير ناقص إجمالي المدفوع
+                decimal calculatedBalance = totalInvoices - calculatedPaid;
+                if (calculatedBalance < 0) calculatedBalance = 0;
+
+                if (customer.TotalPaid != calculatedPaid || customer.TotalBalance != calculatedBalance)
+                {
+                    customer.TotalPaid = calculatedPaid;
+                    customer.TotalBalance = calculatedBalance;
+                    _context.Update(customer);
+                    changesMade = true;
+                }
+            }
+
+            if (changesMade)
+            {
+                await _context.SaveChangesAsync();
+            }
+
             return View(customers);
         }
 
@@ -125,9 +167,13 @@ namespace AlarganShipping.Controllers
             }
             return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
+
         public async Task<IActionResult> PrintStatement(int? id)
         {
             if (id == null) return NotFound();
+
+            // 💡 تصحيح الأرصدة قبل الطباعة لضمان التطابق التام
+            await HealCustomerBalance(id.Value);
 
             var customer = await _context.Customers
                 .Include(c => c.Cars).ThenInclude(car => car.Auction)
@@ -139,6 +185,60 @@ namespace AlarganShipping.Controllers
 
             return View(customer);
         }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            // 💡 تصحيح الأرصدة قبل العرض لضمان التطابق التام
+            await HealCustomerBalance(id.Value);
+
+            var customer = await _context.Customers
+                .Include(c => c.Cars)
+                .Include(c => c.Invoices)
+                .Include(c => c.PaymentReceipts)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (customer == null) return NotFound();
+            return View(customer);
+        }
+
+        // ==========================================
+        // دالة الصيانة الذاتية لمعالجة وتحديث أرقام العميل
+        // ==========================================
+        private async Task HealCustomerBalance(int customerId)
+        {
+            var customer = await _context.Customers
+                .Include(c => c.Invoices)
+                .Include(c => c.PaymentReceipts)
+                .FirstOrDefaultAsync(c => c.Id == customerId);
+
+            if (customer != null)
+            {
+                decimal totalInvoices = customer.Invoices?.Sum(i => i.TotalAmount) ?? 0;
+                decimal totalPaidInAdvance = customer.Invoices?.Sum(i => i.AmountPaid) ?? 0;
+                decimal totalReceipts = customer.PaymentReceipts?.Sum(r => r.TotalDeducted) ?? 0;
+
+                decimal totalRefunds = await _context.PaymentVouchers
+                    .Where(v => v.CustomerId == customerId && v.Category == "إرجاع أموال لعميل")
+                    .SumAsync(v => (decimal?)v.Amount) ?? 0;
+
+                decimal calculatedPaid = totalPaidInAdvance + totalReceipts - totalRefunds;
+                if (calculatedPaid < 0) calculatedPaid = 0;
+
+                decimal calculatedBalance = totalInvoices - calculatedPaid;
+                if (calculatedBalance < 0) calculatedBalance = 0;
+
+                if (customer.TotalPaid != calculatedPaid || customer.TotalBalance != calculatedBalance)
+                {
+                    customer.TotalPaid = calculatedPaid;
+                    customer.TotalBalance = calculatedBalance;
+                    _context.Update(customer);
+                    await _context.SaveChangesAsync();
+                }
+            }
+        }
+
         // ==========================================
         // إضافة عميل سريع من شاشة السيارات (AJAX)
         // ==========================================
@@ -155,8 +255,8 @@ namespace AlarganShipping.Controllers
                     Name = name,
                     Phone = "-", // بيانات افتراضية مؤقتة
                     Email = "info@alargan.com", // بريد افتراضي لمنع مشاكل الـ Validation
-                    Address = "غير محدد", // <--- حل المشكلة بتمرير قيمة افتراضية للعنوان
-                    CivilId = "-", // إضافة قيمة للرقم المدني لتجنب أي أخطاء مشابهة
+                    Address = "غير محدد",
+                    CivilId = "-",
                     CustomerCode = "CUST-" + new Random().Next(1000, 9999),
                     PortalUsername = "user" + new Random().Next(100, 999),
                     PortalPassword = new Random().Next(100000, 999999).ToString(),
@@ -170,7 +270,6 @@ namespace AlarganShipping.Controllers
             }
             catch (Exception ex)
             {
-                // إرجاع رسالة الخطأ الدقيقة لتظهر في السكريبت
                 return Json(new { success = false, message = ex.InnerException?.Message ?? ex.Message });
             }
         }
@@ -195,19 +294,6 @@ namespace AlarganShipping.Controllers
             {
                 return Json(new { success = false, message = "لا يمكن الحذف لوجود ارتباطات مالية." });
             }
-        }
-
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null) return NotFound();
-            var customer = await _context.Customers
-                .Include(c => c.Cars)
-                .Include(c => c.Invoices)
-                .Include(c => c.PaymentReceipts)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (customer == null) return NotFound();
-            return View(customer);
         }
 
         private bool CustomerExists(int id)

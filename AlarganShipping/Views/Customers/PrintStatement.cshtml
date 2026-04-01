@@ -9,6 +9,9 @@
     <meta charset="utf-8" />
     <title>كشف حساب - @Model.Name</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="~/images/logo.jpg" rel="icon" type="image/jpeg" />
+
     <style>
         :root {
             --primary-navy: #1e293b;
@@ -213,6 +216,7 @@
             justify-content: space-between;
             margin-top: 60px;
             padding-top: 20px;
+            page-break-inside: avoid;
         }
 
         .sig-box {
@@ -254,17 +258,21 @@
             background: var(--primary-gold);
         }
 
+        .btn-pdf {
+            background: #ef4444;
+        }
+
         .btn-back {
             background: var(--primary-navy);
         }
 
         /* ========================================================
-                   كود الطباعة المحسن (Print Optimized)
-                   ======================================================== */
+                    كود الطباعة المحسن (Print Optimized)
+           ======================================================== */
         @@media print {
             @@page {
                 size: A4 portrait;
-                margin: 0;
+                margin: 10mm;
             }
 
             body, html {
@@ -272,7 +280,9 @@
                 padding: 0 !important;
                 margin: 0 !important;
                 width: 100% !important;
+                /* إزالة القيود للسماح بتعدد الصفحات */
                 height: auto !important;
+                overflow: visible !important;
             }
 
             .controls {
@@ -283,15 +293,13 @@
                 box-shadow: none !important;
                 border: none !important;
                 margin: 0 !important;
-                padding: 15mm !important; /* هامش مناسب للطباعة */
-                width: 210mm !important; /* عرض A4 */
+                padding: 0 !important; /* إزالة الـ Padding الداخلي للاعتماد على margin الصفحة */
+                width: 100% !important; 
                 max-width: 100% !important;
-                min-height: 297mm !important;
-                box-sizing: border-box !important;
-                /* تصغير بسيط لضمان عدم قطع المحتوى */
-                transform: scale(0.95);
-                transform-origin: top center;
+                /* إزالة التحجيم الذي كان يسبب تشوهاً */
+                transform: none !important;
             }
+
             /* ضمان ظهور الألوان والخلفيات */
             * {
                 -webkit-print-color-adjust: exact !important;
@@ -327,6 +335,20 @@
             img {
                 display: inline-block !important;
                 visibility: visible !important;
+            }
+            
+            /* منع انكسار العناصر عبر الصفحات */
+            table {
+                page-break-inside: auto !important;
+            }
+            
+            tr {
+                page-break-inside: avoid !important;
+                page-break-after: auto !important;
+            }
+
+            .signatures, .financial-summary {
+                page-break-inside: avoid !important;
             }
         }
     </style>
@@ -364,15 +386,15 @@
                 @{
                     decimal totalBilled = Model.TotalBalance + Model.TotalPaid;
                 }
-                <div class="val">@totalBilled.ToString("N2") $</div>
+                <div class="val">$ @totalBilled.ToString("N2")</div>
             </div>
             <div class="fin-card card-paid">
                 <span class="lbl">إجمالي ما تم سداده</span>
-                <div class="val">@Model.TotalPaid.ToString("N2") $</div>
+                <div class="val">$ @Model.TotalPaid.ToString("N2")</div>
             </div>
             <div class="fin-card card-debt">
                 <span class="lbl">الرصيد المتبقي (المطلوب)</span>
-                <div class="val">@Model.TotalBalance.ToString("N2") $</div>
+                <div class="val">$ @Model.TotalBalance.ToString("N2")</div>
             </div>
         </div>
 
@@ -393,7 +415,7 @@
                             <td>@inv.IssueDate.ToString("yyyy/MM/dd")</td>
                             <td class="money-col">@inv.InvoiceNumber</td>
                             <td style="font-size: 0.85rem;">@desc</td>
-                            <td class="money-col" style="color: #b45309;">@inv.TotalAmount.ToString("N2") $</td>
+                            <td class="money-col" style="color: #b45309;">$ @inv.TotalAmount.ToString("N2")</td>
                         </tr>
                     }
                 }
@@ -404,26 +426,49 @@
             </tbody>
         </table>
 
-        <!-- جدول الدفعات (السندات) -->
+        <!-- جدول الدفعات (السندات + المدفوع داخل الفاتورة) -->
         <div class="section-title">سجل الدفعات المسددة (Payments History)</div>
         <table>
             <thead>
-                <tr><th>التاريخ</th><th>رقم السند</th><th>طريقة الدفع</th><th>المبلغ المدفوع</th></tr>
+                <tr><th>التاريخ</th><th>رقم السند / الفاتورة</th><th>طريقة الدفع / البيان</th><th>المبلغ المدفوع</th></tr>
             </thead>
             <tbody>
+                @{
+                    bool hasPayments = false;
+                }
+
+                <!-- 1. عرض الدفعات المقدمة المسجلة داخل الفواتير -->
+                @if (Model.Invoices != null && Model.Invoices.Any(i => i.AmountPaid > 0))
+                {
+                    hasPayments = true;
+                    foreach (var inv in Model.Invoices.Where(i => i.AmountPaid > 0).OrderBy(i => i.IssueDate))
+                    {
+                        <tr>
+                            <td>@inv.IssueDate.ToString("yyyy/MM/dd")</td>
+                            <td class="money-col">@inv.InvoiceNumber</td>
+                            <td>دفعة مقدمة (مدرجة ضمن الفاتورة)</td>
+                            <td class="money-col" style="color: #16a34a;">$ @inv.AmountPaid.ToString("N2")</td>
+                        </tr>
+                    }
+                }
+
+                <!-- 2. عرض السندات العادية (الإيصالات) المضافة يدوياً -->
                 @if (Model.PaymentReceipts != null && Model.PaymentReceipts.Any())
                 {
+                    hasPayments = true;
                     foreach (var rec in Model.PaymentReceipts.OrderBy(r => r.PaymentDate))
                     {
                         <tr>
                             <td>@rec.PaymentDate.ToString("yyyy/MM/dd")</td>
                             <td class="money-col">@rec.ReceiptNumber</td>
                             <td>@rec.PaymentMethod @(!string.IsNullOrEmpty(rec.ReferenceNumber) ? " - " + rec.ReferenceNumber : "")</td>
-                            <td class="money-col" style="color: #16a34a;">@rec.TotalDeducted.ToString("N2") $</td>
+                            <td class="money-col" style="color: #16a34a;">$ @rec.TotalDeducted.ToString("N2")</td>
                         </tr>
                     }
                 }
-                else
+
+                <!-- 3. في حال عدم وجود أي دفعات -->
+                @if (!hasPayments)
                 {
                     <tr><td colspan="4" style="text-align:center; color:#64748b;">لا توجد دفعات مسجلة</td></tr>
                 }
@@ -435,5 +480,25 @@
             <div class="sig-box"><div class="sig-line"></div><div class="sig-title">ختم الشركة<br />Company Stamp</div></div>
         </div>
     </div>
+
+    <script>
+        function downloadPDF() {
+            var element = document.getElementById('reportContent');
+            var opt = {
+                margin:       [10, 10, 10, 10], // وضع هوامش 10 ملم من جميع الجهات لترتيب الصفحات المتعددة
+                filename:     'Customer_Statement_@Model.CustomerCode .pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, windowWidth: 1024 }, // عرض كافي لمنع ظهور نسخة الموبايل في الـ PDF
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+            
+            // إخفاء الأزرار أثناء إنشاء الـ PDF ثم إعادتها
+            document.querySelector('.controls').style.display = 'none';
+            html2pdf().set(opt).from(element).save().then(() => {
+                document.querySelector('.controls').style.display = 'flex';
+            });
+        }
+    </script>
 </body>
 </html>
