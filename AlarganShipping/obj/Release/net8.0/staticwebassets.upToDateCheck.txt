@@ -70,3 +70,5 @@ wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\js\auctionCalculator.js
 wwwroot\images\logo.jpg
 wwwroot\favicon.ico
+wwwroot\uploads\receipts\3e92a4c2-fb56-4962-83be-aa377ae089db_2.jpg
+wwwroot\uploads\receipts\9d5789c0-8d69-4ad2-aa21-7fca3072ad69_4.png

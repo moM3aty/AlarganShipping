@@ -150,6 +150,29 @@
         right: auto;
     }
 
+    /* --- زر الإضافة السريع (+) --- */
+    .btn-add-inline {
+        background-color: var(--primary-navy);
+        color: white;
+        border: none;
+        border-radius: 0.75rem;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(30, 41, 59, 0.2);
+        flex-shrink: 0;
+    }
+
+        .btn-add-inline:hover {
+            background-color: var(--primary-gold);
+            transform: translateY(-2px);
+        }
+
     .form-actions {
         margin-top: 3rem;
         padding-top: 1.5rem;
@@ -213,16 +236,24 @@
                 <input asp-for="TowingFee" type="number" step="0.01" class="form-control money-input" required />
             </div>
 
+            <!-- الحقل المعدل: إضافة زر الإضافة السريعة -->
             <div class="form-group">
                 <label asp-for="OriginLocationId" class="form-label">@Localizer["موقع الاستلام (Origin)"] *</label>
-                <select asp-for="OriginLocationId" class="form-control select2" asp-items="ViewBag.LocationsList" required>
-                    <option value="">-- @Localizer["اختر موقع الاستلام (مثال: المزاد)"] --</option>
-                </select>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div style="flex-grow: 1;">
+                        <select asp-for="OriginLocationId" id="OriginLocationId" class="form-control select2" asp-items="ViewBag.LocationsList" required>
+                            <option value="">-- @Localizer["اختر موقع الاستلام (مثال: المزاد)"] --</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-add-inline" onclick="addNewLocation()" title="@Localizer["إضافة موقع جديد"]">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="form-group">
                 <label asp-for="DestinationLocationId" class="form-label">@Localizer["وجهة التسليم (Destination)"] *</label>
-                <select asp-for="DestinationLocationId" class="form-control select2" asp-items="ViewBag.LocationsList" required>
+                <select asp-for="DestinationLocationId" id="DestinationLocationId" class="form-control select2" asp-items="ViewBag.LocationsList" required>
                     <option value="">-- @Localizer["اختر وجهة التسليم (مثال: المستودع)"] --</option>
                 </select>
             </div>
@@ -284,5 +315,61 @@
                 });
             });
         });
+
+        // --- وظيفة إضافة موقع جديد عبر الـ AJAX ---
+        function addNewLocation() {
+            Swal.fire({
+                title: '@Html.Raw(Localizer["إضافة موقع جديد"])',
+                input: 'text',
+                inputPlaceholder: '@Html.Raw(Localizer["أدخل اسم الموقع (مثال: مستودع تكساس)"])',
+                showCancelButton: true,
+                confirmButtonText: '@Html.Raw(Localizer["حفظ وإضافة"])',
+                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])',
+                confirmButtonColor: 'var(--primary-gold)',
+                cancelButtonColor: 'var(--primary-navy)',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return '@Html.Raw(Localizer["يجب إدخال اسم الموقع!"])';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'جاري الحفظ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+                    $.ajax({
+                        url: '@Url.Action("CreateQuick", "Locations")', // تأكد من اسم الكنترولر المسؤول عن المواقع
+                        type: 'POST',
+                        data: {
+                            name: result.value,
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                // إضافة الموقع الجديد للقائمة المنسدلة لاختيار الاستلام
+                                var newOptionOrigin = new Option(res.name, res.id, true, true);
+                                $('#OriginLocationId').append(newOptionOrigin).trigger('change');
+
+                                // إضافة الموقع الجديد للقائمة المنسدلة لاختيار التسليم (بدون تحديده)
+                                var newOptionDest = new Option(res.name, res.id, false, false);
+                                $('#DestinationLocationId').append(newOptionDest).trigger('change');
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: '@Html.Raw(Localizer["تمت الإضافة!"])',
+                                    text: '@Html.Raw(Localizer["تم إدراج الموقع الجديد بنجاح."])',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message || '@Html.Raw(Localizer["حدث خطأ أثناء حفظ الموقع."])', 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', '@Html.Raw(Localizer["تعذر الاتصال بالسيرفر."])', 'error');
+                        }
+                    });
+                }
+            });
+        }
     </script>
 }

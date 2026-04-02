@@ -2,6 +2,9 @@
 @{
     ViewData["Title"] = Localizer["كشف حساب عميل"];
     Layout = null;
+
+    // سعر الصرف المعتمد للتحويل من دولار إلى ريال عماني
+    decimal exchangeRate = 0.386m;
 }
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -267,12 +270,12 @@
         }
 
         /* ========================================================
-                    كود الطباعة المحسن (Print Optimized)
-           ======================================================== */
+                            كود الطباعة المحسن (Print Optimized)
+                   ======================================================== */
         @@media print {
             @@page {
                 size: A4 portrait;
-                margin: 10mm;
+                margin: 0;
             }
 
             body, html {
@@ -280,9 +283,7 @@
                 padding: 0 !important;
                 margin: 0 !important;
                 width: 100% !important;
-                /* إزالة القيود للسماح بتعدد الصفحات */
                 height: auto !important;
-                overflow: visible !important;
             }
 
             .controls {
@@ -293,13 +294,14 @@
                 box-shadow: none !important;
                 border: none !important;
                 margin: 0 !important;
-                padding: 0 !important; /* إزالة الـ Padding الداخلي للاعتماد على margin الصفحة */
-                width: 100% !important; 
+                padding: 15mm !important; /* هامش مناسب للطباعة */
+                width: 210mm !important; /* عرض A4 */
                 max-width: 100% !important;
-                /* إزالة التحجيم الذي كان يسبب تشوهاً */
-                transform: none !important;
+                min-height: 297mm !important;
+                box-sizing: border-box !important;
+                transform: scale(0.95);
+                transform-origin: top center;
             }
-
             /* ضمان ظهور الألوان والخلفيات */
             * {
                 -webkit-print-color-adjust: exact !important;
@@ -336,26 +338,13 @@
                 display: inline-block !important;
                 visibility: visible !important;
             }
-            
-            /* منع انكسار العناصر عبر الصفحات */
-            table {
-                page-break-inside: auto !important;
-            }
-            
-            tr {
-                page-break-inside: avoid !important;
-                page-break-after: auto !important;
-            }
-
-            .signatures, .financial-summary {
-                page-break-inside: avoid !important;
-            }
         }
     </style>
 </head>
 <body>
     <div class="controls">
-        <a href="javascript:history.back()" class="btn-action btn-back">إغلاق / عودة</a>
+        <!-- تم تعديل زر الرجوع ليعمل سواء كان في نفس الصفحة أو في تبويب جديد (New Tab) -->
+        <a href="@Url.Action("Details", "Customers", new { id = Model.Id })" class="btn-action btn-back" onclick="if(window.history.length <= 1) { window.close(); return false; }">إغلاق / عودة</a>
         <button class="btn-action btn-print" onclick="window.print()">طباعة الكشف</button>
     </div>
 
@@ -385,16 +374,17 @@
                 <span class="lbl">إجمالي المبالغ المطلوبة</span>
                 @{
                     decimal totalBilled = Model.TotalBalance + Model.TotalPaid;
+                    decimal totalBilledOMR = totalBilled * exchangeRate;
                 }
-                <div class="val">$ @totalBilled.ToString("N2")</div>
+                <div class="val">@totalBilledOMR.ToString("N2") OMR</div>
             </div>
             <div class="fin-card card-paid">
                 <span class="lbl">إجمالي ما تم سداده</span>
-                <div class="val">$ @Model.TotalPaid.ToString("N2")</div>
+                <div class="val">@((Model.TotalPaid * exchangeRate).ToString("N2")) OMR</div>
             </div>
             <div class="fin-card card-debt">
                 <span class="lbl">الرصيد المتبقي (المطلوب)</span>
-                <div class="val">$ @Model.TotalBalance.ToString("N2")</div>
+                <div class="val">@((Model.TotalBalance * exchangeRate).ToString("N2")) OMR</div>
             </div>
         </div>
 
@@ -415,7 +405,7 @@
                             <td>@inv.IssueDate.ToString("yyyy/MM/dd")</td>
                             <td class="money-col">@inv.InvoiceNumber</td>
                             <td style="font-size: 0.85rem;">@desc</td>
-                            <td class="money-col" style="color: #b45309;">$ @inv.TotalAmount.ToString("N2")</td>
+                            <td class="money-col" style="color: #b45309;">@((inv.TotalAmount * exchangeRate).ToString("N2")) OMR</td>
                         </tr>
                     }
                 }
@@ -447,7 +437,7 @@
                             <td>@inv.IssueDate.ToString("yyyy/MM/dd")</td>
                             <td class="money-col">@inv.InvoiceNumber</td>
                             <td>دفعة مقدمة (مدرجة ضمن الفاتورة)</td>
-                            <td class="money-col" style="color: #16a34a;">$ @inv.AmountPaid.ToString("N2")</td>
+                            <td class="money-col" style="color: #16a34a;">@((inv.AmountPaid * exchangeRate).ToString("N2")) OMR</td>
                         </tr>
                     }
                 }
@@ -462,7 +452,7 @@
                             <td>@rec.PaymentDate.ToString("yyyy/MM/dd")</td>
                             <td class="money-col">@rec.ReceiptNumber</td>
                             <td>@rec.PaymentMethod @(!string.IsNullOrEmpty(rec.ReferenceNumber) ? " - " + rec.ReferenceNumber : "")</td>
-                            <td class="money-col" style="color: #16a34a;">$ @rec.TotalDeducted.ToString("N2")</td>
+                            <td class="money-col" style="color: #16a34a;">@((rec.TotalDeducted * exchangeRate).ToString("N2")) OMR</td>
                         </tr>
                     }
                 }
@@ -485,15 +475,14 @@
         function downloadPDF() {
             var element = document.getElementById('reportContent');
             var opt = {
-                margin:       [10, 10, 10, 10], // وضع هوامش 10 ملم من جميع الجهات لترتيب الصفحات المتعددة
+                margin:       [10, 10, 10, 10],
                 filename:     'Customer_Statement_@Model.CustomerCode .pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, windowWidth: 1024 }, // عرض كافي لمنع ظهور نسخة الموبايل في الـ PDF
+                html2canvas:  { scale: 2, useCORS: true, windowWidth: 1024 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
                 pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
             };
-            
-            // إخفاء الأزرار أثناء إنشاء الـ PDF ثم إعادتها
+
             document.querySelector('.controls').style.display = 'none';
             html2pdf().set(opt).from(element).save().then(() => {
                 document.querySelector('.controls').style.display = 'flex';

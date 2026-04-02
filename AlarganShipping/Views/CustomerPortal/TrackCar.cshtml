@@ -3,9 +3,10 @@
     ViewData["Title"] = Localizer["تتبع سيارتي"];
 }
 
+<!-- إضافة مكتبة Fancybox (CSS) للاستوديو -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
+
 <style>
-    /* ... (قم بنسخ ولصق نفس أكواد CSS الموجودة في Views/Tracking/Result.cshtml حرفياً لضمان نفس الشكل الجمالي) ... */
-    /* نظراً لضيق المساحة، سأضع التنسيقات الأساسية لتتبع السيارة هنا */
     .tracking-wrapper {
         background: white;
         border-radius: 1.5rem;
@@ -24,6 +25,14 @@
         text-align: center;
     }
 
+    .badges-wrapper {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 3rem;
+    }
+
     .vin-badge {
         background-color: rgba(184, 147, 90, 0.1);
         color: var(--primary-gold);
@@ -32,9 +41,24 @@
         font-family: monospace;
         font-size: 1.1rem;
         font-weight: 900;
-        display: inline-block;
-        margin-bottom: 3rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         border: 1px solid rgba(184, 147, 90, 0.2);
+    }
+
+    .container-badge {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+        padding: 0.5rem 1.5rem;
+        border-radius: 0.75rem;
+        font-family: monospace;
+        font-size: 1.1rem;
+        font-weight: 900;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(59, 130, 246, 0.2);
     }
 
     /* السجل الزمني للتتبع */
@@ -98,7 +122,7 @@
         font-weight: 600;
     }
 
-    /* الصور المرفقة للعميل */
+    /* --- تعديلات الصور لتتوافق مع الاستوديو --- */
     .gallery-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -106,27 +130,71 @@
         margin-top: 2rem;
     }
 
-    .gallery-img {
-        width: 100%;
-        height: 150px;
-        object-fit: cover;
+    .gallery-link {
+        display: block;
+        position: relative;
         border-radius: 1rem;
+        overflow: hidden;
         border: 2px solid #e2e8f0;
+        height: 150px;
         transition: 0.3s;
         cursor: pointer;
     }
 
-        .gallery-img:hover {
+        .gallery-link:hover {
             border-color: var(--primary-gold);
             transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
+
+    .gallery-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+
+    .gallery-link:hover .gallery-img {
+        transform: scale(1.05); /* زووم خفيف للصورة عند التمرير */
+    }
+
+    /* أيقونة العدسة (التكبير) التي تظهر عند التمرير */
+    .gallery-link::after {
+        content: '\f00e';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(30, 41, 59, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        opacity: 0;
+        transition: 0.3s;
+    }
+
+    .gallery-link:hover::after {
+        opacity: 1;
+    }
 </style>
 
 <div class="tracking-wrapper">
     <div style="text-align: center;">
         <a href="@Url.Action("Index", "CustomerPortal")" style="color: #64748b; text-decoration: none; font-weight: 800; display: inline-block; margin-bottom: 1rem;"><i class="fa-solid fa-arrow-right"></i> @Localizer["العودة للوحة التحكم"]</a>
         <h1 class="car-title-large">@Model.Year @Model.Make @Model.Model</h1>
-        <div class="vin-badge">VIN: @Model.VIN</div>
+
+        <div class="badges-wrapper">
+            <div class="vin-badge">VIN: @Model.VIN</div>
+            @if (Model.Shipment != null && !string.IsNullOrEmpty(Model.Shipment.ContainerNumber))
+            {
+                <div class="container-badge"><i class="fa-solid fa-box-open"></i> @Localizer["الحاوية:"] @Model.Shipment.ContainerNumber</div>
+            }
+        </div>
     </div>
 
     <h3 style="color: var(--primary-navy); font-weight: 900; margin-bottom: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem;"><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary-gold);"></i> @Localizer["سجل التتبع والمراحل"]</h3>
@@ -150,17 +218,61 @@
     </div>
 
     <h3 style="color: var(--primary-navy); font-weight: 900; margin-bottom: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; margin-top: 3rem;"><i class="fa-solid fa-images" style="color: var(--primary-gold);"></i> @Localizer["صور ومرفقات السيارة"]</h3>
+
     <div class="gallery-grid">
+        <!-- 1. تم استبدال target="_blank" بـ data-fancybox لتشغيل الاستوديو -->
         @if (!string.IsNullOrEmpty(Model.MainImageUrl))
         {
-            <a href="@Model.MainImageUrl" target="_blank"><img src="@Model.MainImageUrl" class="gallery-img" alt="Main Car Image" /></a>
+            <a href="@Model.MainImageUrl" data-fancybox="gallery" data-caption="@Localizer["الصورة الرئيسية"]" class="gallery-link">
+                <img src="@Model.MainImageUrl" class="gallery-img" alt="Main Car Image" />
+            </a>
         }
         @if (Model.DocumentAttachments != null)
         {
             foreach (var doc in Model.DocumentAttachments.Where(d => d.DocumentType == "CarImage"))
             {
-                <a href="@doc.FilePath" target="_blank"><img src="@doc.FilePath" class="gallery-img" alt="Car Image" /></a>
+                <a href="@doc.FilePath" data-fancybox="gallery" data-caption="@Localizer["صورة السيارة"]" class="gallery-link">
+                    <img src="@doc.FilePath" class="gallery-img" alt="Car Image" loading="lazy" />
+                </a>
             }
+        }
+
+        <!-- 2. رسالة عند عدم وجود صور -->
+        @if (string.IsNullOrEmpty(Model.MainImageUrl) && (Model.DocumentAttachments == null || !Model.DocumentAttachments.Any(d => d.DocumentType == "CarImage")))
+        {
+            <div style="grid-column: 1 / -1; color: #64748b; font-weight: bold; text-align: center; padding: 20px;">
+                <i class="fa-solid fa-camera-retro" style="font-size: 2rem; color: #cbd5e1; display: block; margin-bottom: 10px;"></i>
+                @Localizer["لا توجد صور متوفرة للسيارة حالياً."]
+            </div>
         }
     </div>
 </div>
+
+@section Scripts {
+    <!-- إضافة مكتبة الجافاسكربت لتشغيل الـ Fancybox -->
+    <script src="https://cdn.jsdelivr.net/npm/@@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+    <script>
+        $(document).ready(function () {
+            // تفعيل الاستوديو وربط جميع الصور التي تحمل نفس اسم الجاليري
+            Fancybox.bind('[data-fancybox="gallery"]', {
+                Hash: false, // لعدم إضافة هاش إلى رابط المتصفح
+                Thumbs: {
+                    autoStart: true, // إظهار شريط الصور المصغرة أسفل الشاشة عند الفتح
+                },
+                Toolbar: {
+                    display: {
+                        left: ["infobar"],
+                        middle: [
+                            "zoomIn",
+                            "zoomOut",
+                            "toggle1to1",
+                            "rotateCCW",
+                            "rotateCW",
+                        ],
+                        right: ["slideshow", "thumbs", "close"],
+                    },
+                },
+            });
+        });
+    </script>
+}

@@ -3,10 +3,13 @@
     ViewData["Title"] = Localizer["طباعة الفاتورة"];
     Layout = null;
 
+    // سعر الصرف للتحويل إلى الريال العماني
+    decimal exchangeRate = 0.386m;
+
     // --- التجميع المحاسبي لعرض الفاتورة للعميل ---
     
-    // 1. قيمة السيارة والمزاد
-    decimal carTotal = Model.CarPrice + Model.AuctionFees;
+    // 1. قيمة السيارة والمزاد والتحويل
+    decimal carTotal = Model.CarPrice + Model.AuctionFees + Model.TransferFees;
     
     // 2. رسوم الشحن (الداخلي في أمريكا + الشحن البحري)
     decimal shippingTotal = Model.InlandTowing + Model.SeaFreight;
@@ -325,7 +328,7 @@
                 <thead>
                     <tr>
                         <th>البيان (Description)</th>
-                        <th>المبلغ (USD)</th>
+                        <th>المبلغ (OMR)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -333,15 +336,7 @@
                     {
                         <tr>
                             <td>قيمة السيارة (Car Price)</td>
-                            <td class="amount-col">@carTotal.ToString("N2")</td>
-                        </tr>
-                    }
-
-                    @if (Model.TransferFees > 0)
-                    {
-                        <tr>
-                            <td>رسوم التحويل (Transfer Fees)</td>
-                            <td class="amount-col">@Model.TransferFees.ToString("N2")</td>
+                            <td class="amount-col">@((carTotal * exchangeRate).ToString("N2"))</td>
                         </tr>
                     }
 
@@ -349,39 +344,39 @@
                     {
                         <tr>
                             <td>رسوم حجم السيارة (Car Size Surcharge)</td>
-                            <td class="amount-col">@Model.CarSizeFees.ToString("N2")</td>
+                            <td class="amount-col">@((Model.CarSizeFees * exchangeRate).ToString("N2"))</td>
                         </tr>
                     }
 
                     <tr>
                         <td>الشحن (Shipping Fees)</td>
-                        <td class="amount-col">@shippingTotal.ToString("N2")</td>
+                        <td class="amount-col">@((shippingTotal * exchangeRate).ToString("N2"))</td>
                     </tr>
 
                     @if (Model.OmanTowingFees > 0)
                     {
                         <tr>
                             <td>رسوم النقل داخل عمان (Oman Towing)</td>
-                            <td class="amount-col">@Model.OmanTowingFees.ToString("N2")</td>
+                            <td class="amount-col">@((Model.OmanTowingFees * exchangeRate).ToString("N2"))</td>
                         </tr>
                     }
 
                     <tr>
                         <td>الضريبة والجمارك (Taxes & Customs)</td>
-                        <td class="amount-col">@taxesAndCustomsTotal.ToString("N2")</td>
+                        <td class="amount-col">@((taxesAndCustomsTotal * exchangeRate).ToString("N2"))</td>
                     </tr>
 
                     @if (penaltiesTotal > 0)
                     {
                         <tr>
                             <td>رسوم غرامات (Penalties & Storage)</td>
-                            <td class="amount-col">@penaltiesTotal.ToString("N2")</td>
+                            <td class="amount-col">@((penaltiesTotal * exchangeRate).ToString("N2"))</td>
                         </tr>
                     }
 
                     <tr>
                         <td>عمولة الشركة والأتعاب الإدارية (Admin Fees)</td>
-                        <td class="amount-col">@Model.CompanyCommission.ToString("N2")</td>
+                        <td class="amount-col">@((Model.CompanyCommission * exchangeRate).ToString("N2"))</td>
                     </tr>
                 </tbody>
             </table>
@@ -392,25 +387,20 @@
             <div class="totals-box">
                 <div class="total-row grand-total">
                     <span>الإجمالي (Total)</span>
-                    <span class="val">$@Model.TotalAmount.ToString("N2")</span>
+                    <span class="val">@((Model.TotalAmount * exchangeRate).ToString("N2")) ر.ع</span>
                 </div>
                 <div class="total-row paid">
                     <span>المدفوع (Paid)</span>
-                    <span class="val">$@Model.AmountPaid.ToString("N2")</span>
+                    <span class="val">@((Model.AmountPaid * exchangeRate).ToString("N2")) ر.ع</span>
                 </div>
                 <div class="total-row due">
                     <span>المتبقي للتحصيل (Due)</span>
-                    <span class="val">$@Model.RemainingAmount.ToString("N2")</span>
+                    <span class="val">@((Model.RemainingAmount * exchangeRate).ToString("N2")) ر.ع</span>
                 </div>
             </div>
         </div>
 
-        <!-- تذييل الفاتورة (تفاصيل البنك) -->
-        <div class="bank-box">
-            <h4>تفاصيل الحساب البنكي</h4>
-            <p>بنك مسقط - Bank Muscat</p>
-            <div class="acc-num">0000 0000 0000 0000</div>
-        </div>
+
     </div>
 
     <script>

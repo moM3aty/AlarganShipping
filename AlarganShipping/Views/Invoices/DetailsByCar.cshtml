@@ -1,19 +1,28 @@
 ﻿@model AlarganShipping.Models.Invoice
+@inject AlarganShipping.Models.ApplicationDbContext Context
 @{
     ViewData["Title"] = Localizer["تفاصيل عملية البيع"];
 
+    // سعر الصرف المعتمد
+    decimal exchangeRate = 0.386m;
+
+    // --- حساب المدفوعات بدقة (الدفعة المقدمة + سندات القبض المربوطة بالسيارة) ---
+    decimal invoiceAdvancePaid = Model.AmountPaid;
+
+    // الحل هنا: إضافة ToList() لجلب السجلات للذاكرة أولاً، ثم حساب الـ TotalDeducted الذي يعتبر حقلاً محسوباً
+    decimal receiptsPaidUSD = Context.PaymentReceipts
+        .Where(r => r.CarId == Model.CarId)
+        .ToList()
+        .Sum(r => r.TotalDeducted);
+
+    decimal totalPaidUSD = invoiceAdvancePaid + receiptsPaidUSD;
+    decimal remainingAmountUSD = Model.TotalAmount - totalPaidUSD;
+    if (remainingAmountUSD < 0) remainingAmountUSD = 0;
+
     // --- التجميع المحاسبي لسهولة العرض على العميل ---
-
-    // 1. قيمة السيارة والمزاد
     decimal carTotal = Model.CarPrice + Model.AuctionFees + Model.TransferFees;
-
-    // 2. رسوم الشحن (أمريكا + بحري + عمان + الحجم)
     decimal shippingFees = Model.InlandTowing + Model.SeaFreight + Model.OmanTowingFees + Model.CarSizeFees;
-
-    // 3. الضريبة والجمارك (تخليص + ضريبة + جمارك)
     decimal taxAndCustoms = Model.CustomsAndTaxes + Model.TaxAmount + Model.CustomsAmount;
-
-    // 4. الغرامات والأرضيات
     decimal penalties = Model.StorageFees;
 }
 
@@ -103,6 +112,13 @@
             font-family: monospace;
         }
 
+        .breakdown-box .curr {
+            font-size: 1rem;
+            color: #94a3b8;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+        }
+
     .breakdown-sub {
         font-size: 0.75rem;
         color: #94a3b8;
@@ -176,11 +192,11 @@
     <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
         <div>
             <div style="color: var(--text-muted); font-weight: 800; margin-bottom: 5px;">@Localizer["إجمالي قيمة الفاتورة المطلوب من العميل"]</div>
-            <div class="amount-large">$@Model.TotalAmount.ToString("N2")</div>
+            <div class="amount-large">@((Model.TotalAmount * exchangeRate).ToString("N2")) <span style="font-size: 1.5rem; color: var(--primary-gold);">ر.ع</span></div>
 
             @{
-                string badgeClass = Model.RemainingAmount <= 0 ? "status-paid" : (Model.AmountPaid > 0 ? "status-partial" : "status-unpaid");
-                string badgeText = Model.RemainingAmount <= 0 ? "مسددة بالكامل" : (Model.AmountPaid > 0 ? "مسددة جزئياً" : "غير مسددة");
+                string badgeClass = remainingAmountUSD <= 0 ? "status-paid" : (totalPaidUSD > 0 ? "status-partial" : "status-unpaid");
+                string badgeText = remainingAmountUSD <= 0 ? "مسددة بالكامل" : (totalPaidUSD > 0 ? "مسددة جزئياً" : "غير مسددة");
             }
             <span class="status-badge @badgeClass"><i class="fa-solid fa-circle-check"></i> @Localizer[badgeText]</span>
         </div>
@@ -202,20 +218,20 @@
         {
             <div class="breakdown-box">
                 <h4><i class="fa-solid fa-car"></i> @Localizer["قيمة شراء السيارة"]</h4>
-                <div class="val">$@carTotal.ToString("N2")</div>
+                <div class="val">@((carTotal * exchangeRate).ToString("N2")) <span class="curr">ر.ع</span></div>
                 <div class="breakdown-sub">شراء + مزاد + تحويل</div>
             </div>
         }
 
         <div class="breakdown-box" style="border-color: #cbd5e1; background: white;">
             <h4><i class="fa-solid fa-ship"></i> @Localizer["رسوم الشحن"]</h4>
-            <div class="val">$@shippingFees.ToString("N2")</div>
+            <div class="val">@((shippingFees * exchangeRate).ToString("N2")) <span class="curr">ر.ع</span></div>
             <div class="breakdown-sub">أمريكا + بحري + عمان + حجم السيارة</div>
         </div>
 
         <div class="breakdown-box" style="border-color: #cbd5e1; background: white;">
             <h4><i class="fa-solid fa-building-columns"></i> @Localizer["الضريبة والجمارك"]</h4>
-            <div class="val">$@taxAndCustoms.ToString("N2")</div>
+            <div class="val">@((taxAndCustoms * exchangeRate).ToString("N2")) <span class="curr">ر.ع</span></div>
             <div class="breakdown-sub">تخليص + ضريبة VAT + جمارك</div>
         </div>
 
@@ -223,25 +239,25 @@
         {
             <div class="breakdown-box" style="background: #fef2f2; border-color: #fecaca;">
                 <h4 style="color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> @Localizer["رسوم غرامات"]</h4>
-                <div class="val" style="color: #dc2626;">$@penalties.ToString("N2")</div>
+                <div class="val" style="color: #dc2626;">@((penalties * exchangeRate).ToString("N2")) <span class="curr" style="color: #ef4444;">ر.ع</span></div>
                 <div class="breakdown-sub" style="color: #f87171;">تأخير وتخزين (Storage)</div>
             </div>
         }
 
         <div class="breakdown-box" style="background: rgba(184, 147, 90, 0.05); border-color: rgba(184, 147, 90, 0.2);">
             <h4><i class="fa-solid fa-hand-holding-dollar"></i> @Localizer["عمولة الشركة (الإدارة)"]</h4>
-            <div class="val" style="color: var(--primary-gold);">$@Model.CompanyCommission.ToString("N2")</div>
+            <div class="val" style="color: var(--primary-gold);">@((Model.CompanyCommission * exchangeRate).ToString("N2")) <span class="curr">ر.ع</span></div>
         </div>
     </div>
 
     <div class="finance-grid">
         <div class="finance-box paid-box">
-            <h4>@Localizer["إجمالي ما دفعه العميل مقدماً"]</h4>
-            <div class="val">$@Model.AmountPaid.ToString("N2")</div>
+            <h4>@Localizer["إجمالي ما دفعه العميل"]</h4>
+            <div class="val">@((totalPaidUSD * exchangeRate).ToString("N2")) <span style="font-size: 1.2rem; font-family: 'Cairo'; font-weight: bold;">ر.ع</span></div>
         </div>
         <div class="finance-box balance-box">
             <h4>@Localizer["المتبقي للتحصيل عند الاستلام"]</h4>
-            <div class="val">$@Model.RemainingAmount.ToString("N2")</div>
+            <div class="val">@((remainingAmountUSD * exchangeRate).ToString("N2")) <span style="font-size: 1.2rem; font-family: 'Cairo'; font-weight: bold;">ر.ع</span></div>
         </div>
     </div>
 

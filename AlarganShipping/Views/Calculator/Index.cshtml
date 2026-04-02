@@ -1,97 +1,14 @@
 ﻿@model AlarganShipping.Models.Invoice
 @{
-    ViewData["Title"] = Localizer["المحاسبة والتقارير المالية"];
+    ViewData["Title"] = Localizer["الحاسبة الذكية لتكلفة الاستيراد"];
     Layout = "_Layout";
 
-    // --- الحماية الجذرية من أخطاء الـ Null ---
-    decimal totalSales = ViewBag.TotalSales as decimal? ?? 0m;
-    decimal totalPaid = ViewBag.TotalPaid as decimal? ?? 0m;
-    decimal pendingCollections = ViewBag.PendingCollections as decimal? ?? 0m;
-    int invoicesCount = ViewBag.InvoicesCount as int? ?? 0;
-
-    decimal totalPurchases = ViewBag.TotalPurchases as decimal? ?? 0m;
-    decimal totalExpenses = ViewBag.TotalExpenses as decimal? ?? 0m;
-    int purchasedCarsCount = ViewBag.PurchasedCarsCount as int? ?? 0;
-
-    decimal[] monthlySales = ViewBag.MonthlySales as decimal[] ?? new decimal[12];
-    decimal[] monthlyPurchases = ViewBag.MonthlyPurchases as decimal[] ?? new decimal[12];
-
-    int currentYear = ViewBag.CurrentYear as int? ?? DateTime.Now.Year;
     string errorMessage = ViewBag.ErrorMessage as string;
 }
 
 <style>
-    /* --- التنسيقات الأساسية --- */
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .page-title {
-        font-size: 1.8rem;
-        font-weight: 900;
-        color: var(--primary-navy);
-        margin: 0;
-    }
-
-    .page-subtitle {
-        color: var(--text-muted);
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-top: 5px;
-    }
-
-    .accounting-tabs {
-        display: flex;
-        gap: 10px;
-        background: white;
-        padding: 0.5rem;
-        border-radius: 1rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-        overflow-x: auto;
-        border: 1px solid #e2e8f0;
-        scrollbar-width: none;
-        margin-bottom: 2rem;
-    }
-
-        .accounting-tabs::-webkit-scrollbar {
-            display: none;
-        }
-
-    .acc-tab {
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.75rem;
-        font-weight: 800;
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        text-decoration: none;
-        white-space: nowrap;
-        transition: 0.3s;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        border: none;
-        background: transparent;
-    }
-
-        .acc-tab:hover {
-            background: #f8fafc;
-            color: var(--primary-navy);
-        }
-
-        .acc-tab.active {
-            background: var(--primary-navy);
-            color: white;
-            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
-        }
-
     /* =========================================================
-           تصميم الحاسبة الذكية المتطابق مع الصورة (Pixel-Perfect)
+           تصميم الحاسبة الذكية (Pixel-Perfect) للعميل
            ========================================================= */
 
     :root {
@@ -101,6 +18,7 @@
         --calc-text-muted: #94a3b8;
         --calc-border: #f1f5f9;
     }
+
 
     .smart-calc-master-container {
         font-family: 'Cairo', sans-serif;
@@ -189,30 +107,6 @@
         }
 
         .btn-calc-outline i {
-            color: var(--calc-gold);
-        }
-
-    .btn-calc-primary {
-        background: var(--calc-navy);
-        color: white;
-        border: none;
-        padding: 0.7rem 1.5rem;
-        border-radius: 10px;
-        font-weight: 800;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        transition: 0.3s;
-        box-shadow: 0 4px 15px rgba(30, 41, 59, 0.2);
-    }
-
-        .btn-calc-primary:hover {
-            background: var(--calc-gold);
-        }
-
-        .btn-calc-primary i {
             color: var(--calc-gold);
         }
 
@@ -335,7 +229,7 @@
         background: var(--calc-bg);
         border: 2px solid var(--calc-border);
         border-radius: 1rem;
-        padding: 1rem;
+        padding: 1rem 0.5rem;
         font-size: 1.2rem;
         font-weight: 900;
         color: var(--calc-navy);
@@ -355,6 +249,13 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 15px;
+        margin-bottom: 1.5rem;
+    }
+
+    .calc-grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
         margin-bottom: 1.5rem;
     }
 
@@ -516,25 +417,86 @@
         border: 1px solid var(--calc-border);
     }
 
-    /* Select2 الخاص بالمزاد */
-    .select2-container--default .select2-selection--single {
-        background-color: var(--calc-bg);
-        border: 2px solid var(--calc-border);
-        border-radius: 1rem;
-        height: 60px;
-        display: none;
+    /* =========================================================
+           إصلاحات وتخصيص Select2 الخاص بالمزاد
+           ========================================================= */
+    .select2-container {
+        width: 314px !important;
+        display: block;
+    }
+
+    .select2-selection__placeholder span{
+        font-size:small;
+    }
+        .select2-container ul{
+            list-style:none !important;
+        }
+        .select2-container--default .select2-selection--single {
+        background-color: var(--calc-bg) !important;
+        border: 2px solid var(--calc-border) !important;
+        border-radius: 1rem !important;
+        height: 60px !important;
+        display: flex !important;
         align-items: center;
         padding: 0 10px;
         transition: 0.3s;
+        outline: none;
     }
 
-        .select2-container--default .select2-selection--single:focus {
-            border-color: var(--calc-gold);
-            background: white;
+    .select2-container--default.select2-container--open .select2-selection--single {
+        border-color: var(--calc-gold) !important;
+        background: white !important;
+        box-shadow: 0 0 0 4px rgba(184, 147, 90, 0.1) !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        width: 100%;
+        padding-inline-end: 10px;
+        font-size:small;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 58px !important;
+        right: 15px !important;
+    }
+
+    html[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
+        left: 15px !important;
+        right: auto !important;
+    }
+
+    .select2-search--dropdown {
+        background-color: #ffffff !important;
+        padding: 15px !important;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+        .select2-search--dropdown .select2-search__field {
+            border: 2px solid #e2e8f0 !important;
+            border-radius: 0.75rem !important;
+            padding: 10px 15px !important;
+            outline: none !important;
+            font-family: inherit;
+            font-weight: 700;
+            color: var(--calc-navy);
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 58px;
+            .select2-search--dropdown .select2-search__field:focus {
+                border-color: var(--calc-gold) !important;
+            }
+
+    .select2-results__option {
+        background-color: #ffffff;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 10px 15px;
+        transition: 0.2s;
+    }
+
+        .select2-results__option:hover,
+        .select2-results__option--highlighted[aria-selected] {
+            background-color: #f8fafc !important;
         }
 
 
@@ -652,7 +614,7 @@
             font-weight: 900;
         }
 
-    /* 2. كروت التفاصيل (الشحن يمين، المزاد يسار - حسب الصورة) */
+    /* 2. كروت التفاصيل */
     .res-cards-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -847,167 +809,20 @@
             font-weight: bold;
         }
 
-    /* --- الإحصائيات أسفل الحاسبة --- */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-        gap: 1.5rem;
-        margin-top: 2rem;
-    }
-
-    .fin-card {
-        background: white;
-        border-radius: 1.5rem;
-        padding: 2rem;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
-        display: flex;
-        flex-direction: column;
-    }
-
-    .fin-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-    }
-
-    .fin-card-title {
-        font-size: 1.25rem;
-        font-weight: 900;
-        color: var(--primary-navy);
-        margin: 0;
-    }
-
-    .fin-icon {
-        width: 45px;
-        height: 45px;
-        background: rgba(184, 147, 90, 0.1);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--primary-gold);
-        font-size: 1.3rem;
-    }
-
-    .fin-data-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.25rem;
-    }
-
-    .fin-data-box {
-        padding: 1.25rem;
-        background: #f8fafc;
-        border-radius: 1.25rem;
-        border: 1px solid #f1f5f9;
-        text-align: center;
-        transition: 0.3s;
-    }
-
-        .fin-data-box:hover {
-            border-color: var(--primary-gold);
-            background: white;
+    @@media print {
+        .calc-header-buttons, .adv-settings-btn, .btn-refresh {
+            display: none !important;
         }
 
-    .fin-label {
-        display: block;
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        font-weight: 800;
-        margin-bottom: 0.5rem;
-    }
-
-    .fin-value {
-        font-size: 1.3rem;
-        font-weight: 900;
-        color: var(--primary-navy);
-        font-family: monospace;
-    }
-
-        .fin-value.green {
-            color: #16a34a;
+        body {
+            background: white !important;
         }
 
-        .fin-value.red {
-            color: #ef4444;
+        .smart-calc-master-container {
+            border: none !important;
+            box-shadow: none !important;
         }
-
-    .chart-container, .report-container {
-        background: white;
-        border-radius: 1.5rem;
-        padding: 2rem;
-        margin-top: 2rem;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
     }
-
-    .chart-title {
-        font-size: 1.3rem;
-        font-weight: 900;
-        color: var(--primary-navy);
-        margin-bottom: 2rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .export-btns {
-        display: flex;
-        gap: 10px;
-    }
-
-    .btn-export {
-        border: none;
-        padding: 0.6rem 1.2rem;
-        border-radius: 0.75rem;
-        font-weight: 800;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: 0.3s;
-        color: white;
-    }
-
-    .btn-excel {
-        background: #10b981;
-    }
-
-        .btn-excel:hover {
-            background: #059669;
-        }
-
-    .btn-pdf {
-        background: #ef4444;
-    }
-
-        .btn-pdf:hover {
-            background: #dc2626;
-        }
-
-    .table-enterprise {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: start;
-        margin-top: 1rem;
-    }
-
-        .table-enterprise th {
-            padding: 1rem;
-            background: #f8fafc;
-            color: var(--text-muted);
-            font-weight: 800;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .table-enterprise td {
-            padding: 1rem;
-            border-bottom: 1px solid #f1f5f9;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
 </style>
 
 <div class="accounting-dashboard-page">
@@ -1018,22 +833,17 @@
         </div>
     }
 
-
     <!-- =========================================================
-         واجهة الحاسبة الذكية (Pixel-Perfect Match)
+         واجهة الحاسبة الذكية
          ========================================================= -->
     <div class="smart-calc-master-container" id="calculatorArea">
 
         <!-- هيدر الحاسبة -->
         <div class="calc-top-header">
-            <div class="calc-header-buttons" style="visibility:hidden;">
-                <button class="btn-calc-primary"><i class="fa-solid fa-bolt"></i> ابدأ الآن</button>
-                <button class="btn-calc-outline"><i class="fa-solid fa-share-nodes"></i> مشاركة</button>
-                <button onclick="window.print()" class="btn-calc-outline"><i class="fa-regular fa-file-pdf"></i> تحميل النتائج</button>
-            </div>
+
             <div class="calc-brand-area">
                 <div class="calc-title-texts">
-                    <h1>حاسبة استيراد السيارات</h1>
+                    <h1>الحاسبة الذكية</h1>
                     <p>Al Argan Auto Shipping</p>
                 </div>
                 <div class="calc-logo-box">AL ARGAN</div>
@@ -1052,14 +862,14 @@
                         <div class="banner-box">
                             <span class="lbl">المبلغ عند الوصول</span>
                             <div class="val-wrap">
-                                <span class="val" id="resArrivalDue">836.78</span>
+                                <span class="val" id="resArrivalDue">0.00</span>
                                 <span class="curr">ر.ع</span>
                             </div>
                         </div>
                         <div class="banner-box">
                             <span class="lbl">المبلغ الإجمالي المستحق</span>
                             <div class="val-wrap">
-                                <span class="val" id="resInitialDue">1,849.99</span>
+                                <span class="val" id="resInitialDue">0.00</span>
                                 <span class="curr">ر.ع</span>
                             </div>
                         </div>
@@ -1067,7 +877,7 @@
                     <div class="banner-left">
                         <span class="lbl">الإجمالي الكلي</span>
                         <div class="val-wrap">
-                            <span class="val" id="resGrandTotal">2,686.77</span>
+                            <span class="val" id="resGrandTotal">0.00</span>
                             <span class="curr">ر.ع</span>
                         </div>
                     </div>
@@ -1085,23 +895,27 @@
                         <div class="res-list">
                             <div class="res-item">
                                 <span class="lbl">الشحن الكلي</span>
-                                <div class="val-wrap"><span class="val" id="resOceanFreight">604</span> <span class="curr">ر.ع</span></div>
+                                <div class="val-wrap"><span class="val" id="resOceanFreight">0</span> <span class="curr">ر.ع</span></div>
                             </div>
                             <div class="res-item">
                                 <span class="lbl">الضريبة (VAT)</span>
-                                <div class="val-wrap" id="resTaxContainer"><span class="val" id="resTax">106.00</span> <span class="curr">ر.ع</span></div>
+                                <div class="val-wrap" id="resTaxContainer"><span class="val" id="resTax">0.00</span> <span class="curr">ر.ع</span></div>
                             </div>
                             <div class="res-item">
                                 <span class="lbl">الجمارك (Customs)</span>
-                                <div class="val-wrap" id="resCustomsContainer"><span class="val" id="resCustoms">111.30</span> <span class="curr">ر.ع</span></div>
+                                <div class="val-wrap" id="resCustomsContainer"><span class="val" id="resCustoms">0.00</span> <span class="curr">ر.ع</span></div>
                             </div>
                             <div class="res-item">
                                 <span class="lbl">عمولة الشركة</span>
-                                <div class="val-wrap"><span class="val" id="resCommission">30</span> <span class="curr">ر.ع</span></div>
+                                <div class="val-wrap"><span class="val" id="resCommission">0</span> <span class="curr">ر.ع</span></div>
                             </div>
                             <div class="res-item">
                                 <span class="lbl">النقل البري</span>
                                 <div class="val-wrap"><span class="val" id="resTransport">0</span> <span class="curr">ر.ع</span></div>
+                            </div>
+                            <div class="res-item" id="extraFeesContainer" style="display: none;">
+                                <span class="lbl">رسوم إضافية</span>
+                                <div class="val-wrap"><span class="val" id="resExtraFees">0</span> <span class="curr">ر.ع</span></div>
                             </div>
                         </div>
                         <div class="res-card-footer">
@@ -1110,7 +924,7 @@
                                 <span class="lbl">شامل الرسوم</span>
                             </div>
                             <div class="val-wrap">
-                                <span class="val" id="resShippingTotal">649.48</span>
+                                <span class="val" id="resShippingTotal">0.00</span>
                                 <span class="curr">ر.ع</span>
                             </div>
                         </div>
@@ -1125,32 +939,32 @@
                         <div class="res-list">
                             <div class="res-item">
                                 <span class="lbl">رسوم المشتري</span>
-                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resBuyerFee">555</span></div>
+                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resBuyerFee">0</span></div>
                             </div>
                             <div class="res-item">
                                 <span class="lbl">رسوم البيئة</span>
-                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resEnvFee">15</span></div>
+                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resEnvFee">0</span></div>
                             </div>
                             <div class="res-item">
                                 <span class="lbl">رسوم المزايدة</span>
-                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resVirtualFee">110</span></div>
+                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resVirtualFee">0</span></div>
                             </div>
                             <div class="res-item">
                                 <span class="lbl">رسوم البوابة</span>
-                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resGateFee">95</span></div>
+                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resGateFee">0</span></div>
                             </div>
                             <div class="res-item">
                                 <span class="lbl">رسوم الملكية</span>
-                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resTitleFee">40</span></div>
+                                <div class="val-wrap"><span class="curr">$</span><span class="val" id="resTitleFee">0</span></div>
                             </div>
                         </div>
                         <div class="res-card-footer">
                             <div class="lbl-box">
                                 <span class="lbl">إجمالي المزاد</span>
-                                <span class="sub-lbl" id="resAuctionUSD">$4,715</span>
+                                <span class="sub-lbl" id="resAuctionUSD">$0</span>
                             </div>
                             <div class="val-wrap">
-                                <span class="val" id="resAuctionOMR">1,819.99</span>
+                                <span class="val" id="resAuctionOMR">0.00</span>
                                 <span class="curr">ر.ع</span>
                             </div>
                         </div>
@@ -1190,14 +1004,14 @@
                     </div>
                 </div>
 
-                <!-- موقع المزاد -->
+                <!-- موقع المزاد (قابل للبحث) -->
                 <div class="calc-form-group">
                     <label class="calc-label">موقع المزاد</label>
-                    <select id="selAuction" class="form-control calc-trigger" style="width: 100%;background-color: var(--calc-bg);border: 2px solid var(--calc-border);border-radius: 1rem;height: 60px;display: flex;align-items: center;padding: 0 10px;transition: 0.3s;color:#000;font-family:Cairo; font-weight:900;"></select>
+                    <select id="selAuction" style="display:none" class="form-control calc-trigger"></select>
                 </div>
 
-                <!-- النقل والعمولة -->
-                <div class="calc-grid-2">
+                <!-- النقل والعمولة والرسوم الإضافية -->
+                <div class="calc-grid-3">
                     <div>
                         <label class="calc-label">العمولة (ر.ع)</label>
                         <input type="number" id="inpComm" class="calc-input-sm calc-trigger" value="30" />
@@ -1205,6 +1019,10 @@
                     <div>
                         <label class="calc-label">النقل (ر.ع)</label>
                         <input type="number" id="inpTransport" class="calc-input-sm calc-trigger" value="0" />
+                    </div>
+                    <div>
+                        <label class="calc-label">رسوم إضافية</label>
+                        <input type="number" id="inpExtraFees" class="calc-input-sm calc-trigger" value="0" />
                     </div>
                 </div>
 
@@ -1246,8 +1064,7 @@
                 <!-- بلد المنشأ -->
                 <div class="calc-form-group" style="margin-bottom: 0;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="font-size: 0.65rem; color: #3b82f6; font-weight: bold; cursor: pointer;"><i class="fa-solid fa-circle-info"></i> ما هو الـ VIN</span>
-                        <label class="calc-label" style="margin: 0;">بلد المنشأ</label>
+                        <label class="calc-label" style="margin: 0; width: 100%; text-align: right;">بلد المنشأ</label>
                     </div>
                     <div class="radio-grid-2">
                         <label class="radio-wrap">
@@ -1287,134 +1104,11 @@
 
         </div>
     </div>
-
-    <!-- =========================================================
-         الجزء السفلي (الإحصائيات والرسوم البيانية)
-         ========================================================= -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
-        <div class="fin-card">
-            <div class="fin-card-header">
-                <h3 class="fin-card-title">@Localizer["المبيعات والإيرادات"]</h3>
-                <div class="fin-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
-            </div>
-            <div class="fin-data-grid">
-                <div class="fin-data-box">
-                    <span class="fin-label">@Localizer["إجمالي المبيعات"]</span>
-                    <span class="fin-value" dir="ltr">$@totalSales.ToString("N2")</span>
-                </div>
-                <div class="fin-data-box">
-                    <span class="fin-label">@Localizer["المستلم (سندات قبض)"]</span>
-                    <span class="fin-value green" dir="ltr">$@totalPaid.ToString("N2")</span>
-                </div>
-                <div class="fin-data-box">
-                    <span class="fin-label">@Localizer["المتأخرات (ذمم)"]</span>
-                    <span class="fin-value red" dir="ltr">$@pendingCollections.ToString("N2")</span>
-                </div>
-                <div class="fin-data-box">
-                    <span class="fin-label">@Localizer["عدد الفواتير"]</span>
-                    <span class="fin-value" style="font-family: 'Cairo';">@invoicesCount</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="fin-card">
-            <div class="fin-card-header">
-                <h3 class="fin-card-title">@Localizer["المشتريات والتكاليف"]</h3>
-                <div class="fin-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
-            </div>
-            <div class="fin-data-grid">
-                <div class="fin-data-box">
-                    <span class="fin-label">@Localizer["إجمالي قيمة الشراء"]</span>
-                    <span class="fin-value" dir="ltr">$@totalPurchases.ToString("N2")</span>
-                </div>
-                <div class="fin-data-box">
-                    <span class="fin-label">@Localizer["تكاليف النقل (Towing)"]</span>
-                    <span class="fin-value" dir="ltr" style="color: #f59e0b;">$@totalExpenses.ToString("N2")</span>
-                </div>
-                <div class="fin-data-box">
-                    <span class="fin-label">@Localizer["إجمالي التكاليف"]</span>
-                    <span class="fin-value red" dir="ltr">$@((totalPurchases + totalExpenses).ToString("N2"))</span>
-                </div>
-                <div class="fin-data-box">
-                    <span class="fin-label">@Localizer["سيارات مشتراة"]</span>
-                    <span class="fin-value" style="font-family: 'Cairo';">@purchasedCarsCount</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- الرسم البياني (Chart.js) -->
-    <div class="chart-container">
-        <h3 class="chart-title"><i class="fa-solid fa-chart-line" style="color: var(--primary-gold);"></i> @Localizer["نظرة عامة على التدفقات النقدية لعام"] @currentYear</h3>
-        <div style="width: 100%; position: relative;">
-            <canvas id="financeChart" height="250"></canvas>
-        </div>
-    </div>
-
-    <!-- جدول التقارير المحاسبية والتصدير -->
-    <div class="report-container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-            <h3 class="chart-title" style="margin: 0;"><i class="fa-solid fa-file-invoice" style="color: var(--primary-gold);"></i> @Localizer["التقرير المالي الشهري التفصيلي"]</h3>
-            <div class="export-btns">
-                <button onclick="exportToExcel()" class="btn-export btn-excel"><i class="fa-solid fa-file-excel"></i> @Localizer["تصدير Excel"]</button>
-                <button onclick="exportToPDF()" class="btn-export btn-pdf"><i class="fa-solid fa-file-pdf"></i> @Localizer["تصدير PDF"]</button>
-            </div>
-        </div>
-        <div style="overflow-x: auto;" id="pdfContentArea">
-            <h2 style="display: none; text-align: center; color: var(--primary-navy);" id="pdfReportTitle">تقرير التدفقات النقدية - @currentYear</h2>
-            <table id="accountingReportTable" class="table-enterprise">
-                <thead>
-                    <tr>
-                        <th>@Localizer["الشهر"]</th>
-                        <th>@Localizer["إجمالي المبيعات (الإيرادات)"]</th>
-                        <th>@Localizer["إجمالي المشتريات (المصروفات)"]</th>
-                        <th>@Localizer["صافي التدفق النقدي"]</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @{
-                        decimal grandSales = 0;
-                        decimal grandPurchases = 0;
-                        string[] arabicMonths = { "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر" };
-                    }
-                    @for (int i = 0; i < 12; i++)
-                    {
-                        decimal mSales = monthlySales[i];
-                        decimal mPurchases = monthlyPurchases[i];
-                        decimal mNet = mSales - mPurchases;
-                        grandSales += mSales;
-                        grandPurchases += mPurchases;
-
-                        string monthName = arabicMonths[i];
-                        <tr>
-                            <td style="font-weight: 900; color: var(--primary-navy);">@monthName</td>
-                            <td style="color: #16a34a; font-family: monospace; font-size: 1.1rem;">$@mSales.ToString("N2")</td>
-                            <td style="color: #ef4444; font-family: monospace; font-size: 1.1rem;">$@mPurchases.ToString("N2")</td>
-                            <td style="font-family: monospace; font-weight: 900; font-size: 1.1rem; color: @(mNet >= 0 ? "#16a34a" : "#ef4444")">
-                                $@mNet.ToString("N2")
-                            </td>
-                        </tr>
-                    }
-                    <tr style="background: rgba(184, 147, 90, 0.1);">
-                        <td style="font-weight: 900; color: var(--primary-navy); font-size: 1.1rem;">@Localizer["الإجمالي السنوي"]</td>
-                        <td style="color: #16a34a; font-family: monospace; font-size: 1.2rem; font-weight: 900;">$@grandSales.ToString("N2")</td>
-                        <td style="color: #ef4444; font-family: monospace; font-size: 1.2rem; font-weight: 900;">$@grandPurchases.ToString("N2")</td>
-                        <td style="font-family: monospace; font-weight: 900; font-size: 1.2rem; color: @((grandSales - grandPurchases) >= 0 ? "#16a34a" : "#ef4444")">
-                            $@((grandSales - grandPurchases).ToString("N2"))
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
         // =======================================================
@@ -1811,7 +1505,9 @@
             { id: 388, state: "Washington", city: "Washington", auctionLocation: "Elkotn", price: 905 }
         ];
 
-        function round(num) { return Math.round((num + Number.EPSILON) * 100) / 100; }
+        function round(num) {
+            return Math.round((num + Number.EPSILON) * 100) / 100;
+        }
 
         function getBuyerFee(price) {
             if (price < 100) return 1;
@@ -1858,12 +1554,44 @@
             return round(price * 0.06);
         }
 
-        $(document).ready(function () {
+        function getVirtualBidFee(p) {
+            if (p < 0) return 0;
+            if (p <= 99.99) return 0;
+            if (p <= 499.99) return 50;
+            if (p <= 999.99) return 65;
+            if (p <= 1499.99) return 85;
+            if (p <= 1999.99) return 95;
+            if (p <= 3999.99) return 110;
+            if (p <= 5999.99) return 125;
+            if (p <= 7999.99) return 145;
+            return 160;
+        }
 
-            // تهيئة Select2
+        $(document).ready(function() {
+            // إضافة خيارات الشحن للدروب داون مع الحفاظ على التصميم
+            let optionsHtml = '<option value=""></option>';
+            SHIPPING_RATES.forEach(r => {
+                optionsHtml += `<option value="${r.id}">${r.auctionLocation} - ${r.city}, ${r.state}</option>`;
+            });
+            $('#selAuction').html(optionsHtml);
+
+            // تهيئة Select2 وتخصيص البحث ليشمل اسم המزاد والمدينة والولاية
             $('#selAuction').select2({
-                data: SHIPPING_RATES.map(r => ({ id: r.price, text: r.auctionLocation, city: r.city, state: r.state })),
+                placeholder: "🔍 ابحث عن المزاد، المدينة، أو الولاية...",
+                allowClear: true,
+                data: SHIPPING_RATES.map(r => ({ id: r.id, text: r.auctionLocation, city: r.city, state: r.state, price: r.price })),
                 dir: $('html').attr('dir'),
+                matcher: function(params, data) {
+                    if ($.trim(params.term) === '') return data;
+                    if (typeof data.text === 'undefined') return null;
+                    var q = params.term.toLowerCase();
+                    if (data.text.toLowerCase().indexOf(q) > -1 ||
+                        (data.city && data.city.toLowerCase().indexOf(q) > -1) ||
+                        (data.state && data.state.toLowerCase().indexOf(q) > -1)) {
+                        return data;
+                    }
+                    return null;
+                },
                 templateResult: function(data) {
                     if (!data.id) return data.text;
                     return $(`
@@ -1872,34 +1600,47 @@
                                 <div style="font-weight:900; color:var(--calc-navy); font-size:0.9rem;">${data.text}</div>
                                 <div style="font-size:0.65rem; color:#94a3b8; text-transform:uppercase;">${data.city}, ${data.state}</div>
                             </div>
-                            <div style="font-weight:900; color:var(--calc-gold); direction: ltr;">${data.id} ر.ع</div>
+                            <div style="font-weight:900; color:var(--calc-gold); direction: ltr;">${data.price} ر.ع</div>
                         </div>
                     `);
                 },
                 templateSelection: function(data) {
-                    if (!data.id) return data.text;
-                    return $(`<div style="font-weight:900; width:100%; display:flex; justify-content:space-between; align-items:center;"><span>${data.text}</span> <span style="color:var(--calc-gold); direction:ltr; font-size:0.9rem;">${data.id} ر.ع</span></div>`);
+                    if (!data.id) return $(`<span style="color:#94a3b8; font-weight:800;">${data.text}</span>`);
+                    return $(`<div style="font-weight:900; width:100%; display:flex; justify-content:space-between; align-items:center;"><span>${data.text}</span> <span style="color:var(--calc-gold); direction:ltr; font-size:0.9rem;">${data.price} ر.ع</span></div>`);
                 }
             });
 
-            // الدالة الديناميكية لحساب الحاسبة
-            function calculateSmartCalculator() {
+            // التركيز التلقائي على حقل البحث عند فتح القائمة المنسدلة
+            $('#selAuction').on('select2:open', function () {
+                setTimeout(function() {
+                    document.querySelector('.select2-search__field').focus();
+                }, 50);
+            });
+
+            $('#selAuction').val(1).trigger('change'); // تعيين قيمة مبدئية لـ Birmingham
+
+            function calculateLocal() {
                 var salePrice = parseFloat($('#inpSalePrice').val()) || 0;
-                var oceanPrice = parseFloat($('#selAuction').val()) || 604;
+
+                var selectedAuctionId = $('#selAuction').val();
+                var selectedAuction = SHIPPING_RATES.find(r => r.id == selectedAuctionId);
+                var oceanPrice = selectedAuction ? selectedAuction.price : 604;
+
                 var comm = parseFloat($('#inpComm').val()) || 0;
                 var transport = parseFloat($('#inpTransport').val()) || 0;
+                var extraFees = parseFloat($('#inpExtraFees').val()) || 0;
 
-                var carType = $('input[name="carType"]:checked').val();
-                var origin = $('input[name="origin"]:checked').val();
+                var carType = $('input[name="carType"]:checked').val(); // 'Electric', 'Small', 'Mid', 'Big'
+                var origin = $('input[name="origin"]:checked').val(); // 'NON_US', 'US_EXEMPT'
 
                 var exRate = parseFloat($('#inpExRate').val()) || 0.386;
                 var paymentSvc = parseFloat($('#inpPaymentSvc').val()) || 15.48;
 
                 // ثوابت المزاد
-                var envFee = 15;
-                var virtualFee = 110;
-                var gateFee = 95;
-                var titleFee = 40;
+                var envFee = 15.00;
+                var virtualFee = getVirtualBidFee(salePrice);
+                var gateFee = 95.00;
+                var titleFee = 40.00;
                 var buyerFee = getBuyerFee(salePrice);
 
                 // 1. حساب المزاد
@@ -1907,10 +1648,15 @@
                 var auctionTotalOMR = round(auctionTotalUSD * exRate);
 
                 // 2. حساب الشحن الأساسي
-                var shippingTotalOMR = oceanPrice + comm + transport + paymentSvc;
+                // نضيف رسوم الحجم بناءً على الاختيار
+                var carSizeSurcharge = 0;
+                if (carType === 'Mid') carSizeSurcharge = 60; // يمكنك تعديلها
+                if (carType === 'Big') carSizeSurcharge = 120;
+
+                var shippingTotalOMR = oceanPrice + comm + transport + extraFees + paymentSvc + carSizeSurcharge;
 
                 // 3. حساب الضرائب والجمارك
-                var taxOMR = (auctionTotalOMR + 300) * 0.05;
+                var taxOMR = (auctionTotalOMR + 300) * 0.05; // الـ 300 هي رسوم شحن تقديرية تضاف قبل حساب الضريبة
                 var customsOMR = (origin === 'NON_US') ? (taxOMR + (taxOMR * 0.05)) : 0;
 
                 var isElectric = (carType === 'Electric');
@@ -1937,6 +1683,13 @@
                 $('#resCommission').text(fmt(comm));
                 $('#resTransport').text(fmt(transport));
 
+                if (extraFees > 0) {
+                    $('#extraFeesContainer').show();
+                    $('#resExtraFees').text(fmt(extraFees));
+                } else {
+                    $('#extraFeesContainer').hide();
+                }
+
                 if(isElectric) {
                     $('#resTaxContainer').html('<span style="color:#16a34a; background:#f0fdf4; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;">معفية تماماً</span>');
                     $('#resCustomsContainer').html('<span style="color:#16a34a; background:#f0fdf4; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;">معفية تماماً</span>');
@@ -1952,60 +1705,10 @@
                 $('#resArrivalDue').text(fmt(arrivalDue));
             }
 
-            $('.calc-trigger').on('input change', calculateSmartCalculator);
-            $('#selAuction').on('change', calculateSmartCalculator);
+            $('.form-control, input[type="radio"]').on('input change', calculateLocal);
+            $('#selAuction').on('change', calculateLocal);
 
-            calculateSmartCalculator();
-
-            // --- دوال التصدير والرسوم البيانية ---
-            window.exportToExcel = function() {
-                var table = document.getElementById("accountingReportTable");
-                var wb = XLSX.utils.table_to_book(table, {sheet: "التقرير المالي"});
-                XLSX.writeFile(wb, "Accounting_Report_@(currentYear).xlsx");
-            }
-
-            window.exportToPDF = function() {
-                $('#pdfReportTitle').show();
-                var element = document.getElementById('pdfContentArea');
-                var opt = {
-                  margin:       10,
-                  filename:     'Accounting_Report_@(currentYear).pdf',
-                  image:        { type: 'jpeg', quality: 0.98 },
-                  html2canvas:  { scale: 2, useCORS: true },
-                  jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-                html2pdf().set(opt).from(element).save().then(function(){
-                    $('#pdfReportTitle').hide();
-                });
-            }
-
-            const salesData = [@Html.Raw(string.Join(",", monthlySales.Select(m => m.ToString(System.Globalization.CultureInfo.InvariantCulture))))];
-            const purchasesData = [@Html.Raw(string.Join(",", monthlyPurchases.Select(m => m.ToString(System.Globalization.CultureInfo.InvariantCulture))))];
-            const monthLabels = [ '@Html.Raw(Localizer["يناير"])', '@Html.Raw(Localizer["فبراير"])', '@Html.Raw(Localizer["مارس"])', '@Html.Raw(Localizer["أبريل"])', '@Html.Raw(Localizer["مايو"])', '@Html.Raw(Localizer["يونيو"])', '@Html.Raw(Localizer["يوليو"])', '@Html.Raw(Localizer["أغسطس"])', '@Html.Raw(Localizer["سبتمبر"])', '@Html.Raw(Localizer["أكتوبر"])', '@Html.Raw(Localizer["نوفمبر"])', '@Html.Raw(Localizer["ديسمبر"])'];
-
-            const rootStyles = getComputedStyle(document.documentElement);
-            const goldColor = rootStyles.getPropertyValue('--calc-gold').trim() || '#B88E44';
-            const navyColor = rootStyles.getPropertyValue('--calc-navy').trim() || '#1e293b';
-
-            if(document.getElementById('financeChart')){
-                const ctx = document.getElementById('financeChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: monthLabels,
-                        datasets: [
-                            { label: '@Html.Raw(Localizer["إيرادات الفواتير"])', data: salesData, borderColor: navyColor, backgroundColor: navyColor + '10', tension: 0.4, borderWidth: 3, pointRadius: 4, fill: true },
-                            { label: '@Html.Raw(Localizer["المصروفات والمشتريات"])', data: purchasesData, borderColor: goldColor, backgroundColor: goldColor + '10', tension: 0.4, borderWidth: 3, pointRadius: 4, fill: true }
-                        ]
-                    },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        plugins: { legend: { position: 'top', labels: { usePointStyle: true, font: { family: 'Cairo', weight: 'bold' } } } },
-                        scales: { y: { beginAtZero: true, ticks: { font: { family: 'monospace', weight: 'bold' } } }, x: { ticks: { font: { family: 'Cairo', weight: 'bold' } } } },
-                        interaction: { mode: 'index', intersect: false }
-                    }
-                });
-            }
+            calculateLocal();
         });
     </script>
 }

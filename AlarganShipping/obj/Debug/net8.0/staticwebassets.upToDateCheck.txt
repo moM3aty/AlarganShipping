@@ -69,4 +69,5 @@ wwwroot\uploads\documents\52a04ea2-6bb4-43fa-86a2-f68ff703f571_1.jpg
 wwwroot\uploads\documents\7a36e5cc-f32d-4406-be0f-07fd92f21f18_1.jpg
 wwwroot\uploads\documents\984267f1-d3b7-4092-8f57-5681e275097b_528618683_2900083920186244_956370499369716946_n.jpg
 wwwroot\uploads\documents\e7fe06c1-0c67-4723-a2af-f0e65cccf278_1.jpg
+wwwroot\uploads\receipts\3e92a4c2-fb56-4962-83be-aa377ae089db_2.jpg
 wwwroot\uploads\receipts\b7740803-e2dd-4c4c-9051-618f55d3763c_ملاحظات معا الصور.pdf

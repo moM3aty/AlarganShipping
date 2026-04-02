@@ -1,6 +1,9 @@
 ﻿@model IEnumerable<AlarganShipping.Models.PaymentReceipt>
 @{
     ViewData["Title"] = Localizer["سجل المقبوضات (المدفوعات)"];
+
+    // سعر الصرف المعتمد لإعادة تحويل القيمة المعروضة من دولار إلى ريال عماني
+    decimal exchangeRate = 0.386m;
 }
 
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
@@ -199,32 +202,29 @@
         }
 
     /* ========================================================
-               تعديلات الموبايل (الميديا كويري)
-               ======================================================== */
+                   تعديلات الموبايل (الميديا كويري)
+                   ======================================================== */
     @@media (max-width: 768px) {
-        .page-header
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+            padding: 1.5rem;
+        }
 
-    {
-        flex-direction: column;
-        align-items: stretch;
-        text-align: center;
-        padding: 1.5rem;
-    }
+        .page-title {
+            justify-content: center;
+        }
 
-    .page-title {
-        justify-content: center;
-    }
+        .btn-add {
+            width: 100%;
+            justify-content: center;
+        }
 
-    .btn-add {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .data-card {
-        padding: 1rem;
-        border-radius: 1.2rem;
-    }
-
+        .data-card {
+            padding: 1rem;
+            border-radius: 1.2rem;
+        }
     }
 </style>
 
@@ -280,10 +280,11 @@
                                 </td>
                                 <td>
                                     <div style="display: flex; flex-direction: column; gap: 4px;">
-                                        <span class="rec-amount">@rec.TotalDeducted.ToString("N3") OMR</span>
+                                        <!-- إظهار المبلغ الفعلي بالريال العماني عبر ضرب القيمة المخزنة في سعر الصرف -->
+                                        <span class="rec-amount">@((rec.TotalDeducted * exchangeRate).ToString("N3")) OMR</span>
                                         @if (rec.Discount > 0)
                                         {
-                                            <span class="rec-discount"><i class="fa-solid fa-tag"></i> يشتمل خصم: @rec.Discount.ToString("N3")</span>
+                                            <span class="rec-discount"><i class="fa-solid fa-tag"></i> يشتمل خصم: @((rec.Discount * exchangeRate).ToString("N3")) OMR</span>
                                         }
                                     </div>
                                 </td>

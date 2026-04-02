@@ -5,12 +5,23 @@
     var isRtl = System.Globalization.CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
     var htmlDir = isRtl ? "rtl" : "ltr";
 
-    // حساب مرحلة شريط التقدم (4 مراحل رئيسية حسب التعديلات)
-    int step = 1;
-    if (Model.StatusId >= 7) step = 4; // تم التوصيل
-    else if (Model.StatusId >= 5) step = 3; // تم الشحن
-    else if (Model.StatusId >= 3) step = 2; // جاري المعالجة
-    else step = 1; // تم الطلب
+    // الحصول على أحدث نسبة مئوية تم تسجيلها في سجل التحركات
+    // إذا لم يوجد سجل، يتم أخذ قيمة افتراضية مبنية على حالة السيارة الحالية
+    int currentProgress = 10;
+    if (Model.TrackingLogs != null && Model.TrackingLogs.Any())
+    {
+        currentProgress = Model.TrackingLogs.OrderByDescending(l => l.UpdateDate).First().ProgressPercentage;
+    }
+    else
+    {
+        if (Model.StatusId >= 7) currentProgress = 100;
+        else if (Model.StatusId == 6) currentProgress = 66;
+        else if (Model.StatusId >= 4) currentProgress = 33;
+        else currentProgress = 10;
+    }
+
+    // تحديد عرض الشريط الأخضر ليتوافق مع النقاط الأربعة
+    string barWidth = currentProgress <= 10 ? "0%" : currentProgress == 33 ? "33%" : currentProgress == 66 ? "66%" : "80%";
 }
 
 <!DOCTYPE html>
@@ -21,6 +32,7 @@
     <title>@ViewData["Title"] - ALARGAN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="~/images/logo.jpg" rel="icon" type="image/jpeg" />
 
     <style>
         :root {
@@ -163,7 +175,7 @@
                 transition: 1s;
                 left: @(isRtl ? "auto" : "10%");
                 right: @(isRtl ? "10%" : "auto");
-                width: @(step == 1 ? "0%" : step == 2 ? "33%" : step == 3 ? "66%" : "80%");
+                width: @barWidth;
             }
 
         .step-item {
@@ -208,6 +220,13 @@
             border-color: var(--primary-navy);
             color: white;
             box-shadow: 0 0 0 4px white, 0 4px 10px rgba(30, 41, 59, 0.3);
+        }
+
+        /* تأثير النقر على أيقونة السفينة في شريط التتبع */
+        a.step-icon:hover {
+            transform: scale(1.1);
+            background: var(--primary-gold) !important;
+            border-color: var(--primary-gold) !important;
         }
 
         /* --- 4. تفاصيل السيارة والبطاقة المزدوجة --- */
@@ -323,12 +342,13 @@
             margin: 0;
         }
 
+        /* تعديل تصميم زر التتبع ليكون أزرق اللون كما في الصورة */
         .shipping-link-btn {
             width: 45px;
             height: 45px;
-            background: rgba(184, 147, 90, 0.1);
-            color: var(--primary-gold);
-            border: 1px solid rgba(184, 147, 90, 0.2);
+            background: #eff6ff;
+            color: #3b82f6;
+            border: 1px solid #bfdbfe;
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -340,9 +360,10 @@
         }
 
             .shipping-link-btn:hover {
-                background: var(--primary-gold);
+                background: #3b82f6;
                 color: white;
                 transform: translateY(-2px);
+                box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
             }
 
         .tags-row {
@@ -454,47 +475,41 @@
             }
 
         @@media (max-width: 992px) {
-            .main-details-wrapper
+            .main-details-wrapper {
+                flex-direction: column;
+            }
 
-        {
-            flex-direction: column;
-        }
+            .car-image-section {
+                width: 100%;
+            }
 
-        .car-image-section {
-            width: 100%;
-        }
-
-        .info-boxes-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
+            .info-boxes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @@media (max-width: 576px) {
-            .info-boxes-grid
+            .info-boxes-grid {
+                grid-template-columns: 1fr;
+            }
 
-        {
-            grid-template-columns: 1fr;
-        }
+            .stepper-wrapper::before, .stepper-wrapper::after {
+                left: 5%;
+                right: 5%;
+            }
 
-        .stepper-wrapper::before, .stepper-wrapper::after {
-            left: 5%;
-            right: 5%;
-        }
+            .step-item {
+                width: 70px;
+            }
 
-        .step-item {
-            width: 70px;
-        }
+            .step-label {
+                font-size: 0.75rem;
+                text-align: center;
+            }
 
-        .step-label {
-            font-size: 0.75rem;
-            text-align: center;
-        }
-
-        .step-sublabel {
-            display: none;
-        }
-
+            .step-sublabel {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -521,25 +536,41 @@
             <p style="color: #94a3b8; font-size: 0.85rem; margin-top: -1.5rem; margin-bottom: 2rem;">@Localizer["تتبع رحلة مركبتك من خلال التحديثات الفورية"]</p>
 
             <div class="stepper-wrapper">
-                <div class="step-item @(step >= 1 ? "active" : "")">
-                    <div class="step-icon"><i class="fa-solid fa-box"></i></div>
-                    <div class="step-label">@Localizer["تم الطلب"]</div>
-                    <div class="step-sublabel">@Localizer["تم إنشاء الطلب"]</div>
+                <!-- المرحلة 1: 10% -->
+                <div class="step-item @(currentProgress >= 10 ? "active" : "")">
+                    <div class="step-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                    <div class="step-label">@Localizer["إجراءات الشراء"]</div>
+                    <div class="step-sublabel">@Localizer["شراء، دفع، نقل"]</div>
                 </div>
-                <div class="step-item @(step >= 2 ? "active" : "")">
-                    <div class="step-icon"><i class="fa-regular fa-clock"></i></div>
-                    <div class="step-label">@Localizer["جاري المعالجة"]</div>
-                    <div class="step-sublabel">@Localizer["قيد التحضير"]</div>
+
+                <!-- المرحلة 2: 33% -->
+                <div class="step-item @(currentProgress >= 33 ? "active" : "")">
+                    <div class="step-icon"><i class="fa-solid fa-warehouse"></i></div>
+                    <div class="step-label">@Localizer["وصلت المستودع"]</div>
+                    <div class="step-sublabel">@Localizer["استلام وتجهيز"]</div>
                 </div>
-                <div class="step-item @(step >= 3 ? "active" : "")">
-                    <div class="step-icon"><i class="fa-solid fa-truck-fast"></i></div>
-                    <div class="step-label">@Localizer["تم الشحن"]</div>
-                    <div class="step-sublabel">@Localizer["في الطريق"]</div>
+
+                <!-- المرحلة 3: 66% -->
+                <div class="step-item @(currentProgress >= 66 ? "active" : "")">
+                    @if (currentProgress >= 66 && Model.Shipment != null && !string.IsNullOrEmpty(Model.Shipment.ContainerNumber))
+                    {
+                        <a href="https://www.maersk.com/tracking/@Model.Shipment.ContainerNumber" target="_blank" class="step-icon" title="@Localizer["تتبع السفينة عبر الخط الملاحي"]" style="text-decoration: none; cursor: pointer;">
+                            <i class="fa-solid fa-ship" style="color: inherit;"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="step-icon"><i class="fa-solid fa-ship"></i></div>
+                    }
+                    <div class="step-label">@Localizer["أبحرت"]</div>
+                    <div class="step-sublabel">@Localizer["في الطريق بحراً"]</div>
                 </div>
-                <div class="step-item @(step >= 4 ? "active" : "")">
-                    <div class="step-icon"><i class="fa-regular fa-circle-check"></i></div>
-                    <div class="step-label">@Localizer["تم التوصيل"]</div>
-                    <div class="step-sublabel">@Localizer["وصل"]</div>
+
+                <!-- المرحلة 4: 100% -->
+                <div class="step-item @(currentProgress >= 100 ? "active" : "")">
+                    <div class="step-icon"><i class="fa-solid fa-anchor"></i></div>
+                    <div class="step-label">@Localizer["وصلت وتخلصت"]</div>
+                    <div class="step-sublabel">@Localizer["الميناء الوجهة"]</div>
                 </div>
             </div>
         </div>
@@ -575,10 +606,11 @@
                 <div class="car-header-row">
                     <h1 class="car-title">@Model.Year @Model.Make @Model.Model @Model.Color</h1>
 
+                    <!-- زر السفينة الأزرق للخط الملاحي -->
                     @if (Model.Shipment != null && !string.IsNullOrEmpty(Model.Shipment.ContainerNumber))
                     {
-                        string trackingUrl = $"https://www.searates.com/container/tracking/?number={Model.Shipment.ContainerNumber}";
-                        <a href="@trackingUrl" target="_blank" class="shipping-link-btn" title="@Localizer["تتبع السفينة"]">
+                        string trackingUrl = $"https://www.maersk.com/tracking/{Model.Shipment.ContainerNumber}";
+                        <a href="@trackingUrl" target="_blank" class="shipping-link-btn" title="@Localizer["تتبع مسار السفينة عبر الخط الملاحي"]">
                             <i class="fa-solid fa-ship"></i>
                         </a>
                     }

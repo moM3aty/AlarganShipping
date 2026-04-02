@@ -1,6 +1,9 @@
 ﻿@model IEnumerable<AlarganShipping.Models.Invoice>
 @{
     ViewData["Title"] = Localizer["إدارة الفواتير"];
+
+    // سعر الصرف المعتمد للتحويل إلى الريال العماني
+    decimal exchangeRate = 0.386m;
 }
 
 <style>
@@ -103,22 +106,19 @@
     }
 
     @@media (max-width: 768px) {
-        .page-header
+        .page-header {
+            flex-direction: column;
+            text-align: center;
+        }
 
-    {
-        flex-direction: column;
-        text-align: center;
-    }
+        .btn-add {
+            width: 100%;
+            justify-content: center;
+        }
 
-    .btn-add {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .data-card {
-        padding: 1rem;
-    }
-
+        .data-card {
+            padding: 1rem;
+        }
     }
 </style>
 
@@ -137,7 +137,8 @@
                 <th>@Localizer["تاريخ الإصدار"]</th>
                 <th>@Localizer["العميل"]</th>
                 <th>@Localizer["السيارة"]</th>
-                <th>@Localizer["الإجمالي ($)"]</th>
+                <!-- تعديل العنوان هنا -->
+                <th>@Localizer["الإجمالي (ر.ع)"]</th>
                 <th style="text-align: center;">@Localizer["إجراءات"]</th>
             </tr>
         </thead>
@@ -156,7 +157,12 @@
                     <td>@inv.IssueDate.ToString("yyyy-MM-dd")</td>
                     <td style="font-weight: 700;">@(inv.Customer?.Name)</td>
                     <td><span dir="ltr" style="font-family: monospace;">@(inv.Car?.VIN)</span></td>
-                    <td style="color: var(--primary-gold); font-weight: 900; font-family: monospace;">$@inv.TotalAmount.ToString("N2")</td>
+
+                    <!-- تعديل القيمة لتظهر بالريال العماني -->
+                    <td style="color: var(--primary-gold); font-weight: 900; font-family: monospace;" dir="ltr">
+                        @((inv.TotalAmount * exchangeRate).ToString("N2")) OMR
+                    </td>
+
                     <td style="text-align: center;">
                         <div style="display: flex; gap: 8px; justify-content: center;">
                             <a href="@Url.Action("Details", "Invoices", new { id = inv.Id })" class="action-btn btn-print" title="@Localizer["طباعة الفاتورة"]">
