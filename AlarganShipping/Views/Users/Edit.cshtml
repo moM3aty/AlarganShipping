@@ -4,7 +4,6 @@
 }
 
 <style>
-    /* نفس الستايل الجميل بتاع الإضافة */
     .form-page-header {
         display: flex;
         justify-content: space-between;
@@ -233,8 +232,6 @@
     }
 </style>
 
-<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
-
 <div class="form-page-header">
     <h2 class="form-page-title"><i class="fa-solid fa-user-pen" style="color: var(--primary-gold);"></i> @Localizer["تعديل بيانات الموظف"]</h2>
     <a href="@Url.Action("Index", "Users")" class="btn-back">@Localizer["إلغاء والعودة"]</a>
@@ -283,26 +280,49 @@
                 <label asp-for="JobTitle" class="form-label">@Localizer["المسمى الوظيفي"]</label>
                 <input asp-for="JobTitle" class="form-control" />
             </div>
+
+            <!-- 💡 الحقول الخاصة بالتواصل -->
+            <div class="form-group">
+                <label asp-for="PhoneNumber" class="form-label">@Localizer["رقم هاتف الموظف (للواتساب)"]</label>
+                <input asp-for="PhoneNumber" type="text" class="form-control" dir="ltr" placeholder="968xxxxxxx" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DepartmentIcon" class="form-label">@Localizer["أيقونة القسم (للظهور في صفحة اتصل بنا)"]</label>
+                <select asp-for="DepartmentIcon" class="form-control">
+                    <option value="fa-user-tie">@Localizer["إدارة / عام"]</option>
+                    <option value="fa-headset">@Localizer["خدمة العملاء"]</option>
+                    <option value="fa-gavel">@Localizer["المزادات"]</option>
+                    <option value="fa-tags">@Localizer["المبيعات"]</option>
+                    <option value="fa-car">@Localizer["السيارات والعمليات"]</option>
+                    <option value="fa-ship">@Localizer["الشحن"]</option>
+                    <option value="fa-calculator">@Localizer["المالية والمحاسبة"]</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 💡 قسم الظهور في صفحة اتصل بنا -->
+        <div class="permissions-container" style="border-color: var(--primary-gold); background: rgba(184, 147, 90, 0.05);">
+            <div class="switch-group" style="border: none; padding: 0;">
+                <span class="switch-label" style="color: var(--primary-gold); font-size: 1.1rem;"><i class="fa-solid fa-address-card"></i> @Localizer["الظهور في صفحة اتصل بنا (للعملاء)"]</span>
+                <label class="switch"><input type="checkbox" asp-for="ShowOnContactPage"><span class="slider"></span></label>
+            </div>
         </div>
 
         <div class="permissions-container" id="permsContainer" style="@(Model.Role == "Admin" ? "display:none;" : "")">
             <div class="permissions-title">@Localizer["تخصيص صلاحيات الموظف"]</div>
-
             <div class="switch-group">
                 <span class="switch-label"><i class="fa-solid fa-car" style="color: #64748b;"></i> @Localizer["إدارة السيارات والمزادات وأوامر النقل"]</span>
                 <label class="switch"><input type="checkbox" asp-for="CanManageCars"><span class="slider"></span></label>
             </div>
-
             <div class="switch-group">
                 <span class="switch-label"><i class="fa-solid fa-users" style="color: #64748b;"></i> @Localizer["إدارة وتعديل بيانات العملاء"]</span>
                 <label class="switch"><input type="checkbox" asp-for="CanManageCustomers"><span class="slider"></span></label>
             </div>
-
             <div class="switch-group">
                 <span class="switch-label"><i class="fa-solid fa-calculator" style="color: #64748b;"></i> @Localizer["إدارة المالية (فواتير وسندات وتقارير)"]</span>
                 <label class="switch"><input type="checkbox" asp-for="CanManageFinance"><span class="slider"></span></label>
             </div>
-
             <div class="switch-group">
                 <span class="switch-label"><i class="fa-solid fa-gear" style="color: #64748b;"></i> @Localizer["التحكم في إعدادات النظام"]</span>
                 <label class="switch"><input type="checkbox" asp-for="CanManageSettings"><span class="slider"></span></label>
@@ -318,7 +338,6 @@
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
 
     <script>
@@ -338,18 +357,18 @@
 
                 var btn = $('#btnSubmit');
                 var originalText = btn.html();
-                btn.html('<i class="fa-solid fa-spinner fa-spin"></i> @Html.Raw(Localizer["جاري التحديث..."])').prop('disabled', true);
+                btn.html(`<i class="fa-solid fa-spinner fa-spin"></i> @Html.Raw(Localizer["جاري التحديث..."])`).prop('disabled', true);
 
                 $.ajax({
                     url: form.attr('action'), type: form.attr('method'), data: form.serialize(),
                     success: function (res) {
                         if (res.success) {
                             Swal.fire({
-                                title: '@Html.Raw(Localizer["تم التحديث!"])', icon: 'success', confirmButtonColor: 'var(--primary-gold)'
+                                title: `@Html.Raw(Localizer["تم التحديث!"])`, icon: 'success', confirmButtonColor: 'var(--primary-gold)'
                             }).then(() => { window.location.href = '@Url.Action("Index", "Users")'; });
                         } else {
-                            var errorMsg = res.errors ? res.errors.join('\n') : '@Html.Raw(Localizer["تأكد من البيانات"])';
-                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', errorMsg, 'error');
+                            var errorMsg = res.errors ? res.errors.join('\n') : `@Html.Raw(Localizer["تأكد من البيانات"])`;
+                            Swal.fire(`@Html.Raw(Localizer["خطأ!"])`, errorMsg, 'error');
                             btn.html(originalText).prop('disabled', false);
                         }
                     }
@@ -357,4 +376,4 @@
             });
         });
     </script>
-}       
+}

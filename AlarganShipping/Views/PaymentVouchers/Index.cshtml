@@ -1,6 +1,8 @@
 ﻿@model IEnumerable<AlarganShipping.Models.PaymentVoucher>
 @{
     ViewData["Title"] = Localizer["سجل سندات الصرف (المصروفات)"];
+    // سعر الصرف المعتمد للتحويل إلى الريال العماني
+    decimal exchangeRate = 0.386m;
 }
 
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
@@ -193,8 +195,8 @@
         }
 
     /* ========================================================
-                   تعديلات الموبايل
-                   ======================================================== */
+                        تعديلات الموبايل
+                        ======================================================== */
     @@media (max-width: 768px) {
         .page-header {
             flex-direction: column;
@@ -264,7 +266,7 @@
                                         <i class="fa-solid fa-tag"></i> @vou.Category
                                     </span>
                                 </td>
-                                <td><span class="vou-amount">-$@vou.Amount.ToString("N2")</span></td>
+                                <td><span class="vou-amount" dir="ltr">-@((vou.Amount * exchangeRate).ToString("N2")) OMR</span></td>
                                 <td>
                                     <div class="actions-wrapper">
                                         <a href="@Url.Action("Print", "PaymentVouchers", new { id = vou.Id })" class="action-btn-pro btn-print-pro" title="@Localizer["طباعة السند"]">

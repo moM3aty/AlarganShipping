@@ -20,14 +20,21 @@ namespace AlarganShipping.Controllers
         {
             var vouchers = await _context.PaymentVouchers
                 .Include(v => v.Customer)
+                .Include(v => v.Car) // جلب بيانات السيارة
                 .OrderByDescending(v => v.VoucherDate)
                 .ToListAsync();
             return View(vouchers);
         }
 
-        public IActionResult Create()
+        // استقبال carId لكي يتم اختياره تلقائياً إذا تم فتح الصفحة من سيارة محددة
+        public IActionResult Create(int? carId)
         {
             ViewBag.CustomerId = new SelectList(_context.Customers, "Id", "Name");
+
+            // 💡 التعديل هنا: إرسال قائمة السيارات للشاشة باسم CarsList لتجنب تضارب الأسماء
+            var carsList = _context.Cars.Select(c => new { Id = c.Id, Text = c.Make + " " + c.Model + " - " + c.VIN }).ToList();
+            ViewBag.CarsList = new SelectList(carsList, "Id", "Text", carId);
+
             return View();
         }
 
@@ -36,20 +43,21 @@ namespace AlarganShipping.Controllers
         public async Task<IActionResult> Create(PaymentVoucher voucher)
         {
             ModelState.Remove("Customer");
+            ModelState.Remove("Car"); // إزالة الـ Validation المزعج
             ModelState.Remove("VoucherNumber");
 
             if (ModelState.IsValid)
             {
                 voucher.VoucherNumber = "VOU-" + DateTime.Now.ToString("yyyyMMddHHmmss");
 
-                // 💡 أتمتة: إذا كان إرجاع أموال، نخصم من إجمالي المدفوع للعميل
-                if (voucher.Category == "إرجاع أموال لعميل" && voucher.CustomerId.HasValue)
+                // أتمتة: إذا كان إرجاع أموال أو تعويض، نخصم من إجمالي المدفوع للعميل
+                if ((voucher.Category == "إرجاع أموال لعميل" || voucher.Category == "تعويض للعميل عن أضرار") && voucher.CustomerId.HasValue)
                 {
                     var customer = await _context.Customers.FindAsync(voucher.CustomerId);
                     if (customer != null)
                     {
-                        customer.TotalPaid -= voucher.Amount; // تقليل المدفوع (التأثير المالي)
-                        if (customer.TotalPaid < 0) customer.TotalPaid = 0; // حماية من القيم السالبة
+                        customer.TotalPaid -= voucher.Amount;
+                        if (customer.TotalPaid < 0) customer.TotalPaid = 0;
                         _context.Update(customer);
                     }
                 }
@@ -69,6 +77,11 @@ namespace AlarganShipping.Controllers
             if (voucher == null) return NotFound();
 
             ViewBag.CustomerId = new SelectList(_context.Customers, "Id", "Name", voucher.CustomerId);
+
+            // 💡 التعديل هنا: إرسال قائمة السيارات للشاشة للتعديل
+            var carsList = await _context.Cars.Select(c => new { Id = c.Id, Text = c.Make + " " + c.Model + " - " + c.VIN }).ToListAsync();
+            ViewBag.CarsList = new SelectList(carsList, "Id", "Text", voucher.CarId);
+
             return View(voucher);
         }
 
@@ -79,6 +92,7 @@ namespace AlarganShipping.Controllers
             if (id != voucher.Id) return Json(new { success = false, errors = new[] { "خطأ في المعرف." } });
 
             ModelState.Remove("Customer");
+            ModelState.Remove("Car");
             ModelState.Remove("VoucherNumber");
 
             if (ModelState.IsValid)
@@ -90,39 +104,37 @@ namespace AlarganShipping.Controllers
 
                     voucher.VoucherNumber = oldVoucher.VoucherNumber;
 
-                    // 💡 تسوية الحسابات باحترافية (Edit Action Logic)
-                    if (oldVoucher.CustomerId != voucher.CustomerId || oldVoucher.Category != voucher.Category)
+                    bool isOldRefundOrComp = oldVoucher.Category == "إرجاع أموال لعميل" || oldVoucher.Category == "تعويض للعميل عن أضرار";
+                    bool isNewRefundOrComp = voucher.Category == "إرجاع أموال لعميل" || voucher.Category == "تعويض للعميل عن أضرار";
+
+                    if (oldVoucher.CustomerId != voucher.CustomerId || isOldRefundOrComp != isNewRefundOrComp)
                     {
-                        // 1. التراجع عن تأثير السند القديم للعميل القديم
-                        if (oldVoucher.Category == "إرجاع أموال لعميل" && oldVoucher.CustomerId.HasValue)
+                        if (isOldRefundOrComp && oldVoucher.CustomerId.HasValue)
                         {
                             var oldCustomer = await _context.Customers.FindAsync(oldVoucher.CustomerId);
                             if (oldCustomer != null)
                             {
-                                oldCustomer.TotalPaid += oldVoucher.Amount; // التراجع عن الخصم
+                                oldCustomer.TotalPaid += oldVoucher.Amount;
                                 _context.Update(oldCustomer);
                             }
                         }
 
-                        // 2. تطبيق تأثير السند الجديد للعميل الجديد
-                        if (voucher.Category == "إرجاع أموال لعميل" && voucher.CustomerId.HasValue)
+                        if (isNewRefundOrComp && voucher.CustomerId.HasValue)
                         {
                             var newCustomer = await _context.Customers.FindAsync(voucher.CustomerId);
                             if (newCustomer != null)
                             {
-                                newCustomer.TotalPaid -= voucher.Amount; // تطبيق التأثير
+                                newCustomer.TotalPaid -= voucher.Amount;
                                 if (newCustomer.TotalPaid < 0) newCustomer.TotalPaid = 0;
                                 _context.Update(newCustomer);
                             }
                         }
                     }
-                    else if (oldVoucher.Category == "إرجاع أموال لعميل" && voucher.Category == "إرجاع أموال لعميل" && voucher.CustomerId.HasValue)
+                    else if (isOldRefundOrComp && isNewRefundOrComp && voucher.CustomerId.HasValue)
                     {
-                        // 3. نفس العميل ونفس التصنيف، نعدل الفارق فقط لضمان سلامة العمليات
                         var customer = await _context.Customers.FindAsync(voucher.CustomerId);
                         if (customer != null)
                         {
-                            // نرجع المبلغ القديم، ونخصم المبلغ الجديد
                             customer.TotalPaid = customer.TotalPaid + oldVoucher.Amount - voucher.Amount;
                             if (customer.TotalPaid < 0) customer.TotalPaid = 0;
                             _context.Update(customer);
@@ -144,13 +156,11 @@ namespace AlarganShipping.Controllers
         public async Task<IActionResult> Print(int? id)
         {
             if (id == null) return NotFound();
-
             var voucher = await _context.PaymentVouchers
                 .Include(v => v.Customer)
+                .Include(v => v.Car)
                 .FirstOrDefaultAsync(m => m.Id == id);
-
             if (voucher == null) return NotFound();
-
             return View(voucher);
         }
 
@@ -163,13 +173,12 @@ namespace AlarganShipping.Controllers
 
             try
             {
-                // 💡 التراجع المالي عند الحذف
-                if (voucher.Category == "إرجاع أموال لعميل" && voucher.CustomerId.HasValue)
+                if ((voucher.Category == "إرجاع أموال لعميل" || voucher.Category == "تعويض للعميل عن أضرار") && voucher.CustomerId.HasValue)
                 {
                     var customer = await _context.Customers.FindAsync(voucher.CustomerId);
                     if (customer != null)
                     {
-                        customer.TotalPaid += voucher.Amount; // التراجع عن الخصم ورد المبالغ المسترجعة للرصيد
+                        customer.TotalPaid += voucher.Amount;
                         _context.Update(customer);
                     }
                 }

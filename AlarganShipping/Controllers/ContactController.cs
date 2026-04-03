@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AlarganShipping.Models;
+using System.Text.Json;
 
 namespace AlarganShipping.Controllers
 {
@@ -13,53 +14,42 @@ namespace AlarganShipping.Controllers
         public required List<string> Phones { get; set; }
     }
 
+
     public class ContactController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public ContactController(ApplicationDbContext context)
+        public ContactController(ApplicationDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         public async Task<IActionResult> Index()
         {
-            // 1. جلب الفروع ديناميكياً من قاعدة البيانات
-            // (سنجلب المواقع والموانئ الموجودة في عمان كمثال للفروع)
-            var branches = await _context.Locations
-                .Where(l => l.Country.Contains("Oman") || l.Country.Contains("عمان") || l.LocationType == "Branch")
-                .ToListAsync();
-
-            // 2. إعداد بيانات الأقسام بشكل ديناميكي
-            var departments = new List<DepartmentInfo>
+            // 1. جلب بيانات التواصل من ملف الإعدادات
+            string settingsPath = Path.Combine(_env.WebRootPath, "settings.json");
+            SettingsViewModel settings = new SettingsViewModel();
+            if (System.IO.File.Exists(settingsPath))
             {
-                new DepartmentInfo
-                {
-                    Title = "قسم المزادات",
-                    Icon = "fa-gavel",
-                    Description = "للدعم الفني في حسابات كوبارت و IAAI والمزايدة المباشرة.",
-                    Phones = new List<string> { "96505777", "96202777" }
-                },
-                new DepartmentInfo
-                {
-                    Title = "قسم خدمة العملاء",
-                    Icon = "fa-headset",
-                    Description = "لمتابعة حالة الشحنات، الدعم الفني، وتقديم الاقتراحات.",
-                    Phones = new List<string> { "77521020" }
-                },
-                new DepartmentInfo
-                {
-                    Title = "قسم المبيعات",
-                    Icon = "fa-tags",
-                    Description = "للاستفسارات التجارية، عروض الأسعار، والتعاقدات الجديدة.",
-                    Phones = new List<string> { "94203663", "77263111" }
-                }
-            };
+                var json = System.IO.File.ReadAllText(settingsPath);
+                settings = JsonSerializer.Deserialize<SettingsViewModel>(json) ?? new SettingsViewModel();
+            }
+            ViewBag.Settings = settings;
 
-            ViewBag.Departments = departments;
+            // 2. جلب الفروع ديناميكياً من قاعدة البيانات (الأماكن التي نوعها Branch أو تقع في عمان)
+            var branches = await _context.Locations
+                .Where(l => l.LocationType == "Branch" || l.Country.Contains("Oman") || l.Country.Contains("عمان") || l.Country.Contains("UAE"))
+                .ToListAsync();
             ViewBag.Branches = branches;
 
-            return View();
+            // 3. جلب الموظفين الذين لديهم صلاحية الظهور في صفحة اتصل بنا
+            var contactStaff = await _context.Users
+                .Where(u => u.ShowOnContactPage && u.IsActive)
+                .ToListAsync();
+
+            return View(contactStaff);
         }
     }
 }

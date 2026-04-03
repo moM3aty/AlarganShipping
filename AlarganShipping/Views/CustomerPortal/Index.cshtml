@@ -262,7 +262,8 @@
                     </div>
                 </div>
                 <div class="car-status-text">
-                    <i class="fa-solid fa-location-dot"></i> @statusLabel
+                    <!-- 💡 تم تعديل هذا السطر ليتم ترجمة الحالة بشكل صحيح -->
+                    <i class="fa-solid fa-location-dot"></i> @Localizer[statusLabel]
                 </div>
                 <a href="@Url.Action("TrackCar", "CustomerPortal", new { id = car.Id })" class="btn-track-car">
                     <i class="fa-solid fa-location-crosshairs"></i> @Localizer["تتبع حالة السيارة"]

@@ -8,8 +8,8 @@
 
 <style>
     /* =========================================================
-           تصميم الحاسبة الذكية (Pixel-Perfect) للعميل
-           ========================================================= */
+                       تصميم الحاسبة الذكية (Pixel-Perfect) للعميل
+                       ========================================================= */
 
     :root {
         --calc-navy: #1e293b;
@@ -17,6 +17,10 @@
         --calc-bg: #f8fafc;
         --calc-text-muted: #94a3b8;
         --calc-border: #f1f5f9;
+    }
+
+    body {
+        background-color: #f1f5f9; /* خلفية خفيفة للصفحة كلها */
     }
 
 
@@ -28,6 +32,9 @@
         box-shadow: 0 10px 40px rgba(0,0,0,0.02);
         margin-bottom: 3rem;
         border: 1px solid white;
+        max-width: 1400px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     /* --- هيدر الحاسبة --- */
@@ -99,6 +106,7 @@
         cursor: pointer;
         transition: 0.3s;
         box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        text-decoration: none;
     }
 
         .btn-calc-outline:hover {
@@ -110,7 +118,7 @@
             color: var(--calc-gold);
         }
 
-    /* --- التخطيط العام للحاسبة (يمين ويسار) --- */
+    /* --- التخطيط العام للحاسبة --- */
     .calc-main-layout {
         display: grid;
         grid-template-columns: 1fr;
@@ -118,13 +126,22 @@
         align-items: start;
     }
 
+    /* سطح المكتب: النتائج يمين، المدخلات يسار (RTL) */
     @@media(min-width: 1024px) {
         .calc-main-layout {
-            grid-template-columns: 1fr 380px; /* النتائج يسار (1fr)، المدخلات يمين (380px) */
+            grid-template-columns: 1fr 380px;
+        }
+        /* لضبط الترتيب: النتائج (يسار في الكود) تصبح يمين، والمدخلات (يمين في الكود) تصبح يسار */
+        .calc-results-main {
+            order: 1;
+        }
+
+        .calc-inputs-sidebar {
+            order: 2;
         }
     }
 
-    /* ==================== القسم الأيمن (المدخلات) ==================== */
+    /* ==================== القسم الأيسر (المدخلات) ==================== */
     .calc-inputs-sidebar {
         background: white;
         border-radius: 2rem;
@@ -418,20 +435,23 @@
     }
 
     /* =========================================================
-           إصلاحات وتخصيص Select2 الخاص بالمزاد
-           ========================================================= */
+                       إصلاحات Select2 ودعم التمرير
+                       ========================================================= */
     .select2-container {
         width: 314px !important;
         display: block;
+        background: #FFF !important;
     }
 
-    .select2-selection__placeholder span{
-        font-size:small;
+    .select2-selection__placeholder span {
+        font-size: small;
     }
-        .select2-container ul{
-            list-style:none !important;
-        }
-        .select2-container--default .select2-selection--single {
+
+    .select2-container ul {
+        list-style: none !important;
+    }
+
+    .select2-container--default .select2-selection--single {
         background-color: var(--calc-bg) !important;
         border: 2px solid var(--calc-border) !important;
         border-radius: 1rem !important;
@@ -452,7 +472,7 @@
     .select2-container--default .select2-selection--single .select2-selection__rendered {
         width: 100%;
         padding-inline-end: 10px;
-        font-size:small;
+        font-size: small;
     }
 
     .select2-container--default .select2-selection--single .select2-selection__arrow {
@@ -463,6 +483,18 @@
     html[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
         left: 15px !important;
         right: auto !important;
+    }
+
+    /* القائمة المنسدلة - إصلاح التمرير */
+    .select2-dropdown {
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 1rem !important;
+        overflow: hidden;
+    }
+
+    .select2-results__options {
+        max-height: 300px !important; /* تحديد ارتفاع لتفعيل الاسكرول */
+        overflow-y: auto !important; /* تفعيل التمرير العمودي */
     }
 
     .select2-search--dropdown {
@@ -499,8 +531,7 @@
             background-color: #f8fafc !important;
         }
 
-
-    /* ==================== القسم الأيسر (النتائج) ==================== */
+    /* ==================== القسم الأيمن (النتائج) ==================== */
     .calc-results-main {
         display: flex;
         flex-direction: column;
@@ -548,6 +579,7 @@
         text-align: center;
         min-width: 150px;
         backdrop-filter: blur(10px);
+        flex: 1;
     }
 
         .banner-box .lbl {
@@ -581,6 +613,7 @@
     .banner-left {
         text-align: left;
         z-index: 2;
+        width: 100%;
     }
 
         .banner-left .lbl {
@@ -619,12 +652,6 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 1.5rem;
-    }
-
-    @@media (max-width: 768px) {
-        .res-cards-grid {
-            grid-template-columns: 1fr;
-        }
     }
 
     .res-card {
@@ -787,27 +814,73 @@
         gap: 12px;
     }
 
+        .notes-list li {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #64748b;
+            position: relative;
+            padding-right: 15px;
+        }
+
+            .notes-list li::before {
+                content: '•';
+                position: absolute;
+                right: 0;
+                color: #3b82f6;
+                font-weight: bold;
+            }
+
+    /* ==================== تجاوب الشاشات (Media Queries) ==================== */
+
+    @@media (max-width: 1024px) {
+        .calc-main-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .calc-results-main {
+            order: 2; /* النتائج أسفل المدخلات في الجوال */
+        }
+
+        .calc-inputs-sidebar {
+            order: 1;
+        }
+    }
+
     @@media (max-width: 768px) {
+        .smart-calc-master-container {
+            padding: 1rem;
+            border-radius: 1rem;
+        }
+
+        .calc-top-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .calc-title-texts h1 {
+            font-size: 1.4rem;
+        }
+
+        .res-cards-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .navy-banner {
+            padding: 1.5rem;
+        }
+
+        .banner-left .val {
+            font-size: 2.5rem;
+        }
+
         .notes-list {
             grid-template-columns: 1fr;
         }
-    }
 
-    .notes-list li {
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: #64748b;
-        position: relative;
-        padding-right: 15px;
-    }
-
-        .notes-list li::before {
-            content: '•';
-            position: absolute;
-            right: 0;
-            color: #3b82f6;
-            font-weight: bold;
+        .calc-grid-3 {
+            grid-template-columns: 1fr;
         }
+    }
 
     @@media print {
         .calc-header-buttons, .adv-settings-btn, .btn-refresh {
@@ -833,9 +906,6 @@
         </div>
     }
 
-    <!-- =========================================================
-         واجهة الحاسبة الذكية
-         ========================================================= -->
     <div class="smart-calc-master-container" id="calculatorArea">
 
         <!-- هيدر الحاسبة -->
@@ -843,42 +913,45 @@
 
             <div class="calc-brand-area">
                 <div class="calc-title-texts">
-                    <h1>الحاسبة الذكية</h1>
+                    <h1>@Localizer["الحاسبة الذكية"]</h1>
                     <p>Al Argan Auto Shipping</p>
                 </div>
                 <div class="calc-logo-box">AL ARGAN</div>
             </div>
+
+            <!-- أزرار الهيدر -->
+           
         </div>
 
-        <!-- التخطيط الجانبي (يمين مدخلات، يسار نتائج) -->
+        <!-- التخطيط الجانبي -->
         <div class="calc-main-layout">
 
-            <!-- كارت النتائج (اليسار) -->
+            <!-- كارت النتائج -->
             <div class="calc-results-main">
 
-                <!-- الشريط الكحلي العلوي للنتائج -->
+                <!-- الشريط الكحلي العلوي -->
                 <div class="navy-banner">
                     <div class="banner-right">
                         <div class="banner-box">
-                            <span class="lbl">المبلغ عند الوصول</span>
+                            <span class="lbl">@Localizer["المبلغ عند الوصول"]</span>
                             <div class="val-wrap">
                                 <span class="val" id="resArrivalDue">0.00</span>
-                                <span class="curr">ر.ع</span>
+                                <span class="curr">@Localizer["ر.ع"]</span>
                             </div>
                         </div>
                         <div class="banner-box">
-                            <span class="lbl">المبلغ الإجمالي المستحق</span>
+                            <span class="lbl">@Localizer["المبلغ الإجمالي المستحق"]</span>
                             <div class="val-wrap">
                                 <span class="val" id="resInitialDue">0.00</span>
-                                <span class="curr">ر.ع</span>
+                                <span class="curr">@Localizer["ر.ع"]</span>
                             </div>
                         </div>
                     </div>
                     <div class="banner-left">
-                        <span class="lbl">الإجمالي الكلي</span>
+                        <span class="lbl">@Localizer["الإجمالي الكلي"]</span>
                         <div class="val-wrap">
                             <span class="val" id="resGrandTotal">0.00</span>
-                            <span class="curr">ر.ع</span>
+                            <span class="curr">@Localizer["ر.ع"]</span>
                         </div>
                     </div>
                 </div>
@@ -886,86 +959,86 @@
                 <!-- تفصيل الشحن والمزاد -->
                 <div class="res-cards-grid">
 
-                    <!-- كارت الشحن والرسوم (يمين في الصورة) -->
+                    <!-- كارت الشحن -->
                     <div class="res-card">
                         <div class="res-card-header">
                             <span class="res-card-badge">SHIPPING & FEES</span>
-                            <h4>الشحن والرسوم <i class="fa-solid fa-box"></i></h4>
+                            <h4>@Localizer["الشحن والرسوم"] <i class="fa-solid fa-box"></i></h4>
                         </div>
                         <div class="res-list">
                             <div class="res-item">
-                                <span class="lbl">الشحن الكلي</span>
-                                <div class="val-wrap"><span class="val" id="resOceanFreight">0</span> <span class="curr">ر.ع</span></div>
+                                <span class="lbl">@Localizer["الشحن الكلي"]</span>
+                                <div class="val-wrap"><span class="val" id="resOceanFreight">0</span> <span class="curr">@Localizer["ر.ع"]</span></div>
                             </div>
                             <div class="res-item">
-                                <span class="lbl">الضريبة (VAT)</span>
-                                <div class="val-wrap" id="resTaxContainer"><span class="val" id="resTax">0.00</span> <span class="curr">ر.ع</span></div>
+                                <span class="lbl">@Localizer["الضريبة (VAT)"]</span>
+                                <div class="val-wrap" id="resTaxContainer"><span class="val" id="resTax">0.00</span> <span class="curr">@Localizer["ر.ع"]</span></div>
                             </div>
                             <div class="res-item">
-                                <span class="lbl">الجمارك (Customs)</span>
-                                <div class="val-wrap" id="resCustomsContainer"><span class="val" id="resCustoms">0.00</span> <span class="curr">ر.ع</span></div>
+                                <span class="lbl">@Localizer["الجمارك (Customs)"]</span>
+                                <div class="val-wrap" id="resCustomsContainer"><span class="val" id="resCustoms">0.00</span> <span class="curr">@Localizer["ر.ع"]</span></div>
                             </div>
                             <div class="res-item">
-                                <span class="lbl">عمولة الشركة</span>
-                                <div class="val-wrap"><span class="val" id="resCommission">0</span> <span class="curr">ر.ع</span></div>
+                                <span class="lbl">@Localizer["عمولة الشركة"]</span>
+                                <div class="val-wrap"><span class="val" id="resCommission">0</span> <span class="curr">@Localizer["ر.ع"]</span></div>
                             </div>
                             <div class="res-item">
-                                <span class="lbl">النقل البري</span>
-                                <div class="val-wrap"><span class="val" id="resTransport">0</span> <span class="curr">ر.ع</span></div>
+                                <span class="lbl">@Localizer["النقل البري"]</span>
+                                <div class="val-wrap"><span class="val" id="resTransport">0</span> <span class="curr">@Localizer["ر.ع"]</span></div>
                             </div>
                             <div class="res-item" id="extraFeesContainer" style="display: none;">
-                                <span class="lbl">رسوم إضافية</span>
-                                <div class="val-wrap"><span class="val" id="resExtraFees">0</span> <span class="curr">ر.ع</span></div>
+                                <span class="lbl">@Localizer["رسوم إضافية"]</span>
+                                <div class="val-wrap"><span class="val" id="resExtraFees">0</span> <span class="curr">@Localizer["ر.ع"]</span></div>
                             </div>
                         </div>
                         <div class="res-card-footer">
                             <div class="lbl-box">
-                                <span class="lbl">إجمالي الشحن</span>
-                                <span class="lbl">شامل الرسوم</span>
+                                <span class="lbl">@Localizer["إجمالي الشحن"]</span>
+                                <span class="lbl">@Localizer["شامل الرسوم"]</span>
                             </div>
                             <div class="val-wrap">
                                 <span class="val" id="resShippingTotal">0.00</span>
-                                <span class="curr">ر.ع</span>
+                                <span class="curr">@Localizer["ر.ع"]</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- كارت المزاد (يسار في الصورة) -->
+                    <!-- كارت المزاد -->
                     <div class="res-card">
                         <div class="res-card-header">
                             <span class="res-card-badge">AUCTION DETAILS</span>
-                            <h4>المزاد <i class="fa-solid fa-gavel"></i></h4>
+                            <h4>@Localizer["المزاد"] <i class="fa-solid fa-gavel"></i></h4>
                         </div>
                         <div class="res-list">
                             <div class="res-item">
-                                <span class="lbl">رسوم المشتري</span>
+                                <span class="lbl">@Localizer["رسوم المشتري"]</span>
                                 <div class="val-wrap"><span class="curr">$</span><span class="val" id="resBuyerFee">0</span></div>
                             </div>
                             <div class="res-item">
-                                <span class="lbl">رسوم البيئة</span>
+                                <span class="lbl">@Localizer["رسوم البيئة"]</span>
                                 <div class="val-wrap"><span class="curr">$</span><span class="val" id="resEnvFee">0</span></div>
                             </div>
                             <div class="res-item">
-                                <span class="lbl">رسوم المزايدة</span>
+                                <span class="lbl">@Localizer["رسوم المزايدة"]</span>
                                 <div class="val-wrap"><span class="curr">$</span><span class="val" id="resVirtualFee">0</span></div>
                             </div>
                             <div class="res-item">
-                                <span class="lbl">رسوم البوابة</span>
+                                <span class="lbl">@Localizer["رسوم البوابة"]</span>
                                 <div class="val-wrap"><span class="curr">$</span><span class="val" id="resGateFee">0</span></div>
                             </div>
                             <div class="res-item">
-                                <span class="lbl">رسوم الملكية</span>
+                                <span class="lbl">@Localizer["رسوم الملكية"]</span>
                                 <div class="val-wrap"><span class="curr">$</span><span class="val" id="resTitleFee">0</span></div>
                             </div>
                         </div>
                         <div class="res-card-footer">
                             <div class="lbl-box">
-                                <span class="lbl">إجمالي المزاد</span>
+                                <span class="lbl">@Localizer["إجمالي المزاد"]</span>
                                 <span class="sub-lbl" id="resAuctionUSD">$0</span>
                             </div>
                             <div class="val-wrap">
                                 <span class="val" id="resAuctionOMR">0.00</span>
-                                <span class="curr">ر.ع</span>
+                                <span class="curr">@Localizer["ر.ع"]</span>
                             </div>
                         </div>
                     </div>
@@ -975,87 +1048,87 @@
                 <!-- الملاحظات -->
                 <div class="notes-card">
                     <div class="notes-header">
-                        <i class="fa-solid fa-circle-info"></i> ملاحظات الحساب
+                        <i class="fa-solid fa-circle-info"></i> @Localizer["ملاحظات الحساب"]
                     </div>
                     <ul class="notes-list">
-                        <li>الضريبة = (إجمالي المزاد بالريال + 300 ر.ع) × 5%</li>
-                        <li>السيارات الكهربائية معفاة تماماً من الضريبة والجمارك</li>
-                        <li>الجمارك = الضريبة + 5% من قيمة الضريبة (لغير الأمريكي)</li>
-                        <li>يتم إدخال عمولة الشركة والنقل البري يدوياً</li>
+                        <li>@Localizer["الضريبة = (إجمالي المزاد بالريال + 300 ر.ع) × 5%"]</li>
+                        <li>@Localizer["السيارات الكهربائية معفاة تماماً من الضريبة والجمارك"]</li>
+                        <li>@Localizer["الجمارك = الضريبة + 5% من قيمة الضريبة (لغير الأمريكي)"]</li>
+                        <li>@Localizer["يتم إدخال عمولة الشركة والنقل البري يدوياً"]</li>
                     </ul>
                 </div>
             </div>
 
-            <!-- كارت الإدخال (اليمين) -->
+            <!-- كارت الإدخال -->
             <div class="calc-inputs-sidebar">
                 <div class="inputs-header">
-                    <button class="btn-refresh" onclick="location.reload()" title="إعادة تعيين"><i class="fa-solid fa-rotate-right"></i></button>
+                    <button class="btn-refresh" onclick="resetCalc()" title="@Localizer["إعادة تعيين"]"><i class="fa-solid fa-rotate-right"></i></button>
                     <div class="inputs-title">
-                        بيانات السيارة <div class="icon-car-small"><i class="fa-solid fa-car-side"></i></div>
+                        @Localizer["بيانات السيارة"] <div class="icon-car-small"><i class="fa-solid fa-car-side"></i></div>
                     </div>
                 </div>
 
                 <!-- سعر الشراء -->
                 <div class="calc-form-group">
-                    <label class="calc-label">سعر الشراء ($)</label>
+                    <label class="calc-label">@Localizer["سعر الشراء ($)"]</label>
                     <div class="calc-input-wrapper">
-                        <input type="number" id="inpSalePrice" class="calc-input calc-trigger" value="3900" step="100" />
+                        <input type="number" id="inpSalePrice" class="calc-input calc-trigger" placeholder="0" step="1" />
                         <i class="fa-solid fa-dollar-sign"></i>
                     </div>
                 </div>
 
-                <!-- موقع المزاد (قابل للبحث) -->
+                <!-- موقع المزاد -->
                 <div class="calc-form-group">
-                    <label class="calc-label">موقع المزاد</label>
+                    <label class="calc-label">@Localizer["موقع المزاد"]</label>
                     <select id="selAuction" style="display:none" class="form-control calc-trigger"></select>
                 </div>
 
                 <!-- النقل والعمولة والرسوم الإضافية -->
                 <div class="calc-grid-3">
                     <div>
-                        <label class="calc-label">العمولة (ر.ع)</label>
-                        <input type="number" id="inpComm" class="calc-input-sm calc-trigger" value="30" />
+                        <label class="calc-label">@Localizer["العمولة (ر.ع)"]</label>
+                        <input type="number" id="inpComm" class="calc-input-sm calc-trigger" placeholder="0" />
                     </div>
                     <div>
-                        <label class="calc-label">النقل (ر.ع)</label>
-                        <input type="number" id="inpTransport" class="calc-input-sm calc-trigger" value="0" />
+                        <label class="calc-label">@Localizer["النقل (ر.ع)"]</label>
+                        <input type="number" id="inpTransport" class="calc-input-sm calc-trigger" placeholder="0" />
                     </div>
                     <div>
-                        <label class="calc-label">رسوم إضافية</label>
-                        <input type="number" id="inpExtraFees" class="calc-input-sm calc-trigger" value="0" />
+                        <label class="calc-label">@Localizer["رسوم إضافية"]</label>
+                        <input type="number" id="inpExtraFees" class="calc-input-sm calc-trigger" placeholder="0" />
                     </div>
                 </div>
 
                 <!-- نوع السيارة -->
                 <div class="calc-form-group">
-                    <label class="calc-label">نوع السيارة</label>
+                    <label class="calc-label">@Localizer["نوع السيارة"]</label>
                     <div class="radio-grid-4">
                         <label class="radio-wrap">
                             <input type="radio" name="carType" value="Electric" class="calc-trigger">
                             <div class="radio-box">
                                 <div class="radio-icon ic-elec"><i class="fa-solid fa-bolt"></i></div>
-                                <span>كهرباء</span>
+                                <span>@Localizer["كهرباء"]</span>
                             </div>
                         </label>
                         <label class="radio-wrap">
                             <input type="radio" name="carType" value="Small" class="calc-trigger" checked>
                             <div class="radio-box">
                                 <div class="radio-icon ic-small"><i class="fa-solid fa-car"></i></div>
-                                <span>صغيرة</span>
+                                <span>@Localizer["صغيرة"]</span>
                             </div>
                         </label>
                         <label class="radio-wrap">
                             <input type="radio" name="carType" value="Mid" class="calc-trigger">
                             <div class="radio-box">
                                 <div class="radio-icon ic-mid"><i class="fa-solid fa-car-side"></i></div>
-                                <span>وسط</span>
+                                <span>@Localizer["وسط"]</span>
                             </div>
                         </label>
                         <label class="radio-wrap">
                             <input type="radio" name="carType" value="Big" class="calc-trigger">
                             <div class="radio-box">
                                 <div class="radio-icon ic-big"><i class="fa-solid fa-truck"></i></div>
-                                <span>كبيرة</span>
+                                <span>@Localizer["كبيرة"]</span>
                             </div>
                         </label>
                     </div>
@@ -1064,42 +1137,43 @@
                 <!-- بلد المنشأ -->
                 <div class="calc-form-group" style="margin-bottom: 0;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <label class="calc-label" style="margin: 0; width: 100%; text-align: right;">بلد المنشأ</label>
+                        <label class="calc-label" style="margin: 0; width: 100%; text-align: right;">@Localizer["بلد المنشأ"]</label>
                     </div>
                     <div class="radio-grid-2">
                         <label class="radio-wrap">
                             <input type="radio" name="origin" value="NON_US" class="calc-trigger" checked>
                             <div class="origin-box">
-                                <span>غير أمريكية</span>
-                                <small>جمرك + ضريبة</small>
+                                <span>@Localizer["غير أمريكية"]</span>
+                                <small>@Localizer["جمرك + ضريبة"]</small>
                             </div>
                         </label>
                         <label class="radio-wrap">
                             <input type="radio" name="origin" value="US_EXEMPT" class="calc-trigger">
                             <div class="origin-box">
-                                <span>أمريكية</span>
-                                <small>إعفاء جمركي</small>
+                                <span>@Localizer["أمريكية"]</span>
+                                <small>@Localizer["إعفاء جمركي"]</small>
                             </div>
                         </label>
                     </div>
                 </div>
 
-                <!-- إعدادات متقدمة (قابلة للطي) -->
+                <!-- إعدادات متقدمة -->
                 <div>
-                    <div class="adv-settings-btn" onclick="$('#advSettings').slideToggle();"><i class="fa-solid fa-gear"></i> إعدادات متقدمة </div>
+                    <div class="adv-settings-btn" onclick="$('#advSettings').slideToggle();"><i class="fa-solid fa-gear"></i> @Localizer["إعدادات متقدمة"] </div>
                     <div class="adv-settings-panel" id="advSettings">
                         <div class="calc-grid-2" style="margin-bottom: 0;">
                             <div>
-                                <label class="calc-label">سعر الصرف</label>
+                                <label class="calc-label">@Localizer["سعر الصرف"]</label>
                                 <input type="number" id="inpExRate" class="calc-input-sm calc-trigger" value="0.386" step="0.001" style="padding: 0.5rem;" />
                             </div>
                             <div>
-                                <label class="calc-label">رسوم الدفع</label>
+                                <label class="calc-label">@Localizer["رسوم الدفع"]</label>
                                 <input type="number" id="inpPaymentSvc" class="calc-input-sm calc-trigger" value="15.48" step="0.01" style="padding: 0.5rem;" />
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
 
         </div>
@@ -1111,10 +1185,10 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-        // =======================================================
-        // البيانات الكاملة للموانئ (388 موقع)
-        // =======================================================
-        const SHIPPING_RATES = [
+              // =======================================================
+              // البيانات الكاملة للموانئ
+              // =======================================================
+               const SHIPPING_RATES = [
             { id: 1, state: "Alabama", city: "Birmingham", auctionLocation: "Birmingham North Copart", price: 604 },
             { id: 2, state: "Alabama", city: "Hueytown", auctionLocation: "Birmingham Copart", price: 624 },
             { id: 3, state: "Alabama", city: "Bessemer", auctionLocation: "Birmingham IAA", price: 624 },
@@ -1505,210 +1579,203 @@
             { id: 388, state: "Washington", city: "Washington", auctionLocation: "Elkotn", price: 905 }
         ];
 
-        function round(num) {
-            return Math.round((num + Number.EPSILON) * 100) / 100;
-        }
+              function round(num) {
+                  return Math.round((num + Number.EPSILON) * 100) / 100;
+              }
 
-        function getBuyerFee(price) {
-            if (price < 100) return 1;
-            if (price < 200) return 25;
-            if (price < 300) return 60;
-            if (price < 350) return 85;
-            if (price < 400) return 100;
-            if (price < 450) return 125;
-            if (price < 500) return 135;
-            if (price < 550) return 145;
-            if (price < 600) return 155;
-            if (price < 700) return 170;
-            if (price < 800) return 195;
-            if (price < 900) return 215;
-            if (price < 1000) return 230;
-            if (price < 1200) return 250;
-            if (price < 1300) return 270;
-            if (price < 1400) return 285;
-            if (price < 1500) return 300;
-            if (price < 1600) return 315;
-            if (price < 1700) return 330;
-            if (price < 1800) return 350;
-            if (price < 2000) return 370;
-            if (price < 2400) return 390;
-            if (price < 2500) return 425;
-            if (price < 3000) return 460;
-            if (price < 3500) return 505;
-            if (price < 4000) return 555;
-            if (price < 4500) return 600;
-            if (price < 5000) return 625;
-            if (price < 5500) return 650;
-            if (price < 6000) return 675;
-            if (price < 6500) return 700;
-            if (price < 7000) return 720;
-            if (price < 7500) return 755;
-            if (price < 8000) return 775;
-            if (price < 8500) return 800;
-            if (price < 9000) return 820;
-            if (price < 10000) return 820;
-            if (price < 11500) return 850;
-            if (price < 12000) return 860;
-            if (price < 12500) return 875;
-            if (price < 15000) return 890;
-            return round(price * 0.06);
-        }
+              function getBuyerFee(price) {
+                  if (price < 100) return 1;
+                  if (price < 200) return 25;
+                  if (price < 300) return 60;
+                  if (price < 350) return 85;
+                  if (price < 400) return 100;
+                  if (price < 450) return 125;
+                  if (price < 500) return 135;
+                  if (price < 550) return 145;
+                  if (price < 600) return 155;
+                  if (price < 700) return 170;
+                  if (price < 800) return 195;
+                  if (price < 900) return 215;
+                  if (price < 1000) return 230;
+                  if (price < 1200) return 250;
+                  if (price < 1300) return 270;
+                  if (price < 1400) return 285;
+                  if (price < 1500) return 300;
+                  if (price < 1600) return 315;
+                  if (price < 1700) return 330;
+                  if (price < 1800) return 350;
+                  if (price < 2000) return 370;
+                  if (price < 2400) return 390;
+                  if (price < 2500) return 425;
+                  if (price < 3000) return 460;
+                  if (price < 3500) return 505;
+                  if (price < 4000) return 555;
+                  if (price < 4500) return 600;
+                  if (price < 5000) return 625;
+                  if (price < 5500) return 650;
+                  if (price < 6000) return 675;
+                  if (price < 6500) return 700;
+                  if (price < 7000) return 720;
+                  if (price < 7500) return 755;
+                  if (price < 8000) return 775;
+                  if (price < 8500) return 800;
+                  if (price < 9000) return 820;
+                  if (price < 10000) return 820;
+                  if (price < 11500) return 850;
+                  if (price < 12000) return 860;
+                  if (price < 12500) return 875;
+                  if (price < 15000) return 890;
+                  return round(price * 0.06);
+              }
 
-        function getVirtualBidFee(p) {
-            if (p < 0) return 0;
-            if (p <= 99.99) return 0;
-            if (p <= 499.99) return 50;
-            if (p <= 999.99) return 65;
-            if (p <= 1499.99) return 85;
-            if (p <= 1999.99) return 95;
-            if (p <= 3999.99) return 110;
-            if (p <= 5999.99) return 125;
-            if (p <= 7999.99) return 145;
-            return 160;
-        }
+              function getVirtualBidFee(p) {
+                  if (p < 0) return 0;
+                  if (p <= 99.99) return 0;
+                  if (p <= 499.99) return 50;
+                  if (p <= 999.99) return 65;
+                  if (p <= 1499.99) return 85;
+                  if (p <= 1999.99) return 95;
+                  if (p <= 3999.99) return 110;
+                  if (p <= 5999.99) return 125;
+                  if (p <= 7999.99) return 145;
+                  return 160;
+              }
 
-        $(document).ready(function() {
-            // إضافة خيارات الشحن للدروب داون مع الحفاظ على التصميم
-            let optionsHtml = '<option value=""></option>';
-            SHIPPING_RATES.forEach(r => {
-                optionsHtml += `<option value="${r.id}">${r.auctionLocation} - ${r.city}, ${r.state}</option>`;
-            });
-            $('#selAuction').html(optionsHtml);
+              $(document).ready(function() {
+                  // تهيئة Select2
+                  $('#selAuction').select2({
+                      placeholder: "🔍 @Html.Raw(Localizer["ابحث عن المزاد، المدينة، أو الولاية..."])",
+                      allowClear: true,
+                      data: SHIPPING_RATES.map(r => ({ id: r.id, text: r.auctionLocation, city: r.city, state: r.state, price: r.price })),
+                      dir: $('html').attr('dir'),
+                      matcher: function(params, data) {
+                          if ($.trim(params.term) === '') return data;
+                          if (typeof data.text === 'undefined') return null;
+                          var q = params.term.toLowerCase();
+                          if (data.text.toLowerCase().indexOf(q) > -1 ||
+                              (data.city && data.city.toLowerCase().indexOf(q) > -1) ||
+                              (data.state && data.state.toLowerCase().indexOf(q) > -1)) {
+                              return data;
+                          }
+                          return null;
+                      },
+                      templateResult: function(data) {
+                          if (!data.id) return data.text;
+                          return $(`
+                              <div style="display:flex; justify-content:space-between; align-items:center;">
+                                  <div style="text-align: right;">
+                                      <div style="font-weight:900; color:var(--calc-navy); font-size:0.9rem;">${data.text}</div>
+                                      <div style="font-size:0.65rem; color:#94a3b8; text-transform:uppercase;">${data.city}, ${data.state}</div>
+                                  </div>
+                                  <div style="font-weight:900; color:var(--calc-gold); direction: ltr;">${data.price} @Html.Raw(Localizer["ر.ع"])</div>
+                              </div>
+                          `);
+                      },
+                      templateSelection: function(data) {
+                          if (!data.id) return $(`<span style="color:#94a3b8; font-weight:800;">${data.text}</span>`);
+                          return $(`<div style="font-weight:900; width:100%; display:flex; justify-content:space-between; align-items:center;"><span>${data.text}</span> <span style="color:var(--calc-gold); direction:ltr; font-size:0.9rem;">${data.price} @Html.Raw(Localizer["ر.ع"])</span></div>`);
+                      }
+                  });
 
-            // تهيئة Select2 وتخصيص البحث ليشمل اسم המزاد والمدينة والولاية
-            $('#selAuction').select2({
-                placeholder: "🔍 ابحث عن المزاد، المدينة، أو الولاية...",
-                allowClear: true,
-                data: SHIPPING_RATES.map(r => ({ id: r.id, text: r.auctionLocation, city: r.city, state: r.state, price: r.price })),
-                dir: $('html').attr('dir'),
-                matcher: function(params, data) {
-                    if ($.trim(params.term) === '') return data;
-                    if (typeof data.text === 'undefined') return null;
-                    var q = params.term.toLowerCase();
-                    if (data.text.toLowerCase().indexOf(q) > -1 ||
-                        (data.city && data.city.toLowerCase().indexOf(q) > -1) ||
-                        (data.state && data.state.toLowerCase().indexOf(q) > -1)) {
-                        return data;
-                    }
-                    return null;
-                },
-                templateResult: function(data) {
-                    if (!data.id) return data.text;
-                    return $(`
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div style="text-align: right;">
-                                <div style="font-weight:900; color:var(--calc-navy); font-size:0.9rem;">${data.text}</div>
-                                <div style="font-size:0.65rem; color:#94a3b8; text-transform:uppercase;">${data.city}, ${data.state}</div>
-                            </div>
-                            <div style="font-weight:900; color:var(--calc-gold); direction: ltr;">${data.price} ر.ع</div>
-                        </div>
-                    `);
-                },
-                templateSelection: function(data) {
-                    if (!data.id) return $(`<span style="color:#94a3b8; font-weight:800;">${data.text}</span>`);
-                    return $(`<div style="font-weight:900; width:100%; display:flex; justify-content:space-between; align-items:center;"><span>${data.text}</span> <span style="color:var(--calc-gold); direction:ltr; font-size:0.9rem;">${data.price} ر.ع</span></div>`);
-                }
-            });
+                  // التركيز التلقائي على حقل البحث عند فتح القائمة المنسدلة
+                  $('#selAuction').on('select2:open', function () {
+                      setTimeout(function() {
+                          document.querySelector('.select2-search__field').focus();
+                      }, 50);
+                  });
 
-            // التركيز التلقائي على حقل البحث عند فتح القائمة المنسدلة
-            $('#selAuction').on('select2:open', function () {
-                setTimeout(function() {
-                    document.querySelector('.select2-search__field').focus();
-                }, 50);
-            });
+                  $('#selAuction').val(1).trigger('change'); // تعيين قيمة مبدئية لـ Birmingham
 
-            $('#selAuction').val(1).trigger('change'); // تعيين قيمة مبدئية لـ Birmingham
+                  function calculateLocal() {
+                      var salePrice = parseFloat($('#inpSalePrice').val()) || 0;
 
-            function calculateLocal() {
-                var salePrice = parseFloat($('#inpSalePrice').val()) || 0;
+                      var selectedAuctionId = $('#selAuction').val();
+                      var selectedAuction = SHIPPING_RATES.find(r => r.id == selectedAuctionId);
+                      var oceanPrice = selectedAuction ? selectedAuction.price : 604;
 
-                var selectedAuctionId = $('#selAuction').val();
-                var selectedAuction = SHIPPING_RATES.find(r => r.id == selectedAuctionId);
-                var oceanPrice = selectedAuction ? selectedAuction.price : 604;
+                      var comm = parseFloat($('#inpComm').val()) || 0;
+                      var transport = parseFloat($('#inpTransport').val()) || 0;
+                      var extraFees = parseFloat($('#inpExtraFees').val()) || 0;
 
-                var comm = parseFloat($('#inpComm').val()) || 0;
-                var transport = parseFloat($('#inpTransport').val()) || 0;
-                var extraFees = parseFloat($('#inpExtraFees').val()) || 0;
+                      var carType = $('input[name="carType"]:checked').val(); // 'Electric', 'Small', 'Mid', 'Big'
+                      var origin = $('input[name="origin"]:checked').val(); // 'NON_US', 'US_EXEMPT'
 
-                var carType = $('input[name="carType"]:checked').val(); // 'Electric', 'Small', 'Mid', 'Big'
-                var origin = $('input[name="origin"]:checked').val(); // 'NON_US', 'US_EXEMPT'
+                      var exRate = parseFloat($('#inpExRate').val()) || 0.386;
+                      var paymentSvc = parseFloat($('#inpPaymentSvc').val()) || 15.48;
 
-                var exRate = parseFloat($('#inpExRate').val()) || 0.386;
-                var paymentSvc = parseFloat($('#inpPaymentSvc').val()) || 15.48;
+                      // ثوابت المزاد
+                      var envFee = 15.00;
+                      var virtualFee = getVirtualBidFee(salePrice);
+                      var gateFee = 95.00;
+                      var titleFee = 40.00;
+                      var buyerFee = getBuyerFee(salePrice);
 
-                // ثوابت المزاد
-                var envFee = 15.00;
-                var virtualFee = getVirtualBidFee(salePrice);
-                var gateFee = 95.00;
-                var titleFee = 40.00;
-                var buyerFee = getBuyerFee(salePrice);
+                      // 1. حساب المزاد
+                      var auctionTotalUSD = salePrice + buyerFee + envFee + virtualFee + gateFee + titleFee;
+                      var auctionTotalOMR = round(auctionTotalUSD * exRate);
 
-                // 1. حساب المزاد
-                var auctionTotalUSD = salePrice + buyerFee + envFee + virtualFee + gateFee + titleFee;
-                var auctionTotalOMR = round(auctionTotalUSD * exRate);
+                      // 2. حساب الشحن الأساسي
+                      // نضيف رسوم الحجم بناءً على الاختيار
+                      var carSizeSurcharge = 0;
+                      if (carType === 'Mid') carSizeSurcharge = 60; // يمكنك تعديلها
+                      if (carType === 'Big') carSizeSurcharge = 120;
 
-                // 2. حساب الشحن الأساسي
-                // نضيف رسوم الحجم بناءً على الاختيار
-                var carSizeSurcharge = 0;
-                if (carType === 'Mid') carSizeSurcharge = 60; // يمكنك تعديلها
-                if (carType === 'Big') carSizeSurcharge = 120;
+                      var shippingTotalOMR = oceanPrice + comm + transport + extraFees + paymentSvc + carSizeSurcharge;
 
-                var shippingTotalOMR = oceanPrice + comm + transport + extraFees + paymentSvc + carSizeSurcharge;
+                      // 3. حساب الضرائب والجمارك
+                      var taxOMR = (auctionTotalOMR + 300) * 0.05; // الـ 300 هي رسوم شحن تقديرية تضاف قبل حساب الضريبة
+                      var customsOMR = (origin === 'NON_US') ? (taxOMR + (taxOMR * 0.05)) : 0;
 
-                // 3. حساب الضرائب والجمارك
-                var taxOMR = (auctionTotalOMR + 300) * 0.05; // الـ 300 هي رسوم شحن تقديرية تضاف قبل حساب الضريبة
-                var customsOMR = (origin === 'NON_US') ? (taxOMR + (taxOMR * 0.05)) : 0;
+                      var isElectric = (carType === 'Electric');
+                      var finalTaxOMR = isElectric ? 0 : taxOMR;
+                      var finalCustomsOMR = isElectric ? 0 : customsOMR;
 
-                var isElectric = (carType === 'Electric');
-                var finalTaxOMR = isElectric ? 0 : taxOMR;
-                var finalCustomsOMR = isElectric ? 0 : customsOMR;
+                      // 4. المجاميع النهائية
+                      var grandTotal = auctionTotalOMR + shippingTotalOMR + finalCustomsOMR + finalTaxOMR;
+                      var initialDue = auctionTotalOMR + comm;
+                      var arrivalDue = grandTotal - initialDue;
 
-                // 4. المجاميع النهائية
-                var grandTotal = auctionTotalOMR + shippingTotalOMR + finalCustomsOMR + finalTaxOMR;
-                var initialDue = auctionTotalOMR + comm;
-                var arrivalDue = grandTotal - initialDue;
+                      // 5. التحديث في الشاشة
+                      const fmt = (num) => num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
-                // 5. التحديث في الشاشة
-                const fmt = (num) => num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                      $('#resBuyerFee').text(fmt(buyerFee));
+                      $('#resEnvFee').text(fmt(envFee));
+                      $('#resVirtualFee').text(fmt(virtualFee));
+                      $('#resGateFee').text(fmt(gateFee));
+                      $('#resTitleFee').text(fmt(titleFee));
+                      $('#resAuctionUSD').text('$' + fmt(auctionTotalUSD));
+                      $('#resAuctionOMR').text(fmt(auctionTotalOMR));
 
-                $('#resBuyerFee').text(fmt(buyerFee));
-                $('#resEnvFee').text(fmt(envFee));
-                $('#resVirtualFee').text(fmt(virtualFee));
-                $('#resGateFee').text(fmt(gateFee));
-                $('#resTitleFee').text(fmt(titleFee));
-                $('#resAuctionUSD').text('$' + fmt(auctionTotalUSD));
-                $('#resAuctionOMR').text(fmt(auctionTotalOMR));
+                      $('#resOceanFreight').text(fmt(oceanPrice));
+                      $('#resCommission').text(fmt(comm));
+                      $('#resTransport').text(fmt(transport));
 
-                $('#resOceanFreight').text(fmt(oceanPrice));
-                $('#resCommission').text(fmt(comm));
-                $('#resTransport').text(fmt(transport));
+                      if (extraFees > 0) {
+                          $('#extraFeesContainer').show();
+                          $('#resExtraFees').text(fmt(extraFees));
+                      } else {
+                          $('#extraFeesContainer').hide();
+                      }
 
-                if (extraFees > 0) {
-                    $('#extraFeesContainer').show();
-                    $('#resExtraFees').text(fmt(extraFees));
-                } else {
-                    $('#extraFeesContainer').hide();
-                }
+                      if(isElectric) {
+                          $('#resTaxContainer').html('<span style="color:#16a34a; background:#f0fdf4; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;">@Html.Raw(Localizer["معفية تماماً"])</span>');
+                          $('#resCustomsContainer').html('<span style="color:#16a34a; background:#f0fdf4; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;">@Html.Raw(Localizer["معفية تماماً"])</span>');
+                      } else {
+                          $('#resTaxContainer').html('<span class="val">' + fmt(finalTaxOMR) + '</span> <span class="curr">@Html.Raw(Localizer["ر.ع"])</span>');
+                          $('#resCustomsContainer').html('<span class="val">' + fmt(finalCustomsOMR) + '</span> <span class="curr">@Html.Raw(Localizer["ر.ع"])</span>');
+                      }
 
-                if(isElectric) {
-                    $('#resTaxContainer').html('<span style="color:#16a34a; background:#f0fdf4; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;">معفية تماماً</span>');
-                    $('#resCustomsContainer').html('<span style="color:#16a34a; background:#f0fdf4; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;">معفية تماماً</span>');
-                } else {
-                    $('#resTaxContainer').html('<span class="val">' + fmt(finalTaxOMR) + '</span> <span class="curr">ر.ع</span>');
-                    $('#resCustomsContainer').html('<span class="val">' + fmt(finalCustomsOMR) + '</span> <span class="curr">ر.ع</span>');
-                }
+                      $('#resShippingTotal').text(fmt(shippingTotalOMR + finalTaxOMR + finalCustomsOMR - paymentSvc));
 
-                $('#resShippingTotal').text(fmt(shippingTotalOMR + finalTaxOMR + finalCustomsOMR - paymentSvc));
+                      $('#resGrandTotal').text(fmt(grandTotal));
+                      $('#resInitialDue').text(fmt(initialDue));
+                      $('#resArrivalDue').text(fmt(arrivalDue));
+                  }
 
-                $('#resGrandTotal').text(fmt(grandTotal));
-                $('#resInitialDue').text(fmt(initialDue));
-                $('#resArrivalDue').text(fmt(arrivalDue));
-            }
+                  $('.form-control, input[type="radio"]').on('input change', calculateLocal);
+                  $('#selAuction').on('change', calculateLocal);
 
-            $('.form-control, input[type="radio"]').on('input change', calculateLocal);
-            $('#selAuction').on('change', calculateLocal);
-
-            calculateLocal();
-        });
+                  calculateLocal();
+              });
     </script>
 }

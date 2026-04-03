@@ -202,6 +202,9 @@
 
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
 
+<!-- 💡 إضافة التوكن السحري هنا لتشغيل طلبات الحذف بنجاح -->
+@Html.AntiForgeryToken()
+
 <div class="page-header-container">
     <div class="page-header-text">
         <h2><i class="fa-solid fa-users-gear" style="color: var(--primary-gold);"></i> @Localizer["إدارة الموظفين والصلاحيات"]</h2>
@@ -238,18 +241,17 @@
                         </td>
                         <td>
                             <span class="role-badge @(user.Role == "Admin" ? "role-admin" : "role-staff")">
-                                @(user.Role == "Admin" ? "مدير نظام" : "موظف (Staff)")
+                                @(user.Role == "Admin" ? Localizer["مدير نظام"] : Localizer["موظف (Staff)"])
                             </span>
                         </td>
                         <td>
                             @if (user.IsActive)
                             {
-                                <span class="status-active"><i class="fa-solid fa-circle-check"></i> نشط</span>
+                                <span class="status-active"><i class="fa-solid fa-circle-check"></i> @Localizer["نشط"]</span>
                             }
                             else
                             {
-
-                                <span class="status-inactive"><i class="fa-solid fa-circle-xmark"></i> معطل</span>
+                                <span class="status-inactive"><i class="fa-solid fa-circle-xmark"></i> @Localizer["معطل"]</span>
                             }
                         </td>
                         <td>
@@ -260,10 +262,10 @@
                             else
                             {
                                 <div class="perms-box">
-                                    <div class="perm-icon @(user.CanManageCars ? "perm-yes" : "perm-no")" title="السيارات والمخزون"><i class="fa-solid fa-car"></i></div>
-                                    <div class="perm-icon @(user.CanManageCustomers ? "perm-yes" : "perm-no")" title="إدارة العملاء"><i class="fa-solid fa-users"></i></div>
-                                    <div class="perm-icon @(user.CanManageFinance ? "perm-yes" : "perm-no")" title="المالية والمحاسبة"><i class="fa-solid fa-calculator"></i></div>
-                                    <div class="perm-icon @(user.CanManageSettings ? "perm-yes" : "perm-no")" title="الإعدادات"><i class="fa-solid fa-gear"></i></div>
+                                    <div class="perm-icon @(user.CanManageCars ? "perm-yes" : "perm-no")" title="@Localizer["إدارة السيارات"]"><i class="fa-solid fa-car"></i></div>
+                                    <div class="perm-icon @(user.CanManageCustomers ? "perm-yes" : "perm-no")" title="@Localizer["إدارة العملاء"]"><i class="fa-solid fa-users"></i></div>
+                                    <div class="perm-icon @(user.CanManageFinance ? "perm-yes" : "perm-no")" title="@Localizer["إدارة المالية"]"><i class="fa-solid fa-calculator"></i></div>
+                                    <div class="perm-icon @(user.CanManageSettings ? "perm-yes" : "perm-no")" title="@Localizer["إدارة الإعدادات"]"><i class="fa-solid fa-gear"></i></div>
                                 </div>
                             }
                         </td>
@@ -289,33 +291,37 @@
     <script>
         $(document).ready(function () {
             var dir = $('html').attr('dir') === 'rtl';
-            $('#usersTable').DataTable({
-                "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" },
-                "pageLength": 10,
-                "responsive": true
-            });
+
+            var tableOptions = {
+                pageLength: 10,
+                responsive: true
+            };
+            if (dir) {
+                tableOptions.language = { url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" };
+            }
+            $('#usersTable').DataTable(tableOptions);
         });
 
         function confirmDelete(id) {
             Swal.fire({
-                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
-                text: '@Html.Raw(Localizer["لن تتمكن من التراجع، سيتم حذف الموظف من النظام!"])',
+                title: `@Html.Raw(Localizer["هل أنت متأكد؟"])`,
+                text: `@Html.Raw(Localizer["لن تتمكن من التراجع، سيتم حذف الموظف من النظام!"])`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: 'var(--primary-navy)',
-                confirmButtonText: '@Html.Raw(Localizer["نعم، احذفه!"])',
-                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+                confirmButtonText: `@Html.Raw(Localizer["نعم، احذفه!"])`,
+                cancelButtonText: `@Html.Raw(Localizer["إلغاء"])`
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.post('@Url.Action("Delete", "Users")/' + id, {
                         __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
                     }, function (res) {
                         if (res.success) {
-                            Swal.fire({ title: '@Html.Raw(Localizer["تم الحذف!"])', icon: 'success', timer: 1500, showConfirmButton: false })
+                            Swal.fire({ title: `@Html.Raw(Localizer["تم الحذف!"])`, icon: 'success', timer: 1500, showConfirmButton: false })
                             .then(() => location.reload());
                         } else {
-                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+                            Swal.fire(`@Html.Raw(Localizer["خطأ!"])`, res.message, 'error');
                         }
                     });
                 }

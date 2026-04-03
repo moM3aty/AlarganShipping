@@ -171,36 +171,39 @@
         }
 
     @@media (max-width: 768px) {
-        .page-header {
-            flex-direction: column;
-            align-items: stretch;
-            text-align: center;
-        }
+        .page-header
 
-        .page-title {
-            justify-content: center;
-        }
+    {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
 
-        .btn-save-settings {
-            width: 100%;
-            padding: 1rem;
-        }
+    .page-title {
+        justify-content: center;
+    }
 
-        .settings-grid {
-            grid-template-columns: 1fr;
-        }
+    .btn-save-settings {
+        width: 100%;
+        padding: 1rem;
+    }
 
-        .settings-card {
-            padding: 1.5rem;
-        }
+    .settings-grid {
+        grid-template-columns: 1fr;
+    }
 
-        .maintenance-options {
-            grid-template-columns: 1fr;
-        }
+    .settings-card {
+        padding: 1.5rem;
+    }
 
-        .danger-zone {
-            padding: 1.5rem;
-        }
+    .maintenance-options {
+        grid-template-columns: 1fr;
+    }
+
+    .danger-zone {
+        padding: 1.5rem;
+    }
+
     }
 
     /* تنسيق التقرير المخفي للـ PDF */
@@ -247,7 +250,7 @@
         <div class="page-header">
             <div>
                 <h2 class="page-title">@Localizer["إعدادات النظام والقواعد"]</h2>
-                <div style="color: var(--text-muted); font-weight: 600; margin-top: 5px;">@Localizer["إدارة الثوابت المالية ونماذج الطباعة"]</div>
+                <div style="color: var(--text-muted); font-weight: 600; margin-top: 5px;">@Localizer["إدارة الثوابت المالية ونماذج الطباعة والتواصل"]</div>
             </div>
             <button type="submit" class="btn-save-settings" id="btnSave">
                 <i class="fa-solid fa-floppy-disk"></i> @Localizer["حفظ الإعدادات"]
@@ -255,10 +258,38 @@
         </div>
 
         <div class="settings-grid">
-            <!-- كرت أسعار الصرف والتواصل -->
+            <!-- 💡 كرت إعدادات التواصل (محدث) -->
+            <div class="settings-card" style="grid-column: 1 / -1;">
+                <div class="settings-card-header">
+                    <h3 class="settings-card-title">@Localizer["بيانات الشركة وصفحة اتصل بنا"]</h3>
+                    <div style="color: #3b82f6; font-size: 1.5rem;"><i class="fa-solid fa-building"></i></div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["رقم الواتساب للاستفسارات (مع كود الدولة)"]</label>
+                        <input asp-for="InquiryPhoneNumber" type="text" class="form-control" dir="ltr" placeholder="968xxxxxxx" style="font-family: monospace;" />
+                    </div>
+                    <div>
+                        <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["البريد الإلكتروني الرئيسي"]</label>
+                        <input asp-for="MainEmail" type="email" class="form-control" dir="ltr" placeholder="info@alargan.com" />
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                    <div>
+                        <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["مواعيد العمل"]</label>
+                        <input asp-for="WorkingHours" type="text" class="form-control" placeholder="@Localizer["مثال: من الأحد للخميس: 8 ص - 5 م"]" />
+                    </div>
+                    <div>
+                        <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["العنوان الرئيسي للشركة"]</label>
+                        <input asp-for="MainAddress" type="text" class="form-control" placeholder="@Localizer["مثال: سلطنة عمان، مسقط، المعبيلة"]" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- كرت أسعار الصرف -->
             <div class="settings-card">
                 <div class="settings-card-header">
-                    <h3 class="settings-card-title">@Localizer["إعدادات التواصل والصرف"]</h3>
+                    <h3 class="settings-card-title">@Localizer["أسعار الصرف (Exchange Rates)"]</h3>
                     <div style="color: #16a34a; font-size: 1.5rem;"><i class="fa-solid fa-coins"></i></div>
                 </div>
                 <div style="margin-bottom: 1.5rem;">
@@ -266,8 +297,8 @@
                     <input asp-for="UsdExchangeRate" type="number" step="0.001" class="form-control" dir="ltr" style="font-family: monospace;" />
                 </div>
                 <div>
-                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["رقم الواتساب للاستفسارات (مع كود الدولة)"]</label>
-                    <input asp-for="InquiryPhoneNumber" type="text" class="form-control" dir="ltr" placeholder="968xxxxxxx" style="font-family: monospace;" />
+                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["سعر الدرهم الإماراتي (OMR/AED)"]</label>
+                    <input asp-for="AedExchangeRate" type="number" step="0.001" class="form-control" dir="ltr" style="font-family: monospace;" />
                 </div>
             </div>
 
@@ -281,13 +312,17 @@
                     <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["نسبة الجمارك العمانية (%)"]</label>
                     <input asp-for="CustomsPercentage" type="number" step="0.1" class="form-control" dir="ltr" style="font-family: monospace;" />
                 </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["نسبة ضريبة القيمة المضافة VAT (%)"]</label>
+                    <input asp-for="VatPercentage" type="number" step="0.1" class="form-control" dir="ltr" style="font-family: monospace;" />
+                </div>
                 <div>
-                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["عمولة الشركة الافتراضية (OMR/USD)"]</label>
+                    <label class="form-label" style="display:block; margin-bottom:0.5rem; font-weight:800; color: var(--text-muted); font-size: 0.85rem;">@Localizer["عمولة الشركة الافتراضية (OMR)"]</label>
                     <input asp-for="DefaultCommission" type="number" class="form-control" dir="ltr" style="font-family: monospace;" />
                 </div>
             </div>
 
-            <!-- كرت إعدادات الفواتير (الجديد) -->
+            <!-- كرت إعدادات الفواتير -->
             <div class="settings-card" style="grid-column: 1 / -1;">
                 <div class="settings-card-header">
                     <h3 class="settings-card-title">@Localizer["إعدادات الطباعة ونماذج الفواتير"]</h3>
@@ -448,7 +483,7 @@
                         if(res.success) {
                             Swal.fire({
                                 title: "@Html.Raw(Localizer["تم الحفظ!"])",
-                                text: "@Html.Raw(Localizer["تم تحديث الإعدادات ونماذج الفواتير بنجاح."])",
+                                text: "@Html.Raw(Localizer["تم تحديث الإعدادات وبيانات التواصل بنجاح."])",
                                 icon: 'success',
                                 confirmButtonColor: 'var(--primary-gold)'
                             });

@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AlarganShipping.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AlarganShipping.Controllers
 {
+    [Authorize]
     public class DocumentAttachmentsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -22,10 +24,12 @@ namespace AlarganShipping.Controllers
             return View();
         }
 
-        // معالجة رفع الملفات بشكل حقيقي
+        // ========================================================
+        // 💡 تعديل جوهري: استقبال قائمة من الملفات (List<IFormFile>)
+        // ========================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(DocumentAttachment documentAttachment, IFormFile uploadedFile)
+        public async Task<IActionResult> Create(DocumentAttachment documentAttachment, List<IFormFile> uploadedFiles)
         {
             ModelState.Remove("Car");
             ModelState.Remove("Customer");
@@ -33,34 +37,55 @@ namespace AlarganShipping.Controllers
             ModelState.Remove("FileName");
             ModelState.Remove("FilePath");
 
-            if (ModelState.IsValid && uploadedFile != null && uploadedFile.Length > 0)
+            // التأكد من أن الموظف قام بتحديد ملف واحد على الأقل
+            if (ModelState.IsValid && uploadedFiles != null && uploadedFiles.Count > 0)
             {
-                // التأكد من وجود مجلد الرفع
                 var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
 
-                // إنشاء اسم فريد للملف لتجنب التكرار
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(uploadedFile.FileName);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                // 💡 الدوران (Loop) على كل الملفات المرفوعة وحفظها
+                foreach (var file in uploadedFiles)
                 {
-                    await uploadedFile.CopyToAsync(fileStream);
+                    if (file.Length > 0)
+                    {
+                        var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(file.FileName);
+                        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(fileStream);
+                        }
+
+                        // 💡 إنشاء كائن (Object) جديد لكل ملف لكي يتم إضافته في قاعدة البيانات كصف مستقل
+                        var newAttachment = new DocumentAttachment
+                        {
+                            CarId = documentAttachment.CarId,
+                            CustomerId = documentAttachment.CustomerId,
+                            ShipmentId = documentAttachment.ShipmentId,
+                            DocumentType = documentAttachment.DocumentType, // مثلا: "CarImage"
+                            Description = documentAttachment.Description,
+
+                            // بيانات الملف الفعلي
+                            FileName = file.FileName,
+                            FilePath = "/uploads/" + uniqueFileName,
+                            UploadDate = DateTime.Now
+                        };
+
+                        _context.Add(newAttachment);
+                    }
                 }
 
-                documentAttachment.FileName = uploadedFile.FileName;
-                documentAttachment.FilePath = "/uploads/" + uniqueFileName;
-                documentAttachment.UploadDate = DateTime.Now;
-
-                _context.Add(documentAttachment);
+                // حفظ كل الملفات في قاعدة البيانات دفعة واحدة
                 await _context.SaveChangesAsync();
                 return Json(new { success = true });
             }
-            return Json(new { success = false, errors = new[] { "يرجى التأكد من إرفاق الملف." } });
+
+            return Json(new { success = false, errors = new[] { "يرجى التأكد من إرفاق صورة/ملف واحد على الأقل." } });
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)

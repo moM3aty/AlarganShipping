@@ -24,13 +24,12 @@ namespace AlarganShipping.Models
         [Display(Name = "يصرف للسيد / الجهة (المستفيد)")]
         public string BeneficiaryName { get; set; } = string.Empty;
 
-        // اختياري: في حال كان الصرف (إرجاع أموال) لعميل مسجل لدينا
         [Display(Name = "ارتباط بعميل (اختياري)")]
         public int? CustomerId { get; set; }
         public Customer? Customer { get; set; }
 
         [Display(Name = "طريقة الدفع")]
-        public string PaymentMethod { get; set; } = "تحويل بنكي"; // Cash, Bank Transfer, Check
+        public string PaymentMethod { get; set; } = "تحويل بنكي"; 
 
         [Display(Name = "رقم المرجع / الشيك")]
         public string? ReferenceNumber { get; set; }
@@ -40,6 +39,10 @@ namespace AlarganShipping.Models
         public string Description { get; set; } = string.Empty;
 
         [Display(Name = "تصنيف المصروف")]
-        public string Category { get; set; } = "مشتريات سيارات"; // مزادات، شحن، تشغيلية، إرجاع لعميل
+        public string Category { get; set; } = "مشتريات سيارات";
+        [Display(Name = "السيارة المرتبطة")]
+        public int? CarId { get; set; }
+        [ForeignKey("CarId")]
+        public Car? Car { get; set; }
     }
 }

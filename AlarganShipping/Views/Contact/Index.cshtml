@@ -1,27 +1,11 @@
-﻿@using System.Text.Json
-@using Microsoft.EntityFrameworkCore
-@inject AlarganShipping.Models.ApplicationDbContext DbContext
-@inject IWebHostEnvironment Env
+﻿@model IEnumerable<AlarganShipping.Models.User>
+@using AlarganShipping.Controllers
 @{
     ViewData["Title"] = Localizer["اتصل بنا"];
 
-    // جلب رقم التواصل من ملف الإعدادات ديناميكياً لتفعيل أزرار الـ Promo
-    string settingsPath = System.IO.Path.Combine(Env.WebRootPath, "settings.json");
-    string phone = "96800000000"; // قيمة افتراضية في حال عدم وجود الملف
-    if (System.IO.File.Exists(settingsPath))
-    {
-        var json = System.IO.File.ReadAllText(settingsPath);
-        using var doc = JsonDocument.Parse(json);
-        if (doc.RootElement.TryGetProperty("InquiryPhoneNumber", out var phoneProp))
-        {
-            phone = phoneProp.GetString() ?? phone;
-        }
-    }
-
-    // جلب الموظفين الذين لديهم صلاحية الظهور في صفحة اتصل بنا ديناميكياً
-    var contactStaff = DbContext.Users
-        .Where(u => u.ShowOnContactPage && u.IsActive)
-        .ToList();
+    // جلب الإعدادات والفروع التي مررناها من الكنترولر
+    var settings = ViewBag.Settings as SettingsViewModel ?? new SettingsViewModel();
+    var branches = ViewBag.Branches as List<AlarganShipping.Models.Location> ?? new List<AlarganShipping.Models.Location>();
 }
 
 <style>
@@ -78,6 +62,57 @@
             line-height: 1.6;
         }
 
+    /* 💡 الكروت الجديدة الخاصة بالمعلومات الأساسية للشركة */
+    .company-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .info-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+        transition: 0.3s;
+    }
+
+        .info-card:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: var(--primary-gold);
+        }
+
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(184, 147, 90, 0.15);
+        color: var(--primary-gold);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .info-content h3 {
+        font-size: 1.2rem;
+        font-weight: 900;
+        margin: 0 0 0.5rem 0;
+        color: white;
+    }
+
+    .info-content p {
+        color: #94a3b8;
+        font-size: 0.95rem;
+        margin: 0;
+        line-height: 1.5;
+    }
+
     /* البطاقة الذهبية الكبيرة */
     .promo-card {
         background: linear-gradient(135deg, var(--primary-gold) 0%, var(--secondary-gold) 100%);
@@ -86,7 +121,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 3rem;
+        margin-bottom: 4rem;
         box-shadow: 0 20px 40px rgba(184, 147, 90, 0.2);
         position: relative;
         overflow: hidden;
@@ -167,15 +202,30 @@
             background: rgba(255,255,255,0.1);
         }
 
-    /* بطاقات الموظفين */
-    .depts-grid {
+    /* عنوان الأقسام */
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: white;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .section-title i {
+            color: var(--primary-gold);
+        }
+
+    /* بطاقات الفروع / الموظفين */
+    .cards-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 1.5rem;
         margin-bottom: 4rem;
     }
 
-    .dept-card {
+    .dept-card, .branch-card {
         background: white;
         border-radius: 1.5rem;
         padding: 2.5rem;
@@ -185,7 +235,7 @@
         transition: 0.3s;
     }
 
-        .dept-card:hover {
+        .dept-card:hover, .branch-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
@@ -203,7 +253,7 @@
         margin: 0 auto 1.5rem;
     }
 
-    .dept-card h3 {
+    .dept-card h3, .branch-card h3 {
         font-size: 1.4rem;
         font-weight: 900;
         margin-bottom: 0.5rem;
@@ -213,6 +263,13 @@
         color: var(--primary-gold);
         font-weight: 800;
         font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+
+    .branch-desc {
+        color: var(--text-muted);
+        font-size: 0.95rem;
         margin-bottom: 1.5rem;
         display: block;
     }
@@ -247,69 +304,76 @@
         }
 
     /* ========================================================
-           تعديلات الموبايل (الميديا كويري)
-           ======================================================== */
+               تعديلات الموبايل (الميديا كويري)
+               ======================================================== */
     @@media (max-width: 768px) {
-        .contact-page {
-            padding: 1rem;
+        .contact-page
+
+    {
+        padding: 1rem;
+    }
+
+    .contact-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .contact-header p {
+        font-size: 1rem;
+    }
+
+    .company-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .promo-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem 1.5rem;
+        gap: 1.5rem;
+    }
+
+    .promo-content {
+        margin: 0;
+        text-align: center;
+    }
+
+        .promo-content h2 {
+            font-size: 1.5rem;
         }
 
-        .contact-header h1 {
-            font-size: 1.8rem;
-        }
-
-        .contact-header p {
+        .promo-content p {
             font-size: 1rem;
         }
 
-        .promo-card {
-            flex-direction: column;
-            text-align: center;
-            padding: 2rem 1.5rem;
-            gap: 1.5rem;
-        }
+    .promo-actions {
+        flex-direction: column;
+        width: 100%;
+    }
 
-        .promo-content {
-            margin: 0;
-            text-align: center;
-        }
+    .btn-promo-solid, .btn-promo-outline {
+        width: 100%;
+        padding: 1rem;
+        font-size: 0.95rem;
+    }
 
-            .promo-content h2 {
-                font-size: 1.5rem;
-            }
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
 
-            .promo-content p {
-                font-size: 1rem;
-            }
+    .dept-card, .branch-card {
+        padding: 2rem 1.5rem;
+    }
 
-        .promo-actions {
-            flex-direction: column;
-            width: 100%;
-        }
+    .phone-box {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
 
-        .btn-promo-solid, .btn-promo-outline {
-            width: 100%;
-            padding: 1rem;
-            font-size: 0.95rem;
-        }
+    .phone-actions {
+        margin: 0;
+    }
 
-        .depts-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .dept-card {
-            padding: 2rem 1.5rem;
-        }
-
-        .phone-box {
-            flex-direction: column;
-            gap: 1rem;
-            text-align: center;
-        }
-
-        .phone-actions {
-            margin: 0;
-        }
     }
 </style>
 
@@ -321,28 +385,93 @@
         <p>@Localizer["نحن هنا لخدمتك. تواصل مباشرة مع القسم المختص للحصول على استجابة سريعة."]</p>
     </div>
 
-    <!-- بطاقة الترويج لحسابات المزادات -->
+    <!-- 💡 بطاقات بيانات الشركة الأساسية من الإعدادات -->
+    <div class="company-info-grid">
+        <div class="info-card">
+            <div class="info-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+            <div class="info-content">
+                <h3>@Localizer["المقر الرئيسي"]</h3>
+                <p>@settings.MainAddress</p>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-icon"><i class="fa-solid fa-clock"></i></div>
+            <div class="info-content">
+                <h3>@Localizer["مواعيد العمل"]</h3>
+                <p>@settings.WorkingHours</p>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-icon"><i class="fa-solid fa-envelope"></i></div>
+            <div class="info-content">
+                <h3>@Localizer["البريد الإلكتروني"]</h3>
+                <p dir="ltr" style="text-align: right;">@settings.MainEmail</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- بطاقة الترويج للواتساب الرئيسي -->
     <div class="promo-card">
-        <div class="promo-icon"><i class="fa-solid fa-gavel"></i></div>
+        <div class="promo-icon"><i class="fa-brands fa-whatsapp"></i></div>
         <div class="promo-content">
-            <h2>@Localizer["هل ترغب في فتح حساب مزاد؟"]</h2>
-            <p>@Localizer["فريقنا مستعد لتزويدك بكافة الأدوات اللازمة لبدء استيراد سياراتك بأمان."]</p>
+            <h2>@Localizer["خدمة العملاء والاستفسارات السريعة"]</h2>
+            <p>@Localizer["فريقنا مستعد لتزويدك بكافة المعلومات وتتبع سياراتك عبر الواتساب المباشر للشركة."]</p>
             <div class="promo-actions">
-                <a href="https://wa.me/@(phone)?text=@Html.Raw(Uri.EscapeDataString("أهلاً شركة الأرجان، أرغب في طلب فتح حساب مزاد جديد لبدء المزايدة."))" target="_blank" class="btn-promo-solid">
-                    <i class="fa-brands fa-whatsapp" style="margin-inline-end: 8px;"></i> @Localizer["اطلب حسابك الآن عبر واتساب"]
+                <a href="https://wa.me/@(settings.InquiryPhoneNumber.Replace("+", ""))?text=@Html.Raw(Uri.EscapeDataString("أهلاً شركة الأرجان، لدي استفسار بخصوص استيراد سيارة."))" target="_blank" class="btn-promo-solid">
+                    <i class="fa-brands fa-whatsapp" style="margin-inline-end: 8px;"></i> @Localizer["مراسلة واتساب الآن"]
                 </a>
-                <a href="https://wa.me/@(phone)?text=@Html.Raw(Uri.EscapeDataString("أهلاً شركة الأرجان، أود التواصل مع قسم المزادات للاستفسار عن آلية العمل."))" target="_blank" class="btn-promo-outline">
-                    @Localizer["تواصل مع قسم المزادات"]
+                <a href="tel:@settings.InquiryPhoneNumber" class="btn-promo-outline">
+                    <i class="fa-solid fa-phone" style="margin-inline-end: 8px;"></i> @Localizer["اتصال مباشر"]
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- شبكة الموظفين المسجلين في صفحة اتصل بنا -->
-    <div class="depts-grid">
-        @if (contactStaff.Any())
+    <!-- 💡 عرض الفروع (Locations) الموجودة في قاعدة البيانات -->
+    @if (branches.Any())
+    {
+        <h2 class="section-title"><i class="fa-solid fa-building-flag"></i> @Localizer["فروعنا ومواقعنا"]</h2>
+        <div class="cards-grid">
+            @foreach (var branch in branches)
+            {
+                <div class="branch-card">
+                    <div class="dept-icon">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                    <h3>@branch.Name</h3>
+                    <span class="branch-desc"> @branch.Country</span>
+
+                    @if (!string.IsNullOrEmpty(branch.ContactPhone))
+                    {
+                        <div class="phone-box">
+                            <div class="phone-number" dir="ltr">@branch.ContactPhone</div>
+                            <div class="phone-actions">
+                                <a href="https://wa.me/@(branch.ContactPhone.Replace("+", ""))" target="_blank" title="WhatsApp">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </a>
+                                <a href="tel:@branch.ContactPhone" title="Call">
+                                    <i class="fa-solid fa-phone"></i>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="color: #cbd5e1; font-weight: bold; margin-top: 15px;">@Localizer["الفرع قيد التجهيز"]</div>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+    <!-- شبكة الموظفين المسجلين للدعم -->
+    <h2 class="section-title"><i class="fa-solid fa-users-gear"></i> @Localizer["فريق الدعم المختص"]</h2>
+    <div class="cards-grid" style="margin-bottom: 2rem;">
+        @if (Model != null && Model.Any())
         {
-            foreach (var staff in contactStaff)
+            foreach (var staff in Model)
             {
                 <div class="dept-card">
                     <div class="dept-icon">
@@ -369,7 +498,7 @@
         {
             <div style="grid-column: 1/-1; text-align: center; padding: 4rem; opacity: 0.5;">
                 <i class="fa-solid fa-users-slash" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-                <h3>@Localizer["لا توجد جهات اتصال مسجلة حالياً."]</h3>
+                <h3>@Localizer["لا توجد جهات اتصال لموظفين مسجلة حالياً."]</h3>
             </div>
         }
     </div>

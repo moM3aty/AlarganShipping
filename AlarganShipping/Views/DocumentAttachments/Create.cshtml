@@ -240,7 +240,6 @@
                 <div class="form-group">
                     <label asp-for="DocumentType" class="form-label">@Localizer["نوع المستند / الإيصال"]</label>
                     <select asp-for="DocumentType" class="form-control" required>
-                        <!-- التعديل هنا: إضافة الأنواع المطلوبة -->
                         <option value="AuctionInvoice">@Localizer["فاتورة المزاد (Auction Invoice)"]</option>
                         <option value="BankTransfer">@Localizer["صورة تحويل بنكي / إيصال دفع"]</option>
                         <option value="CarImage">@Localizer["صورة للسيارة (Car Image)"]</option>
@@ -257,8 +256,10 @@
                     <div class="file-upload-wrapper" id="dropZone">
                         <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
                         <div class="upload-text">@Localizer["اضغط هنا لاختيار الملف أو اسحبه وأفلته"]</div>
-                        <div class="upload-hint">@Localizer["يدعم الملفات بصيغة JPG, PNG, PDF بحد أقصى 5 ميجابايت."]</div>
-                        <input type="file" name="uploadedFile" class="file-input" accept="image/*,.pdf" required id="fileInput" />
+                        <div class="upload-hint">@Localizer["يمكنك تحديد أكثر من ملف. يدعم (JPG, PNG, PDF)."]</div>
+
+                        <input type="file" name="uploadedFiles" class="file-input" accept="image/*,.pdf" multiple required id="fileInput" />
+
                         <div class="file-name-display" id="fileNameDisplay"><i class="fa-solid fa-check-circle"></i> <span></span></div>
                     </div>
                 </div>
@@ -266,7 +267,7 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn-submit" id="btnSubmit">
-                    <i class="fa-solid fa-upload"></i> @Localizer["رفع وحفظ المستند"]
+                    <i class="fa-solid fa-upload"></i> @Localizer["رفع وحفظ المستندات"]
                 </button>
             </div>
         </form>
@@ -283,10 +284,12 @@
             var dir = $('html').attr('dir');
             $('.select2-search').select2({ dir: dir, width: '100%' });
 
+            // التعديل هنا: قراءة عدد الملفات المحددة
             $('#fileInput').on('change', function() {
-                var fileName = $(this).val().split('\\').pop();
-                if(fileName) {
-                    $('#fileNameDisplay span').text(fileName);
+                var filesCount = $(this)[0].files.length;
+                if(filesCount > 0) {
+                    var displayTxt = filesCount === 1 ? $(this).val().split('\\').pop() : "تم تحديد " + filesCount + " ملفات";
+                    $('#fileNameDisplay span').text(displayTxt);
                     $('#fileNameDisplay').show();
                     $('.upload-text, .upload-hint').hide();
                 } else {
@@ -318,7 +321,7 @@
                         });
                     },
                     error: function () {
-                        Swal.fire({ title: '@Localizer["خطأ!"]', text: '@Localizer["حدث خطأ أثناء رفع الملف."]', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
+                        Swal.fire({ title: '@Localizer["خطأ!"]', text: '@Localizer["حدث خطأ أثناء رفع الملفات."]', icon: 'error', confirmButtonColor: 'var(--primary-navy)' });
                         btn.html(originalText).prop('disabled', false);
                     }
                 });

@@ -4,6 +4,7 @@ using AlarganShipping.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlarganShipping.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260402215204_AddDescriptionToDocs")]
+    partial class AddDescriptionToDocs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -631,9 +634,6 @@ namespace AlarganShipping.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CarId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -660,8 +660,6 @@ namespace AlarganShipping.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CarId");
 
                     b.HasIndex("CustomerId");
 
@@ -1149,15 +1147,9 @@ namespace AlarganShipping.Migrations
 
             modelBuilder.Entity("AlarganShipping.Models.PaymentVoucher", b =>
                 {
-                    b.HasOne("AlarganShipping.Models.Car", "Car")
-                        .WithMany()
-                        .HasForeignKey("CarId");
-
                     b.HasOne("AlarganShipping.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId");
-
-                    b.Navigation("Car");
 
                     b.Navigation("Customer");
                 });

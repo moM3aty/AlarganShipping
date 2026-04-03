@@ -22,8 +22,9 @@ namespace AlarganShipping.Controllers
                 .ToListAsync();
 
             // 💡 تصحيح الأرصدة تلقائياً (Self-Healing) لجميع العملاء لمنع أي تضارب مالي
+            // التعديل: تمت إضافة "تعويض للعميل عن أضرار" لخصمها من ديون العميل
             var refunds = await _context.PaymentVouchers
-                .Where(v => v.Category == "إرجاع أموال لعميل" && v.CustomerId != null)
+                .Where(v => (v.Category == "إرجاع أموال لعميل" || v.Category == "تعويض للعميل عن أضرار") && v.CustomerId != null)
                 .GroupBy(v => v.CustomerId)
                 .ToDictionaryAsync(g => g.Key, g => g.Sum(v => v.Amount));
 
@@ -219,8 +220,9 @@ namespace AlarganShipping.Controllers
                 decimal totalPaidInAdvance = customer.Invoices?.Sum(i => i.AmountPaid) ?? 0;
                 decimal totalReceipts = customer.PaymentReceipts?.Sum(r => r.TotalDeducted) ?? 0;
 
+                // التعديل: تمت إضافة التعويضات لتُطرح من مبالغ العميل
                 decimal totalRefunds = await _context.PaymentVouchers
-                    .Where(v => v.CustomerId == customerId && v.Category == "إرجاع أموال لعميل")
+                    .Where(v => v.CustomerId == customerId && (v.Category == "إرجاع أموال لعميل" || v.Category == "تعويض للعميل عن أضرار"))
                     .SumAsync(v => (decimal?)v.Amount) ?? 0;
 
                 decimal calculatedPaid = totalPaidInAdvance + totalReceipts - totalRefunds;

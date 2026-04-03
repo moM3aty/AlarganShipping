@@ -186,13 +186,14 @@
 
                 <div class="form-group form-group-full">
                     <label asp-for="DefaultAuctionFee" class="form-label">@Localizer["رسوم المزاد الافتراضية ($)"]</label>
-                    <input asp-for="DefaultAuctionFee" type="number" step="0.01" class="form-control" style="font-family: monospace; color: #16a34a;" />
+                    <!-- 💡 تم تصحيح مشكلة تحويل الفواصل في الأرقام العشرية (Invariant) -->
+                    <input asp-for="DefaultAuctionFee" type="number" step="0.01" value="@Model.DefaultAuctionFee.ToString(System.Globalization.CultureInfo.InvariantCulture)" class="form-control" style="font-family: monospace; color: #16a34a;" />
                     <span asp-validation-for="DefaultAuctionFee" style="color: #ef4444; font-size: 0.85rem; margin-top: 5px;"></span>
                 </div>
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn-submit" onclick="this.innerHTML='<i class=\'fa-solid fa-spinner fa-spin\'></i> جاري التحديث...';">
+                <button type="submit" class="btn-submit" onclick="this.innerHTML='<i class=\'fa-solid fa-spinner fa-spin\'></i> @Localizer["جاري التحديث..."]';">
                     <i class="fa-solid fa-save"></i> @Localizer["حفظ التعديلات"]
                 </button>
             </div>

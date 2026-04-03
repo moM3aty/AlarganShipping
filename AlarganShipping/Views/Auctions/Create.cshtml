@@ -173,13 +173,14 @@
 
                 <div class="form-group">
                     <label asp-for="BuyerNumber" class="form-label">@Localizer["رقم المشتري (Buyer Number)"]</label>
-                    <input asp-for="BuyerNumber" class="form-control" dir="ltr" placeholder="اختياري..." />
+                    <!-- 💡 تم إصلاح الـ Placeholder هنا -->
+                    <input asp-for="BuyerNumber" class="form-control" dir="ltr" placeholder="@Localizer["اختياري..."]" />
                     <span asp-validation-for="BuyerNumber" style="color: #ef4444; font-size: 0.85rem; margin-top: 5px;"></span>
                 </div>
 
                 <div class="form-group">
                     <label asp-for="Location" class="form-label">@Localizer["المدينة / الموقع"]</label>
-                    <input asp-for="Location" class="form-control" placeholder="اختياري..." />
+                    <input asp-for="Location" class="form-control" placeholder="@Localizer["اختياري..."]" />
                     <span asp-validation-for="Location" style="color: #ef4444; font-size: 0.85rem; margin-top: 5px;"></span>
                 </div>
 
@@ -191,7 +192,8 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn-submit" onclick="this.innerHTML='<i class=\'fa-solid fa-spinner fa-spin\'></i> جاري الحفظ...';">
+                <!-- 💡 تم إصلاح الترجمة عند النقر -->
+                <button type="submit" class="btn-submit" onclick="this.innerHTML='<i class=\'fa-solid fa-spinner fa-spin\'></i> @Localizer["جاري الحفظ..."]';">
                     <i class="fa-solid fa-save"></i> @Localizer["حفظ بيانات المزاد"]
                 </button>
             </div>

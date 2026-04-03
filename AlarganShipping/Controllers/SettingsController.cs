@@ -6,6 +6,9 @@ using System.IO;
 
 namespace AlarganShipping.Controllers
 {
+    // ==========================================
+    // 1. Settings Controller
+    // ==========================================
     public class SettingsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -79,19 +82,24 @@ namespace AlarganShipping.Controllers
         }
     }
 
-    // تم إضافة الحقول الجديدة الخاصة بنماذج الفواتير هنا
+    // الموديل الخاص بالإعدادات مضاف إليه الحقول الجديدة
     public class SettingsViewModel
     {
-        public decimal UsdExchangeRate { get; set; } = 0.385m;
+        public decimal UsdExchangeRate { get; set; } = 0.386m;
         public decimal AedExchangeRate { get; set; } = 0.105m;
         public decimal CustomsPercentage { get; set; } = 5;
         public decimal VatPercentage { get; set; } = 5;
         public decimal DefaultCommission { get; set; } = 150;
+
+        // --- 💡 البيانات الجديدة الخاصة بصفحة التواصل ---
         public string InquiryPhoneNumber { get; set; } = "96890000000";
+        public string MainEmail { get; set; } = "info@alarganshipping.com";
+        public string MainAddress { get; set; } = "سلطنة عمان - مسقط - المعبيلة الصناعية";
+        public string WorkingHours { get; set; } = "من الأحد للخميس: 8:00 صباحاً - 5:00 مساءً";
 
         // إعدادات الفواتير والطباعة (Invoice Settings)
         public string InvoiceTemplate { get; set; } = "Modern"; // Classic, Modern, Simple
-        public string InvoiceHeaderColor { get; set; } = "#1e293b"; // لون الترويسة الافتراضي (كحلي)
+        public string InvoiceHeaderColor { get; set; } = "#1e293b";
         public string VatNumber { get; set; } = "00016800820";
         public string CrNumber { get; set; } = "0001425763";
         public string InvoiceFooterText { get; set; } = "البضاعة المباعة لا ترد ولا تستبدل إلا حسب الشروط والأحكام. شكراً لثقتكم بنا.";

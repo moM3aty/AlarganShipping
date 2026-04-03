@@ -12,15 +12,18 @@ namespace AlarganShipping.Models
 
         [Required]
         [Display(Name = "نوع المستند")]
-        public string DocumentType { get; set; } // CarImage, Title, BillOfLading, CustomerID, InvoiceCopy
+        public string DocumentType { get; set; } = string.Empty;
+
+        [Display(Name = "وصف المستند")]
+        public string? Description { get; set; } // الحقل الجديد الذي تم إضافته
 
         [Required]
         [Display(Name = "اسم الملف")]
-        public string FileName { get; set; }
+        public string FileName { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "مسار الملف (URL/Path)")]
-        public string FilePath { get; set; }
+        public string FilePath { get; set; } = string.Empty;
 
         [Display(Name = "تاريخ الرفع")]
         public DateTime UploadDate { get; set; } = DateTime.Now;
@@ -28,14 +31,14 @@ namespace AlarganShipping.Models
         // مفاتيح أجنبية مرنة: المستند قد يخص سيارة، أو عميل، أو شحنة
         public int? CarId { get; set; }
         [ForeignKey("CarId")]
-        public virtual Car Car { get; set; }
+        public virtual Car? Car { get; set; }
 
         public int? CustomerId { get; set; }
         [ForeignKey("CustomerId")]
-        public virtual Customer Customer { get; set; }
+        public virtual Customer? Customer { get; set; }
 
         public int? ShipmentId { get; set; }
         [ForeignKey("ShipmentId")]
-        public virtual Shipment Shipment { get; set; }
+        public virtual Shipment? Shipment { get; set; }
     }
 }

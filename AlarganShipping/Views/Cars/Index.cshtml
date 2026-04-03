@@ -157,18 +157,15 @@
         }
 
     @@keyframes dropFade {
-        from
+        from {
+            opacity: 0;
+            transform: translateY(-5px);
+        }
 
-    {
-        opacity: 0;
-        transform: translateY(-5px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .action-dropdown-item {
@@ -518,51 +515,48 @@
     }
 
     @@media (max-width: 768px) {
-        .page-header-container
+        .page-header-container {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
 
-    {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1.5rem;
-        padding: 1.5rem;
-    }
+        .header-actions {
+            flex-direction: column;
+            width: 100%;
+            gap: 1rem;
+        }
 
-    .header-actions {
-        flex-direction: column;
-        width: 100%;
-        gap: 1rem;
-    }
+        .view-toggle-wrapper {
+            width: 100%;
+            display: flex;
+        }
 
-    .view-toggle-wrapper {
-        width: 100%;
-        display: flex;
-    }
+        .view-toggle-btn {
+            flex: 1;
+        }
 
-    .view-toggle-btn {
-        flex: 1;
-    }
+        .btn-add {
+            width: 100%;
+            justify-content: center;
+        }
 
-    .btn-add {
-        width: 100%;
-        justify-content: center;
-    }
+        .cars-grid-modern {
+            grid-template-columns: 1fr;
+        }
 
-    .cars-grid-modern {
-        grid-template-columns: 1fr;
-    }
+        .fin-summary-grid {
+            grid-template-columns: 1fr;
+        }
 
-    .fin-summary-grid {
-        grid-template-columns: 1fr;
-    }
+        .car-details-area {
+            padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+        }
 
-    .car-details-area {
-        padding: 2.5rem 1.5rem 1.5rem 1.5rem;
-    }
-
-    .data-card {
-        padding: 1.5rem;
-    }
-
+        .data-card {
+            padding: 1.5rem;
+        }
     }
 </style>
 
@@ -718,7 +712,7 @@
                             <td style="text-align: center;">
                                 <div class="action-dropdown">
                                     <button type="button" class="action-dropdown-btn" onclick="toggleDropdown(event, '@car.Id')">
-                                        @Localizer["الإجراءات"] <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem;"></i>
+                                        @Localizer["إجراءات"] <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; margin-inline-start: 8px; width: auto;"></i>
                                     </button>
                                     <div class="action-dropdown-menu" id="dropdown-@car.Id">
                                         <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="action-dropdown-item"><i class="fa-regular fa-file-lines"></i> @Localizer["تفاصيل السيارة"]</a>
@@ -756,7 +750,6 @@
 </div>
 
 @section Scripts {
-    <!-- إضافة مكتبة SweetAlert2 لمنع خطأ Swal is not defined -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
 
     <script>
@@ -812,22 +805,21 @@
             }
         }
 
-        // دالة النسخ الذكية مع إدخال رقم الشاصي الجديد
         function duplicateCar(id) {
             Swal.fire({
-                title: '@Html.Raw(Localizer["نسخ بيانات السيارة"])',
-                text: '@Html.Raw(Localizer["أدخل رقم الشاصي (VIN) للسيارة الجديدة (اختياري):"])',
+                title: `@Html.Raw(Localizer["نسخ بيانات السيارة"])`,
+                text: `@Html.Raw(Localizer["أدخل رقم الشاصي (VIN) للسيارة الجديدة (اختياري):"])`,
                 input: 'text',
-                inputPlaceholder: '@Html.Raw(Localizer["اتركه فارغاً للتوليد التلقائي..."])',
+                inputPlaceholder: `@Html.Raw(Localizer["اتركه فارغاً للتوليد التلقائي..."])`,
                 inputAttributes: { autocapitalize: 'off', dir: 'ltr' },
                 showCancelButton: true,
-                confirmButtonText: '<i class="fa-solid fa-copy"></i> @Html.Raw(Localizer["نسخ وحفظ"])',
-                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])',
+                confirmButtonText: `<i class="fa-solid fa-copy"></i> @Html.Raw(Localizer["نسخ وحفظ"])`,
+                cancelButtonText: `@Html.Raw(Localizer["إلغاء"])`,
                 confirmButtonColor: 'var(--primary-gold)',
                 cancelButtonColor: 'var(--primary-navy)'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({ title: '@Html.Raw(Localizer["جاري النسخ..."])', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                    Swal.fire({ title: `@Html.Raw(Localizer["جاري النسخ..."])`, allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
 
                     $.post('@Url.Action("DuplicateSale", "Cars")', {
                         id: id,
@@ -835,13 +827,13 @@
                         __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
                     }, function(res) {
                         if(res.success) {
-                            Swal.fire({ title: '@Html.Raw(Localizer["تم النسخ!"])', text: res.message, icon: 'success', confirmButtonColor: 'var(--primary-gold)' })
+                            Swal.fire({ title: `@Html.Raw(Localizer["تم النسخ!"])`, text: res.message, icon: 'success', confirmButtonColor: 'var(--primary-gold)' })
                             .then(() => location.reload());
                         } else {
-                            Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+                            Swal.fire(`@Html.Raw(Localizer["خطأ!"])`, res.message, 'error');
                         }
                     }).fail(function() {
-                        Swal.fire('@Html.Raw(Localizer["خطأ في السيرفر!"])', '', 'error');
+                        Swal.fire(`@Html.Raw(Localizer["خطأ في السيرفر!"])`, '', 'error');
                     });
                 }
             });
@@ -849,18 +841,18 @@
 
         function emailSale(id) {
             Swal.fire({
-                title: '@Html.Raw(Localizer["إرسال الفاتورة"])',
+                title: `@Html.Raw(Localizer["إرسال الفاتورة"])`,
                 input: 'email',
-                inputPlaceholder: '@Html.Raw(Localizer["البريد الإلكتروني..."])',
+                inputPlaceholder: `@Html.Raw(Localizer["البريد الإلكتروني..."])`,
                 showCancelButton: true,
-                confirmButtonText: '@Html.Raw(Localizer["إرسال"])',
+                confirmButtonText: `@Html.Raw(Localizer["إرسال"])`,
                 confirmButtonColor: 'var(--primary-navy)'
             }).then((result) => {
                 if (result.isConfirmed && result.value) {
-                    Swal.fire({ title: '@Html.Raw(Localizer["جاري الإرسال..."])', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                    Swal.fire({ title: `@Html.Raw(Localizer["جاري الإرسال..."])`, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                     $.post('@Url.Action("EmailSale", "Cars")', { id: id, email: result.value, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
-                        if(res.success) Swal.fire('@Html.Raw(Localizer["نجاح"])', res.message, 'success');
-                        else Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+                        if(res.success) Swal.fire(`@Html.Raw(Localizer["نجاح"])`, res.message, 'success');
+                        else Swal.fire(`@Html.Raw(Localizer["خطأ!"])`, res.message, 'error');
                     });
                 }
             });
@@ -868,18 +860,18 @@
 
         function returnSale(id) {
             Swal.fire({
-                title: '@Html.Raw(Localizer["مرتجع بيع"])',
-                text: '@Html.Raw(Localizer["هل أنت متأكد من عمل إرجاع وتصفير الفاتورة؟"])',
+                title: `@Html.Raw(Localizer["مرتجع بيع"])`,
+                text: `@Html.Raw(Localizer["هل أنت متأكد من عمل إرجاع وتصفير الفاتورة؟"])`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: '@Html.Raw(Localizer["تأكيد الإرجاع"])',
+                confirmButtonText: `@Html.Raw(Localizer["تأكيد الإرجاع"])`,
                 confirmButtonColor: '#ef4444'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({ title: '@Html.Raw(Localizer["جاري التنفيذ..."])', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                    Swal.fire({ title: `@Html.Raw(Localizer["جاري التنفيذ..."])`, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                     $.post('@Url.Action("ReturnSale", "Cars")/' + id, { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() }, function(res) {
-                        if(res.success) Swal.fire('@Html.Raw(Localizer["نجاح"])', '@Html.Raw(Localizer["تم تسجيل المرتجع بنجاح."])', 'success').then(() => location.reload());
-                        else Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+                        if(res.success) Swal.fire(`@Html.Raw(Localizer["نجاح"])`, `@Html.Raw(Localizer["تم تسجيل المرتجع بنجاح."])`, 'success').then(() => location.reload());
+                        else Swal.fire(`@Html.Raw(Localizer["خطأ!"])`, res.message, 'error');
                     });
                 }
             });
@@ -887,14 +879,14 @@
 
         function confirmDelete(id) {
             Swal.fire({
-                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
-                text: '@Html.Raw(Localizer["لن تتمكن من التراجع عن عملية الحذف!"])',
+                title: `@Html.Raw(Localizer["هل أنت متأكد؟"])`,
+                text: `@Html.Raw(Localizer["لن تتمكن من التراجع عن عملية الحذف!"])`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: 'var(--primary-navy)',
-                confirmButtonText: '@Html.Raw(Localizer["نعم، احذفها!"])',
-                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+                confirmButtonText: `@Html.Raw(Localizer["نعم، احذفها!"])`,
+                cancelButtonText: `@Html.Raw(Localizer["إلغاء"])`
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -903,9 +895,9 @@
                         data: { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
                         success: function (res) {
                             if (res.success) {
-                                Swal.fire({ title: '@Html.Raw(Localizer["تم الحذف!"])', icon: 'success', timer: 1500, showConfirmButton: false }).then(() => location.reload());
+                                Swal.fire({ title: `@Html.Raw(Localizer["تم الحذف!"])`, icon: 'success', timer: 1500, showConfirmButton: false }).then(() => location.reload());
                             } else {
-                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message || '@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])', 'error');
+                                Swal.fire(`@Html.Raw(Localizer["خطأ!"])`, res.message || `@Html.Raw(Localizer["حدث خطأ أثناء الحذف."])`, 'error');
                             }
                         }
                     });
@@ -915,11 +907,19 @@
 
         $(document).ready(function () {
             var dir = $('html').attr('dir') === 'rtl';
-            $('#carsDataTable').DataTable({
-                "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" },
-                "pageLength": 10,
-                "responsive": true
-            });
+
+            // 💡 التصحيح هنا: نمرر ملف الترجمة في حالة العربي فقط، ونسيبه افتراضي لو إنجليزي
+            var tableOptions = {
+                pageLength: 10,
+                responsive: true
+            };
+
+            if (dir) {
+                tableOptions.language = { url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" };
+            }
+
+            $('#carsDataTable').DataTable(tableOptions);
+
             switchView(localStorage.getItem('preferredCarView') || 'grid');
         });
     </script>

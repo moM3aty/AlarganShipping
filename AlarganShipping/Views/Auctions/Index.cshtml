@@ -151,6 +151,9 @@
     }
 </style>
 
+<!-- 💡 إضافة التوكن لكي تنجح عملية الحذف بالـ AJAX -->
+@Html.AntiForgeryToken()
+
 <div class="page-header-container">
     <div class="page-header-text">
         <h2><i class="fa-solid fa-gavel" style="color: var(--primary-gold);"></i> @Localizer["المزادات والمعارض"]</h2>
@@ -187,7 +190,7 @@
                             <td><span class="auction-badge" dir="ltr">@(item.BuyerNumber ?? "-")</span></td>
                             <td><i class="fa-solid fa-location-dot" style="color: var(--text-muted);"></i> @(item.Location ?? "-")</td>
                             <td style="font-family: monospace; font-weight: 900; color: #16a34a;">
-                                $@item.DefaultAuctionFee.ToString("N2")
+                                $@item.DefaultAuctionFee.ToString("N2", System.Globalization.CultureInfo.InvariantCulture)
                             </td>
                             <td style="text-align: center;">
                                 <div style="display: flex; gap: 8px; justify-content: center;">
@@ -212,23 +215,28 @@
     <script>
         $(document).ready(function () {
             var dir = $('html').attr('dir') === 'rtl';
-            $('#auctionsTable').DataTable({
-                "language": { "url": dir ? "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" : "" },
-                "pageLength": 10,
-                "responsive": true
-            });
+
+            // 💡 إصلاح تحميل لغة الجداول
+            var tableOptions = {
+                pageLength: 10,
+                responsive: true
+            };
+            if (dir) {
+                tableOptions.language = { url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json" };
+            }
+            $('#auctionsTable').DataTable(tableOptions);
         });
 
         function confirmDelete(id) {
             Swal.fire({
-                title: '@Html.Raw(Localizer["هل أنت متأكد؟"])',
-                text: '@Html.Raw(Localizer["لن تتمكن من استرجاع بيانات هذا المزاد!"])',
+                title: `@Html.Raw(Localizer["هل أنت متأكد؟"])`,
+                text: `@Html.Raw(Localizer["لن تتمكن من استرجاع بيانات هذا المزاد!"])`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: 'var(--primary-navy)',
-                confirmButtonText: '@Html.Raw(Localizer["نعم، احذفه!"])',
-                cancelButtonText: '@Html.Raw(Localizer["إلغاء"])'
+                confirmButtonText: `@Html.Raw(Localizer["نعم، احذفه!"])`,
+                cancelButtonText: `@Html.Raw(Localizer["إلغاء"])`
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -240,13 +248,13 @@
                         success: function (res) {
                             if (res.success) {
                                 Swal.fire({
-                                    title: '@Html.Raw(Localizer["تم الحذف!"])',
+                                    title: `@Html.Raw(Localizer["تم الحذف!"])`,
                                     icon: 'success',
                                     timer: 1500,
                                     showConfirmButton: false
                                 }).then(() => location.reload());
                             } else {
-                                Swal.fire('@Html.Raw(Localizer["خطأ!"])', res.message, 'error');
+                                Swal.fire(`@Html.Raw(Localizer["خطأ!"])`, res.message, 'error');
                             }
                         }
                     });

@@ -222,15 +222,26 @@
                 <label asp-for="Category" class="form-label">@Localizer["تصنيف المصروف"]</label>
                 <select asp-for="Category" class="form-control select2">
                     <option value="مشتريات سيارات (مزاد)">@Localizer["مشتريات سيارات (مزاد)"]</option>
-                    <option value="أجور نقل وشحن">@Localizer["أجور نقل وشحن"]</option>
+                    <option value="أجور نقل وشحن">@Localizer["أجور نقل وشحن (خارجي)"]</option>
                     <option value="تخليص جمركي">@Localizer["تخليص جمركي وضرائب"]</option>
+                    <option value="نقل داخلي عمان">@Localizer["نقل داخلي عمان"]</option>
+                    <option value="جمارك عمان">@Localizer["جمارك عمان"]</option>
                     <option value="إرجاع أموال لعميل">@Localizer["إرجاع أموال لعميل (Refund)"]</option>
+                    <option value="تعويض للعميل عن أضرار">@Localizer["تعويض للعميل عن أضرار"]</option>
                     <option value="مصروفات تشغيلية (مكتب)">@Localizer["مصروفات تشغيلية (مكتب)"]</option>
                 </select>
             </div>
 
+            <!-- 💡 الحقل الجديد: ربط المصروف بسيارة (الشاصي) -->
+            <div class="form-group">
+                <label asp-for="CarId" class="form-label" style="color: var(--primary-gold);">@Localizer["ارتباط بسيارة (الشاصي) - اختياري"]</label>
+                <select asp-for="CarId" class="form-control select2" asp-items="ViewBag.CarsList">
+                    <option value="">-- @Localizer["مصروف عام (بدون سيارة)"] --</option>
+                </select>
+            </div>
+
             <div class="form-group" id="customerLinkGroup" style="display:none;">
-                <label asp-for="CustomerId" class="form-label">@Localizer["العميل المرتبط (لخصم المبلغ من رصيده)"]</label>
+                <label asp-for="CustomerId" class="form-label">@Localizer["العميل المرتبط"]</label>
                 <select asp-for="CustomerId" class="form-control select2" asp-items="ViewBag.CustomerId">
                     <option value="">-- @Localizer["بدون ارتباط بعميل"] --</option>
                 </select>
@@ -274,9 +285,10 @@
         $(document).ready(function() {
             $('.select2').select2({ dir: $('html').attr('dir'), width: '100%' });
 
-            // إظهار حقل العميل فقط إذا كان نوع المصروف إرجاع
+            // إظهار حقل العميل إذا كان النوع إرجاع أو تعويض
             $('#Category').on('change', function() {
-                if($(this).val() === 'إرجاع أموال لعميل') {
+                var cat = $(this).val();
+                if(cat === 'إرجاع أموال لعميل' || cat === 'تعويض للعميل عن أضرار') {
                     $('#customerLinkGroup').slideDown();
                 } else {
                     $('#customerLinkGroup').slideUp();
