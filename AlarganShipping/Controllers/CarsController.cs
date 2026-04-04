@@ -197,6 +197,17 @@ namespace AlarganShipping.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (car == null) return NotFound();
+
+            // 💡 التعديلات الجديدة: جلب إجمالي سندات القبض وتفاصيلها لهذه السيارة لتحديث الفاتورة للطباعة
+            ViewBag.TotalReceipts = await _context.PaymentReceipts
+                .Where(p => p.CarId == id)
+                .SumAsync(p => p.Amount);
+
+            ViewBag.CarReceipts = await _context.PaymentReceipts
+                .Where(p => p.CarId == id)
+                .OrderBy(p => p.PaymentDate)
+                .ToListAsync();
+
             return View(car);
         }
 
@@ -227,10 +238,6 @@ namespace AlarganShipping.Controllers
                 return Json(new { success = false, message = "لا يمكن حذف السيارة لارتباطها ببيانات أخرى (شحنات، فواتير)." });
             }
         }
-
-        // ========================================================
-        // دوال الإجراءات المصححة
-        // ========================================================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -361,6 +368,5 @@ namespace AlarganShipping.Controllers
 
             return Json(new { success = true, message = "تم إنشاء نسخة من السيارة بنجاح (يمكنك تعديل رقم الشاصي لاحقاً)." });
         }
-
     }
 }
